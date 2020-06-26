@@ -1,0 +1,472 @@
+/* eslint-disable react/prop-types */
+import React, { Component, Fragment } from 'react';
+import Divider from '@material-ui/core/Divider';
+import Typography from "@material-ui/core/Typography";
+import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
+import {
+    TextField, Button, MenuItem
+} from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { Link } from 'react-router-dom';
+import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+class DocumentRequestAction extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: false,
+            documentData: [],
+            documentList: [],
+            applicationId: props.match.params.id,
+            documentTypeId: 0,
+            documentTypeIdError: "",
+            otherType: "",
+            otherTypeError: "",
+            files: [],
+            filesError: "",
+            isLoginMenu: false,
+            isReload: false,
+
+        }
+    }
+
+    componentDidMount() {
+        this.loadData();
+    }
+
+    loadData = async () => {
+        this.setState({
+            isLoading: true
+        })
+        await this.getData();
+        await this.getDocumentList();
+        this.setState({
+            isLoading: false
+        })
+    }
+
+    handleDateChange = (date) => {
+        this.setState({
+            eventDate: date
+        });
+    };
+    getDocumentList = async () => {
+        const urlList = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C01AdmissionsProspectApplicationRequiredDocumentListView`;
+        await fetch(urlList, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.DATA) {
+                        this.setState({
+                            documentList: json.DATA || []
+                        })
+                    }
+                },
+                error => {
+                    if (error.status === 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: true
+                        })
+                    } else {
+                        alert('Failed to fetch, Please try again later.');
+                        console.log(error);
+                    }
+                });
+    }
+
+    getData = async () => {
+
+        const url2 = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplicationDocumentsView?applicationId=${this.state.applicationId}`;
+        await fetch(url2, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.DATA) {
+                        this.setState({
+                            documentData: json.DATA || []
+                        })
+                    }
+                },
+                error => {
+                    if (error.status === 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: true
+                        })
+                    } else {
+                        alert('Failed to fetch, Please try again later.');
+                        console.log(error);
+                    }
+                }
+            );
+        this.setState({
+            isLoading: false
+        })
+
+
+    }
+
+    isFormValid = () => {
+        let { filesError, documentTypeIdError, otherTypeError } = this.state;
+        let isValid = true;
+        if (!this.state.documentTypeId) {
+            isValid = false
+            documentTypeIdError = "Please select document type.";
+        }
+        if (this.state.documentTypeId === 6) {
+            if (!this.state.otherType) {
+                isValid = false;
+                otherTypeError = "Please enter description.";
+            }
+        }
+        if (this.state.files.length <= 0) {
+            isValid = false;
+            filesError = "Please select a file."
+        }
+        this.setState({
+            documentTypeIdError,
+            filesError,
+            otherTypeError
+        })
+        return isValid;
+    }
+
+    handleFileChange = event => {
+        const { files = [] } = event.target;
+        this.setState({
+            files,
+            filesError: ""
+        })
+
+    }
+
+    onHandleChange = e => {
+        const { name, value } = e.target;
+        const errName = `${name}Error`;
+        this.setState({
+            [name]: value,
+            [errName]: ""
+        })
+    }
+
+    handleSubmitButtonClick = () => {
+        const isValid = this.isFormValid();
+        if (isValid) {
+            document.getElementById("submit-button").click();
+        }
+        return;
+    };
+
+    handleSubmit = async (e) => {
+
+        e.preventDefault();
+        const data = new FormData(e.target);
+        this.setState({
+            isLoading: true,
+        });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C01AdmissionsProspectApplicationDocumentsUpload`;
+        await fetch(url, {
+            method: "POST",
+            body: data,
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclToken"),
+            }),
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then((result) => {
+                if (result.CODE === 1) {
+                    window.location.replace("#/dashboard/documents");
+                } else if (result.CODE === 2) {
+                    alert(result.CODE + ":" + result.USER_MESSAGE);
+                } else if (result.CODE === 3) {
+                    alert(result.CODE + ":" + result.SYSTEM_MESSAGE);
+                } else if (result.error === 1) {
+                    alert(result.error_message);
+                } else if (result.success === 0 && result.redirect_url !== "") {
+                    window.location = result.redirect_url;
+                }
+            })
+            .catch((error) => {
+                if (error.status === 401) {
+                    this.setState({
+                        isLoginMenu: true,
+                        isReload: false
+                    })
+                } else {
+                    alert('Operation Failed, Please try again later.');
+                    console.log(error);
+                }
+            });
+        this.setState({
+            isLoading: false,
+        });
+    };
+
+    deleteFile = (id) => {
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C01AdmissionsProspectApplicationDocumentsDelete?documentTypeId=${id}`;
+        fetch(url, {
+            method: "POST",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclToken"),
+            }),
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                (result) => {
+                    console.log(result);
+                    if (result["CODE"] === 1) {
+                        window.location.reload();
+                    } else {
+                        alert(result["SYSTEM_MESSAGE"]);
+                    }
+                })
+            .catch((error) => {
+                if (error.status === 401) {
+                    this.setState({
+                        isLoginMenu: true,
+                        isReload: false
+                    })
+                } else {
+                    alert('Operation Failed, Please try again later.');
+                    console.log(error);
+                }
+            });
+    };
+
+    DownloadFile = (fileName) => {
+        const data = new FormData();
+        data.append("fileName", fileName);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${
+            process.env.REACT_APP_SUB_API_NAME
+            }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
+
+        fetch(url, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+            }),
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    return res.blob();
+                } else if (res.status === 401) {
+                    this.setState({
+                        isLoginMenu: true,
+                        isReload: false
+                    })
+                    return {}
+                } else {
+                    alert('Operation Failed, Please try again later.');
+                    return {}
+                }
+            })
+            .then((result) => {
+                var csvURL = window.URL.createObjectURL(result);
+                var tempLink = document.createElement("a");
+                tempLink.href = csvURL;
+                tempLink.setAttribute("download", fileName);
+                tempLink.click();
+                console.log(csvURL);
+                if (result.CODE === 1) {
+                    //Code
+                } else if (result.CODE === 2) {
+                    alert(
+                        "SQL Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.CODE === 3) {
+                    alert(
+                        "Other Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.error === 1) {
+                    alert(result.error_message);
+                } else if (result.success === 0 && result.redirect_url !== "") {
+                    window.location = result.redirect_url;
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    render() {
+
+        const columns = [
+            { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+            { name: "Document Type", dataIndex: "documentTypeLabel", sortable: false, customStyleHeader: { width: '20%' } },
+            { name: "Remarks", dataIndex: "otherDocumentTypeLabel", sortable: false, customStyleHeader: { width: '30%' } },
+            { name: "Upload Date", dataIndex: "uploadedOn", sortable: false, customStyleHeader: { width: '17%' } },
+            { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
+            {
+                name: "Action", renderer: rowData => {
+                    return (
+                        <Fragment>
+                            <div style={{ display: 'flex', margin: '-10px' }}>
+                                <IconButton onClick={() =>
+                                    this.DownloadFile(rowData.fileName)
+                                } aria-label="download">
+                                    <CloudDownloadIcon />
+                                </IconButton>
+                                <IconButton onClick={() => this.deleteFile(rowData.id)
+                                } aria-label="download">
+                                    <DeleteIcon />
+                                </IconButton>
+                            </div>
+                        </Fragment>
+                    )
+                }, sortable: false, customStyleHeader: { width: '10%' }
+            },
+        ]
+
+        return (
+            <Fragment>
+                <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
+
+                <div style={{
+                    padding: 30
+                }}>
+                    <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
+                        <IconButton style={{
+                            paddingBottom: 0,
+                            marginTop: '-10px'
+                        }} aria-label="Back">
+                            <Link style={{
+                                textDecoration: 'none',
+                                color: 'gray'
+                            }} to="/dashboard/document-requests"><ArrowBackIcon /></Link>
+                        </IconButton> Application ID: {this.state.applicationId}
+                    </Typography>
+
+                    <Divider style={{
+                        backgroundColor: 'rgb(58, 127, 187)',
+                        opacity: '0.3',
+                    }} />
+                    <form id="myform"
+                        onSubmit={this.handleSubmit}
+                        autoComplete="off">
+                        <div style={{
+                            display: 'flex',
+                            marginTop: 30
+                        }}>
+                            <TextField
+                                select
+                                style={{
+                                    marginRight: 20
+                                }}
+                                error={this.state.documentTypeIdError}
+                                value={this.state.documentTypeId || ""}
+                                label="Document Type"
+                                fullWidth
+                                onChange={this.onHandleChange}
+                                name="documentTypeId"
+
+                            >
+                                {this.state.documentList.map((item, index) => {
+                                    return (
+                                        <MenuItem key={index} value={item.ID}>
+                                            {item.Label}
+                                        </MenuItem>
+                                    )
+                                })
+                                }
+                            </TextField>
+                            {this.state.documentTypeId === 6 &&
+                                <TextField
+                                    label="Other"
+                                    name="otherType"
+                                    value={this.state.otherType}
+                                    error={this.state.otherTypeError}
+                                    onChange={this.onHandleChange}
+                                    fullWidth
+                                />
+                            }
+                        </div>
+                        <div style={{
+                            display: 'flex',
+                            marginTop: 30
+                        }}>
+                            <TextField
+                                id="outlined-multiline-static"
+                                label="Remarks"
+                                multiline
+                                fullWidth
+                                style={{
+                                    marginRight: 20
+                                }}
+                                rows={3}
+                                variant="outlined"
+                            />
+                        </div>
+                        <div style={{
+                            marginTop: 30,
+                            display: 'flex',
+                            justifyContent: 'flex-end'
+                        }}>
+                            <input id="submit-button" type="submit" style={{ display: 'none' }} />
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => this.handleSubmitButtonClick()}
+                                style={{
+                                    height: 40,
+                                    marginLeft: 20,
+                                    marginRight: 20,
+                                    textTransform: 'capitalize',
+                                }}
+                            > {this.state.isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Raise Request"}</Button>
+                        </div>
+                    </form>
+                    <div style={{ marginTop: 20 }}>
+                        <TablePanel isShowIndexColumn data={this.state.documentData} isLoading={this.state.isLoading} sortingEnabled={false} columns={columns} />
+                    </div>
+                </div>
+            </Fragment>
+        );
+    }
+}
+export default DocumentRequestAction;
