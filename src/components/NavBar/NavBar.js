@@ -94,6 +94,7 @@ const NavBar = props => {
                                 aria-label="open drawer"
                                 edge="start"
                                 style={{ marginLeft: 5 }}
+                                title={isOpenMenu ? 'Hide Menu' : 'Show Menu'}
                                 onClick={(e) => setOpenMenu(e)}
                             >
                                 {isOpenMenu ? <ArrowBackIosIcon /> : <MenuIcon />}
@@ -112,6 +113,7 @@ const NavBar = props => {
                             <IconButton
                                 style={{ color: '#174A84', opacity: '0.8' }}
                                 onClick={homepage}
+                                title="Go to home page"
                             >
                                 <HomeIcon />
 

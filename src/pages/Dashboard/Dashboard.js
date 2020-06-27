@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment, useState, Suspense } from 'react';
+import clsx from 'clsx';
 import { HashRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -18,6 +19,9 @@ import RegistrationFeeApprovel from './Contents/Decision/RegistrationFeeApprovel
 import OfferLetter from './Contents/Decision/OfferLetter';
 // import UploadDocuments from './Contents/Decision/DocumentRequest';
 // import DocumentRequestAction from './Contents/Decision/Chunks/DocumentRequestAction';
+
+const drawerWidth = 250;
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -58,13 +62,24 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(1),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  contentShift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: drawerWidth
   },
   toolbar: theme.mixins.toolbar,
   drawer: {
-    width: 240,
+    width: drawerWidth - 10,
   },
   drawerPaper: {
-    width: 250,
+    width: drawerWidth,
     color: '#F5F5F5',
     backgroundColor: '#174A84',
   },
@@ -89,7 +104,7 @@ const SetRoute = ({ name, setValue, ...rest }) => {
 const Dashboard = props => {
   const classes = useStyles();
   const [viewValue, setViewValue] = useState(props.match.params.value || "");
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isDrawerOpen, setDrawerOpen] = useState(true);
   const adminData = JSON.parse(localStorage.getItem('adminData'));
 
   const handleValueChange = value => {
@@ -207,11 +222,12 @@ const Dashboard = props => {
               </MenuItem> */}
             </MenuList>
           </div>
-
         </div>
 
       </Drawer>
-      <main className={classes.content}>
+      <main className={clsx(classes.content, {
+        [classes.contentShift]: isDrawerOpen,
+      })}>
         <div className={classes.toolbar} />
         <Router>
           <Suspense fallback={<p>Loading...</p>}>
