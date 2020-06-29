@@ -118,7 +118,7 @@ function BottomBar(props) {
             color="default"
             onClick={event => bottomLeftButtonAction(props)}
           >
-            {props.left_button_text}
+            {props.left_button_text }
           </Button>
           <div className={classes.grow} />
           <Button
