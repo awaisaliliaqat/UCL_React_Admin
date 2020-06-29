@@ -274,7 +274,7 @@ class F06Form extends Component {
                                         display: 'flex' 
                                     }}
                                 >
-                                
+                                {/* 
                                 <Button 
                                     disabled={this.state.isLoading} 
                                     onClick={this.onFormSubmit}
@@ -290,8 +290,8 @@ class F06Form extends Component {
                                         : 
                                         "Save"
                                     }
-                                </Button> 
-                               
+                                </Button>  
+                                */}
                             </Grid>
                         </Grid>
                     </Grid>
@@ -302,6 +302,7 @@ class F06Form extends Component {
                     bottomRightButtonAction={this.clickOnFormSubmit}
                     bottomLeftButtonAction={this.viewReport}
                     loading={this.state.isLoading}
+                    isDrawerOpen={ this.props.isDrawerOpen }
                 />
             </Fragment>
         );

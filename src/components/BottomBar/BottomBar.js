@@ -104,13 +104,12 @@ function BottomBar(props) {
     <div>
       <AppBar
         position="fixed"
+        color="default"
         style={{ 
           top: "auto", 
           bottom:0,
-          overflow:"overflow",
-          marginLeft:283
+          paddingLeft: props.isDrawerOpen ? 250 : 0
         }}
-        color="default"
       >
         <Toolbar variant="dense">
           <Button
@@ -132,7 +131,10 @@ function BottomBar(props) {
             }}
           >
             {props.loading ? 
-              <CircularProgress size={24} style={{ color: 'white' }} />
+              <CircularProgress 
+                size={24} 
+                style={{ color: 'white' }} 
+              />
               :
               props.right_button_text
             }

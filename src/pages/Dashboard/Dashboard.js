@@ -232,8 +232,7 @@ const Dashboard = props => {
             <MenuList>
               <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "F06Form" && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/F06Form/0'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Define Schools</Typography>
+                  <Typography className={classes.menuItemText} noWrap variant="body2">Define Schools</Typography>
                 </Link>
               </MenuItem>
             </MenuList>
@@ -259,7 +258,7 @@ const Dashboard = props => {
               <SetRoute setValue={value => handleValueChange(value)} name="offer-letter" exact path="/dashboard/offer-letter" component={OfferLetter} />
               <SetRoute setValue={value => handleValueChange(value)} name="F06Form" exact path="/dashboard/F06Form/:recordId" render={(props)=> {
                 return (
-                  <F06Form {...props} isDrawerOpen={isDrawerOpen} />
+                  <F06Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
                 )
               }} />
               <SetRoute setValue={value => handleValueChange(value)} name="F06Reports" exact path="/dashboard/F06Reports" component={F06Reports} />
