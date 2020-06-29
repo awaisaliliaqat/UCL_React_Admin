@@ -19,8 +19,6 @@ import RegistrationFeeApprovel from './Contents/Decision/RegistrationFeeApprovel
 import OfferLetter from './Contents/Decision/OfferLetter';
 // import UploadDocuments from './Contents/Decision/DocumentRequest';
 // import DocumentRequestAction from './Contents/Decision/Chunks/DocumentRequestAction';
-import F06Form from './Contents/Forms/F06Form';
-import F06Reports from './Contents/Forms/F06Reports';
 
 const drawerWidth = 250;
 
@@ -225,20 +223,6 @@ const Dashboard = props => {
             </MenuList>
           </div>
 
-          <div className={classes.menuListContainer}>
-            <Typography className={classes.menuTitle} noWrap variant="h6">
-              <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Forms</div>
-            </Typography>
-            <MenuList>
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "/dashboard/F06Form/0" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/F06Form/0'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Define Schools</Typography>
-                </Link>
-              </MenuItem>
-            </MenuList>
-          </div>
-
         </div>
 
       </Drawer>
@@ -257,8 +241,6 @@ const Dashboard = props => {
               {/* <SetRoute setValue={value => handleValueChange(value)} name="document-requests" exact path="/dashboard/document-requests" component={UploadDocuments} /> */}
               {/* <SetRoute setValue={value => handleValueChange(value)} name="document-requests" exact path="/dashboard/document-requests/:id" component={DocumentRequestAction} /> */}
               <SetRoute setValue={value => handleValueChange(value)} name="offer-letter" exact path="/dashboard/offer-letter" component={OfferLetter} />
-              <SetRoute setValue={value => handleValueChange(value)} name="F06Form" exact path="/dashboard/F06Form/:recordId" component={F06Form} />
-              <SetRoute setValue={value => handleValueChange(value)} name="F06Reports" exact path="/dashboard/F06Reports" component={F06Reports} />
             </Switch>
           </Suspense>
         </Router>
