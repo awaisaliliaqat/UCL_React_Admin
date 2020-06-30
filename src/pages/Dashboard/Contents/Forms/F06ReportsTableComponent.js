@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Paper, Input, Typography} from '@material-ui/core';
-import { createStyles, withStyles, WithStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles, Theme, responsiveFontSizes } from '@material-ui/core/styles';
 import { Column, FilteringState, GroupingState, IntegratedFiltering, IntegratedGrouping, IntegratedPaging, 
     IntegratedSelection, IntegratedSorting, PagingState, SelectionState, SortingState, DataTypeProvider, 
     DataTypeProviderProps} from '@devexpress/dx-react-grid';
@@ -45,6 +45,9 @@ class F06ReportsTableComponent extends Component {
                 "lessThanOrEqual",
             ],
             pageSizes:[5,10,15,20],
+            sortingStateColumnExtensions:[
+              { columnName: 'action', sortingEnabled: false },
+            ],
             tableColumnExtensions:[],
             defaultColumnWidths:[
               // { columnName: 'ID', width:100},
@@ -63,6 +66,7 @@ class F06ReportsTableComponent extends Component {
             availableFilterOperations,
             CurrencyEditor,
             tableColumnExtensions,
+            sortingStateColumnExtensions,
             defaultColumnWidths,
             columnBands,
             pageSizes
@@ -79,10 +83,12 @@ class F06ReportsTableComponent extends Component {
                 <FilteringState
                   //defaultFilters={[{ columnName: 'saleDate', value: '2016-02' }]}
                 />
+                
                 <SortingState
                   defaultSorting={[
-                   // { columnName: 'product', direction: 'asc' }
+                    { columnName: 'ID', direction: 'asc' }
                   ]}
+                  columnExtensions={sortingStateColumnExtensions}
                 />
                 {/* 
                   <SelectionState /> 
@@ -106,18 +112,26 @@ class F06ReportsTableComponent extends Component {
                 {/* 
                   <DragDropProvider /> 
                 */}
-                <Table />
+                <Table columnExtensions={tableColumnExtensions}/>
                 <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
                 {/* 
                   <TableSelection showSelectAll={true} /> 
                 */}
-                <TableHeaderRow showSortingControls={true} />
+                <TableHeaderRow 
+                  showSortingControls={true} 
+                  titleComponent={(props) => (
+                    props.children!="Action" ?
+                      <b>{props.children}</b>
+                      :
+                      <b>&emsp;{props.children}</b>
+                  )}
+                />
                 {showFilter?
                   <TableFilterRow showFilterSelector={true} /> 
                   :
                   ""
                 }
-                <PagingPanel pageSizes={pageSizes} p />
+                <PagingPanel pageSizes={pageSizes}/>
                 {/* 
                   <Toolbar /> 
                 */}
