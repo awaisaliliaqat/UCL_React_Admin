@@ -48,7 +48,12 @@ class F06ReportsTableComponent extends Component {
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
             ],
-            tableColumnExtensions:[],
+            tableColumnExtensions:[
+              { columnName: 'ID', width:"10%"},
+              { columnName: 'shortLabel', width:"40%"},
+              { columnName: 'label', width:"40%"},
+              { columnName: 'action', width:"10%"}
+            ],
             defaultColumnWidths:[
               // { columnName: 'ID', width:100},
               // { columnName: 'shortLabel', width:350},
