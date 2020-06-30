@@ -45,6 +45,9 @@ class F06ReportsTableComponent extends Component {
                 "lessThanOrEqual",
             ],
             pageSizes:[5,10,15,20],
+            sortingStateColumnExtensions:[
+              { columnName: 'action', sortingEnabled: false },
+            ],
             tableColumnExtensions:[],
             defaultColumnWidths:[
               // { columnName: 'ID', width:100},
@@ -63,6 +66,7 @@ class F06ReportsTableComponent extends Component {
             availableFilterOperations,
             CurrencyEditor,
             tableColumnExtensions,
+            sortingStateColumnExtensions,
             defaultColumnWidths,
             columnBands,
             pageSizes
@@ -79,10 +83,12 @@ class F06ReportsTableComponent extends Component {
                 <FilteringState
                   //defaultFilters={[{ columnName: 'saleDate', value: '2016-02' }]}
                 />
+                
                 <SortingState
                   defaultSorting={[
-                   // { columnName: 'product', direction: 'asc' }
+                    { columnName: 'ID', direction: 'asc' }
                   ]}
+                  columnExtensions={sortingStateColumnExtensions}
                 />
                 {/* 
                   <SelectionState /> 
@@ -106,12 +112,12 @@ class F06ReportsTableComponent extends Component {
                 {/* 
                   <DragDropProvider /> 
                 */}
-                <Table />
+                <Table columnExtensions={tableColumnExtensions}/>
                 <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
                 {/* 
                   <TableSelection showSelectAll={true} /> 
                 */}
-                <TableHeaderRow showSortingControls={true}/>
+                <TableHeaderRow showSortingControls={true} />
                 {showFilter?
                   <TableFilterRow showFilterSelector={true} /> 
                   :

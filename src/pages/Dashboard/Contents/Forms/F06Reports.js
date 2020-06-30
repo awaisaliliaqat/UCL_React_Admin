@@ -556,7 +556,7 @@ class F06Reports extends Component {
             { name: "ID", title: "Id"},
             { name: "shortLabel", title: "Short Label"},
             { name: "label", title: "Label"},
-            { name: "action", title:"  Action"}
+            { name: "action", title:"Action", sortable: false}
         ]
 
         return (
