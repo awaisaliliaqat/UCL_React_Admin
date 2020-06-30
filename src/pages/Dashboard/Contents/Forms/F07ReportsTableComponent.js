@@ -35,7 +35,10 @@ class F06ReportsTableComponent extends Component {
             columns: [],
             rows: [],
             formatColumns: [],
-            currencyColumns: [],
+            currencyColumns: [], 
+            sortingStateColumnExtensions:[
+              { columnName: 'action', sortingEnabled: false },
+            ],
             availableFilterOperations: [
                 "equal",
                 "notEqual",
@@ -65,7 +68,8 @@ class F06ReportsTableComponent extends Component {
             tableColumnExtensions,
             defaultColumnWidths,
             columnBands,
-            pageSizes
+            pageSizes,
+            sortingStateColumnExtensions,
           } = this.state;
 
           const rows = this.props.data;
@@ -111,7 +115,16 @@ class F06ReportsTableComponent extends Component {
                 {/* 
                   <TableSelection showSelectAll={true} /> 
                 */}
-                <TableHeaderRow showSortingControls={true} />
+                {/* <TableHeaderRow showSortingControls={true} /> */}
+                <TableHeaderRow 
+                  showSortingControls={true} 
+                  titleComponent={(props) => (
+                    props.children!="Action" ?
+                      <b>{props.children}</b>
+                      :
+                      <b>&emsp;{props.children}</b>
+                  )}
+                />
                 {showFilter?
                   <TableFilterRow showFilterSelector={true} /> 
                   :

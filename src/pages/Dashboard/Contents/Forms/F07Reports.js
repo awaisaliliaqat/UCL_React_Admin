@@ -37,7 +37,7 @@ function ActionButton(props) {
       event.preventDefault();
       //return;
       const data = new FormData(event.target);
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C06CommonSchoolsDelete`;
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C07CommonProgrammeGroupsDelete`;
       await fetch(url, {
         method: "POST",
         body:data,
@@ -118,7 +118,7 @@ function ActionButton(props) {
           <DeleteIcon fontSize="small" />
         </IconButton>
         <IconButton
-          onClick={(event) => (window.location = `#/dashboard/F06Form/${props.record_id}`)}
+          onClick={(event) => (window.location = `#/dashboard/F07Form/${props.record_id}`)}
         >
           <EditIcon fontSize="small" />
         </IconButton>
@@ -554,10 +554,10 @@ class F07Reports extends Component {
 
         const columnsPending = [
             { name: "ID", title: "Id", customStyleHeader: {fontSize:"26px"}},
-            { name: "schoolId", title: "Short Label"},
-            { name: "shortLabel", title: "Short Label"},
             { name: "label", title: "Label"},
-            //{ name: "Action", title:"" ,renderer: rowData => {return (<ActionButton getData={this.getData} record_id={rowData.ID}></ActionButton>)}, sortable: false, customStyleHeader: { width:'10%', textAlign:'center' }}
+            { name: "shortLabel", title: "Short Label"},
+            
+            { name: "schoolLabel", title: "Link School"},
             { name: "action", title:"Action"}
         ]
 
@@ -572,7 +572,7 @@ class F07Reports extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Schools Reports
+                            Programme groups Reports
                         </Typography>
                         {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
@@ -602,7 +602,7 @@ class F07Reports extends Component {
                         opacity: '0.3', 
                     }} />
                     {this.state.showSearchBar ? 
-                        <F06ReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
+                        <F07ReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
                         :
                         <br/>
                     }
@@ -622,7 +622,7 @@ class F07Reports extends Component {
                     */}
                     
                     {/* <TablePanel isShowIndexColumn data={this.state.admissionData} isLoading={this.state.isLoading} sortingEnabled columns={columnsPending} /> */}
-                    <F06ReportsTableComponent data={this.state.admissionData} columns={columnsPending} showFilter={this.state.showTableFilter}/>
+                    <F07ReportsTableComponent data={this.state.admissionData} columns={columnsPending} showFilter={this.state.showTableFilter}/>
                     
 
                 </div>
