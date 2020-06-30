@@ -13,6 +13,8 @@ import { format } from 'date-fns';
 import F06ReportsTableComponent from './F06ReportsTableComponent';
 import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import FilterIcon from "mdi-material-ui/FilterOutline";
+import SearchIcon from "mdi-material-ui/FileSearchOutline";
 
 function isEmpty(obj) {
     if (obj == null) return true;
@@ -582,7 +584,7 @@ class F06Reports extends Component {
                                 <IconButton
                                     onClick={this.handleToggleSearchBar}
                                 >
-                                    <SearchOutlinedIcon fontSize="default" color="primary"/>
+                                    <FilterIcon fontSize="default" color="primary"/>
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Table Filter">
@@ -590,7 +592,7 @@ class F06Reports extends Component {
                                     style={{ marginLeft: "-10px" }}
                                     onClick={this.handleToggleTableFilter}
                                 >
-                                    <FindInPageOutlinedIcon fontSize="default" color="primary"/>
+                                    <SearchIcon fontSize="default" color="primary"/>
                                 </IconButton>
                             </Tooltip>
                         </div>
