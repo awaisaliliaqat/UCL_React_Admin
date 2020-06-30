@@ -41,6 +41,7 @@ const AppRoute = () => {
                         <PrivateRoutes exact path="/dashboard/document-requests/:id" component={Dashboard} />
                         <PrivateRoutes exact path="/view-application/:id" component={DisplayAdmissionApplication} />
                         <PrivateRoutes exact path="/dashboard/F06Form/:recordId" component={Dashboard} />
+                        <PrivateRoutes exact path="/dashboard/F07Form/:recordId" component={Dashboard} />
                         <Route exact path="*" component={NoMatchPage} />
                     </Switch>
                 </Suspense>
