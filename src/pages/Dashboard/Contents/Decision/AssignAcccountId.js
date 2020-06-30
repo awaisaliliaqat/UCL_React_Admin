@@ -238,7 +238,7 @@ class OfferLetter extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Assign Account Id Dashboard
+                            Assign Accounts Id
             </Typography>
                     </div>
                     <Divider style={{

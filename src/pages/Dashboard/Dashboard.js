@@ -224,13 +224,13 @@ const Dashboard = props => {
                 <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "assign-account-id" && classes.active}`}>
                   <Link style={{ textDecoration: 'none' }} to='/dashboard/assign-account-id'>
                     <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Assign Account Id</Typography>
+                      noWrap variant="body2">Assign Accounts Id</Typography>
                   </Link>
                 </MenuItem>
                 <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "upload-tution-fees" && classes.active}`}>
                   <Link style={{ textDecoration: 'none' }} to='/dashboard/upload-tution-fees'>
                     <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Upload Tution Fees</Typography>
+                      noWrap variant="body2">Upload Tution Fee Vochers</Typography>
                   </Link>
                 </MenuItem>
                 <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "tution-fee-approval" && classes.active}`}>

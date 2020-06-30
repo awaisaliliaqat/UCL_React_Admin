@@ -97,41 +97,6 @@ class RegistrationFeeApprovel extends Component {
             );
     };
 
-    getStatusTypeData = async () => {
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03CommonAcademicsFeePayableStatusTypesView`;
-        await fetch(url, {
-            method: "GET",
-            headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-            })
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    throw res;
-                }
-                return res.json();
-            })
-            .then(
-                (json) => {
-                    this.setState({
-                        statusTypeData: json.DATA,
-                    });
-                    console.log(json.DATA);
-                },
-                (error) => {
-                    if (error.status === 401) {
-                        this.setState({
-                            isLoginMenu: true,
-                            isReload: true
-                        })
-                    } else {
-                        alert('Failed to fetch, Please try again later.');
-                        console.log(error);
-                    }
-                }
-            );
-    };
-
     getMethodData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C12FinanceStudentsLegacyFeePaymentMethods`;
         await fetch(url, {
@@ -339,7 +304,7 @@ class RegistrationFeeApprovel extends Component {
             isSubmitLoading: true
         })
         if (this.state.methodId) {
-            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03CommonAcademicsFeePayableChangeStatus?paymentId=${id}&paymentMethodId=${this.state.methodId}`;
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C12FinanceStudentsLegacyFeeVouchersChangeStatus?paymentId=${id}&paymentMethodId=${this.state.methodId}`;
             await fetch(url, {
                 method: "GET",
                 headers: new Headers({
@@ -355,6 +320,7 @@ class RegistrationFeeApprovel extends Component {
                 .then(
                     json => {
                         if (json.CODE === 1) {
+                            alert('confirmed');
                             this.setState({
                                 isOpenApprovelMenu: false,
                                 methodId: 0,
@@ -408,7 +374,7 @@ class RegistrationFeeApprovel extends Component {
                 }, sortable: false, customStyleHeader: { width: '12%' }
             },
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '13%' } },
-            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '20%', textAlign: 'center' }, align: 'center' },
+            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '20%', textAlign: 'center' } },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Bill No", dataIndex: "billNo", sortable: false, customStyleHeader: { width: '10%' } },

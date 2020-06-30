@@ -63,7 +63,7 @@ const TutionFeeApprovelMenu = props => {
                                 style={{
                                     width: '160px'
                                 }}
-                                disabled={data.paymentStatusId === 2}
+                                disabled={data.isConfirmed === 1}
                                 error={methodIdError}
                                 name="methodId"
                                 onChange={e => onHandleChange(e)}
@@ -84,7 +84,7 @@ const TutionFeeApprovelMenu = props => {
                             </TextField>
                         </div>
                         <div>
-                            {data.paymentStatusId !== 2 &&
+                            {data.isConfirmed !== 1 &&
                                 <Button style={{
                                     marginRight: 10,
                                 }} className={classes.button} variant="contained" onClick={e => onConfirmClick(e, data.paymentId)} color="primary">
@@ -92,7 +92,7 @@ const TutionFeeApprovelMenu = props => {
                                 </Button>
                             }
                             <Button className={classes.button} variant="contained" onClick={handleClose} color="primary">
-                                {data.paymentStatusId === 2 ? 'Close' : 'Cancel'}
+                                {data.isConfirmed !== 1 ? 'Cancel' : 'Close'}
                             </Button>
                         </div>
 

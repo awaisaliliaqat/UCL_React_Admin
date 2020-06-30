@@ -123,7 +123,8 @@ class UploadTutionFeesAction extends Component {
                                 textTransform: 'capitalize',
                                 width: 90
                             }}
-                        > {values.uploadLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Upload"}</Button>
+                            disabled={values.uploadLoading || values.isLoading}
+                        > {(values.uploadLoading || values.isLoading) ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Upload"}</Button>
                         <input id="submit-button" type="submit" style={{ display: 'none' }} />
 
                     </div>
