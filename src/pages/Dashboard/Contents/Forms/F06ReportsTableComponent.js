@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Paper, Input, Typography} from '@material-ui/core';
-import { createStyles, withStyles, WithStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles, Theme, responsiveFontSizes } from '@material-ui/core/styles';
 import { Column, FilteringState, GroupingState, IntegratedFiltering, IntegratedGrouping, IntegratedPaging, 
     IntegratedSelection, IntegratedSorting, PagingState, SelectionState, SortingState, DataTypeProvider, 
     DataTypeProviderProps} from '@devexpress/dx-react-grid';
@@ -111,13 +111,13 @@ class F06ReportsTableComponent extends Component {
                 {/* 
                   <TableSelection showSelectAll={true} /> 
                 */}
-                <TableHeaderRow showSortingControls={true} />
+                <TableHeaderRow showSortingControls={true}/>
                 {showFilter?
                   <TableFilterRow showFilterSelector={true} /> 
                   :
                   ""
                 }
-                <PagingPanel pageSizes={pageSizes} p />
+                <PagingPanel pageSizes={pageSizes}/>
                 {/* 
                   <Toolbar /> 
                 */}

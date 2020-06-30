@@ -553,11 +553,10 @@ class F06Reports extends Component {
         ]
 
         const columnsPending = [
-            { name: "ID", title: "Id", customStyleHeader: {fontSize:"26px"}},
+            { name: "ID", title: "Id"},
             { name: "shortLabel", title: "Short Label"},
             { name: "label", title: "Label"},
-            //{ name: "Action", title:"" ,renderer: rowData => {return (<ActionButton getData={this.getData} record_id={rowData.ID}></ActionButton>)}, sortable: false, customStyleHeader: { width:'10%', textAlign:'center' }}
-            { name: "action", title:"Action"}
+            { name: "action", title:"  Action"}
         ]
 
         return (
@@ -605,25 +604,11 @@ class F06Reports extends Component {
                         :
                         <br/>
                     }
-                    {/* 
-                    <div style={{
-                        marginTop: 15,
-                        marginBottom: 15,
-                        color: '#174A84',
-                        font: 'Bold 16px Lato',
-                        letterSpacing: '1.8px'
-                    }}>{
-                            this.state.applicationStatusId === 1 && <Fragment>Applicants who have not submitted the &rdquo;Admission Application&rdquo; till date.</Fragment>
-                        }{
-                            this.state.applicationStatusId === 2 && <Fragment>Applicants who have successfully submitted &rdquo;Admission Application&rdquo;.</Fragment>
-                        }
-                    </div> 
-                    */}
-                    
-                    {/* <TablePanel isShowIndexColumn data={this.state.admissionData} isLoading={this.state.isLoading} sortingEnabled columns={columnsPending} /> */}
-                    <F06ReportsTableComponent data={this.state.admissionData} columns={columnsPending} showFilter={this.state.showTableFilter}/>
-                    
-
+                    <F06ReportsTableComponent 
+                        data={this.state.admissionData} 
+                        columns={columnsPending} 
+                        showFilter={this.state.showTableFilter}
+                    />
                 </div>
             </Fragment>
         );
