@@ -115,12 +115,12 @@ function ActionButton(props) {
           onClick={handleClickOpen}
           //aonClick={(event) => DeleteData(props)}
         >
-          <DeleteIcon fontSize="small" />
+          <DeleteIcon fontSize="small" color="error"/>
         </IconButton>
         <IconButton
           onClick={(event) => (window.location = `#/dashboard/F06Form/${props.record_id}`)}
         >
-          <EditIcon fontSize="small" />
+          <EditIcon fontSize="small" style={{color:"#ff9800"}}/>
         </IconButton>
       </div>
     );
