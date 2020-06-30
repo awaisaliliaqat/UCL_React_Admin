@@ -21,6 +21,9 @@ import OfferLetter from './Contents/Decision/OfferLetter';
 // import DocumentRequestAction from './Contents/Decision/Chunks/DocumentRequestAction';
 import F06Form from './Contents/Forms/F06Form';
 import F06Reports from './Contents/Forms/F06Reports';
+import F07Form from './Contents/Forms/F07Form';
+import F07Reports from './Contents/Forms/F07Reports';
+
 
 const drawerWidth = 250;
 
@@ -224,7 +227,7 @@ const Dashboard = props => {
               </MenuItem> */}
             </MenuList>
           </div>
-
+ 
           <div className={classes.menuListContainer}>
             <Typography className={classes.menuTitle} noWrap variant="h6">
               <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Forms</div>
@@ -233,6 +236,11 @@ const Dashboard = props => {
               <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "F06Form" && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/F06Form/0'>
                   <Typography className={classes.menuItemText} noWrap variant="body2">Define Schools</Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "F07Form" && classes.active}`}>
+                <Link style={{ textDecoration: 'none' }} to='/dashboard/F07Form/0'>
+                  <Typography className={classes.menuItemText} noWrap variant="body2">Common Programme Groups</Typography>
                 </Link>
               </MenuItem>
             </MenuList>
@@ -262,6 +270,13 @@ const Dashboard = props => {
                 )
               }} />
               <SetRoute setValue={value => handleValueChange(value)} name="F06Reports" exact path="/dashboard/F06Reports" component={F06Reports} />
+              <SetRoute setValue={value => handleValueChange(value)} name="F07Form" exact path="/dashboard/F07Form/:recordId" render={(props)=> {
+                return (
+                  <F07Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+             <SetRoute setValue={value => handleValueChange(value)} name="F07Reports" exact path="/dashboard/F07Reports" component={F07Reports} />
+             
             </Switch>
           </Suspense>
         </Router>
