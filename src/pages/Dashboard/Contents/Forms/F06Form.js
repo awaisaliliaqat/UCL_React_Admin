@@ -298,9 +298,10 @@ class F06Form extends Component {
                 </form>
                 <BottomBar
                     left_button_text="View"
+                    left_button_hide={false}
+                    bottomLeftButtonAction={this.viewReport}
                     right_button_text="Save"
                     bottomRightButtonAction={this.clickOnFormSubmit}
-                    bottomLeftButtonAction={this.viewReport}
                     loading={this.state.isLoading}
                     isDrawerOpen={ this.props.isDrawerOpen }
                 />

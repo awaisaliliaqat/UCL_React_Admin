@@ -29,6 +29,7 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'row',
         width: '15%',
         marginTop: 29,
+        textAlign:"center"
     },
     label: {
         textAlign: 'left',
@@ -183,7 +184,6 @@ const F06ReportsFilter = props => {
                         fullWidth
                         value={values.eventDate}
                         InputProps={{
-
                             classes: { input: classes.resize }
                         }}
                         onChange={(event) => {
@@ -199,6 +199,7 @@ const F06ReportsFilter = props => {
                         className={classes.button}
                         disabled={isLoading}
                         onClick={() => getDataByStatus(props.values.applicationStatusId)}
+                        style={{width:"48%"}}
                     > 
                         {isLoading ? 
                             <CircularProgress 
@@ -216,7 +217,8 @@ const F06ReportsFilter = props => {
                         color="primary"
                         className={classes.button}
                         style={{
-                            marginLeft: 8,
+                            marginLeft: "4%",
+                            width:"48%"
                         }}
                         onClick={() => onClearFilters()}
                     >Clear</Button>

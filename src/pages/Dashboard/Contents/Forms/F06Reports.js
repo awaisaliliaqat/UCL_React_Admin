@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import {Divider, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,TextField, IconButton} from '@material-ui/core';
+import {Divider, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,TextField, IconButton, Tooltip} from '@material-ui/core';
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 
@@ -11,6 +11,8 @@ import Button from '@material-ui/core/Button';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { format } from 'date-fns'; 
 import F06ReportsTableComponent from './F06ReportsTableComponent';
+import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
+import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 
 function isEmpty(obj) {
     if (obj == null) return true;
@@ -130,7 +132,8 @@ class F06Reports extends Component {
         super(props);
         this.state = {
             isLoading: false,
-            showTableFilter:true,
+            showTableFilter:false,
+            showSearchBar:false,
             isDownloadExcel: false,
             applicationStatusId: 1,
             admissionData: [],
@@ -526,6 +529,10 @@ class F06Reports extends Component {
         this.setState({showTableFilter:!this.state.showTableFilter});
     }
 
+    handleToggleSearchBar = () => {
+        this.setState({showSearchBar:!this.state.showSearchBar});
+    }
+
     componentDidMount() {
         this.getData(this.state.applicationStatusId);
     }
@@ -546,7 +553,7 @@ class F06Reports extends Component {
         ]
 
         const columnsPending = [
-            { name: "ID", title: "Id"},
+            { name: "ID", title: "Id", customStyleHeader: {fontSize:"26px"}},
             { name: "shortLabel", title: "Short Label"},
             { name: "label", title: "Label"},
             //{ name: "Action", title:"" ,renderer: rowData => {return (<ActionButton getData={this.getData} record_id={rowData.ID}></ActionButton>)}, sortable: false, customStyleHeader: { width:'10%', textAlign:'center' }}
@@ -566,17 +573,38 @@ class F06Reports extends Component {
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
                             Schools Reports
                         </Typography>
-                        <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
+                        {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
                             cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
                         }}
-                        />
+                        /> */}
+                        <div style={{float:"right"}}>
+                            <Tooltip title="Search Bar">
+                                <IconButton
+                                    onClick={this.handleToggleSearchBar}
+                                >
+                                    <SearchOutlinedIcon fontSize="default" color="primary"/>
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Table Filter">
+                                <IconButton
+                                    style={{ marginLeft: "-10px" }}
+                                    onClick={this.handleToggleTableFilter}
+                                >
+                                    <FindInPageOutlinedIcon fontSize="default" color="primary"/>
+                                </IconButton>
+                            </Tooltip>
+                        </div>
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <F06ReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
+                    {this.state.showSearchBar ? 
+                        <F06ReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
+                        :
+                        <br/>
+                    }
                     {/* 
                     <div style={{
                         marginTop: 15,

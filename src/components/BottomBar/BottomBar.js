@@ -1,19 +1,9 @@
 import React from "react";
-import { makeStyles, useTheme, withStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListSubheader,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-  Button,
-  TextareaAutosize
-} from "@material-ui/core";
+import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -116,6 +106,7 @@ function BottomBar(props) {
             variant="contained"
             color="default"
             onClick={event => bottomLeftButtonAction(props)}
+            style={{ display:props.left_button_hide==true ? "none":"block"}}
           >
             {props.left_button_text}
           </Button>
