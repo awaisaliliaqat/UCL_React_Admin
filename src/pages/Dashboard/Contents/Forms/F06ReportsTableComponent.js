@@ -117,7 +117,15 @@ class F06ReportsTableComponent extends Component {
                 {/* 
                   <TableSelection showSelectAll={true} /> 
                 */}
-                <TableHeaderRow showSortingControls={true} />
+                <TableHeaderRow 
+                  showSortingControls={true} 
+                  titleComponent={(props) => (
+                    props.children!="Action" ?
+                      <b>{props.children}</b>
+                      :
+                      <b>&emsp;{props.children}</b>
+                  )}
+                />
                 {showFilter?
                   <TableFilterRow showFilterSelector={true} /> 
                   :

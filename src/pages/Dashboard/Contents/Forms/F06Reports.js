@@ -553,10 +553,10 @@ class F06Reports extends Component {
         ]
 
         const columnsPending = [
-            { name: "ID", title: "Id"},
+            { name: "ID", title: "ID"},
             { name: "shortLabel", title: "Short Label"},
             { name: "label", title: "Label"},
-            { name: "action", title:"Action", sortable: false}
+            { name: "action", title:"Action"}
         ]
 
         return (
