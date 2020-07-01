@@ -5,12 +5,12 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 import Typography from "@material-ui/core/Typography";
 import ExcelIcon from '../../../../assets/Images/excel.png';
-import F07ReportsFilter from './F07ReportsFilter';
+import F09ReportsFilter from './F09ReportsFilter';
 import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
 import Button from '@material-ui/core/Button';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { format } from 'date-fns'; 
-import F07ReportsTableComponent from './F07ReportsTableComponent';
+import F09ReportsTableComponent from './F09ReportsTableComponent';
 import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 
@@ -37,7 +37,7 @@ function ActionButton(props) {
       event.preventDefault();
       //return;
       const data = new FormData(event.target);
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C07CommonProgrammeGroupsDelete`;
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupDelete`;
       await fetch(url, {
         method: "POST",
         body:data,
@@ -115,18 +115,18 @@ function ActionButton(props) {
           onClick={handleClickOpen}
           //aonClick={(event) => DeleteData(props)}
         >
-          <DeleteIcon fontSize="small" />
+          <DeleteIcon fontSize="small" color="error"/>
         </IconButton>
         <IconButton
-          onClick={(event) => (window.location = `#/dashboard/F07Form/${props.record_id}`)}
+          onClick={(event) => (window.location = `#/dashboard/F09Form/${props.record_id}`)}
         >
-          <EditIcon fontSize="small" />
+          <EditIcon fontSize="small" style={{color:"#ff9800"}}/>
         </IconButton>
       </div>
     );
   }
 
-class F07Reports extends Component {
+class F09Reports extends Component {
 
     constructor(props) {
         super(props);
@@ -403,7 +403,7 @@ class F07Reports extends Component {
         const reload = status === 1 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
         const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
         const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C07CommonProgrammeGroupsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -553,11 +553,9 @@ class F07Reports extends Component {
         // ]
 
         const columnsPending = [
-            { name: "ID", title: "ID", customStyleHeader: {fontSize:"26px"}},
-            { name: "label", title: "Label"},
+            { name: "ID", title: "ID"},
             { name: "shortLabel", title: "Short Label"},
-            
-            { name: "schoolLabel", title: "Link School"},
+            { name: "label", title: "Label"},
             { name: "action", title:"Action"}
         ]
 
@@ -572,7 +570,7 @@ class F07Reports extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Programme groups Reports
+                        Course Selection Group Report
                         </Typography>
                         {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
@@ -599,35 +597,21 @@ class F07Reports extends Component {
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',
-                        opacity: '0.3', 
+                        opacity: '0.3',
                     }} />
                     {this.state.showSearchBar ? 
-                        <F07ReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
+                        <F09ReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
                         :
                         <br/>
                     }
-                    {/* 
-                    <div style={{
-                        marginTop: 15,
-                        marginBottom: 15,
-                        color: '#174A84',
-                        font: 'Bold 16px Lato',
-                        letterSpacing: '1.8px'
-                    }}>{
-                            this.state.applicationStatusId === 1 && <Fragment>Applicants who have not submitted the &rdquo;Admission Application&rdquo; till date.</Fragment>
-                        }{
-                            this.state.applicationStatusId === 2 && <Fragment>Applicants who have successfully submitted &rdquo;Admission Application&rdquo;.</Fragment>
-                        }
-                    </div> 
-                    */}
-                    
-                    {/* <TablePanel isShowIndexColumn data={this.state.admissionData} isLoading={this.state.isLoading} sortingEnabled columns={columnsPending} /> */}
-                    <F07ReportsTableComponent data={this.state.admissionData} columns={columnsPending} showFilter={this.state.showTableFilter}/>
-                    
-
+                    <F09ReportsTableComponent 
+                        data={this.state.admissionData} 
+                        columns={columnsPending} 
+                        showFilter={this.state.showTableFilter}
+                    />
                 </div>
             </Fragment>
         );
     }
 }
-export default F07Reports;
+export default F09Reports;
