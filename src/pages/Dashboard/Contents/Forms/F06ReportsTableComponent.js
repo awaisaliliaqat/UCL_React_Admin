@@ -45,20 +45,27 @@ class F06ReportsTableComponent extends Component {
                 "lessThanOrEqual",
             ],
             pageSizes:[5,10,15,20],
+            defaultSorting:[
+              { columnName: 'ID', direction: 'asc' }
+            ],
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions:[
-              { columnName: 'ID', width:"10%"},
-              { columnName: 'shortLabel', width:"40%"},
-              { columnName: 'label', width:"40%"},
-              { columnName: 'action', width:"10%"}
+              // { columnName: 'ID', width:"10%"},
+              // { columnName: 'shortLabel', width:"35%"},
+              // { columnName: 'label', width:"35%"},
+              // { columnName: 'action', width:"20%"}
             ],
             defaultColumnWidths:[
-              // { columnName: 'ID', width:100},
-              // { columnName: 'shortLabel', width:350},
-              // { columnName: 'label', width:400},
-              // { columnName: 'action', width:150}
+              { columnName: 'ID', width:100},
+              { columnName: 'shortLabel', width:350},
+              { columnName: 'label', width:400},
+              { columnName: 'action', width:150}
+            ],
+            defaultFilters:[],
+            filteringStateColumnExtensions:[
+              { columnName: 'action', filteringEnabled: false },
             ]
         };
     }
@@ -66,62 +73,40 @@ class F06ReportsTableComponent extends Component {
     render() {
         
         const {
-            formatColumns,
-            currencyColumns,
-            availableFilterOperations,
-            CurrencyEditor,
-            tableColumnExtensions,
-            sortingStateColumnExtensions,
-            defaultColumnWidths,
-            columnBands,
-            pageSizes
-          } = this.state;
+          formatColumns,
+          currencyColumns,
+          availableFilterOperations,
+          CurrencyEditor,
+          tableColumnExtensions,
+          defaultSorting,
+          sortingStateColumnExtensions,
+          filteringStateColumnExtensions,
+          defaultFilters,
+          defaultColumnWidths,
+          columnBands,
+          pageSizes
+        } = this.state;
 
-          const rows = this.props.data;
-          const columns = this.props.columns;
-
-          const showFilter = this.props.showFilter;
+        const rows = this.props.data;
+        const columns = this.props.columns;
+        const showFilter = this.props.showFilter;
 
         return (
             <Paper>
               <Grid rows={rows} columns={columns}>
-                <FilteringState
-                  //defaultFilters={[{ columnName: 'saleDate', value: '2016-02' }]}
-                />
-                
-                <SortingState
-                  defaultSorting={[
-                    { columnName: 'ID', direction: 'asc' }
-                  ]}
-                  columnExtensions={sortingStateColumnExtensions}
-                />
-                {/* 
-                  <SelectionState /> 
-                */}
-                {/* 
-                <GroupingState
-                  defaultGrouping={[{ columnName: 'product' }]}
-                  defaultExpandedGroups={['EnviroCare Max']}
-                /> 
-                */}
-                <PagingState 
-                  defaultCurrentPage={0}
-                  defaultPageSize={5} 
-                />
+                <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
+                <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
+                {/* <SelectionState />  */}
+                {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
+                <PagingState defaultCurrentPage={0} defaultPageSize={5}/>
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />
-                {/* 
-                  <IntegratedSelection /> 
-                */}
-                {/* 
-                  <DragDropProvider /> 
-                */}
-                <Table columnExtensions={tableColumnExtensions}/>
-                <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-                {/* 
-                  <TableSelection showSelectAll={true} /> 
-                */}
+                {/* <IntegratedSelection /> */}
+                {/* <DragDropProvider /> */}
+                <Table/>
+                <TableColumnResizing defaultColumnWidths={defaultColumnWidths}/>
+                {/* <TableSelection showSelectAll={true} /> */}
                 <TableHeaderRow 
                   showSortingControls={true} 
                   titleComponent={(props) => (
@@ -137,9 +122,7 @@ class F06ReportsTableComponent extends Component {
                   ""
                 }
                 <PagingPanel pageSizes={pageSizes}/>
-                {/* 
-                  <Toolbar /> 
-                */}
+                {/* <Toolbar /> */}
               </Grid>
             </Paper>
         );

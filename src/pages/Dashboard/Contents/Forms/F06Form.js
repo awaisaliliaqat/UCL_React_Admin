@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from 'react';
-import { withStyles } from '@material-ui/styles';
-import Divider from '@material-ui/core/Divider';
-import Typography from "@material-ui/core/Typography";
+import { withStyles, ThemeProvider } from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 //import { alphabetExp, numberExp, emailExp } from '../../../../utils/regularExpression';
-import { TextField, Grid, Button, CircularProgress } from '@material-ui/core';
+import { TextField, Grid, Button, CircularProgress, Snackbar, Divider, Typography  } from '@material-ui/core';
 import BottomBar from "../../../../components/BottomBar/BottomBar";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
 const styles = () => ({
     root: {
@@ -33,7 +32,7 @@ const styles = () => ({
 
 class F06Form extends Component {
 
-    constructor(props) {
+    constructor(props) { 
         super(props);
         this.state = {
             recordId: this.props.match.params.recordId,
@@ -42,9 +41,29 @@ class F06Form extends Component {
             label:"",
             labelError:"",
             shortLabel:"",
-            shortLabelError:""
+            shortLabelError:"",
+            isOpenSnackbar:false,
+            snackbarMessage:"",
+            snackbarSeverity:""
         }
     }
+
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar:true,
+            snackbarMessage:msg,
+            snackbarSeverity:severity
+        });
+    };
+
+    handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            isOpenSnackbar:false
+        });
+    };
 
     loadData = async(index) => {
         const data = new FormData();
@@ -72,7 +91,8 @@ class F06Form extends Component {
                            shortLabel:json.DATA[0].shortLabel
                        });
                     } else {
-                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -84,7 +104,8 @@ class F06Form extends Component {
                         })
                     } else {
                         console.log(error);
-                        alert("Failed to Save ! Please try Again later.")
+                        alert("Failed to Save ! Please try Again later.");
+                        this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
                     }
                 });
         this.setState({isLoading: false})
@@ -165,14 +186,18 @@ class F06Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                        alert(json.USER_MESSAGE);
-                        if(this.state.recordId!=0){
-                            window.location = "#/dashboard/F06Reports";
-                        }else{
-                            window.location.reload();
-                        }
+                        //alert(json.USER_MESSAGE);
+                        this.handleOpenSnackbar(json.USER_MESSAGE,"success");
+                        setTimeout(()=>{
+                            if(this.state.recordId!=0){
+                                window.location="#/dashboard/F06Reports";
+                            }else{
+                                window.location.reload();
+                            }
+                        }, 2000);
                     } else {
-                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -184,7 +209,8 @@ class F06Form extends Component {
                         })
                     } else {
                         console.log(error);
-                        alert("Failed to Save ! Please try Again later.")
+                        //alert("Failed to Save ! Please try Again later.");
+                        this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
                     }
                 });
         this.setState({isLoading: false})
@@ -211,10 +237,17 @@ class F06Form extends Component {
                 <form id="myForm" onSubmit={this.isFormValid}>
                     <TextField type="hidden" name="recordId" value={this.state.recordId}/>
                     <Grid container component="main" className={classes.root}>
-                        <Typography style={{
-                            color: '#1d5f98', fontWeight: 600, borderBottom: '1px solid #d2d2d2',
-                            width: '98%', marginBottom: 25, fontSize: 20
-                        }} variant="h5">
+                        <Typography 
+                            style={{
+                                color: '#1d5f98', 
+                                fontWeight: 600, 
+                                borderBottom: '1px solid #d2d2d2',
+                                width: '98%', 
+                                marginBottom: 25, 
+                                fontSize: 20
+                            }} 
+                            variant="h5"
+                        >
                             Define Schools 
                         </Typography>
                         <Divider style={{
@@ -244,6 +277,7 @@ class F06Form extends Component {
                                         label="School Name"
                                         required
                                         fullWidth
+                                        variant="outlined"
                                         onKeyDown={this.StopEnter}
                                         onChange={this.onHandleChange}
                                         value={this.state.label}
@@ -258,6 +292,7 @@ class F06Form extends Component {
                                         label="Short Name"
                                         required
                                         fullWidth
+                                        variant="outlined"
                                         onKeyDown={this.StopEnter}
                                         onChange={this.onHandleChange}
                                         value={this.state.shortLabel}
@@ -274,10 +309,10 @@ class F06Form extends Component {
                                         display: 'flex' 
                                     }}
                                 >
-                                {/* 
+                                {/*                                 
                                 <Button 
                                     disabled={this.state.isLoading} 
-                                    onClick={this.onFormSubmit}
+                                    //onClick={this.onFormSubmit}
                                     color="primary" 
                                     variant="contained" 
                                     fullWidth={true}
@@ -303,7 +338,13 @@ class F06Form extends Component {
                     right_button_text="Save"
                     bottomRightButtonAction={this.clickOnFormSubmit}
                     loading={this.state.isLoading}
-                    isDrawerOpen={ this.props.isDrawerOpen }
+                    isDrawerOpen={ this.props.isDrawerOpen}
+                />
+                <CustomizedSnackbar
+                    isOpen={this.state.isOpenSnackbar}
+                    message={this.state.snackbarMessage}
+                    severity={this.state.snackbarSeverity}
+                    handleCloseSnackbar={() => this.handleCloseSnackbar()}
                 />
             </Fragment>
         );
