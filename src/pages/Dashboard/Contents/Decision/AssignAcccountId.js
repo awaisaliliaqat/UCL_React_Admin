@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Typography from "@material-ui/core/Typography";
-import OfferLetterFilter from './Chunks/OfferLetterFilter';
+import AssignAccountIdFiltter from './Chunks/AssignAccountIdFiltter';
 import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import AssignAcccountIdMenu from './Chunks/AssignAcccountIdMenu';
@@ -16,6 +16,7 @@ class OfferLetter extends Component {
             admissionData: [],
             selectedData: {},
             applicationId: "",
+            applicationStatusId: 1,
             accountId: "",
             accountIdError: "",
             isLoginMenu: false,
@@ -83,9 +84,8 @@ class OfferLetter extends Component {
         this.setState({
             isLoading: true
         })
-        const applicationId = this.state.applicationId ? this.state.applicationId : 0;
-        const reload = applicationId === 0;
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C10CommonStudentsView?applicationId=${applicationId}`;
+        const reload = this.state.applicationStatusId === 1;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C10CommonStudentsView?statusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -245,7 +245,7 @@ class OfferLetter extends Component {
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <OfferLetterFilter isLoading={this.state.isLoading} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
+                    <AssignAccountIdFiltter isLoading={this.state.isLoading} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
                     <div style={{
                         marginTop: 15,
                         marginBottom: 15,

@@ -237,12 +237,8 @@ class DocumentRequest extends Component {
                 if (result.CODE === 1) {
                     alert('File Uploaded');
                     this.getData();
-                } else if (result.CODE === 2) {
+                } else {
                     alert(result.CODE + ":" + result.USER_MESSAGE + "\n" + result.SYSTEM_MESSAGE);
-                } else if (result.error === 1) {
-                    alert(result.error_message);
-                } else if (result.success === 0 && result.redirect_url !== "") {
-                    window.location = result.redirect_url;
                 }
             })
             .catch((error) => {
@@ -274,7 +270,7 @@ class DocumentRequest extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Upload Tution Fee Vochers
+                            Upload Tuition Fee Vochers
             </Typography>
                     </div>
                     <Divider style={{
