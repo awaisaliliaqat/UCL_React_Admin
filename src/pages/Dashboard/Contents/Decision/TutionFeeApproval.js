@@ -409,7 +409,7 @@ class RegistrationFeeApprovel extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Tution Fee Approval Dashboard
+                            Tuition Fee Approval Dashboard
             </Typography>
                         {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,

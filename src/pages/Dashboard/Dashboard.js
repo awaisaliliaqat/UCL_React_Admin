@@ -227,16 +227,16 @@ const Dashboard = props => {
                       noWrap variant="body2">Assign Accounts Id</Typography>
                   </Link>
                 </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "upload-tution-fees" && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/upload-tution-fees'>
+                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "upload-tuition-fees" && classes.active}`}>
+                  <Link style={{ textDecoration: 'none' }} to='/dashboard/upload-tuition-fees'>
                     <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Upload Tution Fee Vochers</Typography>
+                      noWrap variant="body2">Upload Tuition Fee Vochers</Typography>
                   </Link>
                 </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "tution-fee-approval" && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/tution-fee-approval'>
+                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "tuition-fee-approval" && classes.active}`}>
+                  <Link style={{ textDecoration: 'none' }} to='/dashboard/tuition-fee-approval'>
                     <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Tution Fee Approval</Typography>
+                      noWrap variant="body2">Tuition Fee Approval</Typography>
                   </Link>
                 </MenuItem>
                 {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "document-requests" && classes.active}`}>
@@ -273,8 +273,8 @@ const Dashboard = props => {
               {/* <SetRoute setValue={value => handleValueChange(value)} name="document-requests" exact path="/dashboard/document-requests/:id" component={DocumentRequestAction} /> */}
               <SetRoute setValue={value => handleValueChange(value)} name="offer-letter" exact path="/dashboard/offer-letter" component={OfferLetter} />
               <SetRoute setValue={value => handleValueChange(value)} name="assign-account-id" exact path="/dashboard/assign-account-id" component={AssignAcccountId} />
-              <SetRoute setValue={value => handleValueChange(value)} name="upload-tution-fees" exact path="/dashboard/upload-tution-fees" component={UploadTutionFees} />
-              <SetRoute setValue={value => handleValueChange(value)} name="tution-fee-approval" exact path="/dashboard/tution-fee-approval" component={TutionFeeApproval} />
+              <SetRoute setValue={value => handleValueChange(value)} name="upload-tuition-fees" exact path="/dashboard/upload-tuition-fees" component={UploadTutionFees} />
+              <SetRoute setValue={value => handleValueChange(value)} name="tuition-fee-approval" exact path="/dashboard/tuition-fee-approval" component={TutionFeeApproval} />
             </Switch>
           </Suspense>
         </Router>

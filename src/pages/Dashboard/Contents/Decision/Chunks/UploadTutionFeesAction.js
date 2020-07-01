@@ -28,7 +28,7 @@ function MyDropzone(props) {
     let msg = files || [];
     if (msg.length <= 0 || props.files.length <= 0) {
         msg = <Typography variant="subtitle1">
-            Please click here to  select and upload a tution fees file
+            Please click here to  select and upload a tuition fees file
     </Typography>;
     }
     return (
