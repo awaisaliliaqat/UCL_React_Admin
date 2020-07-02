@@ -196,7 +196,7 @@ class OfferLetter extends Component {
 
     render() {
         const columns = [
-            { name: "Application Id", dataIndex: "applicationId", sortable: false, customStyleHeader: { width: '14%' } },
+            { name: "Application Id", dataIndex: "applicationId", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Nucleus Id", dataIndex: "studentId", sortable: false, customStyleHeader: { width: '14%' } },
 
             {
@@ -208,9 +208,8 @@ class OfferLetter extends Component {
             },
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '10%' } },
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '20%', textAlign: 'center' }, align: 'center' },
-            { name: "Age", dataIndex: "age", sortable: false, customStyleHeader: { width: '10%' } },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '14%' } },
-            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
+            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '20%' } },
             { name: "Account Id", dataIndex: "accountsId", sortable: false, customStyleHeader: { width: '14%' } },
             {
                 name: "Action", renderer: rowData => {

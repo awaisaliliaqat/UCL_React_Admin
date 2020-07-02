@@ -57,7 +57,7 @@ const AdmissionApplicationReportsFilter = props => {
             <div className={classes.container}>
 
                 <div className={classes.item} style={{
-                    width: '20%'
+                    width: '17%'
                 }}>
                     <span className={classes.label}>Application Status *</span>
 
@@ -83,9 +83,9 @@ const AdmissionApplicationReportsFilter = props => {
                     </TextField>
                 </div>
                 <div className={classes.item} style={{
-                    width: '8%'
+                    width: '15%'
                 }}>
-                    <span className={classes.label}>ID</span>
+                    <span className={classes.label}> {values.applicationStatusId === 1 ? 'Student Id' : 'Application Id'}</span>
                     <TextField
                         placeholder="ID"
                         variant="outlined"
@@ -233,10 +233,7 @@ AdmissionApplicationReportsFilter.defaultProps = {
     onClearFilters: fn => fn,
     handleDateChange: fn => fn,
     getDataFilters: fn => fn,
-    isLoading: false
-
-
-
+    isLoading: false,
 
 };
 
