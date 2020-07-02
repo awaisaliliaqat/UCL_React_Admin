@@ -415,7 +415,7 @@ class RegistrationFeeApprovel extends Component {
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Payment Reference No", dataIndex: "paymentReferenceNo", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Payment Method", dataIndex: "paymentMethodLabel", sortIndex: "paymentMethodLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Payment Date", dataIndex: "paymentDate", sortIndex: "paymentDate", sortable: true, customStyleHeader: { width: '13%' } },
+            { name: "Payment Date", dataIndex: "paymentDate", sortIndex: "submittedOnMillis", sortable: true, customStyleHeader: { width: '13%' } },
             { name: "Status", dataIndex: "paymentStatusLabel", sortIndex: "paymentStatusLabel", sortable: true, customStyleHeader: { width: '12%' } },
             {
                 name: "Action", renderer: rowData => {

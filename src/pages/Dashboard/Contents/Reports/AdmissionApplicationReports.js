@@ -421,8 +421,8 @@ class AdmissionApplicationReports extends Component {
 
     render() {
         const columnsSubmitted = [
-            //{ name: "SR#", dataIndex: "serialNo", sortable: false, customStyleHeader: { width: '7%' } },
-            { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+            { name: "Student Id", dataIndex: "studentId", sortable: false, customStyleHeader: { width: '12%', textAlign: 'center' } },
+            { name: "Application Id", dataIndex: "applicationId", sortable: false, customStyleHeader: { width: '13%' } },
             {
                 name: "Name", renderer: rowData => {
                     return (
@@ -434,30 +434,30 @@ class AdmissionApplicationReports extends Component {
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Payment Method", dataIndex: "paymentMethod", sortIndex: "paymentMethod", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOnMillis", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Payment Method", dataIndex: "paymentMethodLabel", sortIndex: "paymentMethodLabel", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Payment Status", dataIndex: "paymentStatusLabel", sortIndex: "paymentStatusLabel", sortable: true, customStyleHeader: { width: '15%' } },
             {
                 name: "Profile", renderer: rowData => {
                     return (
                         <Button style={{
                             fontSize: 12,
                             textTransform: 'capitalize'
-                        }} variant="outlined" onClick={() => window.open(`#/view-application/${rowData.id}`, "_blank")} >View</Button>
+                        }} variant="outlined" onClick={() => window.open(`#/view-application/${rowData.applicationId}`, "_blank")} >View</Button>
                     )
                 }, sortable: false, customStyleHeader: { width: '15%' }
             },
         ]
 
         const columnsPending = [
-            //{ name: "SR#", dataIndex: "serialNo", sortable: false, customStyleHeader: { width: '7%' } },
-            { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+            { name: "Student Id", dataIndex: "studentId", sortable: false, customStyleHeader: { width: '12%', textAlign: 'center' } },
+            { name: "Application Id", dataIndex: "applicationId", sortable: false, customStyleHeader: { width: '12%' } },
             { name: "Applicant Name", dataIndex: "displayName", sortable: false, customStyleHeader: { width: '13%' } },
-            { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '8%' } },
+            { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '10%' } },
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Reg Date", dataIndex: "createdOn", sortIndex: "createdOn", sortable: true, customStyleHeader: { width: '12%' } },
+            { name: "Reg Date", dataIndex: "createdOn", sortIndex: "createdOnMillis", sortable: true, customStyleHeader: { width: '12%' } },
             { name: "Stage", dataIndex: "stage", sortIndex: "stage", sortable: true, customStyleHeader: { width: '15%' } },
             {
                 name: "Since", dataIndex: "since", sortIndex: "since", sortable: true, customStyleHeader: { width: '7%' }
