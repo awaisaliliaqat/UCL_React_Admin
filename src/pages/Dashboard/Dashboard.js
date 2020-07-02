@@ -23,6 +23,10 @@ import F06Form from './Contents/Forms/F06Form';
 import F06Reports from './Contents/Forms/F06Reports';
 import F07Form from './Contents/Forms/F07Form';
 import F07Reports from './Contents/Forms/F07Reports';
+import F08Form from './Contents/Forms/F08Form';
+import F08Reports from './Contents/Forms/F08Reports';
+import F09Form from './Contents/Forms/F09Form';
+import F09Reports from './Contents/Forms/F09Reports';
 
 
 const drawerWidth = 250;
@@ -240,7 +244,17 @@ const Dashboard = props => {
               </MenuItem>
               <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "F07Form" && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/F07Form/0'>
-                  <Typography className={classes.menuItemText} noWrap variant="body2">Common Programme Groups</Typography>
+                  <Typography className={classes.menuItemText} noWrap variant="body2">Define Programme Groups</Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "F08Form" && classes.active}`}>
+                <Link style={{ textDecoration: 'none' }} to='/dashboard/F08Form/0'>
+                  <Typography className={classes.menuItemText} noWrap variant="body2">Define Programmes</Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "F09Form" && classes.active}`}>
+                <Link style={{ textDecoration: 'none' }} to='/dashboard/F09Form/0'>
+                  <Typography className={classes.menuItemText} noWrap variant="body2">Define Course Selection Group</Typography>
                 </Link>
               </MenuItem>
             </MenuList>
@@ -276,7 +290,19 @@ const Dashboard = props => {
                 )
               }} />
              <SetRoute setValue={value => handleValueChange(value)} name="F07Reports" exact path="/dashboard/F07Reports" component={F07Reports} />
-             
+             <SetRoute setValue={value => handleValueChange(value)} name="F08Form" exact path="/dashboard/F08Form/:recordId" render={(props)=> {
+                return (
+                  <F08Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+             <SetRoute setValue={value => handleValueChange(value)} name="F08Reports" exact path="/dashboard/F08Reports" component={F08Reports} />
+             <SetRoute setValue={value => handleValueChange(value)} name="F09Form" exact path="/dashboard/F09Form/:recordId" render={(props)=> {
+                return (
+                  <F09Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+             <SetRoute setValue={value => handleValueChange(value)} name="F09Reports" exact path="/dashboard/F09Reports" component={F09Reports} />
+            
             </Switch>
           </Suspense>
         </Router>
