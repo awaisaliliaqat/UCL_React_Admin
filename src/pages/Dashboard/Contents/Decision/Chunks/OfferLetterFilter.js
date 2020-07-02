@@ -58,7 +58,7 @@ const OfferLetterFilter = props => {
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>
-                    <span className={classes.label}>ID</span>
+                    <span className={classes.label}>Application ID</span>
                     <TextField
                         placeholder="ID"
                         variant="outlined"

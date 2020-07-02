@@ -17,6 +17,9 @@ import AdmissionApplicationReports from './Contents/Reports/AdmissionApplication
 import AdmissionDecision from './Contents/Decision/AddmissionDecision';
 import RegistrationFeeApprovel from './Contents/Decision/RegistrationFeeApprovel';
 import OfferLetter from './Contents/Decision/OfferLetter';
+import AssignAcccountId from './Contents/Decision/AssignAcccountId';
+import UploadTutionFees from './Contents/Decision/UploadTutionFees';
+import TutionFeeApproval from './Contents/Decision/TutionFeeApproval';
 // import UploadDocuments from './Contents/Decision/DocumentRequest';
 // import DocumentRequestAction from './Contents/Decision/Chunks/DocumentRequestAction';
 import F06Form from './Contents/Forms/F06Form';
@@ -29,7 +32,7 @@ import F09Form from './Contents/Forms/F09Form';
 import F09Reports from './Contents/Forms/F09Reports';
 
 
-const drawerWidth = 250;
+const drawerWidth = 283;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   active: {
     backgroundColor: "#103C6E",
     paddingRight: 10,
-    width: 230,
+    width: drawerWidth - 20,
     height: 30
   },
   content: {
@@ -94,6 +97,10 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerContainer: {
     overflow: 'auto',
+    justifyContent: 'space-between',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%'
   },
   regular: {
     minHeight: 0
@@ -141,8 +148,8 @@ const Dashboard = props => {
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
-
-          {/* <div className={classes.menuListContainer}>
+          <div>
+            {/* <div className={classes.menuListContainer}>
             <Typography className={classes.menuTitle} noWrap variant="h6">
               <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Analytics</div>
             </Typography>
@@ -162,75 +169,100 @@ const Dashboard = props => {
             </MenuList>
           </div> */}
 
-          <div className={classes.menuListContainer}>
-            <Typography className={classes.menuTitle} noWrap variant="h6">
-              <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Reports</div>
-            </Typography>
-            <MenuList>
-              {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "applicant-registration-reports" && classes.active}`}>
+            <div className={classes.menuListContainer}>
+              <Typography className={classes.menuTitle} noWrap variant="h6">
+                <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Reports</div>
+              </Typography>
+              <MenuList>
+                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "applicant-registration-reports" && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/applicant-registration-reports'>
                   <Typography className={classes.menuItemText}
                     noWrap variant="body2">Applicant Registration</Typography>
                 </Link>
               </MenuItem> */}
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "admission-application-reports" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/admission-application-reports'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Addmission Application</Typography>
-                </Link>
-              </MenuItem>
-              {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "registration-fee-payment-reports" && classes.active}`}>
+                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "admission-application-reports" && classes.active}`}>
+                  <Link style={{ textDecoration: 'none' }} to='/dashboard/admission-application-reports'>
+                    <Typography className={classes.menuItemText}
+                      noWrap variant="body2">Addmission Application</Typography>
+                  </Link>
+                </MenuItem>
+                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "registration-fee-payment-reports" && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/registration-fee-payment-reports'>
                   <Typography className={classes.menuItemText}
                     noWrap variant="body2">Registration Fee Payments</Typography>
                 </Link>
               </MenuItem> */}
-              {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "addmission-decision-reports" && classes.active}`}>
+                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "addmission-decision-reports" && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/addmission-decision-reports'>
                   <Typography className={classes.menuItemText}
                     noWrap variant="body2">Addmission Decision</Typography>
                 </Link>
               </MenuItem> */}
-              {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "tution-fee-payment-reports" && classes.active}`}>
+                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "tution-fee-payment-reports" && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/tution-fee-payment-reports'>
                   <Typography className={classes.menuItemText}
                     noWrap variant="body2">Tution Fee Payments</Typography>
                 </Link>
               </MenuItem> */}
-            </MenuList>
-          </div>
+              </MenuList>
+            </div>
 
-          <div className={classes.menuListContainer}>
-            <Typography className={classes.menuTitle} noWrap variant="h6">
-              <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Dashboards</div>
-            </Typography>
-            <MenuList>
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "registration-fee-approval" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/registration-fee-approval'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2"> Registration Fee Approval</Typography>
-                </Link>
-              </MenuItem>
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "admission-decision" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/admission-decision'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Admission Decision</Typography>
-                </Link>
-              </MenuItem>
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "offer-letter" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/offer-letter'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Offer Letter</Typography>
-                </Link>
-              </MenuItem>
-              {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "document-requests" && classes.active}`}>
+            <div className={classes.menuListContainer}>
+              <Typography className={classes.menuTitle} noWrap variant="h6">
+                <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Dashboards</div>
+              </Typography>
+              <MenuList>
+                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "registration-fee-approval" && classes.active}`}>
+                  <Link style={{ textDecoration: 'none' }} to='/dashboard/registration-fee-approval'>
+                    <Typography className={classes.menuItemText}
+                      noWrap variant="body2"> Registration Fee Approval</Typography>
+                  </Link>
+                </MenuItem>
+                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "admission-decision" && classes.active}`}>
+                  <Link style={{ textDecoration: 'none' }} to='/dashboard/admission-decision'>
+                    <Typography className={classes.menuItemText}
+                      noWrap variant="body2">Admission Decision</Typography>
+                  </Link>
+                </MenuItem>
+                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "offer-letter" && classes.active}`}>
+                  <Link style={{ textDecoration: 'none' }} to='/dashboard/offer-letter'>
+                    <Typography className={classes.menuItemText}
+                      noWrap variant="body2">Offer Letter</Typography>
+                  </Link>
+                </MenuItem>
+                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "assign-account-id" && classes.active}`}>
+                  <Link style={{ textDecoration: 'none' }} to='/dashboard/assign-account-id'>
+                    <Typography className={classes.menuItemText}
+                      noWrap variant="body2">Assign Accounts Id</Typography>
+                  </Link>
+                </MenuItem>
+                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "upload-tuition-fees" && classes.active}`}>
+                  <Link style={{ textDecoration: 'none' }} to='/dashboard/upload-tuition-fees'>
+                    <Typography className={classes.menuItemText}
+                      noWrap variant="body2">Upload Tuition Fee Vochers</Typography>
+                  </Link>
+                </MenuItem>
+                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "tuition-fee-approval" && classes.active}`}>
+                  <Link style={{ textDecoration: 'none' }} to='/dashboard/tuition-fee-approval'>
+                    <Typography className={classes.menuItemText}
+                      noWrap variant="body2">Tuition Fee Approval</Typography>
+                  </Link>
+                </MenuItem>
+                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "document-requests" && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/document-requests'>
                   <Typography className={classes.menuItemText}
                     noWrap variant="body2">Document Requests</Typography>
                 </Link>
               </MenuItem> */}
-            </MenuList>
+              </MenuList>
+            </div>
           </div>
+          <div style={{ maxWidth: drawerWidth - 15, paddingBottom: 10, paddingTop: 20 }}>
+            <Typography variant="body2" style={{ fontSize: 12, color: 'white' }} align="center">
+              Copyright © {new Date().getFullYear()}. University College Lahore<br></br>(UCL), Pakistan - All Rights Reserved
+              </Typography>
+          </div>
+
  
           <div className={classes.menuListContainer}>
             <Typography className={classes.menuTitle} noWrap variant="h6">
@@ -260,6 +292,7 @@ const Dashboard = props => {
             </MenuList>
           </div>
 
+
         </div>
 
       </Drawer>
@@ -278,6 +311,7 @@ const Dashboard = props => {
               {/* <SetRoute setValue={value => handleValueChange(value)} name="document-requests" exact path="/dashboard/document-requests" component={UploadDocuments} /> */}
               {/* <SetRoute setValue={value => handleValueChange(value)} name="document-requests" exact path="/dashboard/document-requests/:id" component={DocumentRequestAction} /> */}
               <SetRoute setValue={value => handleValueChange(value)} name="offer-letter" exact path="/dashboard/offer-letter" component={OfferLetter} />
+
               <SetRoute setValue={value => handleValueChange(value)} name="F06Form" exact path="/dashboard/F06Form/:recordId" render={(props)=> {
                 return (
                   <F06Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
@@ -303,6 +337,11 @@ const Dashboard = props => {
               }} />
              <SetRoute setValue={value => handleValueChange(value)} name="F09Reports" exact path="/dashboard/F09Reports" component={F09Reports} />
             
+
+              <SetRoute setValue={value => handleValueChange(value)} name="assign-account-id" exact path="/dashboard/assign-account-id" component={AssignAcccountId} />
+              <SetRoute setValue={value => handleValueChange(value)} name="upload-tuition-fees" exact path="/dashboard/upload-tuition-fees" component={UploadTutionFees} />
+              <SetRoute setValue={value => handleValueChange(value)} name="tuition-fee-approval" exact path="/dashboard/tuition-fee-approval" component={TutionFeeApproval} />
+
             </Switch>
           </Suspense>
         </Router>
