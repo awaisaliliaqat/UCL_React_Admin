@@ -446,9 +446,11 @@ class F07Reports extends Component {
                         });
                         for (var i = 0; i < json.DATA.length; i++) {
                             json.DATA[i].action = (
-                              <ActionButton
-                                getData={this.getData}
-                                record_id={json.DATA[i].ID}
+                                <EditDeleteTableRecord
+                                recordId={json.DATA[i].ID}
+                                DeleteData={this.DeleteData}
+                                onEditURL={`#/dashboard/F07Form/${json.DATA[i].ID}`}
+                                handleOpenSnackbar={this.handleOpenSnackbar}
                               />
                             );
                           }
@@ -474,6 +476,48 @@ class F07Reports extends Component {
 
 
     }
+
+    DeleteData = async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C07CommonProgrammeGroupsDelete`;
+        await fetch(url, {
+          method: "POST",
+          body:data,
+          headers: new Headers({
+              Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+          })
+        })
+          .then(res => {
+              if (!res.ok) {
+                  throw res;
+              }
+              return res.json();
+          })
+          .then(
+              json => {
+                  if (json.CODE === 1) {
+                      this.handleOpenSnackbar("Deleted","success");
+                      this.getData();
+                  } else {
+                      //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                      this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
+                  }
+                  console.log(json);
+              },
+              error => {
+                  if (error.status === 401) {
+                      this.setState({
+                          isLoginMenu: true,
+                          isReload: true
+                      })
+                  } else {
+                      //alert('Failed to fetch, Please try again later.');
+                      this.handleOpenSnackbar("Failed to fetch, Please try again later.","error")
+                      console.log(error);
+                  }
+              });
+        }
 
     DownloadFile = (fileName) => {
         const data = new FormData();
@@ -606,13 +650,15 @@ class F07Reports extends Component {
                         }}
                         /> */}
                         <div style={{float:"right"}}>
-                            <Tooltip title="Search Bar">
-                                <IconButton
-                                    onClick={this.handleToggleSearchBar}
-                                >
-                                    <SearchOutlinedIcon fontSize="default" color="primary"/>
-                                </IconButton>
-                            </Tooltip>
+                        <Hidden xsUp={true}>
+                                <Tooltip title="Search Bar">
+                                    <IconButton
+                                        onClick={this.handleToggleSearchBar}
+                                    >
+                                        <FilterIcon fontSize="default" color="primary"/>
+                                    </IconButton>
+                                </Tooltip>
+                            </Hidden>
                             <Tooltip title="Table Filter">
                                 <IconButton
                                     style={{ marginLeft: "-10px" }}
