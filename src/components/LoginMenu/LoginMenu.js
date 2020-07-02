@@ -126,7 +126,7 @@ const LoginMenu = props => {
 
     return (
         <div>
-            <Dialog disableEscapeKeyDown disableBackdropClick open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+            <Dialog disableScrollLock disableEscapeKeyDown disableBackdropClick open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
 
                 <DialogTitle id="customized-dialog-title">
                     Login

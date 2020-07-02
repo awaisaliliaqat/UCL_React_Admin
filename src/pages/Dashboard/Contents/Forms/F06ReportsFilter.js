@@ -5,6 +5,7 @@ import Divider from '@material-ui/core/Divider';
 import { TextField, Button, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { DatePicker } from "@material-ui/pickers";
+
 const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
@@ -29,6 +30,7 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'row',
         width: '15%',
         marginTop: 29,
+        textAlign:"center"
     },
     label: {
         textAlign: 'left',
@@ -47,7 +49,7 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const AdmissionApplicationReportsFilter = props => {
+const F06ReportsFilter = props => {
     const classes = useStyles();
     const { values, onHandleChange, getDataByStatus, onClearFilters, handleDateChange, isLoading } = props;
 
@@ -55,12 +57,10 @@ const AdmissionApplicationReportsFilter = props => {
     return (
         <Fragment>
             <div className={classes.container}>
-
-                <div className={classes.item} style={{
-                    width: '17%'
+                {/* <div className={classes.item} style={{
+                    width: '20%'
                 }}>
                     <span className={classes.label}>Application Status *</span>
-
                     <TextField
                         placeholder="Status"
                         variant="outlined"
@@ -81,11 +81,11 @@ const AdmissionApplicationReportsFilter = props => {
                             Submitted
                         </MenuItem>
                     </TextField>
-                </div>
+                </div> */}
                 <div className={classes.item} style={{
-                    width: '15%'
+                    width: '13%'
                 }}>
-                    <span className={classes.label}> {values.applicationStatusId === 1 ? 'Student Id' : 'Application Id'}</span>
+                    <span className={classes.label}>ID</span>
                     <TextField
                         placeholder="ID"
                         variant="outlined"
@@ -94,15 +94,13 @@ const AdmissionApplicationReportsFilter = props => {
                         name="applicationId"
                         onChange={e => {
                             onHandleChange(e)
-
                         }}
-
                     />
                 </div>
                 <div className={classes.item} style={{
-                    width: '20%'
+                    width: '24%'
                 }}>
-                    <span className={classes.label}>Name</span>
+                    <span className={classes.label}>Short Label</span>
                     <TextField
                         placeholder="Name"
                         variant="outlined"
@@ -116,9 +114,9 @@ const AdmissionApplicationReportsFilter = props => {
                     />
                 </div>
                 <div className={classes.item} style={{
-                    width: '12%'
+                    width: '24%'
                 }}>
-                    <span className={classes.label}>Gender</span>
+                    <span className={classes.label}>Label</span>
                     <TextField
                         placeholder="Gender"
                         variant="outlined"
@@ -128,9 +126,7 @@ const AdmissionApplicationReportsFilter = props => {
                         name="genderId"
                         onChange={e => {
                             onHandleChange(e)
-
                         }}
-
                     >
                         <MenuItem value={0}>
                             All
@@ -142,7 +138,7 @@ const AdmissionApplicationReportsFilter = props => {
                         ))}
                     </TextField>
                 </div>
-                <div className={classes.item} style={{
+                {/* <div className={classes.item} style={{
                     width: '20%'
                 }}>
                     <span className={classes.label}>Degree Programme</span>
@@ -173,9 +169,9 @@ const AdmissionApplicationReportsFilter = props => {
                             );
                         })}
                     </TextField>
-                </div>
+                </div> */}
                 <div className={classes.item} style={{
-                    width: '20%'
+                    width: '24%'
                 }}>
                     <span className={classes.label}>Date</span>
                     <DatePicker
@@ -189,7 +185,6 @@ const AdmissionApplicationReportsFilter = props => {
                         fullWidth
                         value={values.eventDate}
                         InputProps={{
-
                             classes: { input: classes.resize }
                         }}
                         onChange={(event) => {
@@ -205,13 +200,26 @@ const AdmissionApplicationReportsFilter = props => {
                         className={classes.button}
                         disabled={isLoading}
                         onClick={() => getDataByStatus(props.values.applicationStatusId)}
-                    > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
+                        style={{width:"48%"}}
+                    > 
+                        {isLoading ? 
+                            <CircularProgress 
+                                style={{ 
+                                    color: 'white' 
+                                }} 
+                                size={24} 
+                            /> 
+                            : 
+                            "Search"
+                        }
+                    </Button>
                     <Button
                         variant="contained"
                         color="primary"
                         className={classes.button}
                         style={{
-                            marginLeft: 8,
+                            marginLeft: "4%",
+                            width:"48%"
                         }}
                         onClick={() => onClearFilters()}
                     >Clear</Button>
@@ -226,18 +234,17 @@ const AdmissionApplicationReportsFilter = props => {
     );
 }
 
-AdmissionApplicationReportsFilter.defaultProps = {
+F06ReportsFilter.defaultProps = {
     onHandleChange: fn => fn,
     getDataByStatus: fn => fn,
     values: {},
     onClearFilters: fn => fn,
     handleDateChange: fn => fn,
     getDataFilters: fn => fn,
-    isLoading: false,
-
+    isLoading: false
 };
 
-AdmissionApplicationReportsFilter.propTypes = {
+F06ReportsFilter.propTypes = {
     onHandleChange: PropTypes.func,
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
@@ -247,4 +254,4 @@ AdmissionApplicationReportsFilter.propTypes = {
     isLoading: PropTypes.bool,
 };
 
-export default AdmissionApplicationReportsFilter;
+export default F06ReportsFilter;

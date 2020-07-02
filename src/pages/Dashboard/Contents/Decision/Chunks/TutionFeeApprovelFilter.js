@@ -4,7 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import { TextField, Button, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { DatePicker } from "@material-ui/pickers";
+// import { DatePicker } from "@material-ui/pickers";
+
 const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
@@ -47,9 +48,9 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const AdmissionApplicationReportsFilter = props => {
+const TutionFeeApprovelFilter = props => {
     const classes = useStyles();
-    const { values, onHandleChange, getDataByStatus, onClearFilters, handleDateChange, isLoading } = props;
+    const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading } = props;
 
 
     return (
@@ -57,9 +58,9 @@ const AdmissionApplicationReportsFilter = props => {
             <div className={classes.container}>
 
                 <div className={classes.item} style={{
-                    width: '17%'
+                    width: '20%'
                 }}>
-                    <span className={classes.label}>Application Status *</span>
+                    <span className={classes.label}>Status</span>
 
                     <TextField
                         placeholder="Status"
@@ -70,22 +71,24 @@ const AdmissionApplicationReportsFilter = props => {
                         value={values.applicationStatusId}
                         onChange={e => {
                             onHandleChange(e);
-                            getDataByStatus(e.target.value)
                         }}
                         select
                     >
+                        <MenuItem value={0}>
+                            All
+                        </MenuItem>
                         <MenuItem value={1}>
                             Pending
                         </MenuItem>
                         <MenuItem value={2}>
-                            Submitted
+                            Confirmed
                         </MenuItem>
                     </TextField>
                 </div>
                 <div className={classes.item} style={{
-                    width: '15%'
+                    width: '20%'
                 }}>
-                    <span className={classes.label}> {values.applicationStatusId === 1 ? 'Student Id' : 'Application Id'}</span>
+                    <span className={classes.label}>Nucleus ID</span>
                     <TextField
                         placeholder="ID"
                         variant="outlined"
@@ -99,7 +102,7 @@ const AdmissionApplicationReportsFilter = props => {
 
                     />
                 </div>
-                <div className={classes.item} style={{
+                {/* <div className={classes.item} style={{
                     width: '20%'
                 }}>
                     <span className={classes.label}>Name</span>
@@ -109,6 +112,22 @@ const AdmissionApplicationReportsFilter = props => {
                         InputProps={{ classes: { input: classes.resize } }}
                         value={values.studentName}
                         name="studentName"
+                        onChange={e => {
+                            onHandleChange(e)
+
+                        }}
+                    />
+                </div>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Reference No.</span>
+                    <TextField
+                        placeholder="Reference No."
+                        variant="outlined"
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.referenceNo}
+                        name="referenceNo"
                         onChange={e => {
                             onHandleChange(e)
 
@@ -181,8 +200,8 @@ const AdmissionApplicationReportsFilter = props => {
                     <DatePicker
                         autoOk
                         invalidDateMessage=""
+                        placeholder="Payment Date"
                         disableFuture
-                        placeholder="Date"
                         variant="inline"
                         inputVariant="outlined"
                         format="dd-MMM-yyyy"
@@ -197,14 +216,14 @@ const AdmissionApplicationReportsFilter = props => {
                         }}
 
                     />
-                </div>
+                </div> */}
                 <div className={classes.actions}>
                     <Button
                         variant="contained"
                         color="primary"
                         className={classes.button}
                         disabled={isLoading}
-                        onClick={() => getDataByStatus(props.values.applicationStatusId)}
+                        onClick={() => getDataByStatus()}
                     > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
                     <Button
                         variant="contained"
@@ -226,18 +245,21 @@ const AdmissionApplicationReportsFilter = props => {
     );
 }
 
-AdmissionApplicationReportsFilter.defaultProps = {
+TutionFeeApprovelFilter.defaultProps = {
     onHandleChange: fn => fn,
     getDataByStatus: fn => fn,
     values: {},
     onClearFilters: fn => fn,
     handleDateChange: fn => fn,
     getDataFilters: fn => fn,
-    isLoading: false,
+    isLoading: false
+
+
+
 
 };
 
-AdmissionApplicationReportsFilter.propTypes = {
+TutionFeeApprovelFilter.propTypes = {
     onHandleChange: PropTypes.func,
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
@@ -247,4 +269,4 @@ AdmissionApplicationReportsFilter.propTypes = {
     isLoading: PropTypes.bool,
 };
 
-export default AdmissionApplicationReportsFilter;
+export default TutionFeeApprovelFilter;

@@ -1,35 +1,142 @@
 import React, { Component, Fragment } from 'react';
-import Divider from '@material-ui/core/Divider';
+import {Divider, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,TextField, IconButton, Tooltip} from '@material-ui/core';
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+
 import Typography from "@material-ui/core/Typography";
 import ExcelIcon from '../../../../assets/Images/excel.png';
-import AdmissionApplicationReportsFilter from './Chunks/AdmissionApplicationReportsFilter';
+import F08ReportsFilter from './F08ReportsFilter';
 import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
 import Button from '@material-ui/core/Button';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import { format } from 'date-fns';
-
+import { format } from 'date-fns'; 
+import F08ReportsTableComponent from './F08ReportsTableComponent';
+import FilterIcon from "mdi-material-ui/FilterOutline";
+import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
 
 function isEmpty(obj) {
     if (obj == null) return true;
-
     if (obj.length > 0) return false;
     if (obj.length === 0) return true;
-
     if (typeof obj !== "object") return true;
-
     for (var key in obj) {
         if (hasOwnProperty.call(obj, key)) return false;
     }
-
     return true;
 }
 
-class AdmissionApplicationReports extends Component {
+function ActionButton(props) {
+    const [open, setOpen] = React.useState(false);
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+    const handleClose = () => {
+      setOpen(false);
+    };
+    async function DeleteData(event) {
+      event.preventDefault();
+      //return;
+      const data = new FormData(event.target);
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C08CommonProgrammesDelete`;
+      await fetch(url, {
+        method: "POST",
+        body:data,
+        headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+        })
+    })
+        .then(res => {
+            if (!res.ok) {
+                throw res;
+            }
+            return res.json();
+        })
+        .then(
+            json => {
+                if (json.CODE === 1) {
+                    props.getData();
+                } else {
+                    alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                }
+                console.log(json);
+            },
+            error => {
+                if (error.status === 401) {
+                    // this.setState({
+                    //     isLoginMenu: true,
+                    //     isReload: true
+                    // })
+                } else {
+                    alert('Failed to fetch, Please try again later.');
+                    console.log(error);
+                }
+            });
+    }
+    return (
+      <div>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <form
+            id="myform"
+            onSubmit={(event) => DeleteData(event)}
+            autoComplete="off"
+          >
+            <DialogTitle id="form-dialog-title">Delete</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Please provide the reason to delete the record.
+              </DialogContentText>
+              <input type="hidden" value={props.record_id} name="id"></input>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="log_reason"
+                name="logReason"
+                label="Reason"
+                type="text"
+                fullWidth
+                required
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button type="submit" color="primary">
+                Confirm
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+        <IconButton
+          onClick={handleClickOpen}
+          //aonClick={(event) => DeleteData(props)}
+        >
+          <DeleteIcon fontSize="small" color="error"/>
+        </IconButton>
+        <IconButton
+          onClick={(event) => (window.location = `#/dashboard/F08Form/${props.record_id}`)}
+        >
+          <EditIcon fontSize="small" style={{color:"#ff9800"}}/>
+        </IconButton>
+      </div>
+    );
+  }
+
+class F08Reports extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             isLoading: false,
+            showTableFilter:false,
+            showSearchBar:false,
             isDownloadExcel: false,
             applicationStatusId: 1,
             admissionData: [],
@@ -41,15 +148,12 @@ class AdmissionApplicationReports extends Component {
             applicationId: "",
             isLoginMenu: false,
             isReload: false,
-            eventDate: null
+            eventDate: null,
+            isOpenSnackbar:false,
+            snackbarMessage:"",
+            snackbarSeverity:""
 
-        }
-    }
-
-    componentDidMount() {
-        this.getGenderData();
-        this.getDegreesData();
-        this.getData(this.state.applicationStatusId);
+        };
     }
 
     getGenderData = async () => {
@@ -298,6 +402,23 @@ class AdmissionApplicationReports extends Component {
         }
     }
 
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar:true,
+            snackbarMessage:msg,
+            snackbarSeverity:severity
+        });
+    };
+
+    handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            isOpenSnackbar:false
+        });
+    };
+
     getData = async status => {
         this.setState({
             isLoading: true
@@ -305,7 +426,7 @@ class AdmissionApplicationReports extends Component {
         const reload = status === 1 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
         const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
         const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsView?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C08CommonProgrammesView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -323,9 +444,21 @@ class AdmissionApplicationReports extends Component {
                     if (json.CODE === 1) {
                         this.setState({
                             admissionData: json.DATA || []
-                        })
+                        });
+                        for (var i = 0; i < json.DATA.length; i++) {
+                            
+                                json.DATA[i].action = (
+                                    <EditDeleteTableRecord
+                                      recordId={json.DATA[i].ID}
+                                      DeleteData={this.DeleteData}
+                                      onEditURL={`#/dashboard/F08Form/${json.DATA[i].ID}`}
+                                      handleOpenSnackbar={this.handleOpenSnackbar}
+                                    />
+                                  );
+                           
+                          }
                     } else {
-                        alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -336,7 +469,7 @@ class AdmissionApplicationReports extends Component {
                             isReload: reload
                         })
                     } else {
-                        alert('Failed to fetch, Please try again later.');
+                        this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
                         console.log(error);
                     }
                 });
@@ -346,6 +479,47 @@ class AdmissionApplicationReports extends Component {
 
 
     }
+    DeleteData = async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C08CommonProgrammesDelete`;
+        await fetch(url, {
+          method: "POST",
+          body:data,
+          headers: new Headers({
+              Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+          })
+        })
+          .then(res => {
+              if (!res.ok) {
+                  throw res;
+              }
+              return res.json();
+          })
+          .then(
+              json => {
+                  if (json.CODE === 1) {
+                      this.handleOpenSnackbar("Deleted","success");
+                      this.getData();
+                  } else {
+                      //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                      this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
+                  }
+                  console.log(json);
+              },
+              error => {
+                  if (error.status === 401) {
+                      this.setState({
+                          isLoginMenu: true,
+                          isReload: true
+                      })
+                  } else {
+                      //alert('Failed to fetch, Please try again later.');
+                      this.handleOpenSnackbar("Failed to fetch, Please try again later.","error")
+                      console.log(error);
+                  }
+              });
+        }
 
     DownloadFile = (fileName) => {
         const data = new FormData();
@@ -417,57 +591,46 @@ class AdmissionApplicationReports extends Component {
         this.setState({
             [name]: value
         })
+    };
+
+    handleToggleTableFilter = () => {
+        this.setState({showTableFilter:!this.state.showTableFilter});
+    }
+
+    handleToggleSearchBar = () => {
+        this.setState({showSearchBar:!this.state.showSearchBar});
+    }
+
+    componentDidMount() {
+        this.getData(this.state.applicationStatusId);
     }
 
     render() {
-        const columnsSubmitted = [
-            { name: "Student Id", dataIndex: "studentId", sortable: false, customStyleHeader: { width: '12%', textAlign: 'center' } },
-            { name: "Application Id", dataIndex: "applicationId", sortable: false, customStyleHeader: { width: '13%' } },
-            {
-                name: "Name", renderer: rowData => {
-                    return (
-                        <Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>
-                    )
-                }, sortable: false, customStyleHeader: { width: '10%' }
-            },
-            { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
-            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
-            { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
-            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOnMillis", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Payment Method", dataIndex: "paymentMethodLabel", sortIndex: "paymentMethodLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Payment Status", dataIndex: "paymentStatusLabel", sortIndex: "paymentStatusLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            {
-                name: "Profile", renderer: rowData => {
-                    return (
-                        <Button style={{
-                            fontSize: 12,
-                            textTransform: 'capitalize'
-                        }} variant="outlined" onClick={() => window.open(`#/view-application/${rowData.applicationId}`, "_blank")} >View</Button>
-                    )
-                }, sortable: false, customStyleHeader: { width: '15%' }
-            },
-        ]
+        // const columnsSubmitted = [
+        //     //{ name: "SR#", dataIndex: "serialNo", sortable: false, customStyleHeader: { width: '7%' } },
+        //     { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+        //     {name: "Name", renderer: rowData => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}, sortable: false, customStyleHeader: { width: '10%' }},
+        //     { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
+        //     { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
+        //     { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
+        //     { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
+        //     { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '15%' } },
+        //     { name: "Payment Method", dataIndex: "paymentMethod", sortIndex: "paymentMethod", sortable: true, customStyleHeader: { width: '15%' } },
+        //     { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
+        //     { name: "Profile", renderer: rowData => {return (<Button style={{fontSize: 12,textTransform: 'capitalize'}} variant="outlined" onClick={() => window.open(`#/view-application/${rowData.id}`, "_blank")} >View</Button>)}, sortable: false, customStyleHeader: { width: '15%' }},
+        // ]
 
         const columnsPending = [
-            { name: "Student Id", dataIndex: "studentId", sortable: false, customStyleHeader: { width: '12%', textAlign: 'center' } },
-            { name: "Application Id", dataIndex: "applicationId", sortable: false, customStyleHeader: { width: '12%' } },
-            { name: "Applicant Name", dataIndex: "displayName", sortable: false, customStyleHeader: { width: '13%' } },
-            { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '10%' } },
-            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
-            { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
-            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Reg Date", dataIndex: "createdOn", sortIndex: "createdOnMillis", sortable: true, customStyleHeader: { width: '12%' } },
-            { name: "Stage", dataIndex: "stage", sortIndex: "stage", sortable: true, customStyleHeader: { width: '15%' } },
-            {
-                name: "Since", dataIndex: "since", sortIndex: "since", sortable: true, customStyleHeader: { width: '7%' }
-            }
+            { name: "ID", title: "ID", customStyleHeader: {fontSize:"26px"}},
+            { name: "shortLabel", title: "Short Label"},
+            { name: "label", title: "Label"},
+            { name: "programmeGroupsLabel", title: "Programme Group"},
+            { name: "action", title:"Action"}
+
         ]
 
         return (
             <Fragment>
-                {/* <DisplayAdmissionApplications documentData={this.state.documentsData} onDownload={fileName => this.DownloadFile(fileName)} data={this.state.addmissionForm} open={false} handleClose={() => this.onHandleFormClose()} /> */}
-
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
                 <div style={{
                     padding: 20
@@ -477,41 +640,61 @@ class AdmissionApplicationReports extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Admission Application Reports
-            </Typography>
-                        <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
+                             <Tooltip title="Back">
+                                <IconButton onClick={() => window.history.back()}>
+                                    <ArrowBackIcon fontSize="small" color="primary"/>
+                                </IconButton>
+                            </Tooltip>
+                           Programmes Report
+                        </Typography>
+                        {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
                             cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
                         }}
-                        />
+                        /> */}
+                        <div style={{float:"right"}}>
+                        {/* <Hidden xsUp={true}> */}
+                                {/* <Tooltip title="Search Bar">
+                                    <IconButton
+                                        onClick={this.handleToggleSearchBar}
+                                    >
+                                        <FilterIcon fontSize="default" color="primary"/>
+                                    </IconButton>
+                                </Tooltip> */}
+                            {/* </Hidden> */}
+                            <Tooltip title="Table Filter">
+                                <IconButton
+                                    style={{ marginLeft: "-10px" }}
+                                    onClick={this.handleToggleTableFilter}
+                                >
+                                    <FilterIcon fontSize="default" color="primary"/>
+                                </IconButton>
+                            </Tooltip>
+                        </div>
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <AdmissionApplicationReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
-                    <div style={{
-                        marginTop: 15,
-                        marginBottom: 15,
-                        color: '#174A84',
-                        font: 'Bold 16px Lato',
-                        letterSpacing: '1.8px'
-                    }}>{
-                            this.state.applicationStatusId === 1 && <Fragment>Applicants who have not submitted the &rdquo;Admission Application&rdquo; till date.</Fragment>
-                        }{
-                            this.state.applicationStatusId === 2 && <Fragment>Applicants who have successfully submitted &rdquo;Admission Application&rdquo;.</Fragment>
-                        }
-                    </div>
-                    {this.state.applicationStatusId === 1 &&
-                        <TablePanel isShowIndexColumn data={this.state.admissionData} isLoading={this.state.isLoading} sortingEnabled columns={columnsPending} />
+                    {this.state.showSearchBar ? 
+                        <F08ReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
+                        :
+                        <br/>
                     }
-                    {this.state.applicationStatusId === 2 &&
-                        <TablePanel isShowIndexColumn data={this.state.admissionData} isLoading={this.state.isLoading} sortingEnabled columns={columnsSubmitted} />
-                    }
-
+                    <F08ReportsTableComponent 
+                        data={this.state.admissionData} 
+                        columns={columnsPending} 
+                        showFilter={this.state.showTableFilter}
+                    />
+                     <CustomizedSnackbar
+                        isOpen={this.state.isOpenSnackbar}
+                        message={this.state.snackbarMessage}
+                        severity={this.state.snackbarSeverity}
+                        handleCloseSnackbar={() => this.handleCloseSnackbar()}
+                    />
                 </div>
             </Fragment>
         );
     }
 }
-export default AdmissionApplicationReports;
+export default F08Reports;
