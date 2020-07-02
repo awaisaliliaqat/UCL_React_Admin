@@ -13,6 +13,9 @@ import { format } from 'date-fns';
 import F09ReportsTableComponent from './F09ReportsTableComponent';
 import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
 
 function isEmpty(obj) {
     if (obj == null) return true;
@@ -145,11 +148,30 @@ class F09Reports extends Component {
             applicationId: "",
             isLoginMenu: false,
             isReload: false,
-            eventDate: null
+            eventDate: null,
+            isOpenSnackbar:false,
+            snackbarMessage:"",
+            snackbarSeverity:""
 
         };
     }
 
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar:true,
+            snackbarMessage:msg,
+            snackbarSeverity:severity
+        });
+    };
+
+    handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            isOpenSnackbar:false
+        });
+    };
     getGenderData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonGendersView`;
         await fetch(url, {
@@ -427,11 +449,12 @@ class F09Reports extends Component {
                               <ActionButton
                                 getData={this.getData}
                                 record_id={json.DATA[i].ID}
+                                handleOpenSnackbar={this.handleOpenSnackbar}
                               />
                             );
                           }
                     } else {
-                        alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -442,7 +465,7 @@ class F09Reports extends Component {
                             isReload: reload
                         })
                     } else {
-                        alert('Failed to fetch, Please try again later.');
+                        this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
                         console.log(error);
                     }
                 });
@@ -570,6 +593,11 @@ class F09Reports extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
+                        <Tooltip title="Back">
+                                <IconButton onClick={() => window.history.back()}>
+                                    <ArrowBackIcon fontSize="small" color="primary"/>
+                                </IconButton>
+                            </Tooltip>
                         Course Selection Group Report
                         </Typography>
                         {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{

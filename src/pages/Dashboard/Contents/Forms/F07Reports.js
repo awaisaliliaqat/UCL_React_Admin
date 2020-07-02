@@ -13,6 +13,9 @@ import { format } from 'date-fns';
 import F07ReportsTableComponent from './F07ReportsTableComponent';
 import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
 
 function isEmpty(obj) {
     if (obj == null) return true;
@@ -145,10 +148,29 @@ class F07Reports extends Component {
             applicationId: "",
             isLoginMenu: false,
             isReload: false,
-            eventDate: null
+            eventDate: null,
+            isOpenSnackbar:false,
+            snackbarMessage:"",
+            snackbarSeverity:""
 
         };
     }
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar:true,
+            snackbarMessage:msg,
+            snackbarSeverity:severity
+        });
+    };
+
+    handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            isOpenSnackbar:false
+        });
+    };
 
     getGenderData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonGendersView`;
@@ -431,7 +453,7 @@ class F07Reports extends Component {
                             );
                           }
                     } else {
-                        alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -442,7 +464,7 @@ class F07Reports extends Component {
                             isReload: reload
                         })
                     } else {
-                        alert('Failed to fetch, Please try again later.');
+                        this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
                         console.log(error);
                     }
                 });
@@ -556,7 +578,6 @@ class F07Reports extends Component {
             { name: "ID", title: "ID", customStyleHeader: {fontSize:"26px"}},
             { name: "label", title: "Label"},
             { name: "shortLabel", title: "Short Label"},
-            
             { name: "schoolLabel", title: "Link School"},
             { name: "action", title:"Action"}
         ]
@@ -572,6 +593,11 @@ class F07Reports extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
+                            < Tooltip title="Back">
+                                <IconButton onClick={() => window.history.back()}>
+                                    <ArrowBackIcon fontSize="small" color="primary"/>
+                                </IconButton>
+                            </Tooltip>
                             Programme groups Reports
                         </Typography>
                         {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
@@ -624,7 +650,12 @@ class F07Reports extends Component {
                     {/* <TablePanel isShowIndexColumn data={this.state.admissionData} isLoading={this.state.isLoading} sortingEnabled columns={columnsPending} /> */}
                     <F07ReportsTableComponent data={this.state.admissionData} columns={columnsPending} showFilter={this.state.showTableFilter}/>
                     
-
+                    <CustomizedSnackbar
+                        isOpen={this.state.isOpenSnackbar}
+                        message={this.state.snackbarMessage}
+                        severity={this.state.snackbarSeverity}
+                        handleCloseSnackbar={() => this.handleCloseSnackbar()}
+                    />  
                 </div>
             </Fragment>
         );
