@@ -637,6 +637,12 @@ class F09Reports extends Component {
                         columns={columnsPending} 
                         showFilter={this.state.showTableFilter}
                     />
+                    <CustomizedSnackbar
+                        isOpen={this.state.isOpenSnackbar}
+                        message={this.state.snackbarMessage}
+                        severity={this.state.snackbarSeverity}
+                        handleCloseSnackbar={() => this.handleCloseSnackbar()}
+                    />
                 </div>
             </Fragment>
         );
