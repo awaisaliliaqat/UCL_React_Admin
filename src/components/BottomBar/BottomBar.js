@@ -114,7 +114,7 @@ function BottomBar(props) {
         style={{ 
           top: "auto", 
           bottom:0,
-          paddingLeft: props.isDrawerOpen ? 250 : 0
+          paddingLeft: props.isDrawerOpen ? 280 : 0
         }}
 
       >

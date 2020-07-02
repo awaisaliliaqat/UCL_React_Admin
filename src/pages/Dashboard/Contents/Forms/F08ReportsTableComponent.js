@@ -45,6 +45,9 @@ class F08ReportsTableComponent extends Component {
                 "lessThanOrEqual",
             ],
             pageSizes:[5,10,15,20],
+            defaultSorting:[
+              { columnName: 'ID', direction: 'asc' }
+            ],
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
             ],
@@ -56,10 +59,15 @@ class F08ReportsTableComponent extends Component {
               { columnName: 'action', width:"10%"}
             ],
             defaultColumnWidths:[
-              // { columnName: 'ID', width:100},
-              // { columnName: 'shortLabel', width:350},
-              // { columnName: 'label', width:400},
-              // { columnName: 'action', width:150}
+              { columnName: "ID", width:100},
+              { columnName: "shortLabel", width:250},
+              { columnName: "label", width:250},
+              { columnName: "programmeGroupsLabel", width:250},
+              { columnName: "action", width:150}
+            ],
+            defaultFilters:[],
+            filteringStateColumnExtensions:[
+              { columnName: 'action', filteringEnabled: false },
             ]
         };
     }
@@ -71,9 +79,13 @@ class F08ReportsTableComponent extends Component {
             currencyColumns,
             availableFilterOperations,
             CurrencyEditor,
+            filter,
             tableColumnExtensions,
-            sortingStateColumnExtensions,
+            defaultFilters,
+            filteringStateColumnExtensions,
             defaultColumnWidths,
+            sortingStateColumnExtensions,
+            defaultSorting,
             columnBands,
             pageSizes
           } = this.state;
@@ -86,16 +98,8 @@ class F08ReportsTableComponent extends Component {
         return (
             <Paper>
               <Grid rows={rows} columns={columns}>
-                <FilteringState
-                  //defaultFilters={[{ columnName: 'saleDate', value: '2016-02' }]}
-                />
-                
-                <SortingState
-                  defaultSorting={[
-                    { columnName: 'ID', direction: 'asc' }
-                  ]}
-                  columnExtensions={sortingStateColumnExtensions}
-                />
+              <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
+              <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
                 {/* 
                   <SelectionState /> 
                 */}
@@ -118,7 +122,7 @@ class F08ReportsTableComponent extends Component {
                 {/* 
                   <DragDropProvider /> 
                 */}
-                <Table columnExtensions={tableColumnExtensions}/>
+                <Table />
                 <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
                 {/* 
                   <TableSelection showSelectAll={true} /> 
