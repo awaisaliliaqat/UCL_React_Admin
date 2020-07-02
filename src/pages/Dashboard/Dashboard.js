@@ -22,6 +22,15 @@ import UploadTutionFees from './Contents/Decision/UploadTutionFees';
 import TutionFeeApproval from './Contents/Decision/TutionFeeApproval';
 // import UploadDocuments from './Contents/Decision/DocumentRequest';
 // import DocumentRequestAction from './Contents/Decision/Chunks/DocumentRequestAction';
+import F06Form from './Contents/Forms/F06Form';
+import F06Reports from './Contents/Forms/F06Reports';
+import F07Form from './Contents/Forms/F07Form';
+import F07Reports from './Contents/Forms/F07Reports';
+import F08Form from './Contents/Forms/F08Form';
+import F08Reports from './Contents/Forms/F08Reports';
+import F09Form from './Contents/Forms/F09Form';
+import F09Reports from './Contents/Forms/F09Reports';
+
 
 const drawerWidth = 283;
 
@@ -254,6 +263,36 @@ const Dashboard = props => {
               </Typography>
           </div>
 
+ 
+          <div className={classes.menuListContainer}>
+            <Typography className={classes.menuTitle} noWrap variant="h6">
+              <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Forms</div>
+            </Typography>
+            <MenuList>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F06Form" || viewValue === "F06Reports") && classes.active}`}>
+                <Link style={{ textDecoration: 'none' }} to='/dashboard/F06Form/0'>
+                  <Typography className={classes.menuItemText} noWrap variant="body2">Define Schools</Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F07Form" || viewValue === "F07Reports") && classes.active}`}>
+                <Link style={{ textDecoration: 'none' }} to='/dashboard/F07Form/0'>
+                  <Typography className={classes.menuItemText} noWrap variant="body2">Define Programme Groups</Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F08Form" || viewValue === "F08Reports") && classes.active}`}>
+                <Link style={{ textDecoration: 'none' }} to='/dashboard/F08Form/0'>
+                  <Typography className={classes.menuItemText} noWrap variant="body2">Define Programmes</Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F09Form" || viewValue === "F09Reports") && classes.active}`}>
+                <Link style={{ textDecoration: 'none' }} to='/dashboard/F09Form/0'>
+                  <Typography className={classes.menuItemText} noWrap variant="body2">Define Course Selection Group</Typography>
+                </Link>
+              </MenuItem>
+            </MenuList>
+          </div>
+
+
         </div>
 
       </Drawer>
@@ -272,9 +311,37 @@ const Dashboard = props => {
               {/* <SetRoute setValue={value => handleValueChange(value)} name="document-requests" exact path="/dashboard/document-requests" component={UploadDocuments} /> */}
               {/* <SetRoute setValue={value => handleValueChange(value)} name="document-requests" exact path="/dashboard/document-requests/:id" component={DocumentRequestAction} /> */}
               <SetRoute setValue={value => handleValueChange(value)} name="offer-letter" exact path="/dashboard/offer-letter" component={OfferLetter} />
+
+              <SetRoute setValue={value => handleValueChange(value)} name="F06Form" exact path="/dashboard/F06Form/:recordId" render={(props)=> {
+                return (
+                  <F06Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+              <SetRoute setValue={value => handleValueChange(value)} name="F06Reports" exact path="/dashboard/F06Reports" component={F06Reports} />
+              <SetRoute setValue={value => handleValueChange(value)} name="F07Form" exact path="/dashboard/F07Form/:recordId" render={(props)=> {
+                return (
+                  <F07Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+             <SetRoute setValue={value => handleValueChange(value)} name="F07Reports" exact path="/dashboard/F07Reports" component={F07Reports} />
+             <SetRoute setValue={value => handleValueChange(value)} name="F08Form" exact path="/dashboard/F08Form/:recordId" render={(props)=> {
+                return (
+                  <F08Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+             <SetRoute setValue={value => handleValueChange(value)} name="F08Reports" exact path="/dashboard/F08Reports" component={F08Reports} />
+             <SetRoute setValue={value => handleValueChange(value)} name="F09Form" exact path="/dashboard/F09Form/:recordId" render={(props)=> {
+                return (
+                  <F09Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+             <SetRoute setValue={value => handleValueChange(value)} name="F09Reports" exact path="/dashboard/F09Reports" component={F09Reports} />
+            
+
               <SetRoute setValue={value => handleValueChange(value)} name="assign-account-id" exact path="/dashboard/assign-account-id" component={AssignAcccountId} />
               <SetRoute setValue={value => handleValueChange(value)} name="upload-tuition-fees" exact path="/dashboard/upload-tuition-fees" component={UploadTutionFees} />
               <SetRoute setValue={value => handleValueChange(value)} name="tuition-fee-approval" exact path="/dashboard/tuition-fee-approval" component={TutionFeeApproval} />
+
             </Switch>
           </Suspense>
         </Router>
