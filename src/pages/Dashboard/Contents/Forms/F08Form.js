@@ -204,11 +204,13 @@ class F08Form extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-                        if(this.state.recordId!=0){
-                            window.location = "#/dashboard/F08Reports";
-                        }else{
-                            window.location.reload();
-                        }
+                        setTimeout(()=>{
+                            if(this.state.recordId!=0){
+                                window.location="#/dashboard/F08Reports";
+                            }else{
+                                window.location.reload();
+                            }
+                        }, 2000);
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
@@ -358,7 +360,7 @@ class F08Form extends Component {
                                         fullWidth
                                         select
                                        // size="small"
-                                        label="Link Programme Groups"
+                                        label="Programme Group"
                                         variant="outlined"
                                         onChange={this.onHandleChange}
                                         value={this.state.programmeGroupsId}

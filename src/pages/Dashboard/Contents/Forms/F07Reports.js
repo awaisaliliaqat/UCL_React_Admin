@@ -622,7 +622,7 @@ class F07Reports extends Component {
             { name: "ID", title: "ID", customStyleHeader: {fontSize:"26px"}},
             { name: "label", title: "Label"},
             { name: "shortLabel", title: "Short Label"},
-            { name: "schoolLabel", title: "Link School"},
+            { name: "schoolLabel", title: "School"},
             { name: "action", title:"Action"}
         ]
 

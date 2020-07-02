@@ -275,11 +275,13 @@ class F06Form extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-                        if(this.state.recordId!=0){
-                            window.location = "#/dashboard/F07Reports";
-                        }else{
-                            window.location.reload();
-                        }
+                        setTimeout(()=>{
+                            if(this.state.recordId!=0){
+                                window.location="#/dashboard/F07Reports";
+                            }else{
+                                window.location.reload();
+                            }
+                        }, 2000);
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
@@ -387,7 +389,7 @@ class F06Form extends Component {
                                         variant="outlined"
                                         select
                                         
-                                        label="Link School"
+                                        label="School"
                                       //  variant="outlined"
                                         onChange={this.onHandleChange}
                                         value={this.state.schoolId}

@@ -242,17 +242,17 @@ const Dashboard = props => {
                   <Typography className={classes.menuItemText} noWrap variant="body2">Define Schools</Typography>
                 </Link>
               </MenuItem>
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "F07Form" && classes.active}`}>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F07Form" || viewValue === "F07Reports") && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/F07Form/0'>
                   <Typography className={classes.menuItemText} noWrap variant="body2">Define Programme Groups</Typography>
                 </Link>
               </MenuItem>
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "F08Form" && classes.active}`}>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F08Form" || viewValue === "F08Reports") && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/F08Form/0'>
                   <Typography className={classes.menuItemText} noWrap variant="body2">Define Programmes</Typography>
                 </Link>
               </MenuItem>
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "F09Form" && classes.active}`}>
+              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F09Form" || viewValue === "F09Reports") && classes.active}`}>
                 <Link style={{ textDecoration: 'none' }} to='/dashboard/F09Form/0'>
                   <Typography className={classes.menuItemText} noWrap variant="body2">Define Course Selection Group</Typography>
                 </Link>

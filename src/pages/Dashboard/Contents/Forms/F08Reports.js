@@ -624,7 +624,7 @@ class F08Reports extends Component {
             { name: "ID", title: "ID", customStyleHeader: {fontSize:"26px"}},
             { name: "shortLabel", title: "Short Label"},
             { name: "label", title: "Label"},
-            { name: "programmeGroupsLabel", title: "Link Programme Groups"},
+            { name: "programmeGroupsLabel", title: "Programme Group"},
             { name: "action", title:"Action"}
 
         ]
