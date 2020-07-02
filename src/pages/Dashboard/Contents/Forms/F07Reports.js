@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { format } from 'date-fns'; 
 import F07ReportsTableComponent from './F07ReportsTableComponent';
-import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
+import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
@@ -650,21 +650,21 @@ class F07Reports extends Component {
                         }}
                         /> */}
                         <div style={{float:"right"}}>
-                        <Hidden xsUp={true}>
-                                <Tooltip title="Search Bar">
+                        {/* <Hidden xsUp={true}> */}
+                                {/* <Tooltip title="Search Bar">
                                     <IconButton
                                         onClick={this.handleToggleSearchBar}
                                     >
                                         <FilterIcon fontSize="default" color="primary"/>
                                     </IconButton>
-                                </Tooltip>
-                            </Hidden>
+                                </Tooltip> */}
+                            {/* </Hidden> */}
                             <Tooltip title="Table Filter">
                                 <IconButton
                                     style={{ marginLeft: "-10px" }}
                                     onClick={this.handleToggleTableFilter}
                                 >
-                                    <FindInPageOutlinedIcon fontSize="default" color="primary"/>
+                                    <FilterIcon fontSize="default" color="primary"/>
                                 </IconButton>
                             </Tooltip>
                         </div>

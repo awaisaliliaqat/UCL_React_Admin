@@ -395,7 +395,7 @@ class F06Form extends Component {
                                     >
                                         {this.state.schools.map((item) => (
                                         <MenuItem key={item.ID} value={item.ID}>
-                                            {item.Label}
+                                             {item.shortLabel} - {item.label}
                                         </MenuItem>
                                         ))}
                                     </TextField>
@@ -440,6 +440,12 @@ class F06Form extends Component {
                     bottomRightButtonAction={this.clickOnFormSubmit}
                     loading={this.state.isLoading}
                     isDrawerOpen={ this.props.isDrawerOpen }
+                />
+                    <CustomizedSnackbar
+                    isOpen={this.state.isOpenSnackbar}
+                    message={this.state.snackbarMessage}
+                    severity={this.state.snackbarSeverity}
+                    handleCloseSnackbar={() => this.handleCloseSnackbar()}
                 />
             </Fragment>
         );

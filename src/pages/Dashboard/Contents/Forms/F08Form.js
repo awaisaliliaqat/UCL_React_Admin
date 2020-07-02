@@ -367,7 +367,7 @@ class F08Form extends Component {
                                     >
                                         {this.state.ProgrammeGroups.map((item) => (
                                         <MenuItem key={item.ID} value={item.ID}>
-                                            {item.Label}
+                                              {item.shortLabel} - {item.label}
                                         </MenuItem>
                                         ))}
                                     </TextField>
