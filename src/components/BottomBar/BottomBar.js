@@ -111,9 +111,15 @@ function BottomBar(props) {
         position="fixed"
 
         color="default"
+<<<<<<< HEAD
         style={{
           top: "auto",
           bottom: 0,
+=======
+        style={{ 
+          top: "auto", 
+          bottom:0,
+>>>>>>> 5e006d44315ab26c7e1ebe6d2ac6c12f60858663
           paddingLeft: props.isDrawerOpen ? 280 : 0
         }}
 

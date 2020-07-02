@@ -36,6 +36,9 @@ class F06ReportsTableComponent extends Component {
             rows: [],
             formatColumns: [],
             currencyColumns: [], 
+            defaultSorting:[
+              { columnName: 'ID', direction: 'asc' }
+            ],
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
             ],
@@ -50,10 +53,15 @@ class F06ReportsTableComponent extends Component {
             pageSizes:[5,10,15,20],
             tableColumnExtensions:[],
             defaultColumnWidths:[
-              // { columnName: 'ID', width:100},
-              // { columnName: 'shortLabel', width:350},
-              // { columnName: 'label', width:400},
-              // { columnName: 'action', width:150}
+              { columnName: "ID", width:100},
+              { columnName: "label", width:250},
+              { columnName: "shortLabel", width:250},
+              { columnName: "schoolLabel", width:250},
+              { columnName: "action", width:150}
+            ],
+            defaultFilters:[],
+            filteringStateColumnExtensions:[
+              { columnName: 'action', filteringEnabled: false },
             ]
         };
     }
@@ -67,8 +75,11 @@ class F06ReportsTableComponent extends Component {
             CurrencyEditor,
             tableColumnExtensions,
             defaultColumnWidths,
+            defaultFilters,
+            filteringStateColumnExtensions,
             columnBands,
             pageSizes,
+            defaultSorting,
             sortingStateColumnExtensions,
           } = this.state;
 
@@ -80,14 +91,8 @@ class F06ReportsTableComponent extends Component {
         return (
             <Paper>
               <Grid rows={rows} columns={columns}>
-                <FilteringState
-                  //defaultFilters={[{ columnName: 'saleDate', value: '2016-02' }]}
-                />
-                <SortingState
-                  defaultSorting={[
-                   // { columnName: 'product', direction: 'asc' }
-                  ]}
-                />
+                <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions}/>
+                <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions}   />
                 {/* 
                   <SelectionState /> 
                 */}
