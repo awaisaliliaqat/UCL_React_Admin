@@ -122,6 +122,7 @@ const Dashboard = props => {
   const [viewValue, setViewValue] = useState(props.match.params.value || "");
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const adminData = JSON.parse(localStorage.getItem('adminData'));
+  const { featureList = [] } = adminData;
 
   const handleValueChange = value => {
     setViewValue(value);
@@ -149,142 +150,33 @@ const Dashboard = props => {
         <Toolbar />
         <div className={classes.drawerContainer}>
           <div>
-            {/* <div className={classes.menuListContainer}>
-            <Typography className={classes.menuTitle} noWrap variant="h6">
-              <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Analytics</div>
-            </Typography>
-            <MenuList>
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "applicant-registration-analytics" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/applicant-registration-analytics'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Applicant Registration</Typography>
-                </Link>
-              </MenuItem>
-              <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "addmission-application-analytics" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/addmission-application-analytics'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Addmission Application</Typography>
-                </Link>
-              </MenuItem>
-            </MenuList>
-          </div> */}
+            {
+              featureList.map(feature => {
+                const { items = [] } = feature;
+                return (
+                  <div key={feature.typeId} className={classes.menuListContainer}>
+                    <Typography className={classes.menuTitle} noWrap variant="h6">
+                      <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>{feature.typeLabel}</div>
+                    </Typography>
+                    <MenuList>
+                      {
+                        items.map(option => {
+                          return (
+                            <MenuItem key={option.id} onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === `${option.action}` && classes.active}`}>
+                              <Link style={{ textDecoration: 'none' }} to={option.webUrl}>
+                                <Typography className={classes.menuItemText}
+                                  noWrap variant="body2">{option.label}</Typography>
+                              </Link>
+                            </MenuItem>
+                          );
+                        })
+                      }
+                    </MenuList>
+                  </div>
+                );
+              })
 
-            <div className={classes.menuListContainer}>
-              <Typography className={classes.menuTitle} noWrap variant="h6">
-                <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Reports</div>
-              </Typography>
-              <MenuList>
-                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "applicant-registration-reports" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/applicant-registration-reports'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Applicant Registration</Typography>
-                </Link>
-              </MenuItem> */}
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "admission-application-reports" && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/admission-application-reports'>
-                    <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Addmission Application</Typography>
-                  </Link>
-                </MenuItem>
-                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "registration-fee-payment-reports" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/registration-fee-payment-reports'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Registration Fee Payments</Typography>
-                </Link>
-              </MenuItem> */}
-                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "addmission-decision-reports" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/addmission-decision-reports'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Addmission Decision</Typography>
-                </Link>
-              </MenuItem> */}
-                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "tution-fee-payment-reports" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/tution-fee-payment-reports'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Tution Fee Payments</Typography>
-                </Link>
-              </MenuItem> */}
-              </MenuList>
-            </div>
-
-            <div className={classes.menuListContainer}>
-              <Typography className={classes.menuTitle} noWrap variant="h6">
-                <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Dashboards</div>
-              </Typography>
-              <MenuList>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "registration-fee-approval" && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/registration-fee-approval'>
-                    <Typography className={classes.menuItemText}
-                      noWrap variant="body2"> Registration Fee Approval</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "admission-decision" && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/admission-decision'>
-                    <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Admission Decision</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "offer-letter" && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/offer-letter'>
-                    <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Offer Letter</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "assign-account-id" && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/assign-account-id'>
-                    <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Assign Accounts Id</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "upload-tuition-fees" && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/upload-tuition-fees'>
-                    <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Upload Tuition Fee Vochers</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "tuition-fee-approval" && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/tuition-fee-approval'>
-                    <Typography className={classes.menuItemText}
-                      noWrap variant="body2">Tuition Fee Approval</Typography>
-                  </Link>
-                </MenuItem>
-                {/* <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === "document-requests" && classes.active}`}>
-                <Link style={{ textDecoration: 'none' }} to='/dashboard/document-requests'>
-                  <Typography className={classes.menuItemText}
-                    noWrap variant="body2">Document Requests</Typography>
-                </Link>
-              </MenuItem> */}
-              </MenuList>
-            </div>
-
-
-            <div className={classes.menuListContainer}>
-              <Typography className={classes.menuTitle} noWrap variant="h6">
-                <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>Forms</div>
-              </Typography>
-              <MenuList>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F06Form" || viewValue === "F06Reports") && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/F06Form/0'>
-                    <Typography className={classes.menuItemText} noWrap variant="body2">Define Schools</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F07Form" || viewValue === "F07Reports") && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/F07Form/0'>
-                    <Typography className={classes.menuItemText} noWrap variant="body2">Define Programme Groups</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F08Form" || viewValue === "F08Reports") && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/F08Form/0'>
-                    <Typography className={classes.menuItemText} noWrap variant="body2">Define Programmes</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${(viewValue === "F09Form" || viewValue === "F09Reports") && classes.active}`}>
-                  <Link style={{ textDecoration: 'none' }} to='/dashboard/F09Form/0'>
-                    <Typography className={classes.menuItemText} noWrap variant="body2">Define Course Selection Group</Typography>
-                  </Link>
-                </MenuItem>
-              </MenuList>
-            </div>
+            }
 
           </div>
           <div style={{ maxWidth: drawerWidth - 15, paddingBottom: 10, paddingTop: 20 }}>

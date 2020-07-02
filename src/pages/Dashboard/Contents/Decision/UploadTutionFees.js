@@ -270,7 +270,7 @@ class DocumentRequest extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Upload Tuition Fee Vochers
+                            Upload Tuition Fee Vouchers
             </Typography>
                     </div>
                     <Divider style={{
