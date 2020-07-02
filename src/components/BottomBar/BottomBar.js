@@ -111,9 +111,9 @@ function BottomBar(props) {
         position="fixed"
 
         color="default"
-        style={{ 
-          top: "auto", 
-          bottom:0,
+        style={{
+          top: "auto",
+          bottom: 0,
           paddingLeft: props.isDrawerOpen ? 280 : 0
         }}
 
@@ -124,7 +124,7 @@ function BottomBar(props) {
             color="default"
             onClick={event => bottomLeftButtonAction(props)}
 
-            style={{ display:props.left_button_hide==true ? "none":"block"}}
+            style={{ display: props.left_button_hide == true ? "none" : "block" }}
           >
             {props.left_button_text}
           </Button>
@@ -133,18 +133,18 @@ function BottomBar(props) {
           <Button
             variant="contained"
             color="primary"
-            variant="contained" 
+            variant="contained"
             disabled={props.loading}
             onClick={event => bottomRightButtonAction(props)}
-            style={{ 
-              backgroundColor: '#174A84' 
+            style={{
+              backgroundColor: '#174A84'
             }}
           >
 
-            {props.loading ? 
-              <CircularProgress 
-                size={24} 
-                style={{ color: 'white' }} 
+            {props.loading ?
+              <CircularProgress
+                size={24}
+                style={{ color: 'white' }}
               />
 
               :
