@@ -6,6 +6,7 @@ import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 //import { alphabetExp, numberExp, emailExp } from '../../../../utils/regularExpression';
 import { TextField, Grid, Button, CircularProgress } from '@material-ui/core';
 import BottomBar from "../../../../components/BottomBar/BottomBar";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
 const styles = () => ({
     root: {
@@ -42,9 +43,29 @@ class F09Form extends Component {
             label:"",
             labelError:"",
             shortLabel:"",
-            shortLabelError:""
+            shortLabelError:"",
+            isOpenSnackbar:false,
+            snackbarMessage:"",
+            snackbarSeverity:""
         }
     }
+
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar:true,
+            snackbarMessage:msg,
+            snackbarSeverity:severity
+        });
+    };
+
+    handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            isOpenSnackbar:false
+        });
+    };
 
     loadData = async(index) => {
         const data = new FormData();
@@ -72,7 +93,7 @@ class F09Form extends Component {
                            shortLabel:json.DATA[0].shortLabel
                        });
                     } else {
-                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -84,7 +105,7 @@ class F09Form extends Component {
                         })
                     } else {
                         console.log(error);
-                        alert("Failed to Save ! Please try Again later.")
+                        this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
                     }
                 });
         this.setState({isLoading: false})
@@ -165,14 +186,16 @@ class F09Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                        alert(json.USER_MESSAGE);
-                        if(this.state.recordId!=0){
-                            window.location = "#/dashboard/F09Reports";
-                        }else{
-                            window.location.reload();
-                        }
+                        this.handleOpenSnackbar(json.USER_MESSAGE,"success");
+                        setTimeout(()=>{
+                            if(this.state.recordId!=0){
+                                window.location="#/dashboard/F09Reports";
+                            }else{
+                                window.location.reload();
+                            }
+                        }, 2000);
                     } else {
-                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -184,7 +207,7 @@ class F09Form extends Component {
                         })
                     } else {
                         console.log(error);
-                        alert("Failed to Save ! Please try Again later.")
+                        this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
                     }
                 });
         this.setState({isLoading: false})
@@ -306,6 +329,12 @@ class F09Form extends Component {
                     bottomRightButtonAction={this.clickOnFormSubmit}
                     loading={this.state.isLoading}
                     isDrawerOpen={ this.props.isDrawerOpen }
+                />
+                 <CustomizedSnackbar
+                    isOpen={this.state.isOpenSnackbar}
+                    message={this.state.snackbarMessage}
+                    severity={this.state.snackbarSeverity}
+                    handleCloseSnackbar={() => this.handleCloseSnackbar()}
                 />
             </Fragment>
         );

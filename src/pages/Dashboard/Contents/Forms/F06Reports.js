@@ -539,21 +539,21 @@ class F06Reports extends Component {
                         }}
                         /> */}
                         <div style={{float:"right"}}>
-                            <Hidden xsUp={true}>
-                                <Tooltip title="Search Bar">
+                            {/* <Hidden xsUp={true}> */}
+                                {/* <Tooltip title="Search Bar">
                                     <IconButton
                                         onClick={this.handleToggleSearchBar}
                                     >
                                         <FilterIcon fontSize="default" color="primary"/>
                                     </IconButton>
-                                </Tooltip>
-                            </Hidden>
+                                </Tooltip> */}
+                            {/* </Hidden> */}
                             <Tooltip title="Table Filter">
                                 <IconButton
                                     style={{ marginLeft: "-10px" }}
                                     onClick={this.handleToggleTableFilter}
                                 >
-                                    <SearchIcon fontSize="default" color="primary"/>
+                                    <FilterIcon fontSize="default" color="primary"/>
                                 </IconButton>
                             </Tooltip>
                         </div>

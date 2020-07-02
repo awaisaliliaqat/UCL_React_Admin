@@ -7,7 +7,7 @@ import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { TextField, Grid, Button, CircularProgress } from '@material-ui/core';
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import MenuItem from "@material-ui/core/MenuItem";
-
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 const styles = () => ({
     root: {
         padding: 20,
@@ -47,8 +47,28 @@ class F06Form extends Component {
             schools: [],
             schoolId:"",
             schoolIdError:"",
+            isOpenSnackbar:false,
+            snackbarMessage:"",
+            snackbarSeverity:""
         }
     }
+
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar:true,
+            snackbarMessage:msg,
+            snackbarSeverity:severity
+        });
+    };
+
+    handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            isOpenSnackbar:false
+        });
+    };
 
     loadData = async(index) => {
         const data = new FormData();
@@ -78,7 +98,7 @@ class F06Form extends Component {
                            schoolId:json.DATA[0].schoolId
                        });
                     } else {
-                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -90,7 +110,7 @@ class F06Form extends Component {
                         })
                     } else {
                         console.log(error);
-                        alert("Failed to Save ! Please try Again later.")
+                         this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
                     }
                 });
         this.setState({isLoading: false})
@@ -208,7 +228,7 @@ class F06Form extends Component {
                           
                        });
                     } else {
-                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -220,7 +240,7 @@ class F06Form extends Component {
                         })
                     } else {
                         console.log(error);
-                        alert("Failed to Save ! Please try Again later.")
+                        this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
                     }
                 });
         this.setState({isLoading: false})
@@ -254,14 +274,16 @@ class F06Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                        alert(json.USER_MESSAGE);
-                        if(this.state.recordId!=0){
-                            window.location = "#/dashboard/F07Reports";
-                        }else{
-                            window.location.reload();
-                        }
+                        this.handleOpenSnackbar(json.USER_MESSAGE,"success");
+                        setTimeout(()=>{
+                            if(this.state.recordId!=0){
+                                window.location="#/dashboard/F07Reports";
+                            }else{
+                                window.location.reload();
+                            }
+                        }, 2000);
                     } else {
-                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -273,7 +295,7 @@ class F06Form extends Component {
                         })
                     } else {
                         console.log(error);
-                        alert("Failed to Save ! Please try Again later.")
+                        this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
                     }
                 });
         this.setState({isLoading: false})
@@ -335,6 +357,7 @@ class F06Form extends Component {
                                         label="Programme Group Name"
                                         required
                                         fullWidth
+                                        variant="outlined"
                                         onKeyDown={this.StopEnter}
                                         onChange={this.onHandleChange}
                                         value={this.state.label}
@@ -349,6 +372,7 @@ class F06Form extends Component {
                                         label="Short Name"
                                         required
                                         fullWidth
+                                        variant="outlined"
                                         onKeyDown={this.StopEnter}
                                         onChange={this.onHandleChange}
                                         value={this.state.shortLabel}
@@ -362,9 +386,10 @@ class F06Form extends Component {
                                         name="schoolId"
                                         required
                                         fullWidth
+                                        variant="outlined"
                                         select
-                                        size="small"
-                                        label="Link School"
+                                        
+                                        label="School"
                                       //  variant="outlined"
                                         onChange={this.onHandleChange}
                                         value={this.state.schoolId}
@@ -372,7 +397,7 @@ class F06Form extends Component {
                                     >
                                         {this.state.schools.map((item) => (
                                         <MenuItem key={item.ID} value={item.ID}>
-                                            {item.Label}
+                                             {item.shortLabel} - {item.label}
                                         </MenuItem>
                                         ))}
                                     </TextField>
@@ -417,6 +442,12 @@ class F06Form extends Component {
                     bottomRightButtonAction={this.clickOnFormSubmit}
                     loading={this.state.isLoading}
                     isDrawerOpen={ this.props.isDrawerOpen }
+                />
+                    <CustomizedSnackbar
+                    isOpen={this.state.isOpenSnackbar}
+                    message={this.state.snackbarMessage}
+                    severity={this.state.snackbarSeverity}
+                    handleCloseSnackbar={() => this.handleCloseSnackbar()}
                 />
             </Fragment>
         );

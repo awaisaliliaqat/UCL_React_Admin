@@ -1,9 +1,20 @@
 import React from "react";
-import { makeStyles } from "@material-ui/styles";
+
+import { makeStyles, useTheme, withStyles } from "@material-ui/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { Button } from "@material-ui/core";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListSubheader,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Button
+} from "@material-ui/core";
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -39,12 +50,15 @@ const useStyles = makeStyles(theme => ({
     margin: 10
   },
   badgeMargin: {
+
     margin: theme.spacing()
+
   },
   inline: {
     display: "inline"
   },
   button: {
+
     margin: theme.spacing()
   },
   leftIcon: {
@@ -52,6 +66,7 @@ const useStyles = makeStyles(theme => ({
   },
   rightIcon: {
     marginLeft: theme.spacing()
+
   },
   iconSmall: {
     fontSize: 20
@@ -94,23 +109,27 @@ function BottomBar(props) {
     <div>
       <AppBar
         position="fixed"
+
         color="default"
         style={{ 
           top: "auto", 
           bottom:0,
           paddingLeft: props.isDrawerOpen ? 250 : 0
         }}
+
       >
         <Toolbar variant="dense">
           <Button
             variant="contained"
             color="default"
             onClick={event => bottomLeftButtonAction(props)}
+
             style={{ display:props.left_button_hide==true ? "none":"block"}}
           >
             {props.left_button_text}
           </Button>
           <div className={classes.grow} />
+
           <Button
             variant="contained"
             color="primary"
@@ -121,11 +140,13 @@ function BottomBar(props) {
               backgroundColor: '#174A84' 
             }}
           >
+
             {props.loading ? 
               <CircularProgress 
                 size={24} 
                 style={{ color: 'white' }} 
               />
+
               :
               props.right_button_text
             }

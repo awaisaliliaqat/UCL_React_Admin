@@ -11,8 +11,11 @@ import Button from '@material-ui/core/Button';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { format } from 'date-fns'; 
 import F09ReportsTableComponent from './F09ReportsTableComponent';
-import FindInPageOutlinedIcon from '@material-ui/icons/FindInPageOutlined';
+import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
 
 function isEmpty(obj) {
     if (obj == null) return true;
@@ -145,11 +148,30 @@ class F09Reports extends Component {
             applicationId: "",
             isLoginMenu: false,
             isReload: false,
-            eventDate: null
+            eventDate: null,
+            isOpenSnackbar:false,
+            snackbarMessage:"",
+            snackbarSeverity:""
 
         };
     }
 
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar:true,
+            snackbarMessage:msg,
+            snackbarSeverity:severity
+        });
+    };
+
+    handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            isOpenSnackbar:false
+        });
+    };
     getGenderData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonGendersView`;
         await fetch(url, {
@@ -424,14 +446,18 @@ class F09Reports extends Component {
                         });
                         for (var i = 0; i < json.DATA.length; i++) {
                             json.DATA[i].action = (
-                              <ActionButton
-                                getData={this.getData}
-                                record_id={json.DATA[i].ID}
+                              <EditDeleteTableRecord
+                               // getData={this.getData}
+                                // record_id={json.DATA[i].ID}
+                                recordId={json.DATA[i].ID}
+                                DeleteData={this.DeleteData}
+                                onEditURL={`#/dashboard/F09Form/${json.DATA[i].ID}`}
+                                handleOpenSnackbar={this.handleOpenSnackbar}
                               />
                             );
                           }
                     } else {
-                        alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -442,7 +468,7 @@ class F09Reports extends Component {
                             isReload: reload
                         })
                     } else {
-                        alert('Failed to fetch, Please try again later.');
+                        this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
                         console.log(error);
                     }
                 });
@@ -452,6 +478,48 @@ class F09Reports extends Component {
 
 
     }
+
+    DeleteData = async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupDelete`;
+        await fetch(url, {
+          method: "POST",
+          body:data,
+          headers: new Headers({
+              Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+          })
+        })
+          .then(res => {
+              if (!res.ok) {
+                  throw res;
+              }
+              return res.json();
+          })
+          .then(
+              json => {
+                  if (json.CODE === 1) {
+                      this.handleOpenSnackbar("Deleted","success");
+                      this.getData();
+                  } else {
+                      //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                      this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
+                  }
+                  console.log(json);
+              },
+              error => {
+                  if (error.status === 401) {
+                      this.setState({
+                          isLoginMenu: true,
+                          isReload: true
+                      })
+                  } else {
+                      //alert('Failed to fetch, Please try again later.');
+                      this.handleOpenSnackbar("Failed to fetch, Please try again later.","error")
+                      console.log(error);
+                  }
+              });
+        }
 
     DownloadFile = (fileName) => {
         const data = new FormData();
@@ -570,6 +638,11 @@ class F09Reports extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
+                        <Tooltip title="Back">
+                                <IconButton onClick={() => window.history.back()}>
+                                    <ArrowBackIcon fontSize="small" color="primary"/>
+                                </IconButton>
+                            </Tooltip>
                         Course Selection Group Report
                         </Typography>
                         {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
@@ -578,19 +651,19 @@ class F09Reports extends Component {
                         }}
                         /> */}
                         <div style={{float:"right"}}>
-                            <Tooltip title="Search Bar">
+                            {/* <Tooltip title="Search Bar">
                                 <IconButton
                                     onClick={this.handleToggleSearchBar}
                                 >
                                     <SearchOutlinedIcon fontSize="default" color="primary"/>
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip> */}
                             <Tooltip title="Table Filter">
                                 <IconButton
                                     style={{ marginLeft: "-10px" }}
                                     onClick={this.handleToggleTableFilter}
                                 >
-                                    <FindInPageOutlinedIcon fontSize="default" color="primary"/>
+                                    <FilterIcon fontSize="default" color="primary"/>
                                 </IconButton>
                             </Tooltip>
                         </div>
@@ -608,6 +681,12 @@ class F09Reports extends Component {
                         data={this.state.admissionData} 
                         columns={columnsPending} 
                         showFilter={this.state.showTableFilter}
+                    />
+                    <CustomizedSnackbar
+                        isOpen={this.state.isOpenSnackbar}
+                        message={this.state.snackbarMessage}
+                        severity={this.state.snackbarSeverity}
+                        handleCloseSnackbar={() => this.handleCloseSnackbar()}
                     />
                 </div>
             </Fragment>
