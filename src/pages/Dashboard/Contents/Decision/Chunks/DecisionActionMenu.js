@@ -113,6 +113,7 @@ const DecisionActionMenu = props => {
                             fullWidth
                             name="DecisionId"
                             value={DecisionId}
+                            disabled={data.isGranted === 1}
                             onChange={e => {
                                 onHandleChange(e)
                             }}
@@ -129,6 +130,11 @@ const DecisionActionMenu = props => {
                                     </MenuItem>
                                 );
                             })}
+                            {DecisionId === 6 && <MenuItem
+                                value={DecisionId}
+                            >
+                                Offer Letter Sent
+                                    </MenuItem>}
                         </TextField>
                     </div>
                     <div style={{
@@ -141,7 +147,7 @@ const DecisionActionMenu = props => {
                             variant="outlined"
                             fullWidth
                             select
-                            disabled={DecisionId !== 3 && DecisionId !== 7}
+                            disabled={(DecisionId !== 3 && DecisionId !== 7) || data.isGranted === 1}
                             InputProps={{ classes: { input: classes.resize } }}
                             value={degreeId}
                             name="degreeId"
@@ -165,14 +171,15 @@ const DecisionActionMenu = props => {
                     </div>
                 </DialogContent>
                 <DialogActions style={{ justifyContent: 'center', padding: 20 }}>
-                    <Button variant="contained" style={{
+                    {data.isGranted !== 1 && <Button variant="contained" style={{
                         backgroundColor: '#235a97'
                     }} onClick={e => onConfirmClick(e, data.id)} color="primary">
                         {submitLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Submit"}
                     </Button>
+                    }
                     <Button variant="outlined" onClick={handleClose} color="primary">
-                        Cancel
-          </Button>
+                        {data.isGranted === 1 ? 'Close' : 'Cancel'}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </div>

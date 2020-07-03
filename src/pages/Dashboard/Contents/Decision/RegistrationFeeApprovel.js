@@ -239,6 +239,69 @@ class RegistrationFeeApprovel extends Component {
         });
     };
 
+    onDownload = (fileName) => {
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${
+            process.env.REACT_APP_SUB_API_NAME
+            }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
+
+        fetch(url, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+            }),
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    return res.blob();
+                } else if (res.status === 401) {
+                    this.setState({
+                        isLoginMenu: true,
+                        isReload: false
+                    })
+                    return {}
+                } else {
+                    alert('Operation Failed, Please try again later.');
+                    return {}
+                }
+            })
+            .then((result) => {
+                var csvURL = window.URL.createObjectURL(result);
+                var tempLink = document.createElement("a");
+                tempLink.href = csvURL;
+                tempLink.setAttribute("download", fileName);
+                tempLink.click();
+                console.log(csvURL);
+                if (result.CODE === 1) {
+                    //Code
+                } else if (result.CODE === 2) {
+                    alert(
+                        "SQL Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.CODE === 3) {
+                    alert(
+                        "Other Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.error === 1) {
+                    alert(result.error_message);
+                } else if (result.success === 0 && result.redirect_url !== "") {
+                    window.location = result.redirect_url;
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
 
     downloadExcelData = async () => {
         if (this.state.isDownloadExcel === false) {
@@ -415,7 +478,7 @@ class RegistrationFeeApprovel extends Component {
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Payment Reference No", dataIndex: "paymentReferenceNo", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Payment Method", dataIndex: "paymentMethodLabel", sortIndex: "paymentMethodLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Payment Date", dataIndex: "paymentDate", sortIndex: "submittedOnMillis", sortable: true, customStyleHeader: { width: '13%' } },
+            { name: "Payment Date", dataIndex: "paymentDate", sortIndex: "paymentDateMillis", sortable: true, customStyleHeader: { width: '13%' } },
             { name: "Status", dataIndex: "paymentStatusLabel", sortIndex: "paymentStatusLabel", sortable: true, customStyleHeader: { width: '12%' } },
             {
                 name: "Action", renderer: rowData => {
@@ -432,7 +495,7 @@ class RegistrationFeeApprovel extends Component {
         return (
             <Fragment>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
-                <RegistrationFeeApprovelMenu methodIdError={this.state.methodIdError} submitLoading={this.state.isSubmitLoading} onHandleChange={e => this.onHandleChange(e)} methodId={this.state.methodId}
+                <RegistrationFeeApprovelMenu onDownload={name => this.onDownload(name)} methodIdError={this.state.methodIdError} submitLoading={this.state.isSubmitLoading} onHandleChange={e => this.onHandleChange(e)} methodId={this.state.methodId}
                     methodData={this.state.methodData} data={this.state.selectedData} open={this.state.isOpenApprovelMenu}
                     handleClose={() => this.setState({ isOpenApprovelMenu: false })} onConfirmClick={(e, id) => this.onConfirmClick(e, id)} />
                 <div style={{
