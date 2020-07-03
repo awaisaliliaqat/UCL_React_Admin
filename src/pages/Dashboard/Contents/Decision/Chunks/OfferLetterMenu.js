@@ -113,14 +113,14 @@ const OfferLetterMenu = props => {
     const { selectedData = {}, sendLoading, uploadLoading, isLoading, files = [], filesError } = values;
     const columns = [
         //{ name: "SR#", dataIndex: "serialNo", sortable: false, customStyleHeader: { width: '7%' } },
-        { name: "Id", dataIndex: "offerLetterId", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+        { name: "Id", dataIndex: "offerLetterId", sortable: false, customStyleHeader: { width: '12%', textAlign: 'center' } },
         {
             // eslint-disable-next-line react/display-name
             name: "File", renderer: rowData => {
                 return <Fragment>
                     <span>{rowData.offerLetterFileName}</span>
                 </Fragment>
-            }, sortable: false, customStyleHeader: { width: '40%' }
+            }, sortable: false, customStyleHeader: { width: '35%' }
         },
         {
             // eslint-disable-next-line react/display-name
