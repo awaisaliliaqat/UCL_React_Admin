@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import { MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -44,8 +45,11 @@ const useStyles = makeStyles(() => ({
 const RegistrationFeeApprovelMenu = props => {
 
     const classes = useStyles();
-    const { handleClose, open, data, methodData, methodId, methodIdError, onHandleChange, onConfirmClick, submitLoading } = props;
-
+    const { handleClose, open, data, methodData, methodId, onDownload, methodIdError, onHandleChange, onConfirmClick, submitLoading } = props;
+    const fileName = data.paymentFileName || "";
+    const fileNameLower = fileName.toLowerCase();
+    const isImageFile = fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".jpeg") ||
+        fileNameLower.endsWith(".png");
     return (
         <div>
             <Dialog fullWidth={false}
@@ -97,10 +101,27 @@ const RegistrationFeeApprovelMenu = props => {
                         </div>
 
                     </div>
-
-                    <div className={classes.imageContainer} style={{
-                        backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalImageView?fileName=${data.paymentFileName})`,
-                    }} />
+                    {!isImageFile ? <div className={classes.imageContainer}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '70%'
+                        }}>
+                            <CloudDownloadIcon style={{ fontSize: 80, color: 'gray' }} />
+                            <span onClick={() => onDownload(data.paymentFileName)} style={{
+                                textDecoration: 'underline',
+                                color: '#6b6bff',
+                                cursor: 'pointer',
+                                marginTop: 10
+                            }}>Click Here To Download</span>
+                        </div>
+                    </div> :
+                        <div className={classes.imageContainer} style={{
+                            backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalImageView?fileName=${data.paymentFileName})`,
+                        }} />
+                    }
 
                 </DialogContent>
             </Dialog>
@@ -112,6 +133,7 @@ RegistrationFeeApprovelMenu.propTypes = {
     handleClose: PropTypes.func,
     onHandleChange: PropTypes.func,
     onConfirmClick: PropTypes.func,
+    onDownload: PropTypes.func,
     open: PropTypes.bool,
     submitLoading: PropTypes.bool,
     data: PropTypes.object,
@@ -124,6 +146,7 @@ RegistrationFeeApprovelMenu.defaultProps = {
     handleClose: fn => fn,
     onHandleChange: fn => fn,
     onConfirmClick: fn => fn,
+    onDownload: fn => fn,
     open: false,
     submitLoading: false,
     data: {},

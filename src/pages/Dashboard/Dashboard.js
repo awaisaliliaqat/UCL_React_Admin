@@ -162,7 +162,7 @@ const Dashboard = props => {
                       {
                         items.map(option => {
                           return (
-                            <MenuItem key={option.id} onClick={() => setDrawerOpen(false)} className={`${classes.menuItemPadding} ${viewValue === `${option.action}` && classes.active}`}>
+                            <MenuItem key={option.id} className={`${classes.menuItemPadding} ${viewValue === `${option.action}` && classes.active}`}>
                               <Link style={{ textDecoration: 'none' }} to={option.webUrl}>
                                 <Typography className={classes.menuItemText}
                                   noWrap variant="body2">{option.label}</Typography>
