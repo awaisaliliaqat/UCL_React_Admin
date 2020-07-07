@@ -2,9 +2,8 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import { TextField, Button, MenuItem } from '@material-ui/core';
+import { TextField, Button } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { DatePicker } from "@material-ui/pickers";
 const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
@@ -49,16 +48,17 @@ const useStyles = makeStyles(() => ({
 
 const DocumentRequestFilter = props => {
     const classes = useStyles();
-    const { values, onHandleChange, getDataByStatus, onClearFilters, handleDateChange, isLoading } = props;
+    const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading } = props;
 
 
     return (
         <Fragment>
             <div className={classes.container}>
+
                 <div className={classes.item} style={{
-                    width: '10%'
+                    width: '20%'
                 }}>
-                    <span className={classes.label}>ID</span>
+                    <span className={classes.label}>Application ID</span>
                     <TextField
                         placeholder="ID"
                         variant="outlined"
@@ -72,50 +72,7 @@ const DocumentRequestFilter = props => {
 
                     />
                 </div>
-                <div className={classes.item} style={{
-                    width: '20%'
-                }}>
-                    <span className={classes.label}>Name</span>
-                    <TextField
-                        placeholder="Name"
-                        variant="outlined"
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.studentName}
-                        name="studentName"
-                        onChange={e => {
-                            onHandleChange(e)
-
-                        }}
-                    />
-                </div>
-                <div className={classes.item} style={{
-                    width: '12%'
-                }}>
-                    <span className={classes.label}>Gender</span>
-                    <TextField
-                        placeholder="Gender"
-                        variant="outlined"
-                        select
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.genderId}
-                        name="genderId"
-                        onChange={e => {
-                            onHandleChange(e)
-
-                        }}
-
-                    >
-                        <MenuItem value={0}>
-                            All
-                          </MenuItem>
-                        {values.genderData.map((item) => (
-                            <MenuItem key={item.id} value={item.id}>
-                                {item.label}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </div>
-                <div className={classes.item} style={{
+                {/* <div className={classes.item} style={{
                     width: '20%'
                 }}>
                     <span className={classes.label}>Degree Programme</span>
@@ -146,31 +103,7 @@ const DocumentRequestFilter = props => {
                             );
                         })}
                     </TextField>
-                </div>
-                <div className={classes.item} style={{
-                    width: '20%'
-                }}>
-                    <span className={classes.label}>Date</span>
-                    <DatePicker
-                        autoOk
-                        invalidDateMessage=""
-                        placeholder="Date"
-                        disableFuture
-                        variant="inline"
-                        inputVariant="outlined"
-                        format="dd-MMM-yyyy"
-                        fullWidth
-                        value={values.eventDate}
-                        InputProps={{
-
-                            classes: { input: classes.resize }
-                        }}
-                        onChange={(event) => {
-                            handleDateChange(event);
-                        }}
-
-                    />
-                </div>
+                </div> */}
                 <div className={classes.actions}>
                     <Button
                         variant="contained"
@@ -204,7 +137,6 @@ DocumentRequestFilter.defaultProps = {
     getDataByStatus: fn => fn,
     values: {},
     onClearFilters: fn => fn,
-    handleDateChange: fn => fn,
     isLoading: false
 
 
@@ -217,7 +149,6 @@ DocumentRequestFilter.propTypes = {
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
     onClearFilters: PropTypes.func,
-    handleDateChange: PropTypes.func,
     isLoading: PropTypes.bool,
 };
 

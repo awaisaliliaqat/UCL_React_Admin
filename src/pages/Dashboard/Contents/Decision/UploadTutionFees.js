@@ -90,7 +90,7 @@ class DocumentRequest extends Component {
                 (result) => {
                     console.log(result);
                     if (result["CODE"] === 1) {
-                        window.location.reload();
+                        this.getData();
                     } else {
                         alert(result["SYSTEM_MESSAGE"]);
                     }
