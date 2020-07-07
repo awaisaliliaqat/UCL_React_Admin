@@ -44,11 +44,8 @@ const AppRoute = () => {
                         <PrivateRoutes exact path="/dashboard/F07Form/:recordId" component={Dashboard} />
                         <PrivateRoutes exact path="/dashboard/F08Form/:recordId" component={Dashboard} />
                         <PrivateRoutes exact path="/dashboard/F09Form/:recordId" component={Dashboard} />
-<<<<<<< HEAD
                         <PrivateRoutes exact path="/dashboard/F18Form/:recordId" component={Dashboard} />
-=======
                         <PrivateRoutes exact path="/dashboard/F19Form/:recordId" component={Dashboard} />
->>>>>>> bd5e5d3fb0a632af946f32b6994d65b0c66fba3d
                         <Route exact path="*" component={NoMatchPage} />
                     </Switch>
                 </Suspense>
