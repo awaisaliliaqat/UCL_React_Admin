@@ -49,24 +49,20 @@ class F06ReportsTableComponent extends Component {
               { columnName: 'ID', direction: 'asc' }
             ],
             sortingStateColumnExtensions:[
-              { columnName: 'action', sortingEnabled: false },
+              { columnName: 'admissionActivation', sortingEnabled: false },
+              { columnName: 'classesActivation', sortingEnabled: false }
             ],
             tableColumnExtensions:[
-              { columnName: 'ID', width:100},
-              { columnName: 'shortLabel', wordWrapEnabled: true},
-              { columnName: 'label', wordWrapEnabled: true},
-              { columnName: 'action', width:120}
+              { columnName: "ID", width: 100},
+              { columnName: "admissionActivation", width:175},
+              { columnName: "classesActivation", width:175},
             ],
-            defaultColumnWidths:[
-              { columnName: 'ID', minWidth:100, maxWidth:100},
-              { columnName: 'shortLabel', minWidth:100, maxWidth:100},
-              { columnName: 'label', minWidth:100, maxWidth:100},
-              { columnName: 'action', minWidth:100, maxWidth:100}
-            ],
+            defaultColumnWidths:[],
             resizingMode:"widget",
             defaultFilters:[],
             filteringStateColumnExtensions:[
-              { columnName: 'action', filteringEnabled: false },
+              { columnName: 'admissionActivation', filteringEnabled: false },
+              { columnName: 'classesActivation', filteringEnabled: false }
             ]
         };
     }
@@ -100,13 +96,13 @@ class F06ReportsTableComponent extends Component {
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
                 {/* <SelectionState />  */}
                 {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
-                <PagingState defaultCurrentPage={0} defaultPageSize={5}/>
+                <PagingState defaultCurrentPage={0} defaultPageSize={10}/>
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />
                 {/* <IntegratedSelection /> */}
                 {/* <DragDropProvider /> */}
-                <Table columnExtensions={tableColumnExtensions} />
+                <Table columnExtensions={tableColumnExtensions}/>
                 {/* <TableColumnResizing columnExtensions={defaultColumnWidths}/> */}
                 {/* <TableSelection showSelectAll={true} /> */}
                 <TableHeaderRow

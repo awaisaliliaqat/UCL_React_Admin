@@ -509,8 +509,8 @@ class F06Reports extends Component {
 
         const columns = [
             { name: "ID", title: "ID"},
-            { name: "shortLabel", title: "Short Label"},
-            { name: "label", title: "School Name"},
+            { name: "shortLabel", title: "Short\xa0Label"},
+            { name: "label", title: "School\xa0Name"},
             { name: "action", title:"Action"}
         ]
 

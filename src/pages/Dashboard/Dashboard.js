@@ -30,6 +30,7 @@ import F08Form from './Contents/Forms/F08Form';
 import F08Reports from './Contents/Forms/F08Reports';
 import F09Form from './Contents/Forms/F09Form';
 import F09Reports from './Contents/Forms/F09Reports';
+import F19Form from './Contents/Forms/F19Form';
 
 
 const drawerWidth = 283;
@@ -209,7 +210,7 @@ const Dashboard = props => {
                   <F06Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
                 )
               }} />
-              <SetRoute setValue={value => handleValueChange(value)} name="F06Reports" exact path="/dashboard/F06Reports" component={F06Reports} />
+              <SetRoute setValue={value => handleValueChange(value)} name="F06Form" exact path="/dashboard/F06Reports" component={F06Reports} />
               <SetRoute setValue={value => handleValueChange(value)} name="F07Form" exact path="/dashboard/F07Form/:recordId" render={(props) => {
                 return (
                   <F07Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
@@ -229,6 +230,11 @@ const Dashboard = props => {
               }} />
               <SetRoute setValue={value => handleValueChange(value)} name="F09Reports" exact path="/dashboard/F09Reports" component={F09Reports} />
 
+              <SetRoute setValue={value => handleValueChange(value)} name="F19Form" exact path="/dashboard/F19Form/:recordId" render={(props) => {
+                return (
+                  <F19Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
 
               <SetRoute setValue={value => handleValueChange(value)} name="assign-account-id" exact path="/dashboard/assign-account-id" component={AssignAcccountId} />
               <SetRoute setValue={value => handleValueChange(value)} name="upload-tuition-fees" exact path="/dashboard/upload-tuition-fees" component={UploadTutionFees} />
