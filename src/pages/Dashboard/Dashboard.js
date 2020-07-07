@@ -235,7 +235,6 @@ const Dashboard = props => {
                 )
               }} />
               <SetRoute setValue={value => handleValueChange(value)} name="F09Reports" exact path="/dashboard/F09Reports" component={F09Reports} />
-<<<<<<< HEAD
               <SetRoute setValue={value => handleValueChange(value)} name="F18Form" exact path="/dashboard/F18Form/:recordId" render={(props) => {
                 return (
                   <F18Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
@@ -243,14 +242,12 @@ const Dashboard = props => {
               }} />
               <SetRoute setValue={value => handleValueChange(value)} name="F18Reports" exact path="/dashboard/F18Reports" component={F18Reports} />
   
-=======
 
               <SetRoute setValue={value => handleValueChange(value)} name="F19Form" exact path="/dashboard/F19Form/:recordId" render={(props) => {
                 return (
                   <F19Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
                 )
               }} />
->>>>>>> bd5e5d3fb0a632af946f32b6994d65b0c66fba3d
 
               <SetRoute setValue={value => handleValueChange(value)} name="assign-account-id" exact path="/dashboard/assign-account-id" component={AssignAcccountId} />
               <SetRoute setValue={value => handleValueChange(value)} name="upload-tuition-fees" exact path="/dashboard/upload-tuition-fees" component={UploadTutionFees} />
