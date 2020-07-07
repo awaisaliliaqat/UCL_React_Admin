@@ -30,13 +30,10 @@ import F08Form from './Contents/Forms/F08Form';
 import F08Reports from './Contents/Forms/F08Reports';
 import F09Form from './Contents/Forms/F09Form';
 import F09Reports from './Contents/Forms/F09Reports';
-<<<<<<< HEAD
 import F18Form from './Contents/Forms/F18Form';
 import F18Reports from './Contents/Forms/F18Reports';
 
-=======
 import F19Form from './Contents/Forms/F19Form';
->>>>>>> bd5e5d3fb0a632af946f32b6994d65b0c66fba3d
 
 
 const drawerWidth = 283;
