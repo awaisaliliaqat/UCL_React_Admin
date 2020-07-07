@@ -214,7 +214,7 @@ class DocumentRequest extends Component {
 
     render() {
         const columnsSubmitted = [
-            { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+            { name: "Application Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '15%', textAlign: 'center' } },
             {
                 name: "Name", renderer: rowData => {
                     return (
@@ -223,12 +223,10 @@ class DocumentRequest extends Component {
                 }, sortable: false, customStyleHeader: { width: '10%' }
             },
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
-            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
-            { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
-            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Payment Method", dataIndex: "paymentMethod", sortIndex: "paymentMethod", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '20%', textAlign: 'center' }, align: 'center' },
+            { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '15%' } },
+            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '17%' } },
+            { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '17%' } },
             {
                 name: "Action", renderer: rowData => {
                     console.log(rowData);
