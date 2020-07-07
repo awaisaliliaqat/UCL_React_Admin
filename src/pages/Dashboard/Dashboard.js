@@ -30,6 +30,9 @@ import F08Form from './Contents/Forms/F08Form';
 import F08Reports from './Contents/Forms/F08Reports';
 import F09Form from './Contents/Forms/F09Form';
 import F09Reports from './Contents/Forms/F09Reports';
+import F18Form from './Contents/Forms/F18Form';
+import F18Reports from './Contents/Forms/F18Reports';
+
 
 
 const drawerWidth = 283;
@@ -228,7 +231,13 @@ const Dashboard = props => {
                 )
               }} />
               <SetRoute setValue={value => handleValueChange(value)} name="F09Reports" exact path="/dashboard/F09Reports" component={F09Reports} />
-
+              <SetRoute setValue={value => handleValueChange(value)} name="F18Form" exact path="/dashboard/F18Form/:recordId" render={(props) => {
+                return (
+                  <F18Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+              <SetRoute setValue={value => handleValueChange(value)} name="F18Reports" exact path="/dashboard/F18Reports" component={F18Reports} />
+  
 
               <SetRoute setValue={value => handleValueChange(value)} name="assign-account-id" exact path="/dashboard/assign-account-id" component={AssignAcccountId} />
               <SetRoute setValue={value => handleValueChange(value)} name="upload-tuition-fees" exact path="/dashboard/upload-tuition-fees" component={UploadTutionFees} />
