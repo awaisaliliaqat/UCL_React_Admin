@@ -1,16 +1,13 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, useState } from 'react';
 import { withStyles } from '@material-ui/styles';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import { TextField, Grid, Button, CircularProgress ,  InputLabel, Select, Input, Chip, Switch, FormControlLabel, Checkbox,} from '@material-ui/core';
+import { TextField, Grid, FormControl, FormControlLabel, Checkbox, FormLabel, FormGroup, FormHelperText,
+    Card, CardContent} from '@material-ui/core';
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import MenuItem from "@material-ui/core/MenuItem";
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import { green } from '@material-ui/core/colors';
 
 const styles = () => ({
     root: {
@@ -36,51 +33,92 @@ const styles = () => ({
     },
 });
 
+function ProgrammesCheckBox(props) {
+   
+    const [isChecked, setIsChecked] = useState(props.isChecked);
 
-function ProgrGroupCheckboxes(props) {
-    const [open, setOpen] = React.useState(false);
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-    const handleClose = () => {
-      setOpen(false);
-    };
-    
-    function showValue(e){
-                console.log("abc",e.target.ID);
+    const handleChecked = () => {
+        setIsChecked(!isChecked);
     }
-    return (
-      <div>
-        <Grid item xs={5}>
-            {/* <Typography style={{
-                width: '98%', marginBottom: 5, fontSize: 18
-            }}  className={classes.title} color="textSecondary" gutterBottom>
-                School Of Economics and Management
-            </Typography> */}
-             <div> 
-                
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            id={props.valueID}
-                            name="abc"
-                            onClick={e=>showValue(e)}
-                            color="primary"
-                            inputProps={{ 'aria-valeu': 'secondary checkbox','value':props.valueID }}
-                            value={props.valueID}
-                        />
-                    }
-                    
-                    style={{
-                        color: '#1d5f98', fontWeight: 600,
-                        width: '98%', marginBottom: 5, fontSize: 12
-                    }} 
-                    label={props.value}
-                />
 
-            </div>
+    return (
+        <Grid 
+            item 
+            md={3}
+        >
+            <FormControlLabel
+                control={
+                    <Checkbox 
+                        checked={isChecked} 
+                        onChange={handleChecked} 
+                        name="programmesId" 
+                        color="primary" 
+                        value={props.id}
+                    />}
+                label={props.label}
+                style={{
+                    color:'#1d5f98', 
+                    fontWeight:600,
+                    marginBottom:5, 
+                    fontSize:12,
+                    wordBreak: "break-word"
+                }}
+            />
         </Grid>
-      </div>
+    );
+}
+
+function ProgrammeGroup(props) {
+    
+    const {classes, programmesGroupData, selectedProgrammesArray, ...rest} = props;
+    
+    const data = programmesGroupData;
+
+    const checkIsSelected = (val) => {
+        return selectedProgrammesArray.some(arrVal => val === arrVal);
+    }
+        
+    return (
+      <Fragment>
+        <FormControl
+            component="fieldset" 
+            className={classes.formControl}
+        >
+            <FormLabel 
+                component="legend" 
+                style={{
+                    fontSize:18,
+                    marginBottom:"1em"
+                }}
+                >
+                    {data.programmeGroupLabel}
+            </FormLabel>
+            <FormGroup>
+                <Grid 
+                    container
+                    direction="row"
+                    justify="flex-start"
+                    alignItems="center"
+                >
+                {data.programmes.map((dt, i)=>(
+                    data.programmes ? 
+                        <ProgrammesCheckBox 
+                            key={"programmes"+i} 
+                            id={dt.id}
+                            label={dt.label}
+                            isChecked={checkIsSelected(dt.id)}
+                        />
+                        :
+                        ""
+                ))
+                }
+                </Grid>
+            </FormGroup>
+        </FormControl>
+        <br/>
+        <br/>
+        <br/>
+    </Fragment>
     );
   }
 
@@ -99,11 +137,10 @@ class F18Form extends Component {
             isOpenSnackbar: false,
             snackbarMessage: "",
             snackbarSeverity: "",
-            AcademicSessions: [],
-            AcademicSessionsId: "",
-            AcademicSessionsIdError: "",
-            ProgrammesGroup: [],
-            
+            academicSession: "",
+            academicSessionError: "",
+            programmesGroup: [],
+            selectedProgrammesArray:[]
         }
     }
 
@@ -124,11 +161,54 @@ class F18Form extends Component {
         });
     };
 
+    getProgrammesGroupData = async (index) => {
+        const data = new FormData();
+        this.setState({ isLoading: true });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C18CommonProgrammeGroupsView`;
+        await fetch(url, {
+            method: "POST",
+            // body: data,
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                        // this.handleOpenSnackbar(json.USER_MESSAGE,"success");
+                        this.setState({
+                            programmesGroup: json.DATA,
+                        });
+                    } else {
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
+                    }
+                    //console.log(json);
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        console.log(error);
+                        this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.", "error");
+                    }
+                });
+        this.setState({ isLoading: false })
+    }
+
     loadData = async (index) => {
         const data = new FormData();
         data.append("id", index);
         this.setState({ isLoading: true });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C18CommonAcademicSessionsView`;
         await fetch(url, {
             method: "POST",
             body: data,
@@ -146,8 +226,8 @@ class F18Form extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.setState({
-                            label: json.DATA[0].label,
-                            shortLabel: json.DATA[0].shortLabel
+                            academicSession: json.DATA[0].academicSession,
+                            selectedProgrammesArray: json.DATA[0].programmesId
                         });
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
@@ -162,51 +242,38 @@ class F18Form extends Component {
                         })
                     } else {
                         console.log(error);
-                        this.handleOpenSnackbar("Failed to Save ! Please try Again later.", "error");
+                        this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.", "error");
                     }
                 });
         this.setState({ isLoading: false })
     }
 
-    islabelValid = () => {
+    isAcademicSessionValid = () => {
         let isValid = true;
-        if (!this.state.label) {
-            this.setState({ labelError: "Please enter Course Selection Group." });
-            document.getElementById("label").focus();
+        if (!this.state.academicSession) {
+            this.setState({ academicSessionError: "Please enter academic session." });
+            document.getElementById("academicSession").focus();
             isValid = false;
         } else {
-            this.setState({ labelError: "" });
+            this.setState({ academicSessionError: "" });
         }
         return isValid;
     }
 
-    isshortLabelValid = () => {
+    isProgrammesValid = () => {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var checkedOne = Array.prototype.slice.call(checkboxes).some(x => x.checked);
         let isValid = true;
-        if (!this.state.shortLabel) {
-            this.setState({ shortLabelError: "Please enter Short Name." });
-            document.getElementById("shortLabel").focus();
+        if (!checkedOne) {
+            this.handleOpenSnackbar("Please select at least one offer programme.", "error");
             isValid = false;
-        } else {
-            this.setState({ shortLabelError: "" });
-        }
+        } 
         return isValid;
     }
 
     onHandleChange = e => {
         const { name, value } = e.target;
         const errName = `${name}Error`;
-        //let regex = "";
-        // switch (name) {
-        //     case "label":
-        //     case "shortLabel":
-        //         regex = new RegExp(alphabetExp);
-        //         if (value && !regex.test(value)) {
-        //             return;
-        //         }
-        //         break;
-        // default:
-        //     break;
-        // }
         this.setState({
             [name]: value,
             [errName]: ""
@@ -218,15 +285,14 @@ class F18Form extends Component {
     }
 
     onFormSubmit = async (e) => {
-        //e.preventDefault();
         if (
-            !this.islabelValid() ||
-            !this.isshortLabelValid()
+            !this.isAcademicSessionValid() || 
+            !this.isProgrammesValid() 
         ) { return; }
         let myForm = document.getElementById('myForm');
         const data = new FormData(myForm);
         this.setState({ isLoading: true });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupSave`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C18CommonAcademicSessionsSave`;
         await fetch(url, {
             method: "POST",
             body: data,
@@ -246,7 +312,7 @@ class F18Form extends Component {
                         this.handleOpenSnackbar(json.USER_MESSAGE, "success");
                         setTimeout(() => {
                             if (this.state.recordId != 0) {
-                                window.location = "#/dashboard/F09Reports";
+                                window.location = "#/dashboard/F18Reports";
                             } else {
                                 window.location.reload();
                             }
@@ -270,106 +336,16 @@ class F18Form extends Component {
         this.setState({ isLoading: false })
     }
 
-    getSessionData = async (index) => {
-        const data = new FormData();
-        data.append("id", index);
-        this.setState({ isLoading: true });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C08CommonProgrammeGroupsView`;
-        await fetch(url, {
-            method: "POST",
-            body: data,
-            headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-            })
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw res;
-                }
-                return res.json();
-            })
-            .then(
-                json => {
-                    if (json.CODE === 1) {
-                        // this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-                        this.setState({
-                            AcademicSessions: json.DATA,
-
-                        });
-                    } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
-                    }
-                    console.log(json);
-                },
-                error => {
-                    if (error.status == 401) {
-                        this.setState({
-                            isLoginMenu: true,
-                            isReload: false
-                        })
-                    } else {
-                        console.log(error);
-                        this.handleOpenSnackbar("Failed to Save ! Please try Again later.", "error");
-                    }
-                });
-        this.setState({ isLoading: false })
-    }
-
-    getProgrammesGroupData = async (index) => {
-        const data = new FormData();
-       
-        this.setState({ isLoading: true });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C18CommonProgrammeGroupsView`;
-        await fetch(url, {
-            method: "POST",
-            // body: data,
-            headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-            })
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw res;
-                }
-                return res.json();
-            })
-            .then(
-                json => {
-                    if (json.CODE === 1) {
-                        // this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-                        this.setState({
-                            ProgrammesGroup: json.DATA,
-
-                        });
-                    } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
-                    }
-                    console.log(json);
-                },
-                error => {
-                    if (error.status == 401) {
-                        this.setState({
-                            isLoginMenu: true,
-                            isReload: false
-                        })
-                    } else {
-                        console.log(error);
-                        this.handleOpenSnackbar("Failed to Save ! Please try Again later.", "error");
-                    }
-                });
-        this.setState({ isLoading: false })
-    }
-
-
+    
     viewReport = () => {
         window.location = "#/dashboard/F18Reports";
     }
 
     componentDidMount() {
+        this.getProgrammesGroupData();
         if (this.state.recordId != 0) {
             this.loadData(this.state.recordId);
         }
-        this.getProgrammesGroupData();
     }
 
     render() {
@@ -380,7 +356,7 @@ class F18Form extends Component {
             <Fragment>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
                 <form id="myForm" onSubmit={this.isFormValid}>
-                    <TextField type="hidden" name="recordId" value={this.state.recordId} />
+                    <TextField type="hidden" name="id" value={this.state.recordId} />
                     <Grid container component="main" className={classes.root}>
                         <Typography style={{
                             color: '#1d5f98', fontWeight: 600, borderBottom: '1px solid #d2d2d2',
@@ -401,28 +377,19 @@ class F18Form extends Component {
                                 marginRight: 10
                             }}
                         >
-
                             <Grid item xs={12}>
                                 <TextField
-                                    id="academicSessionsId"
-                                    name="academicSessionsId"
+                                    id="academicSession"
+                                    name="academicSession"
                                     required
                                     fullWidth
-                                    select
-                                    // size="small"
                                     label="Academics Session"
                                     variant="outlined"
                                     onChange={this.onHandleChange}
-                                    value={this.state.AcademicSessionsId}
-                                    error={this.state.AcademicSessionsIdError}
-                                    helperText={this.state.AcademicSessionsIdError}
-                                >
-                                    {this.state.AcademicSessions.map((item) => (
-                                        <MenuItem key={item.ID} value={item.ID}>
-                                            {item.label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                    value={this.state.academicSession}
+                                    error={!!this.state.academicSessionError}
+                                    helperText={this.state.academicSessionError}
+                                />
                             </Grid>
                             <Divider style={{
                                 backgroundColor: 'rgb(58, 127, 187)',
@@ -430,118 +397,34 @@ class F18Form extends Component {
                                 marginTop: 100
                             }}
                             />
-                            <Typography style={{
-                                color: '#1d5f98', fontWeight: 600,
-                                width: '98%', marginBottom: 5, fontSize: 18
-                            }} variant="h6">
-                                Offer Programme
-                                    </Typography>
-
-                            <Grid  item xs={12}>
+                            <Typography 
+                                style={{
+                                    color: '#1d5f98', 
+                                    fontWeight: 600,
+                                    width: '98%', 
+                                    marginBottom: 5, 
+                                    fontSize: 18
+                                }} 
+                                variant="h6"
+                            >
+                                Offer Programme *
+                            </Typography>
+                            <Grid item xs={12}>
                                 <Card className={classes.root}>
                                     <CardContent>
-                                        <Grid  item xs={12}>
-                                          
-                                            {/* <ProgrGroupCheckboxes ProgrammesGroup={this.state.ProgrammesGroup}/>
-                                                         */}
-                                               {this.state.ProgrammesGroup.map((item) => (
-                                                // <ProgrGroupCheckboxes key={item.ID} value={item.ID}/>
-                                                <ProgrGroupCheckboxes  key={item.ID} value={item.label}  valueID={item.ID} /> 
-                                            ))}                    
-                                            <Grid item xs={5}>
-                                                <Typography style={{
-                                                           
-                                                            width: '98%', marginBottom: 5, fontSize: 18
-                                                        }}  className={classes.title} color="textSecondary" gutterBottom>
-                                                    School Of Law
-                                                 </Typography>
-                                                 <div>
-                                                    <input 
-                                                    type="hidden" 
-                                                    name="isEntryTestApplicable"
-                                                    value="1"
-                                                    disabled={!this.state.entry_test_applicable}
-                                                    />
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Checkbox
-                                                                //defaultChecked
-                                                                color="primary"
-                                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                                            />
-                                                        }
-                                                        style={{
-                                                            color: '#1d5f98', fontWeight: 600,
-                                                            width: '98%', marginBottom: 5, fontSize: 12
-                                                        }} 
-                                                        label="LLB"
-                                                    />
-                                                     <FormControlLabel
-                                                        control={
-                                                            <Checkbox
-                                                                //defaultChecked
-                                                                color="primary"
-                                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                                            />
-                                                        }
-                                                        style={{
-                                                            color: '#1d5f98', fontWeight: 600,
-                                                            width: '98%', marginBottom: 5, fontSize: 12
-                                                        }} 
-                                                        label="CertHE Common Law "
-                                                    />
-                                                     <FormControlLabel
-                                                        control={
-                                                            <Checkbox
-                                                                //defaultChecked
-                                                                color="primary"
-                                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                                            />
-                                                        }
-                                                        style={{
-                                                            color: '#1d5f98', fontWeight: 600,
-                                                            width: '98%', marginBottom: 5, fontSize: 12
-                                                        }} 
-                                                        label="Graduate Diploma in Commercial Law"
-                                                    />
-
-
-                                                </div>
-                                                
-                                                
-                                                <Typography style={{
-                                                           
-                                                           width: '98%', marginBottom: 5, fontSize: 18
-                                                       }}   className={classes.title} color="textSecondary" gutterBottom>
-                                                    School of GCE
-                                                 </Typography>
-                                                 <div>
-                                                   
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Checkbox
-                                                                //defaultChecked
-                                                                color="primary"
-                                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                                            />
-                                                        }
-                                                        label="A-Level"
-                                                        style={{
-                                                            color: '#1d5f98', fontWeight: 600,
-                                                            width: '98%', marginBottom: 5, fontSize: 12
-                                                        }} 
-                                                    />
-                                                    
-                                                   
-
-
-                                                </div>
-                                               
-                                                
-                                            </Grid>
-                                        </Grid>
+                                        {this.state.programmesGroup.map((dt, i)=>(
+                                            this.state.programmesGroup ? 
+                                            <ProgrammeGroup
+                                                key={"ProgrammeGroup"+i}
+                                                programmesGroupData={dt}
+                                                selectedProgrammesArray={this.state.selectedProgrammesArray}
+                                                classes={classes}
+                                            />
+                                            :
+                                            ""
+                                        ))
+                                        }
                                     </CardContent>
-
                                 </Card>
                             </Grid>
                             <Grid
@@ -553,24 +436,6 @@ class F18Form extends Component {
                                     display: 'flex'
                                 }}
                             >
-                                {/* 
-                                <Button 
-                                    disabled={this.state.isLoading} 
-                                    onClick={this.onFormSubmit}
-                                    color="primary" 
-                                    variant="contained" 
-                                    fullWidth={true}
-                                    style={{ 
-                                        backgroundColor: '#174A84' 
-                                    }}
-                                >
-                                    {this.state.isLoading ? 
-                                        <CircularProgress style={{ color: 'white' }} size={24} /> 
-                                        : 
-                                        "Save"
-                                    }
-                                </Button>  
-                                */}
                             </Grid>
                         </Grid>
                     </Grid>

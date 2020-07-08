@@ -55,17 +55,13 @@ class F18ReportsTableComponent extends Component {
               { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions:[
-               { columnName: 'ID',width:100},
-              { columnName: 'sessionLabel',width:100},
-              { columnName: 'type1',width:200},
-              { columnName: 'type2',width:100},
-              { columnName: 'type3',width:100},
-              { columnName: 'action',width:120},
+              { columnName: 'ID',width:100},
+              { columnName: 'sessionLabel', wordWrapEnabled:true},
+              { columnName: 'type1', wordWrapEnabled:true},
+              { columnName: 'type2', wordWrapEnabled:true},
+              { columnName: 'type3', wordWrapEnabled:true},
+              { columnName: 'action',width:120}
             ],
-          
-           
-
-
             defaultFilters:[],
             filteringStateColumnExtensions:[
               { columnName: 'action', filteringEnabled: false },
@@ -92,43 +88,30 @@ class F18ReportsTableComponent extends Component {
 
           const rows = this.props.data;
           const columns = this.props.columns;
-
           const showFilter = this.props.showFilter;
 
         return (
             <Paper>
               <Grid rows={rows} columns={columns}>
-              <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
+                <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
-                {/* 
-                  <SelectionState /> 
-                */}
+                {/* <SelectionState /> */}
                 {/* 
                 <GroupingState
                   defaultGrouping={[{ columnName: 'product' }]}
                   defaultExpandedGroups={['EnviroCare Max']}
                 /> 
                 */}
-                <PagingState 
-                  defaultCurrentPage={0}
-                  defaultPageSize={5} 
-                />
+                <PagingState defaultCurrentPage={0} defaultPageSize={5}/>
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />
-                {/* 
-                  <IntegratedSelection /> 
-                */}
-                {/* 
-                  <DragDropProvider /> 
-                */}
+                {/* <IntegratedSelection /> */}
+                {/* <DragDropProvider /> */}
                 <Table columnExtensions={tableColumnExtensions}/>
-
                 {/* <TableColumnResizing defaultColumnWidths={defaultColumnWidths} /> */}
-                {/* 
-                  <TableSelection showSelectAll={true} /> 
-                */}
-                <TableHeaderRow 
+                {/* <TableSelection showSelectAll={true} /> */}
+                <TableHeaderRow
                   showSortingControls={true} 
                   titleComponent={(props) => (
                     props.children!="Action" ?
@@ -143,9 +126,7 @@ class F18ReportsTableComponent extends Component {
                   ""
                 }
                 <PagingPanel pageSizes={pageSizes}/>
-                {/* 
-                  <Toolbar /> 
-                */}
+                {/* <Toolbar /> */}
               </Grid>
             </Paper>
         );
