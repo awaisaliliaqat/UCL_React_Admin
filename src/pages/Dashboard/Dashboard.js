@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment, useState, Suspense } from 'react';
 import clsx from 'clsx';
-import { HashRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import MenuList from '@material-ui/core/MenuList';
@@ -20,8 +20,8 @@ import OfferLetter from './Contents/Decision/OfferLetter';
 import AssignAcccountId from './Contents/Decision/AssignAcccountId';
 import UploadTutionFees from './Contents/Decision/UploadTutionFees';
 import TutionFeeApproval from './Contents/Decision/TutionFeeApproval';
-// import UploadDocuments from './Contents/Decision/DocumentRequest';
-// import DocumentRequestAction from './Contents/Decision/Chunks/DocumentRequestAction';
+import UploadDocuments from './Contents/Decision/DocumentRequest';
+import DocumentRequestAction from './Contents/Decision/Chunks/DocumentRequestAction';
 import F06Form from './Contents/Forms/F06Form';
 import F06Reports from './Contents/Forms/F06Reports';
 import F07Form from './Contents/Forms/F07Form';
@@ -59,10 +59,11 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 15
   },
   menuItemText: {
-    textAlign: 'center',
+    textAlign: 'left',
     paddingTop: 3,
     paddingBottom: 3,
     color: 'white',
+    width: drawerWidth - 20,
     marginLeft: 40
   },
   active: {
@@ -117,6 +118,12 @@ const SetRoute = ({ name, setValue, ...rest }) => {
   );
 }
 
+const NoFound = () => {
+  return (
+    <Redirect to="/dashboard" />
+  )
+}
+
 const Dashboard = props => {
   const classes = useStyles();
   const [viewValue, setViewValue] = useState(props.match.params.value || "");
@@ -158,7 +165,9 @@ const Dashboard = props => {
                     <Typography className={classes.menuTitle} noWrap variant="h6">
                       <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>{feature.typeLabel}</div>
                     </Typography>
-                    <MenuList>
+                    <MenuList style={{
+                      outline: 'none'
+                    }}>
                       {
                         items.map(option => {
                           return (
@@ -200,8 +209,8 @@ const Dashboard = props => {
               {/* <SetRoute setValue={value => handleValueChange(value)} name="applicant-registration-analytics" exact path="/dashboard/applicant-registration-analytics" component={ApplicantRegistrationAnalytics} /> */}
               <SetRoute setValue={value => handleValueChange(value)} name="admission-decision" exact path="/dashboard/admission-decision" component={AdmissionDecision} />
               <SetRoute setValue={value => handleValueChange(value)} name="registration-fee-approval" exact path="/dashboard/registration-fee-approval" component={RegistrationFeeApprovel} />
-              {/* <SetRoute setValue={value => handleValueChange(value)} name="document-requests" exact path="/dashboard/document-requests" component={UploadDocuments} /> */}
-              {/* <SetRoute setValue={value => handleValueChange(value)} name="document-requests" exact path="/dashboard/document-requests/:id" component={DocumentRequestAction} /> */}
+              <SetRoute setValue={value => handleValueChange(value)} name="raise-document-requests" exact path="/dashboard/raise-document-requests" component={UploadDocuments} />
+              <SetRoute setValue={value => handleValueChange(value)} name="raise-document-requests" exact path="/dashboard/raise-document-requests/:id" component={DocumentRequestAction} />
               <SetRoute setValue={value => handleValueChange(value)} name="offer-letter" exact path="/dashboard/offer-letter" component={OfferLetter} />
 
               <SetRoute setValue={value => handleValueChange(value)} name="F06Form" exact path="/dashboard/F06Form/:recordId" render={(props) => {
@@ -233,7 +242,7 @@ const Dashboard = props => {
               <SetRoute setValue={value => handleValueChange(value)} name="assign-account-id" exact path="/dashboard/assign-account-id" component={AssignAcccountId} />
               <SetRoute setValue={value => handleValueChange(value)} name="upload-tuition-fees" exact path="/dashboard/upload-tuition-fees" component={UploadTutionFees} />
               <SetRoute setValue={value => handleValueChange(value)} name="tuition-fee-approval" exact path="/dashboard/tuition-fee-approval" component={TutionFeeApproval} />
-
+              <SetRoute setValue={value => handleValueChange(value)} name="home" exact path="*" component={NoFound} />
             </Switch>
           </Suspense>
         </Router>

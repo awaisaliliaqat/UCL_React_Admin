@@ -5,7 +5,7 @@ import UploadDocumentsFilter from './Chunks/DocumentRequestFilter';
 import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
 import Button from '@material-ui/core/Button';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 
 
@@ -37,6 +37,7 @@ class DocumentRequest extends Component {
             genderId: 0,
             degreeId: 0,
             applicationId: "",
+            applicationStatusId: 0,
             isLoginMenu: false,
             isReload: false,
             eventDate: null,
@@ -45,8 +46,6 @@ class DocumentRequest extends Component {
     }
 
     componentDidMount() {
-        this.getGenderData();
-        this.getDegreesData();
         this.getData();
     }
 
@@ -138,6 +137,7 @@ class DocumentRequest extends Component {
 
     onClearFilters = () => {
         this.setState({
+            applicationStatusId: 0,
             studentName: "",
             genderId: 0,
             degreeId: 0,
@@ -163,9 +163,9 @@ class DocumentRequest extends Component {
         this.setState({
             isLoading: true
         })
-        const eventDateQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : ''
-        const reload = this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplicationSubmittedApplicationsView?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDateQuery}`;
+        const applicationId = this.state.applicationId ? this.state.applicationId : 0;
+        const reload = applicationId === 0 && this.state.applicationStatusId === 0;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C17AdmissionsProspectApplicationView?statusId=${this.state.applicationStatusId}&applicationId=${applicationId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -216,7 +216,7 @@ class DocumentRequest extends Component {
 
     render() {
         const columnsSubmitted = [
-            { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+            { name: "Application Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '13%', textAlign: 'center' } },
             {
                 name: "Name", renderer: rowData => {
                     return (
@@ -225,12 +225,12 @@ class DocumentRequest extends Component {
                 }, sortable: false, customStyleHeader: { width: '10%' }
             },
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
-            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
+            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '20%', textAlign: 'center' }, align: 'center' },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
-            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Payment Method", dataIndex: "paymentMethod", sortIndex: "paymentMethod", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '17%' } },
+            { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '17%' } },
+            { name: "Status", dataIndex: "statusLabel", sortable: false, customStyleHeader: { width: '14%' } },
+
             {
                 name: "Action", renderer: rowData => {
                     console.log(rowData);
@@ -239,11 +239,12 @@ class DocumentRequest extends Component {
                             fontSize: 12,
                             textTransform: 'capitalize'
                         }} variant="outlined">
-                            <Link style={{ textDecoration: 'none', color: 'black' }} to={`/dashboard/document-requests/${rowData.id}`}>Upload
+                            <Link style={{ textDecoration: 'none', color: 'black' }} to={`/dashboard/raise-document-requests/${rowData.id}`}>
+                                Request Document
                              </Link>
                         </Button>
                     )
-                }, sortable: false, customStyleHeader: { width: '15%' }
+                }, sortable: false, customStyleHeader: { width: '21%' }
             },
         ]
 
@@ -273,8 +274,6 @@ class DocumentRequest extends Component {
                         font: 'Bold 16px Lato',
                         letterSpacing: '1.8px'
                     }}>
-                        Applicants who have successfully submitted &rdquo;Admission Application&rdquo;
-
                     </div><TablePanel isShowIndexColumn data={this.state.admissionData} isLoading={this.state.isLoading} sortingEnabled columns={columnsSubmitted} />
 
                 </div>

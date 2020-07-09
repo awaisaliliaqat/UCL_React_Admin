@@ -12,7 +12,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { Link } from 'react-router-dom';
 import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import DeleteIcon from '@material-ui/icons/Delete';
+// import DeleteIcon from '@material-ui/icons/Delete';
 
 class DocumentRequestAction extends Component {
 
@@ -25,10 +25,8 @@ class DocumentRequestAction extends Component {
             applicationId: props.match.params.id,
             documentTypeId: 0,
             documentTypeIdError: "",
-            otherType: "",
-            otherTypeError: "",
-            files: [],
-            filesError: "",
+            remarks: "",
+            remarksError: "",
             isLoginMenu: false,
             isReload: false,
 
@@ -56,7 +54,7 @@ class DocumentRequestAction extends Component {
         });
     };
     getDocumentList = async () => {
-        const urlList = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C01AdmissionsProspectApplicationRequiredDocumentListView`;
+        const urlList = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C17AdmissionsProspectApplicationRequiredDocumentListView`;
         await fetch(urlList, {
             method: "GET",
             headers: new Headers({
@@ -92,7 +90,7 @@ class DocumentRequestAction extends Component {
 
     getData = async () => {
 
-        const url2 = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplicationDocumentsView?applicationId=${this.state.applicationId}`;
+        const url2 = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C17AdmissionsProspectApplicationDocumentsView?applicationId=${this.state.applicationId}`;
         await fetch(url2, {
             method: "GET",
             headers: new Headers({
@@ -133,37 +131,21 @@ class DocumentRequestAction extends Component {
     }
 
     isFormValid = () => {
-        let { filesError, documentTypeIdError, otherTypeError } = this.state;
+        let { documentTypeIdError, remarksError } = this.state;
         let isValid = true;
         if (!this.state.documentTypeId) {
             isValid = false
             documentTypeIdError = "Please select document type.";
         }
-        if (this.state.documentTypeId === 6) {
-            if (!this.state.otherType) {
-                isValid = false;
-                otherTypeError = "Please enter description.";
-            }
-        }
-        if (this.state.files.length <= 0) {
+        if (!this.state.remarks) {
             isValid = false;
-            filesError = "Please select a file."
+            remarksError = "Please give some remarks."
         }
         this.setState({
             documentTypeIdError,
-            filesError,
-            otherTypeError
+            remarksError
         })
         return isValid;
-    }
-
-    handleFileChange = event => {
-        const { files = [] } = event.target;
-        this.setState({
-            files,
-            filesError: ""
-        })
-
     }
 
     onHandleChange = e => {
@@ -190,12 +172,12 @@ class DocumentRequestAction extends Component {
         this.setState({
             isLoading: true,
         });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C01AdmissionsProspectApplicationDocumentsUpload`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C17AdmissionsProspectApplicationDocumentRequestsRaiseRequest`;
         await fetch(url, {
             method: "POST",
             body: data,
             headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("uclToken"),
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
             }),
         })
             .then((res) => {
@@ -206,15 +188,16 @@ class DocumentRequestAction extends Component {
             })
             .then((result) => {
                 if (result.CODE === 1) {
-                    window.location.replace("#/dashboard/documents");
-                } else if (result.CODE === 2) {
-                    alert(result.CODE + ":" + result.USER_MESSAGE);
-                } else if (result.CODE === 3) {
-                    alert(result.CODE + ":" + result.SYSTEM_MESSAGE);
-                } else if (result.error === 1) {
-                    alert(result.error_message);
-                } else if (result.success === 0 && result.redirect_url !== "") {
-                    window.location = result.redirect_url;
+                    alert("Request Raised");
+                    this.setState({
+                        documentTypeId: "",
+                        documentTypeIdError: "",
+                        remarks: "",
+                        remarksError: ""
+                    })
+                    this.getData();
+                } else {
+                    alert(result.CODE + ":" + result.SYSTEM_MESSAGE + "\n" + result.USER_MESSAGE);
                 }
             })
             .catch((error) => {
@@ -337,25 +320,31 @@ class DocumentRequestAction extends Component {
     render() {
 
         const columns = [
-            { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+            { name: "Request Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '10%' } },
             { name: "Document Type", dataIndex: "documentTypeLabel", sortable: false, customStyleHeader: { width: '20%' } },
-            { name: "Remarks", dataIndex: "otherDocumentTypeLabel", sortable: false, customStyleHeader: { width: '30%' } },
+            { name: "Remarks", dataIndex: "remarks", sortable: false, customStyleHeader: { width: '30%' } },
             { name: "Upload Date", dataIndex: "uploadedOn", sortable: false, customStyleHeader: { width: '17%' } },
-            { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
+            {
+                name: "Status", renderer: rowData => {
+                    return (
+                        `${rowData.isUploaded === 1 ? 'Uploaded' : 'Pending'}`
+                    )
+                }, sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' }
+            },
             {
                 name: "Action", renderer: rowData => {
                     return (
                         <Fragment>
                             <div style={{ display: 'flex', margin: '-10px' }}>
-                                <IconButton onClick={() =>
+                                <IconButton disabled={rowData.isUploaded === 0} onClick={() =>
                                     this.DownloadFile(rowData.fileName)
                                 } aria-label="download">
                                     <CloudDownloadIcon />
                                 </IconButton>
-                                <IconButton onClick={() => this.deleteFile(rowData.id)
-                                } aria-label="download">
+                                {/* <IconButton onClick={() => this.deleteFile(rowData.id)
+                                } aria-label="delete">
                                     <DeleteIcon />
-                                </IconButton>
+                                </IconButton> */}
                             </div>
                         </Fragment>
                     )
@@ -378,7 +367,7 @@ class DocumentRequestAction extends Component {
                             <Link style={{
                                 textDecoration: 'none',
                                 color: 'gray'
-                            }} to="/dashboard/document-requests"><ArrowBackIcon /></Link>
+                            }} to="/dashboard/raise-document-requests"><ArrowBackIcon /></Link>
                         </IconButton> Application ID: {this.state.applicationId}
                     </Typography>
 
@@ -393,6 +382,7 @@ class DocumentRequestAction extends Component {
                             display: 'flex',
                             marginTop: 30
                         }}>
+                            <input name="applicationId" type="hidden" value={this.state.applicationId} />
                             <TextField
                                 select
                                 style={{
@@ -415,16 +405,6 @@ class DocumentRequestAction extends Component {
                                 })
                                 }
                             </TextField>
-                            {this.state.documentTypeId === 6 &&
-                                <TextField
-                                    label="Other"
-                                    name="otherType"
-                                    value={this.state.otherType}
-                                    error={this.state.otherTypeError}
-                                    onChange={this.onHandleChange}
-                                    fullWidth
-                                />
-                            }
                         </div>
                         <div style={{
                             display: 'flex',
@@ -433,12 +413,16 @@ class DocumentRequestAction extends Component {
                             <TextField
                                 id="outlined-multiline-static"
                                 label="Remarks"
+                                name="remarks"
                                 multiline
                                 fullWidth
                                 style={{
                                     marginRight: 20
                                 }}
+                                value={this.state.remarks}
+                                onChange={this.onHandleChange}
                                 rows={3}
+                                error={this.state.remarksError}
                                 variant="outlined"
                             />
                         </div>
@@ -458,7 +442,7 @@ class DocumentRequestAction extends Component {
                                     marginRight: 20,
                                     textTransform: 'capitalize',
                                 }}
-                            > {this.state.isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Raise Request"}</Button>
+                            > {this.state.isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Request"}</Button>
                         </div>
                     </form>
                     <div style={{ marginTop: 20 }}>

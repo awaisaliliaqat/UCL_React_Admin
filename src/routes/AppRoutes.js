@@ -38,7 +38,7 @@ const AppRoute = () => {
                         <Route exact path="/forgot-password" component={ForgotPassword} />
                         <PrivateRoutes exact path="/dashboard" component={Dashboard} />
                         <PrivateRoutes exact path="/dashboard/:id" component={Dashboard} />
-                        <PrivateRoutes exact path="/dashboard/document-requests/:id" component={Dashboard} />
+                        <PrivateRoutes exact path="/dashboard/raise-document-requests/:id" component={Dashboard} />
                         <PrivateRoutes exact path="/view-application/:id" component={DisplayAdmissionApplication} />
                         <PrivateRoutes exact path="/dashboard/F06Form/:recordId" component={Dashboard} />
                         <PrivateRoutes exact path="/dashboard/F07Form/:recordId" component={Dashboard} />

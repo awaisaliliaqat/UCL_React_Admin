@@ -435,7 +435,6 @@ class AdmissionApplicationReports extends Component {
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOnMillis", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Payment Method", dataIndex: "paymentMethodLabel", sortIndex: "paymentMethodLabel", sortable: true, customStyleHeader: { width: '15%' } },
             { name: "Payment Status", dataIndex: "paymentStatusLabel", sortIndex: "paymentStatusLabel", sortable: true, customStyleHeader: { width: '15%' } },
             {
                 name: "Profile", renderer: rowData => {
