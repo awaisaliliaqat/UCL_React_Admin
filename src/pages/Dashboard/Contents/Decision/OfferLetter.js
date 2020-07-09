@@ -403,11 +403,9 @@ class OfferLetter extends Component {
             },
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '10%' } },
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
-            { name: "Age", dataIndex: "age", sortable: false, customStyleHeader: { width: '10%' } },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
-            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
+            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '20%' } },
             { name: "Reg Fee Payment Status", dataIndex: "paymentStatusLabel", sortable: false, customStyleHeader: { width: '17%' } },
-            { name: "Reg Fee Payment Date", dataIndex: "paymentDate", sortable: false, customStyleHeader: { width: '17%' } },
             { name: "Status", dataIndex: "statusLabel", sortable: false, customStyleHeader: { width: '15%' } },
             {
                 name: "Action", renderer: rowData => {
