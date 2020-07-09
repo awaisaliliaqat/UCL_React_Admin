@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
-// import ExcelIcon from '../../../../assets/Images/excel.png';
+import ExcelIcon from '../../../../assets/Images/excel.png';
 import RegistrationFeeApprovelFilter from './Chunks/RegistrationFeeApprovelFilter';
 import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
 import Button from '@material-ui/core/Button';
@@ -308,8 +308,8 @@ class RegistrationFeeApprovel extends Component {
             this.setState({
                 isDownloadExcel: true
             })
-            const type = this.state.applicationStatusId === 2 ? 'Submitted' : 'Pending';
-            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}`;
+            const paymentDate = this.state.eventDate ? `&paymentDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalExcelDownload?paymentStatusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}`;
             await fetch(url, {
                 method: "GET",
                 headers: new Headers({
@@ -327,7 +327,7 @@ class RegistrationFeeApprovel extends Component {
                         if (json) {
                             var csvURL = window.URL.createObjectURL(json);
                             var tempLink = document.createElement("a");
-                            tempLink.setAttribute("download", `Applications${type}.xlsx`);
+                            tempLink.setAttribute("download", `RegistrationFeeApprovalStatus.xlsx`);
                             tempLink.href = csvURL;
                             tempLink.click();
                             console.log(json);
@@ -508,11 +508,11 @@ class RegistrationFeeApprovel extends Component {
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
                             Registration Fee Approval Dashboard
             </Typography>
-                        {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
+                        <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
                             cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
                         }}
-                        /> */}
+                        />
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',

@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import { TextField, Button, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { DatePicker } from "@material-ui/pickers";
+// import { DatePicker } from "@material-ui/pickers";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -50,7 +50,7 @@ const useStyles = makeStyles(() => ({
 
 const AddmissionDecisionFilter = props => {
     const classes = useStyles();
-    const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading, handleDateChange } = props;
+    const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading } = props;
 
 
     return (
@@ -176,7 +176,7 @@ const AddmissionDecisionFilter = props => {
                         })}
                     </TextField>
                 </div>
-                <div className={classes.item} style={{
+                {/* <div className={classes.item} style={{
                     width: '20%'
                 }}>
                     <span className={classes.label}>Submission Date</span>
@@ -199,7 +199,7 @@ const AddmissionDecisionFilter = props => {
                         }}
 
                     />
-                </div>
+                </div> */}
                 <div className={classes.actions}>
                     <Button
                         variant="contained"

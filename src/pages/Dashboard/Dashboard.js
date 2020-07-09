@@ -165,7 +165,9 @@ const Dashboard = props => {
                     <Typography className={classes.menuTitle} noWrap variant="h6">
                       <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>{feature.typeLabel}</div>
                     </Typography>
-                    <MenuList>
+                    <MenuList style={{
+                      outline: 'none'
+                    }}>
                       {
                         items.map(option => {
                           return (
