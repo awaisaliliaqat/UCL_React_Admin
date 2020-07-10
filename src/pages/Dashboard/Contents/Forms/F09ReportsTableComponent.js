@@ -97,7 +97,7 @@ class F09ReportsTableComponent extends Component {
               <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
                 <PagingState 
-                  defaultCurrentPage={0}
+                  defaultCurrentPage={1}
                   defaultPageSize={10} 
                 />
                 <IntegratedFiltering />
