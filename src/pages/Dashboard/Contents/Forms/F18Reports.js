@@ -28,109 +28,7 @@ function isEmpty(obj) {
     return true;
 }
 
-function ActionButton(props) {
-    const [open, setOpen] = React.useState(false);
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-    const handleClose = () => {
-      setOpen(false);
-    };
-    async function DeleteData(event) {
-      event.preventDefault();
-      //return;
-      const data = new FormData(event.target);
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupDelete`;
-      await fetch(url, {
-        method: "POST",
-        body:data,
-        headers: new Headers({
-            Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-        })
-    })
-        .then(res => {
-            if (!res.ok) {
-                throw res;
-            }
-            return res.json();
-        })
-        .then(
-            json => {
-                if (json.CODE === 1) {
-                    props.getData();
-                } else {
-                    alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-                }
-                console.log(json);
-            },
-            error => {
-                if (error.status === 401) {
-                    // this.setState({
-                    //     isLoginMenu: true,
-                    //     isReload: true
-                    // })
-                } else {
-                    alert('Failed to fetch, Please try again later.');
-                    console.log(error);
-                }
-            });
-    }
-    return (
-      <div>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="form-dialog-title"
-        >
-          <form
-            id="myform"
-            onSubmit={(event) => DeleteData(event)}
-            autoComplete="off"
-          >
-            <DialogTitle id="form-dialog-title">Delete</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Please provide the reason to delete the record.
-              </DialogContentText>
-              <input type="hidden" value={props.record_id} name="id"></input>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="log_reason"
-                name="logReason"
-                label="Reason"
-                type="text"
-                fullWidth
-                required
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                Cancel
-              </Button>
-              <Button type="submit" color="primary">
-                Confirm
-              </Button>
-            </DialogActions>
-          </form>
-        </Dialog>
-        <IconButton
-          onClick={handleClickOpen}
-          //aonClick={(event) => DeleteData(props)}
-        >
-          <DeleteIcon fontSize="small" color="error"/>
-        </IconButton>
-        <IconButton
-          onClick={(event) => (window.location = `#/dashboard/F09Form/${props.record_id}`)}
-        >
-          <EditIcon fontSize="small" style={{color:"#ff9800"}}/>
-        </IconButton>
-      </div>
-    );
-  }
-
 class F18Reports extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -139,7 +37,9 @@ class F18Reports extends Component {
             showSearchBar:false,
             isDownloadExcel: false,
             applicationStatusId: 1,
-            admissionData: [],
+            tableData: [],
+            tableColumns: [],
+            allTableData:{},
             genderData: [],
             degreeData: [],
             studentName: "",
@@ -172,6 +72,7 @@ class F18Reports extends Component {
             isOpenSnackbar:false
         });
     };
+
     getGenderData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonGendersView`;
         await fetch(url, {
@@ -425,7 +326,7 @@ class F18Reports extends Component {
         const reload = status === 1 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
         const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
         const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C18CommonAcademicSessionsView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -442,16 +343,16 @@ class F18Reports extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.setState({
-                            admissionData: json.DATA || []
+                            allTableData : json.DATA || {},
+                            tableData: json.DATA[0].results || [],
+                            tableColumns: json.DATA[0].columns.push("Action") || []
                         });
-                        for (var i = 0; i < json.DATA.length; i++) {
-                            json.DATA[i].action = (
+                        for (var i = 0; i < json.DATA[0].results.length; i++) {
+                            json.DATA[0].results[i].Action = (
                               <EditDeleteTableRecord
-                               // getData={this.getData}
-                                // record_id={json.DATA[i].ID}
-                                recordId={json.DATA[i].ID}
+                                recordId={json.DATA[0].results[i].ID}
                                 DeleteData={this.DeleteData}
-                                onEditURL={`#/dashboard/F18Form/${json.DATA[i].ID}`}
+                                onEditURL={`#/dashboard/F18Form/${json.DATA[0].results[i].ID}`}
                                 handleOpenSnackbar={this.handleOpenSnackbar}
                               />
                             );
@@ -482,7 +383,7 @@ class F18Reports extends Component {
     DeleteData = async (event) => {
         event.preventDefault();
         const data = new FormData(event.target);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupDelete`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C18CommonAcademicsSessionsDelete`;
         await fetch(url, {
           method: "POST",
           body:data,
@@ -606,29 +507,23 @@ class F18Reports extends Component {
     }
 
     render() {
-        // const columnsSubmitted = [
-        //     //{ name: "SR#", dataIndex: "serialNo", sortable: false, customStyleHeader: { width: '7%' } },
-        //     { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
-        //     {name: "Name", renderer: rowData => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}, sortable: false, customStyleHeader: { width: '10%' }},
-        //     { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
-        //     { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
-        //     { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
-        //     { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-        //     { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '15%' } },
-        //     { name: "Payment Method", dataIndex: "paymentMethod", sortIndex: "paymentMethod", sortable: true, customStyleHeader: { width: '15%' } },
-        //     { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
-        //     { name: "Profile", renderer: rowData => {return (<Button style={{fontSize: 12,textTransform: 'capitalize'}} variant="outlined" onClick={() => window.open(`#/view-application/${rowData.id}`, "_blank")} >View</Button>)}, sortable: false, customStyleHeader: { width: '15%' }},
-        // ]
+        
+        // const tableColumns = [
+        //     {name: "ID", title: "ID"},
+        //     {name: "Session", title: "Session"},
+        //     {name: "Group1", title: "Group1"},
+        //     {name: "Group2", title: "Group2"},
+        //     {name: "Group3", title: "Group3"},
+        //     {name: "Action", title: "Action"}
+        // ];
 
-        const columnsPending = [
-            { name: "ID", title: "ID"},
-            { name: "sessionLabel", title: "Session Name"},
-            { name: "type1", title: "School Of Economics and Management"},
-            { name: "type2", title: "School Of Law"},
-             {name: "type3", title: "School of GCE"},
-            { name: "action", title:"Action"}
-        ]
-
+        const columnsArr = this.state.allTableData[0];
+        const tableColumns = columnsArr ? (columnsArr.columns.map((dt, i)=>(
+                { name: dt, title: dt}
+            )))
+            :
+            ([]);
+        
         return (
             <Fragment>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
@@ -680,8 +575,8 @@ class F18Reports extends Component {
                         <br/>
                     }
                     <F18ReportsTableComponent 
-                        data={this.state.admissionData} 
-                        columns={columnsPending} 
+                        data={this.state.tableData}
+                        columns={tableColumns} 
                         showFilter={this.state.showTableFilter}
                     />
                     <CustomizedSnackbar
