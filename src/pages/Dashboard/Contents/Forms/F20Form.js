@@ -94,7 +94,8 @@ class F20Form extends Component {
                        this.setState({
                            courseId:json.DATA[0].courseId,
                            courseCode:json.DATA[0].courseCode,
-                           courseTitle:json.DATA[0].courseTitle
+                           courseTitle:json.DATA[0].courseTitle,
+                           courseLabel:json.DATA[0].courseLabel
                        });
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
