@@ -54,12 +54,13 @@ class F09ReportsTableComponent extends Component {
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
             ],
-            tableColumnExtensions:[],
-            defaultColumnWidths:[
-              { columnName: 'ID', width:100},
-              { columnName: 'shortLabel', width:350},
-              { columnName: 'label', width:400},
-              { columnName: 'action', width:150}
+            tableColumnExtensions:[
+              { columnName: 'ID', width:120},
+              { columnName: "academicSessionLabel", wordWrapEnabled:true},
+              { columnName: 'shortLabel', wordWrapEnabled:true},
+              { columnName: 'label', wordWrapEnabled:true},
+              { columnName: 'programmeCourseLabel', wordWrapEnabled:true},
+              { columnName: 'action', width:120}
             ],
             defaultFilters:[],
             filteringStateColumnExtensions:[
@@ -95,33 +96,14 @@ class F09ReportsTableComponent extends Component {
               <Grid rows={rows} columns={columns}>
               <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
-                {/* 
-                  <SelectionState /> 
-                */}
-                {/* 
-                <GroupingState
-                  defaultGrouping={[{ columnName: 'product' }]}
-                  defaultExpandedGroups={['EnviroCare Max']}
-                /> 
-                */}
                 <PagingState 
-                  defaultCurrentPage={0}
-                  defaultPageSize={5} 
+                  defaultCurrentPage={1}
+                  defaultPageSize={10} 
                 />
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />
-                {/* 
-                  <IntegratedSelection /> 
-                */}
-                {/* 
-                  <DragDropProvider /> 
-                */}
-                <Table/>
-                <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-                {/* 
-                  <TableSelection showSelectAll={true} /> 
-                */}
+                <Table tableColumnExtensions={tableColumnExtensions}/>
                 <TableHeaderRow 
                   showSortingControls={true} 
                   titleComponent={(props) => (
@@ -137,9 +119,6 @@ class F09ReportsTableComponent extends Component {
                   ""
                 }
                 <PagingPanel pageSizes={pageSizes}/>
-                {/* 
-                  <Toolbar /> 
-                */}
               </Grid>
             </Paper>
         );

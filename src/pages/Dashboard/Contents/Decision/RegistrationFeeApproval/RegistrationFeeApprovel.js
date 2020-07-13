@@ -1,13 +1,15 @@
 import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 import Typography from "@material-ui/core/Typography";
-import AddmissionDecisionFilter from './Chunks/AddmissionDecisionFilter';
-import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
-import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import DecisionActionMenu from './Chunks/DecisionActionMenu';
-import ExcelIcon from '../../../../assets/Images/excel.png';
+import ExcelIcon from '../../../../../assets/Images/excel.png';
+import RegistrationFeeApprovelFilter from './Chunks/RegistrationFeeApprovelFilter';
+import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
+import Button from '@material-ui/core/Button';
+import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
+import RegistrationFeeApprovelMenu from './Chunks/RegistrationFeeApprovelMenu';
+
 import { format } from 'date-fns';
+
 
 function isEmpty(obj) {
     if (obj == null) return true;
@@ -21,46 +23,46 @@ function isEmpty(obj) {
         if (hasOwnProperty.call(obj, key)) return false;
     }
 
-
     return true;
 }
 
-class AddmissionDecision extends Component {
+class RegistrationFeeApprovel extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             isLoading: false,
-            isDownloadExcel: false,
-            admissionData: [],
-            degreeData: [],
-            isOpenForm: false,
-            documentData: [],
-            DecisionData: [],
-            addmissionForm: {},
-            selectedData: {},
-            DecisionId: 1,
             applicationStatusId: 1,
-            applicationId: "",
+            admissionData: [],
+            genderData: [],
+            degreeData: [],
+            documentData: [],
+            statusTypeData: [],
             studentName: "",
+            referenceNo: "",
             genderId: 0,
             degreeId: 0,
-            eventDate: null,
-            genderData: [],
+            applicationId: "",
+            isDownloadExcel: false,
             isLoginMenu: false,
-            isSubmitLoading: false,
             isReload: false,
-            isOpenDecisionMenu: false
+            isSubmitLoading: false,
+            isOpenApprovelMenu: false,
+            eventDate: null,
+            selectedData: {},
+            methodData: [],
+            methodId: 0,
+            methodIdError: ""
 
         }
     }
 
     componentDidMount() {
-        this.getDegreesData();
-        this.getDecisionData();
         this.getGenderData();
+        this.getDegreesData();
+        this.getStatusTypeData();
+        this.getMethodData();
         this.getData();
-
     }
 
     getGenderData = async () => {
@@ -132,8 +134,8 @@ class AddmissionDecision extends Component {
             );
     };
 
-    getDecisionData = async () => {
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C04AdmissionsProspectApplicationStatusTypesView`;
+    getMethodData = async () => {
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03CommonAcademicsFeePayablePaymentMethodsView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -149,7 +151,7 @@ class AddmissionDecision extends Component {
             .then(
                 (json) => {
                     this.setState({
-                        DecisionData: json.DATA || [],
+                        methodData: json.DATA || [],
                     });
                     console.log(json.DATA);
                 },
@@ -166,54 +168,6 @@ class AddmissionDecision extends Component {
                 }
             );
     };
-
-    getData = async () => {
-        this.setState({
-            isLoading: true
-        })
-        const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-        const reload = this.state.applicationStatusId === 0 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C04AdmissionsProspectApplicationView?applicationStatusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
-        await fetch(url, {
-            method: "GET",
-            headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-            })
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw res;
-                }
-                return res.json();
-            })
-            .then(
-                json => {
-                    if (json.CODE === 1) {
-                        this.setState({
-                            admissionData: json.DATA || []
-                        })
-                    } else {
-                        alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-                    }
-                    console.log(json);
-                },
-                error => {
-                    if (error.status === 401) {
-                        this.setState({
-                            isLoginMenu: true,
-                            isReload: reload
-                        })
-                    } else {
-                        alert('Failed to fetch, Please try again later.');
-                        console.log(error);
-                    }
-                });
-        this.setState({
-            isLoading: false
-        })
-
-
-    }
 
     getDegreesData = async () => {
         let data = [];
@@ -268,80 +222,94 @@ class AddmissionDecision extends Component {
 
 
     onClearFilters = () => {
-
         this.setState({
-            degreeId: 0,
-            genderId: 0,
-            applicationStatusId: 1,
-            eventDate: null,
             studentName: "",
-            applicationId: ""
+            genderId: 0,
+            degreeId: 0,
+            applicationId: "",
+            referenceNo: "",
+            applicationStatusId: 1,
+            eventDate: null
         })
     }
 
-    onConfirmClick = async (e, id) => {
-        e.preventDefault();
+    handleDateChange = (date) => {
         this.setState({
-            isSubmitLoading: true
-        })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C04AdmissionsProspectApplicationChangeStatus?applicationId=${id}&statusId=${this.state.DecisionId}&degreeId=${this.state.degreeId}`;
-        await fetch(url, {
+            eventDate: date
+        });
+    };
+
+    onDownload = (fileName) => {
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${
+            process.env.REACT_APP_SUB_API_NAME
+            }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
+
+        fetch(url, {
             method: "GET",
             headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-            })
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+            }),
         })
-            .then(res => {
-                if (!res.ok) {
-                    throw res;
+            .then((res) => {
+                if (res.status === 200) {
+                    return res.blob();
+                } else if (res.status === 401) {
+                    this.setState({
+                        isLoginMenu: true,
+                        isReload: false
+                    })
+                    return {}
+                } else {
+                    alert('Operation Failed, Please try again later.');
+                    return {}
                 }
-                return res.json();
             })
-            .then(
-                json => {
-                    if (json.CODE === 1) {
-                        this.setState({
-                            isOpenDecisionMenu: false,
-                            degreeId: 0,
-                            DecisionId: 1,
-                            selectedData: {}
-                        })
-                        this.getData();
-                    } else {
-                        alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-                    }
-                    console.log(json);
-                },
-                error => {
-                    if (error.status === 401) {
-                        this.setState({
-                            isLoginMenu: true,
-                            isReload: false
-                        })
-                    } else {
-                        alert('Failed to fetch, Please try again later.');
-                        console.log(error);
-                    }
-                });
-        this.setState({
-            isSubmitLoading: false
-        })
-    }
+            .then((result) => {
+                var csvURL = window.URL.createObjectURL(result);
+                var tempLink = document.createElement("a");
+                tempLink.href = csvURL;
+                tempLink.setAttribute("download", fileName);
+                tempLink.click();
+                console.log(csvURL);
+                if (result.CODE === 1) {
+                    //Code
+                } else if (result.CODE === 2) {
+                    alert(
+                        "SQL Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.CODE === 3) {
+                    alert(
+                        "Other Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.error === 1) {
+                    alert(result.error_message);
+                } else if (result.success === 0 && result.redirect_url !== "") {
+                    window.location = result.redirect_url;
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
-    onHandleChange = e => {
-        const { name, value } = e.target;
-        this.setState({
-            [name]: value
-        })
-    }
 
     downloadExcelData = async () => {
         if (this.state.isDownloadExcel === false) {
             this.setState({
                 isDownloadExcel: true
             })
-            const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C04AdmissionsProspectApplicationViewExcelDownload?applicationStatusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
+            const paymentDate = this.state.eventDate ? `&paymentDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalExcelDownload?paymentStatusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}`;
             await fetch(url, {
                 method: "GET",
                 headers: new Headers({
@@ -359,7 +327,7 @@ class AddmissionDecision extends Component {
                         if (json) {
                             var csvURL = window.URL.createObjectURL(json);
                             var tempLink = document.createElement("a");
-                            tempLink.setAttribute("download", `AdmissionDecisionStatus.xlsx`);
+                            tempLink.setAttribute("download", `RegistrationFeeApprovalStatus.xlsx`);
                             tempLink.href = csvURL;
                             tempLink.click();
                             console.log(json);
@@ -382,11 +350,116 @@ class AddmissionDecision extends Component {
         }
     }
 
-
-    handleDateChange = (date) => {
+    getData = async () => {
         this.setState({
-            eventDate: date
-        });
+            isLoading: true
+        })
+        const paymentDate = this.state.eventDate ? `&paymentDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
+        const reload = this.state.applicationStatusId === 0 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.referenceNo === "" && this.state.studentName === "" && this.state.eventDate === null;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalView?paymentStatusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}`;
+        await fetch(url, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                        this.setState({
+                            admissionData: json.DATA || []
+                        })
+                    } else {
+                        alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                    }
+                    console.log(json);
+                },
+                error => {
+                    if (error.status === 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: reload
+                        })
+                    } else {
+                        alert('Failed to fetch, Please try again later.');
+                        console.log(error);
+                    }
+                });
+        this.setState({
+            isLoading: false
+        })
+
+
+    }
+
+    onConfirmClick = async (e, id) => {
+        e.preventDefault();
+        this.setState({
+            isSubmitLoading: true
+        })
+        if (this.state.methodId) {
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03CommonAcademicsFeePayableChangeStatus?paymentId=${id}&paymentMethodId=${this.state.methodId}`;
+            await fetch(url, {
+                method: "GET",
+                headers: new Headers({
+                    Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+                })
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw res;
+                    }
+                    return res.json();
+                })
+                .then(
+                    json => {
+                        if (json.CODE === 1) {
+                            this.setState({
+                                isOpenApprovelMenu: false,
+                                methodId: 0,
+                                selectedData: {}
+                            })
+                            this.getData();
+                        } else {
+                            alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                        }
+                        console.log(json);
+                    },
+                    error => {
+                        if (error.status === 401) {
+                            this.setState({
+                                isLoginMenu: true,
+                                isReload: false
+                            })
+                        } else {
+                            alert('Failed to fetch, Please try again later.');
+                            console.log(error);
+                        }
+                    });
+        } else {
+            this.setState({ methodIdError: "Please select method." });
+        }
+        this.setState({
+            isSubmitLoading: false
+        })
+    }
+
+    onHandleChange = e => {
+        const { name, value } = e.target;
+        let { methodIdError } = this.state;
+        if (name === "methodId") {
+            methodIdError = "";
+        }
+        this.setState({
+            [name]: value,
+            methodIdError
+        })
     }
 
     render() {
@@ -397,22 +470,23 @@ class AddmissionDecision extends Component {
                     return (
                         <Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>
                     )
-                }, sortable: false, customStyleHeader: { width: '13%' }
+                }, sortable: false, customStyleHeader: { width: '12%' }
             },
-            { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
+            { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '9%' } },
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
-            { name: "Age", dataIndex: "age", sortable: false, customStyleHeader: { width: '10%' } },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Reg Fee Payment Status", dataIndex: "paymentStatusLabel", sortable: false, customStyleHeader: { width: '17%' } },
-            { name: "Status", dataIndex: "statusLabel", sortable: false, customStyleHeader: { width: '15%' } },
+            { name: "Payment Reference No", dataIndex: "paymentReferenceNo", sortable: false, customStyleHeader: { width: '15%' } },
+            { name: "Payment Method", dataIndex: "paymentMethodLabel", sortIndex: "paymentMethodLabel", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Payment Date", dataIndex: "paymentDate", sortIndex: "paymentDateMillis", sortable: true, customStyleHeader: { width: '13%' } },
+            { name: "Status", dataIndex: "paymentStatusLabel", sortIndex: "paymentStatusLabel", sortable: true, customStyleHeader: { width: '12%' } },
             {
                 name: "Action", renderer: rowData => {
                     return (
-                        <Button key={rowData.id} style={{
+                        <Button key={rowData.id} disabled={rowData.paymentMethodId === 4} style={{
                             fontSize: 12,
                             textTransform: 'capitalize'
-                        }} variant="outlined" onClick={() => this.setState({ isOpenDecisionMenu: true, selectedData: rowData, degreeId: rowData.degreeId, DecisionId: rowData.statusId })} >View</Button>
+                        }} variant="outlined" onClick={() => this.setState({ isOpenApprovelMenu: true, selectedData: rowData, methodId: rowData.paymentMethodId })} >View</Button>
                     )
                 }, sortable: false, customStyleHeader: { width: '10%' }
             },
@@ -421,7 +495,9 @@ class AddmissionDecision extends Component {
         return (
             <Fragment>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
-                <DecisionActionMenu submitLoading={this.state.isSubmitLoading} onConfirmClick={(e, id) => this.onConfirmClick(e, id)} DecisionId={this.state.DecisionId} DecisionData={this.state.DecisionData} onHandleChange={e => this.onHandleChange(e)} data={this.state.selectedData} degreeId={this.state.degreeId} degreeData={this.state.degreeData} open={this.state.isOpenDecisionMenu} handleClose={() => this.setState({ isOpenDecisionMenu: false })} />
+                <RegistrationFeeApprovelMenu onDownload={name => this.onDownload(name)} methodIdError={this.state.methodIdError} submitLoading={this.state.isSubmitLoading} onHandleChange={e => this.onHandleChange(e)} methodId={this.state.methodId}
+                    methodData={this.state.methodData} data={this.state.selectedData} open={this.state.isOpenApprovelMenu}
+                    handleClose={() => this.setState({ isOpenApprovelMenu: false })} onConfirmClick={(e, id) => this.onConfirmClick(e, id)} />
                 <div style={{
                     padding: 20
                 }}>
@@ -430,7 +506,7 @@ class AddmissionDecision extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Admission Decision Dashboard
+                            Registration Fee Approval Dashboard
             </Typography>
                         <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
@@ -442,20 +518,14 @@ class AddmissionDecision extends Component {
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <AddmissionDecisionFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
-                    <div style={{
-                        marginTop: 15,
-                        marginBottom: 15,
-                        color: '#174A84',
-                        font: 'Bold 16px Lato',
-                        letterSpacing: '1.8px'
-                    }}>
-                    </div>
+                    <RegistrationFeeApprovelFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
+
                     <TablePanel isShowIndexColumn data={this.state.admissionData} isLoading={this.state.isLoading} sortingEnabled columns={columns} />
+
 
                 </div>
             </Fragment>
         );
     }
 }
-export default AddmissionDecision;
+export default RegistrationFeeApprovel;

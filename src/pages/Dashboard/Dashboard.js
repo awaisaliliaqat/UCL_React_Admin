@@ -12,16 +12,18 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import WelcomePage from './Contents/WelcomePage';
 import Leaf from '../../assets/Images/svg/leaf.svg';
-import AdmissionApplicationReports from './Contents/Reports/AdmissionApplicationReports';
+import AdmissionApplicationReports from './Contents/Reports/AdmissionApplicationReports/AdmissionApplicationReports';
 // import ApplicantRegistrationAnalytics from './Contents/Analytics/ApplicantRegistrationAnalytics';
-import AdmissionDecision from './Contents/Decision/AddmissionDecision';
-import RegistrationFeeApprovel from './Contents/Decision/RegistrationFeeApprovel';
-import OfferLetter from './Contents/Decision/OfferLetter';
-import AssignAcccountId from './Contents/Decision/AssignAcccountId';
-import UploadTutionFees from './Contents/Decision/UploadTutionFees';
-import TutionFeeApproval from './Contents/Decision/TutionFeeApproval';
-import UploadDocuments from './Contents/Decision/DocumentRequest';
-import DocumentRequestAction from './Contents/Decision/Chunks/DocumentRequestAction';
+import AdmissionDecision from './Contents/Decision/AdmissionDecision/AddmissionDecision';
+import RegistrationFeeApprovel from './Contents/Decision/RegistrationFeeApproval/RegistrationFeeApprovel';
+import OfferLetter from './Contents/Decision/OfferLetter/OfferLetter';
+import AssignAcccountId from './Contents/Decision/AssignAccountId/AssignAcccountId';
+import UploadTutionFees from './Contents/Decision/UploadTutionFee/UploadTutionFees';
+import TutionFeeApproval from './Contents/Decision/TutionFeeApproval/TutionFeeApproval';
+import UploadDocuments from './Contents/Decision/DocumentRequest/DocumentRequest';
+import DocumentRequestAction from './Contents/Decision/DocumentRequest/Chunks/DocumentRequestAction';
+import EditStudentInformation from './Contents/Decision/EditStudentInformation/EditStudentInformation';
+import EditStudentInformationAction from './Contents/Decision/EditStudentInformation/Chunks/EditStudentInformationAction';
 import F06Form from './Contents/Forms/F06Form';
 import F06Reports from './Contents/Forms/F06Reports';
 import F07Form from './Contents/Forms/F07Form';
@@ -30,6 +32,11 @@ import F08Form from './Contents/Forms/F08Form';
 import F08Reports from './Contents/Forms/F08Reports';
 import F09Form from './Contents/Forms/F09Form';
 import F09Reports from './Contents/Forms/F09Reports';
+import F18Form from './Contents/Forms/F18Form';
+import F18Reports from './Contents/Forms/F18Reports';
+import F19Form from './Contents/Forms/F19Form';
+import F20Form from './Contents/Forms/F20Form';
+import F20Reports from './Contents/Forms/F20Reports';
 
 
 const drawerWidth = 283;
@@ -128,7 +135,7 @@ const Dashboard = props => {
   const classes = useStyles();
   const [viewValue, setViewValue] = useState(props.match.params.value || "");
   const [isDrawerOpen, setDrawerOpen] = useState(true);
-  const adminData = JSON.parse(localStorage.getItem('adminData'));
+  const adminData = localStorage.getItem('adminData') ? JSON.parse(localStorage.getItem('adminData')) : {};
   const { featureList = [] } = adminData;
 
   const handleValueChange = value => {
@@ -218,7 +225,7 @@ const Dashboard = props => {
                   <F06Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
                 )
               }} />
-              <SetRoute setValue={value => handleValueChange(value)} name="F06Reports" exact path="/dashboard/F06Reports" component={F06Reports} />
+              <SetRoute setValue={value => handleValueChange(value)} name="F06Form" exact path="/dashboard/F06Reports" component={F06Reports} />
               <SetRoute setValue={value => handleValueChange(value)} name="F07Form" exact path="/dashboard/F07Form/:recordId" render={(props) => {
                 return (
                   <F07Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
@@ -237,11 +244,33 @@ const Dashboard = props => {
                 )
               }} />
               <SetRoute setValue={value => handleValueChange(value)} name="F09Reports" exact path="/dashboard/F09Reports" component={F09Reports} />
+              <SetRoute setValue={value => handleValueChange(value)} name="F18Form" exact path="/dashboard/F18Form/:recordId" render={(props) => {
+                return (
+                  <F18Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+              <SetRoute setValue={value => handleValueChange(value)} name="F18Reports" exact path="/dashboard/F18Reports" component={F18Reports} />
+  
 
+              <SetRoute setValue={value => handleValueChange(value)} name="F19Form" exact path="/dashboard/F19Form/:recordId" render={(props) => {
+                return (
+                  <F19Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }} />
+
+              <SetRoute setValue={value => handleValueChange(value)} name="F20Form" exact path="/dashboard/F20Form/:recordId" render={(props) => {
+                  return (
+                    <F20Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                  )
+                }} 
+              />
+              <SetRoute setValue={value => handleValueChange(value)} name="F20Reports" exact path="/dashboard/F20Reports" component={F20Reports} />
 
               <SetRoute setValue={value => handleValueChange(value)} name="assign-account-id" exact path="/dashboard/assign-account-id" component={AssignAcccountId} />
               <SetRoute setValue={value => handleValueChange(value)} name="upload-tuition-fees" exact path="/dashboard/upload-tuition-fees" component={UploadTutionFees} />
               <SetRoute setValue={value => handleValueChange(value)} name="tuition-fee-approval" exact path="/dashboard/tuition-fee-approval" component={TutionFeeApproval} />
+              <SetRoute setValue={value => handleValueChange(value)} name="edit-student-information" exact path="/dashboard/edit-student-information" component={EditStudentInformation} />
+              <SetRoute setValue={value => handleValueChange(value)} name="edit-student-information" exact path="/dashboard/edit-student-information/:id" component={EditStudentInformationAction} />
               <SetRoute setValue={value => handleValueChange(value)} name="home" exact path="*" component={NoFound} />
             </Switch>
           </Suspense>

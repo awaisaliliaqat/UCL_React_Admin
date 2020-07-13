@@ -53,44 +53,44 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 const ControlledDialog = props => {
-    const { handleClose, open, title, content, isFullScreen,enableBackDrop } = props;
-    return (
-        <div>
-            <Dialog disableBackdropClick={!enableBackDrop} fullScreen={isFullScreen} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-                <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                    {title}
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Typography gutterBottom>
-                        {content}
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Close
+  const { handleClose, open, title, content, isFullScreen, enableBackDrop } = props;
+  return (
+    <div>
+      <Dialog disableBackdropClick={!enableBackDrop} fullScreen={isFullScreen} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+          {title}
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            {content}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
                    </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
-    );
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 }
 
 ControlledDialog.propTypes = {
-    title: PropTypes.string,
-    handleClose: PropTypes.func,
-    open: PropTypes.bool,
-    isFullScreen: PropTypes.bool,
-    enableBackDrop: PropTypes.bool,
-    content: PropTypes.string
+  title: PropTypes.string,
+  handleClose: PropTypes.func,
+  open: PropTypes.bool,
+  isFullScreen: PropTypes.bool,
+  enableBackDrop: PropTypes.bool,
+  content: PropTypes.string
 };
 
 ControlledDialog.defaultProps = {
-    title: "",
-    open: false,
-    content: "",
-    handleClose: fn => fn,
-    isFullScreen: false,
-    enableBackDrop: false 
+  title: "",
+  open: false,
+  content: "",
+  handleClose: fn => fn,
+  isFullScreen: false,
+  enableBackDrop: false
 };
 
 export default ControlledDialog;

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import UploadTutionFessAction from './Chunks/UploadTutionFeesAction';
-import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
+import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 
 class DocumentRequest extends Component {
 

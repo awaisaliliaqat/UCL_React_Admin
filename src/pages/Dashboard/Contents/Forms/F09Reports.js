@@ -28,107 +28,6 @@ function isEmpty(obj) {
     return true;
 }
 
-function ActionButton(props) {
-    const [open, setOpen] = React.useState(false);
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-    const handleClose = () => {
-      setOpen(false);
-    };
-    async function DeleteData(event) {
-      event.preventDefault();
-      //return;
-      const data = new FormData(event.target);
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupDelete`;
-      await fetch(url, {
-        method: "POST",
-        body:data,
-        headers: new Headers({
-            Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-        })
-    })
-        .then(res => {
-            if (!res.ok) {
-                throw res;
-            }
-            return res.json();
-        })
-        .then(
-            json => {
-                if (json.CODE === 1) {
-                    props.getData();
-                } else {
-                    alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-                }
-                console.log(json);
-            },
-            error => {
-                if (error.status === 401) {
-                    // this.setState({
-                    //     isLoginMenu: true,
-                    //     isReload: true
-                    // })
-                } else {
-                    alert('Failed to fetch, Please try again later.');
-                    console.log(error);
-                }
-            });
-    }
-    return (
-      <div>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="form-dialog-title"
-        >
-          <form
-            id="myform"
-            onSubmit={(event) => DeleteData(event)}
-            autoComplete="off"
-          >
-            <DialogTitle id="form-dialog-title">Delete</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Please provide the reason to delete the record.
-              </DialogContentText>
-              <input type="hidden" value={props.record_id} name="id"></input>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="log_reason"
-                name="logReason"
-                label="Reason"
-                type="text"
-                fullWidth
-                required
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                Cancel
-              </Button>
-              <Button type="submit" color="primary">
-                Confirm
-              </Button>
-            </DialogActions>
-          </form>
-        </Dialog>
-        <IconButton
-          onClick={handleClickOpen}
-          //aonClick={(event) => DeleteData(props)}
-        >
-          <DeleteIcon fontSize="small" color="error"/>
-        </IconButton>
-        <IconButton
-          onClick={(event) => (window.location = `#/dashboard/F09Form/${props.record_id}`)}
-        >
-          <EditIcon fontSize="small" style={{color:"#ff9800"}}/>
-        </IconButton>
-      </div>
-    );
-  }
-
 class F09Reports extends Component {
 
     constructor(props) {
@@ -459,7 +358,7 @@ class F09Reports extends Component {
                     } else {
                         this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
                     }
-                    console.log(json);
+                    console.log("getData", json);
                 },
                 error => {
                     if (error.status === 401) {
@@ -606,24 +505,13 @@ class F09Reports extends Component {
     }
 
     render() {
-        // const columnsSubmitted = [
-        //     //{ name: "SR#", dataIndex: "serialNo", sortable: false, customStyleHeader: { width: '7%' } },
-        //     { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
-        //     {name: "Name", renderer: rowData => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}, sortable: false, customStyleHeader: { width: '10%' }},
-        //     { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
-        //     { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
-        //     { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
-        //     { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-        //     { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '15%' } },
-        //     { name: "Payment Method", dataIndex: "paymentMethod", sortIndex: "paymentMethod", sortable: true, customStyleHeader: { width: '15%' } },
-        //     { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
-        //     { name: "Profile", renderer: rowData => {return (<Button style={{fontSize: 12,textTransform: 'capitalize'}} variant="outlined" onClick={() => window.open(`#/view-application/${rowData.id}`, "_blank")} >View</Button>)}, sortable: false, customStyleHeader: { width: '15%' }},
-        // ]
-
+        
         const columnsPending = [
             { name: "ID", title: "ID"},
-            { name: "shortLabel", title: "Short Label"},
-            { name: "label", title: "Label"},
+            { name: "academicSessionLabel", title: "Academic Session"},
+            { name: "label", title: "Course Group"},
+            { name: "shortLabel", title: "Short Name"},
+            { name: "programmeCourseLabel", title: "Programme Courses"},
             { name: "action", title:"Action"}
         ]
 
