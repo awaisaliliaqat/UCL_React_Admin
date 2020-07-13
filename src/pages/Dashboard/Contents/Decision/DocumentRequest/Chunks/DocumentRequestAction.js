@@ -2,7 +2,7 @@
 import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
-import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
+import LoginMenu from '../../../../../../components/LoginMenu/LoginMenu';
 import {
     TextField, Button, MenuItem
 } from '@material-ui/core';
@@ -10,7 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { Link } from 'react-router-dom';
-import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
+import TablePanel from '../../../../../../components/ControlledTable/RerenderTable/TablePanel';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 // import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -234,7 +234,7 @@ class DocumentRequestAction extends Component {
                 (result) => {
                     console.log(result);
                     if (result["CODE"] === 1) {
-                        window.location.reload();
+                        this.loadData();
                     } else {
                         alert(result["SYSTEM_MESSAGE"]);
                     }

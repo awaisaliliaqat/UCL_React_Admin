@@ -3,8 +3,8 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Typography from "@material-ui/core/Typography";
 import AssignAccountIdFiltter from './Chunks/AssignAccountIdFiltter';
-import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
-import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
+import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
+import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 import AssignAcccountIdMenu from './Chunks/AssignAcccountIdMenu';
 
 class OfferLetter extends Component {
