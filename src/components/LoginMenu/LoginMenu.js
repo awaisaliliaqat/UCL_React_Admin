@@ -122,7 +122,7 @@ const LoginMenu = props => {
         window.location.replace("#/login");
     }
 
-    const { email = "" } = JSON.parse(window.localStorage.getItem("adminData"));
+    const { email = "" } = window.localStorage.getItem("adminData") ? JSON.parse(window.localStorage.getItem("adminData")) : {};
 
     return (
         <div>

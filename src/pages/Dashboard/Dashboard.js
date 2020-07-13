@@ -12,16 +12,18 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import WelcomePage from './Contents/WelcomePage';
 import Leaf from '../../assets/Images/svg/leaf.svg';
-import AdmissionApplicationReports from './Contents/Reports/AdmissionApplicationReports';
+import AdmissionApplicationReports from './Contents/Reports/AdmissionApplicationReports/AdmissionApplicationReports';
 // import ApplicantRegistrationAnalytics from './Contents/Analytics/ApplicantRegistrationAnalytics';
-import AdmissionDecision from './Contents/Decision/AddmissionDecision';
-import RegistrationFeeApprovel from './Contents/Decision/RegistrationFeeApprovel';
-import OfferLetter from './Contents/Decision/OfferLetter';
-import AssignAcccountId from './Contents/Decision/AssignAcccountId';
-import UploadTutionFees from './Contents/Decision/UploadTutionFees';
-import TutionFeeApproval from './Contents/Decision/TutionFeeApproval';
-import UploadDocuments from './Contents/Decision/DocumentRequest';
-import DocumentRequestAction from './Contents/Decision/Chunks/DocumentRequestAction';
+import AdmissionDecision from './Contents/Decision/AdmissionDecision/AddmissionDecision';
+import RegistrationFeeApprovel from './Contents/Decision/RegistrationFeeApproval/RegistrationFeeApprovel';
+import OfferLetter from './Contents/Decision/OfferLetter/OfferLetter';
+import AssignAcccountId from './Contents/Decision/AssignAccountId/AssignAcccountId';
+import UploadTutionFees from './Contents/Decision/UploadTutionFee/UploadTutionFees';
+import TutionFeeApproval from './Contents/Decision/TutionFeeApproval/TutionFeeApproval';
+import UploadDocuments from './Contents/Decision/DocumentRequest/DocumentRequest';
+import DocumentRequestAction from './Contents/Decision/DocumentRequest/Chunks/DocumentRequestAction';
+import EditStudentInformation from './Contents/Decision/EditStudentInformation/EditStudentInformation';
+import EditStudentInformationAction from './Contents/Decision/EditStudentInformation/Chunks/EditStudentInformationAction';
 import F06Form from './Contents/Forms/F06Form';
 import F06Reports from './Contents/Forms/F06Reports';
 import F07Form from './Contents/Forms/F07Form';
@@ -128,7 +130,7 @@ const Dashboard = props => {
   const classes = useStyles();
   const [viewValue, setViewValue] = useState(props.match.params.value || "");
   const [isDrawerOpen, setDrawerOpen] = useState(true);
-  const adminData = JSON.parse(localStorage.getItem('adminData'));
+  const adminData = localStorage.getItem('adminData') ? JSON.parse(localStorage.getItem('adminData')) : {};
   const { featureList = [] } = adminData;
 
   const handleValueChange = value => {
@@ -242,6 +244,8 @@ const Dashboard = props => {
               <SetRoute setValue={value => handleValueChange(value)} name="assign-account-id" exact path="/dashboard/assign-account-id" component={AssignAcccountId} />
               <SetRoute setValue={value => handleValueChange(value)} name="upload-tuition-fees" exact path="/dashboard/upload-tuition-fees" component={UploadTutionFees} />
               <SetRoute setValue={value => handleValueChange(value)} name="tuition-fee-approval" exact path="/dashboard/tuition-fee-approval" component={TutionFeeApproval} />
+              <SetRoute setValue={value => handleValueChange(value)} name="edit-student-information" exact path="/dashboard/edit-student-information" component={EditStudentInformation} />
+              <SetRoute setValue={value => handleValueChange(value)} name="edit-student-information" exact path="/dashboard/edit-student-information/:id" component={EditStudentInformationAction} />
               <SetRoute setValue={value => handleValueChange(value)} name="home" exact path="*" component={NoFound} />
             </Switch>
           </Suspense>

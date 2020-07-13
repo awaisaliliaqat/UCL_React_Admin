@@ -10,27 +10,28 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const ChangePasswordMenu = props => {
 
-    const { handleClose, open } = props;
+    const { handleClose, isLoading, open, handleChange, newPassword, confirmPassword, newPasswordError, confirmPasswordError, onChangeClick } = props;
 
     const [showNP, setShowNP] = React.useState(false);
-  const [showCP, setShowCP] = React.useState(false);
+    const [showCP, setShowCP] = React.useState(false);
 
-  const handleClickShowNPassword = () => {
-    const update = !showNP;
-    setShowNP(update);
-  };
+    const handleClickShowNPassword = () => {
+        const update = !showNP;
+        setShowNP(update);
+    };
 
-  const handleClickShowCPassword = () => {
-    const update = !showCP;
-    setShowCP(update);
-  };
+    const handleClickShowCPassword = () => {
+        const update = !showCP;
+        setShowCP(update);
+    };
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     return (
         <div>
@@ -45,6 +46,10 @@ const ChangePasswordMenu = props => {
                         id="newPassword"
                         label="New Password"
                         name="newPassword"
+                        onChange={e => handleChange(e)}
+                        value={newPassword}
+                        error={newPasswordError}
+                        helperText={newPasswordError}
                         type={showNP ? "text" : "password"}
                         autoFocus
                         InputProps={{
@@ -67,7 +72,11 @@ const ChangePasswordMenu = props => {
                         required
                         fullWidth
                         name="confirmPassword"
+                        onChange={e => handleChange(e)}
+                        value={confirmPassword}
                         label="Confirm Password"
+                        error={confirmPasswordError}
+                        helperText={confirmPasswordError}
                         type={showCP ? "text" : "password"}
                         id="confirmPassword"
                         InputProps={{
@@ -86,10 +95,10 @@ const ChangePasswordMenu = props => {
                     />
                 </DialogContent>
                 <DialogActions style={{ justifyContent: 'center', padding: 20 }}>
-                    <Button variant="contained" onClick={handleClose} color="primary">
-                        Submit
-          </Button>
-                    <Button variant="outlined" onClick={handleClose} color="primary">
+                    <Button variant="contained" onClick={() => onChangeClick()} color="primary">
+                        {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Change"}
+                    </Button>
+                    <Button variant="outlined" onClick={() => handleClose()} color="primary">
                         Cancel
           </Button>
                 </DialogActions>
@@ -100,12 +109,28 @@ const ChangePasswordMenu = props => {
 
 ChangePasswordMenu.propTypes = {
     handleClose: PropTypes.func,
-    open: PropTypes.bool
+    handleChange: PropTypes.func,
+    onPasswordSubmit: PropTypes.func,
+    onChangeClick: PropTypes.func,
+    open: PropTypes.bool,
+    isLoading: PropTypes.bool,
+    newPassword: PropTypes.string,
+    confirmPassword: PropTypes.string,
+    newPasswordError: "",
+    confirmPasswordError: "",
 };
 
 ChangePasswordMenu.defaultProps = {
     handleClose: fn => fn,
-    open: false
+    handleChange: fn => fn,
+    onPasswordSubmit: fn => fn,
+    onChangeClick: fn => fn,
+    open: false,
+    isLoading: false,
+    newPassword: "",
+    confirmPassword: "",
+    newPasswordError: "",
+    confirmPasswordError: "",
 };
 
 export default ChangePasswordMenu;

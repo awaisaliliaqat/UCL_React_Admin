@@ -2,9 +2,9 @@ import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import UploadDocumentsFilter from './Chunks/DocumentRequestFilter';
-import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
+import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
 import Button from '@material-ui/core/Button';
-import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
+import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 // import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 
