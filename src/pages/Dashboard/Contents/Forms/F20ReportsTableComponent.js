@@ -53,15 +53,10 @@ class F06ReportsTableComponent extends Component {
             ],
             tableColumnExtensions:[
               { columnName: 'ID', width:100},
-              { columnName: 'shortLabel', wordWrapEnabled: true},
-              { columnName: 'label', wordWrapEnabled: true},
+              { columnName: 'courseCode', wordWrapEnabled: true},
+              { columnName: 'courseTitle', wordWrapEnabled: true},
+              { columnName: 'courseLabel', wordWrapEnabled: true},
               { columnName: 'action', width:120}
-            ],
-            defaultColumnWidths:[
-              { columnName: 'ID', minWidth:100, maxWidth:100},
-              { columnName: 'shortLabel', minWidth:100, maxWidth:100},
-              { columnName: 'label', minWidth:100, maxWidth:100},
-              { columnName: 'action', minWidth:100, maxWidth:100}
             ],
             resizingMode:"widget",
             defaultFilters:[],
@@ -100,7 +95,7 @@ class F06ReportsTableComponent extends Component {
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
                 {/* <SelectionState />  */}
                 {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
-                <PagingState defaultCurrentPage={0} defaultPageSize={5}/>
+                <PagingState defaultCurrentPage={0} defaultPageSize={10}/>
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />

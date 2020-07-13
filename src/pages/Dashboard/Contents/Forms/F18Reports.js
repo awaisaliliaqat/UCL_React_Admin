@@ -10,7 +10,7 @@ import TablePanel from '../../../../components/ControlledTable/RerenderTable/Tab
 import Button from '@material-ui/core/Button';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { format } from 'date-fns'; 
-import F09ReportsTableComponent from './F09ReportsTableComponent';
+import F18ReportsTableComponent from './F18ReportsTableComponent';
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
@@ -28,8 +28,7 @@ function isEmpty(obj) {
     return true;
 }
 
-class F09Reports extends Component {
-
+class F18Reports extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -38,7 +37,9 @@ class F09Reports extends Component {
             showSearchBar:false,
             isDownloadExcel: false,
             applicationStatusId: 1,
-            admissionData: [],
+            tableData: [],
+            tableColumns: [],
+            allTableData:{},
             genderData: [],
             degreeData: [],
             studentName: "",
@@ -71,6 +72,7 @@ class F09Reports extends Component {
             isOpenSnackbar:false
         });
     };
+
     getGenderData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonGendersView`;
         await fetch(url, {
@@ -324,7 +326,7 @@ class F09Reports extends Component {
         const reload = status === 1 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
         const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
         const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C18CommonAcademicSessionsView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -341,16 +343,16 @@ class F09Reports extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.setState({
-                            admissionData: json.DATA || []
+                            allTableData : json.DATA || {},
+                            tableData: json.DATA[0].results || [],
+                            tableColumns: json.DATA[0].columns.push("Action") || []
                         });
-                        for (var i = 0; i < json.DATA.length; i++) {
-                            json.DATA[i].action = (
+                        for (var i = 0; i < json.DATA[0].results.length; i++) {
+                            json.DATA[0].results[i].Action = (
                               <EditDeleteTableRecord
-                               // getData={this.getData}
-                                // record_id={json.DATA[i].ID}
-                                recordId={json.DATA[i].ID}
+                                recordId={json.DATA[0].results[i].ID}
                                 DeleteData={this.DeleteData}
-                                onEditURL={`#/dashboard/F09Form/${json.DATA[i].ID}`}
+                                onEditURL={`#/dashboard/F18Form/${json.DATA[0].results[i].ID}`}
                                 handleOpenSnackbar={this.handleOpenSnackbar}
                               />
                             );
@@ -358,7 +360,7 @@ class F09Reports extends Component {
                     } else {
                         this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
                     }
-                    console.log("getData", json);
+                    console.log(json);
                 },
                 error => {
                     if (error.status === 401) {
@@ -381,7 +383,7 @@ class F09Reports extends Component {
     DeleteData = async (event) => {
         event.preventDefault();
         const data = new FormData(event.target);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupDelete`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C18CommonAcademicsSessionsDelete`;
         await fetch(url, {
           method: "POST",
           body:data,
@@ -506,15 +508,22 @@ class F09Reports extends Component {
 
     render() {
         
-        const columnsPending = [
-            { name: "ID", title: "ID"},
-            { name: "academicSessionLabel", title: "Academic Session"},
-            { name: "label", title: "Course Group"},
-            { name: "shortLabel", title: "Short Name"},
-            { name: "programmeCourseLabel", title: "Programme Courses"},
-            { name: "action", title:"Action"}
-        ]
+        // const tableColumns = [
+        //     {name: "ID", title: "ID"},
+        //     {name: "Session", title: "Session"},
+        //     {name: "Group1", title: "Group1"},
+        //     {name: "Group2", title: "Group2"},
+        //     {name: "Group3", title: "Group3"},
+        //     {name: "Action", title: "Action"}
+        // ];
 
+        const columnsArr = this.state.allTableData[0];
+        const tableColumns = columnsArr ? (columnsArr.columns.map((dt, i)=>(
+                { name: dt, title: dt}
+            )))
+            :
+            ([]);
+        
         return (
             <Fragment>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
@@ -531,7 +540,7 @@ class F09Reports extends Component {
                                     <ArrowBackIcon fontSize="small" color="primary"/>
                                 </IconButton>
                             </Tooltip>
-                        Course Selection Group Report
+                        Session & Offer Programmes Report
                         </Typography>
                         {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
@@ -565,9 +574,9 @@ class F09Reports extends Component {
                         :
                         <br/>
                     }
-                    <F09ReportsTableComponent 
-                        data={this.state.admissionData} 
-                        columns={columnsPending} 
+                    <F18ReportsTableComponent 
+                        data={this.state.tableData}
+                        columns={tableColumns} 
                         showFilter={this.state.showTableFilter}
                     />
                     <CustomizedSnackbar
@@ -581,4 +590,4 @@ class F09Reports extends Component {
         );
     }
 }
-export default F09Reports;
+export default F18Reports;
