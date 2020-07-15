@@ -59,12 +59,12 @@ class F18ReportsTableComponent extends Component {
               { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions:[
-              { columnName: 'ID',width:100},
-              // { columnName: 'sessionLabel', wordWrapEnabled:true},
-              // { columnName: 'type1', wordWrapEnabled:true},
-              // { columnName: 'type2', wordWrapEnabled:true},
-              // { columnName: 'type3', wordWrapEnabled:true},
-              { columnName: 'action',width:120}
+              // { columnName: 'ID',width:100},
+              // // { columnName: 'sessionLabel', wordWrapEnabled:true},
+              // // { columnName: 'type1', wordWrapEnabled:true},
+              // // { columnName: 'type2', wordWrapEnabled:true},
+              // // { columnName: 'type3', wordWrapEnabled:true},
+              // { columnName: 'action',width:120}
             ],
             defaultFilters:[],
             filteringStateColumnExtensions:[
@@ -87,7 +87,7 @@ class F18ReportsTableComponent extends Component {
             CurrencyEditor,
             defaultSorting,
             sortingStateColumnExtensions,
-            tableColumnExtensions,
+            //tableColumnExtensions,
             defaultColumnWidths,
             filteringStateColumnExtensions,
             defaultFilters,
@@ -98,6 +98,7 @@ class F18ReportsTableComponent extends Component {
           const rows = this.props.data;
           const columns = this.props.columns;
           const showFilter = this.props.showFilter;
+          const tableColumnExtensions = this.props.tableColumnExtensions
 
         return (
             <Paper>
