@@ -300,6 +300,16 @@ class F19Form extends Component {
         this.getData(this.state.applicationStatusId);
     }
 
+    componentWillReceiveProps(nextProps){
+        if(this.props.match.params.recordId!=nextProps.match.params.recordId){
+            if(nextProps.match.params.recordId!=0){
+                this.getData(this.state.applicationStatusId);
+            }else{
+                window.location.reload();
+            }
+        }
+    }
+
     render() {
         
 

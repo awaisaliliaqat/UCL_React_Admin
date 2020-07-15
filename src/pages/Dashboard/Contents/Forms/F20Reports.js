@@ -209,10 +209,13 @@ class F20Reports extends Component {
         
         const columns = [
             { name: "ID", title: "ID"},
+            {name: "academicsSessionLabel", title: "Session"},
+            {name: "programmeGroupLabel", title: "Programme Group"},
             { name: "courseId", title: "Course\xa0ID"},
             { name: "courseCode", title: "Course\xa0Code"},
             { name: "courseTitle", title: "Course\xa0Title"},
-            { name: "courseLabel", title: "Label"},
+            { name: "courseCreditLabel", title: "Course\xa0Credit"},
+            { name: "courseLabel", title: "Course\xa0Label"},
             { name: "action", title:"Action"}
         ]
 

@@ -1,8 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import { withStyles, ThemeProvider } from '@material-ui/styles';
+import { withStyles} from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import { alphabetExp, numberExp, emailExp } from '../../../../utils/regularExpression';
-import { TextField, Grid, Divider, Typography  } from '@material-ui/core';
+import { TextField, Grid, Divider, Typography, MenuItem, CircularProgress} from '@material-ui/core';
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
@@ -45,11 +44,21 @@ class F20Form extends Component {
             courseIdError:"",
             courseCode:"",
             courseCodeError:"",
+            courseCreditId:"",
+            courseCreditIdError:"",
+            courseCreditIdMenuItems:null,
             courseTitle:"",
             courseTitleError:"",
             isCourseLabelAutoChangeable:true,
             courseLabel:"",
-            courseLabelError:""
+            courseLabelError:"",
+            academicsSessionIdMenuItems:null,
+            academicsSessionId:"",
+            academicsSessionIdError:"",
+            programmeMenuItems:null,
+            programmeGroupId:"",
+            programmeGroupIdError:"",
+            courseRowDataArray:[]
         }
     }
 
@@ -69,6 +78,120 @@ class F20Form extends Component {
             isOpenSnackbar:false
         });
     };
+
+    loadAcademicSession = async() => {        
+        this.setState({isLoading: true});
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C20CommonAcademicSessionsView`;
+        await fetch(url, {
+            method: "POST",
+            headers: new Headers({
+                Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                       this.setState({academicsSessionIdMenuItems:json.DATA});
+                    } else {
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                    }
+                    console.log("loadAcademicSession",json);
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        console.log(error);
+                        this.handleOpenSnackbar("Failed to fetch ! Please try again later.","error");
+                    }
+                });
+        this.setState({isLoading: false})
+    }
+
+    loadProgrammes = async(academicsSessionId) => {        
+        this.setState({isLoading: true});
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C20CommonProgrammeGroupsView`;
+        await fetch(url, {
+            method: "POST",
+            headers: new Headers({
+                Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                        this.setState({programmeMenuItems:json.DATA});
+                    } else {
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                    }
+                    console.log("programmeMenuItems",json);
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        console.log(error);
+                        this.handleOpenSnackbar("Failed to fetch ! Please try again later.","error");
+                    }
+                });
+        this.setState({isLoading: false})
+    }
+
+    loadCourseCredit = async() => {        
+        this.setState({isLoading: true});
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C20CommonProgrammeCoursesCreditTypeView`;
+        await fetch(url, {
+            method: "POST",
+            headers: new Headers({
+                Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                        this.setState({courseCreditIdMenuItems:json.DATA});
+                    } else {
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                    }
+                    console.log("courseCreditIdMenuItems",json);
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        console.log(error);
+                        this.handleOpenSnackbar("Failed to fetch ! Please try again later.","error");
+                    }
+                });
+        this.setState({isLoading: false})
+    }
 
     loadData = async(index) => {
         const data = new FormData();
@@ -91,16 +214,26 @@ class F20Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.setState({
-                           courseId:json.DATA[0].courseId,
-                           courseCode:json.DATA[0].courseCode,
-                           courseTitle:json.DATA[0].courseTitle,
-                           courseLabel:json.DATA[0].courseLabel
-                       });
+                        console.log("loadData", json);
+                        if(json.DATA.length){
+                            this.loadProgrammes(json.DATA[0].academicsSessionId);
+                            this.setState({
+                                academicsSessionId:json.DATA[0].academicsSessionId,
+                                programmeGroupId:json.DATA[0].programmeGroupId,
+                                courseCreditId:json.DATA[0].courseCreditId,
+                                courseId:json.DATA[0].courseLabel,
+                                courseCode:json.DATA[0].courseCode,
+                                courseTitle:json.DATA[0].courseTitle,
+                                courseLabel:json.DATA[0].courseLabel
+                            });
+                        }else{
+                            this.setState({recordId:0});
+                            window.location = "#/dashboard/F20Form/"+this.state.recordId;
+                        }
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
-                    console.log(json);
+                    console.log("loadData", json);
                 },
                 error => {
                     if (error.status == 401) {
@@ -111,16 +244,40 @@ class F20Form extends Component {
                     } else {
                         console.log(error);
                        // alert("Failed to Save ! Please try Again later.");
-                        this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.","error");
+                        this.handleOpenSnackbar("Failed to fetch ! Please try again later.","error");
                     }
                 });
         this.setState({isLoading: false})
     }
 
+    isAcademicSessionValid = () => {
+        let isValid = true;
+        if (!this.state.academicsSessionId) {
+            this.setState({academicsSessionIdError:"Please select academic session."});
+            document.getElementById("academicsSessionId").focus();
+            isValid = false;
+        } else {
+            this.setState({academicsSessionIdError:""});
+        }
+        return isValid;
+    }
+
+    isProgrammeValid = () => {
+        let isValid = true;
+        if (!this.state.programmeGroupId) {
+            this.setState({programmeGroupIdError:"Please select programme group."});
+            document.getElementById("programmeGroupId").focus();
+            isValid = false;
+        } else {
+            this.setState({programmeGroupIdError:""});
+        }
+        return isValid;
+    }
+
     isCourseIdValid = () => {
         let isValid = true;        
         if (!this.state.courseId) {
-            this.setState({courseIdError:"Please enter Course ID."});
+            this.setState({courseIdError:"Please enter course id."});
             document.getElementById("courseId").focus();
             isValid = false;
         } else {
@@ -132,7 +289,7 @@ class F20Form extends Component {
     isCourseCodeValid = () => {
         let isValid = true;        
         if (!this.state.courseCode) {
-            this.setState({courseCodeError:"Please enter Course Code."});
+            this.setState({courseCodeError:"Please enter course code."});
             document.getElementById("courseCode").focus();
             isValid = false;
         } else {
@@ -144,7 +301,7 @@ class F20Form extends Component {
     isCourseTitleValid = () => {
         let isValid = true;
         if (!this.state.courseTitle) {
-            this.setState({courseTitleError:"Please enter Course Title."});
+            this.setState({courseTitleError:"Please enter course title."});
             document.getElementById("courseTitle").focus();
             isValid = false;
         } else {
@@ -153,10 +310,22 @@ class F20Form extends Component {
         return isValid;
     }
 
+    isCourseCreditValid = () => {
+        let isValid = true;
+        if (!this.state.courseCreditId) {
+            this.setState({courseCreditIdError:"Please select course credit."});
+            document.getElementById("courseCreditId").focus();
+            isValid = false;
+        } else {
+            this.setState({courseCreditIdError:""});
+        }
+        return isValid;
+    }
+
     isCourseLabelValid = () => {
         let isValid = true;
         if (!this.state.courseLabel) {
-            this.setState({courseLabelError:"Please enter Label."});
+            this.setState({courseLabelError:"Please enter label."});
             document.getElementById("courseLabel").focus();
             isValid = false;
         } else {
@@ -168,14 +337,7 @@ class F20Form extends Component {
     onHandleChange = e => {
         const { name, value } = e.target;
         const errName = `${name}Error`;
-        let regex = "";
         switch (name) {
-            case "courseId":
-                regex = new RegExp(numberExp);
-                if (value && !regex.test(value)) {
-                    return;
-                }
-                break;
             case "courseLabel":
                 this.setState({isCourseLabelAutoChangeable:false});
                 break;
@@ -187,6 +349,14 @@ class F20Form extends Component {
             [name]: value,
             [errName]: ""
         });
+
+        switch (name) {
+            case "academicsSessionId":
+                this.loadProgrammes(value);
+                break;
+            default:
+                break;
+        }
 
         if(this.state.isCourseLabelAutoChangeable){
             let CID = document.getElementById("courseId").value;
@@ -201,9 +371,12 @@ class F20Form extends Component {
 
      onFormSubmit = async(e) => {
         if( 
+            !this.isAcademicSessionValid() ||
+            !this.isProgrammeValid() ||
             !this.isCourseIdValid() ||
             !this.isCourseCodeValid() ||
             !this.isCourseTitleValid() ||
+            !this.isCourseCreditValid() ||
             !this.isCourseLabelValid()
         ){ return; }
         let myForm = document.getElementById('myForm');
@@ -260,9 +433,22 @@ class F20Form extends Component {
     }
 
     componentDidMount() {
+        this.loadAcademicSession();
+        this.loadCourseCredit();
         if(this.state.recordId!=0){
             this.loadData(this.state.recordId);
             this.setState({isCourseLabelAutoChangeable:false});
+        }
+    }
+
+    componentWillReceiveProps(nextProps){
+        if(this.props.match.params.recordId!=nextProps.match.params.recordId){
+            if(nextProps.match.params.recordId!=0){
+                this.loadData(nextProps.match.params.recordId);
+                this.setState({isCourseLabelAutoChangeable:false});
+            }else{
+                window.location.reload();
+            }
         }
     }
 
@@ -280,7 +466,7 @@ class F20Form extends Component {
                             style={{
                                 color: '#1d5f98', 
                                 fontWeight: 600, 
-                                borderBottom: '1px solid #d2d2d2',
+                                borderBottom: '1px solid rgb(58, 127, 187, 0.3)',
                                 width: '98%', 
                                 marginBottom: 25, 
                                 fontSize: 20
@@ -289,11 +475,6 @@ class F20Form extends Component {
                         >
                             Define Programme Courses
                         </Typography>
-                        <Divider style={{
-                                backgroundColor: 'rgb(58, 127, 187)',
-                                opacity: '0.3'
-                            }} 
-                        />
                         <Grid 
                             container 
                             spacing={2} 
@@ -302,6 +483,75 @@ class F20Form extends Component {
                                 marginRight: 10 
                             }}
                         >
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    id="academicsSessionId"
+                                    name="academicsSessionId"
+                                    variant="outlined"
+                                    label="Academic Session"
+                                    onChange={this.onHandleChange}
+                                    value={this.state.academicsSessionId}
+                                    error={!!this.state.academicsSessionIdError}
+                                    helperText={this.state.academicsSessionIdError}
+                                    required
+                                    fullWidth
+                                    select
+                                >
+                                    {this.state.academicsSessionIdMenuItems ?
+                                        this.state.academicsSessionIdMenuItems.map((dt, i) => (
+                                            <MenuItem 
+                                                key={"academicsSessionIdMenuItems"+dt.ID} 
+                                                value={dt.ID}
+                                            >
+                                                {dt.Label}
+                                            </MenuItem>
+                                        ))
+                                        :
+                                        <MenuItem>
+                                            <CircularProgress/>
+                                        </MenuItem>
+                                    }
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    id="programmeGroupId"
+                                    name="programmeGroupId"
+                                    variant="outlined"
+                                    label="Programme Group"
+                                    onChange={this.onHandleChange}
+                                    value={this.state.programmeGroupId}
+                                    error={!!this.state.programmeGroupIdError}
+                                    helperText={this.state.programmeGroupIdError}
+                                    disabled={!this.state.academicsSessionId}
+                                    required
+                                    fullWidth
+                                    select
+                                >
+                                    {this.state.programmeMenuItems ?
+                                        this.state.programmeMenuItems.map((dt, i) => (
+                                            <MenuItem 
+                                                key={"programmeGroupIdMenuItems"+dt.ID} 
+                                                value={dt.ID}
+                                            >
+                                                {dt.Label}
+                                            </MenuItem>
+                                        ))
+                                        :
+                                        <MenuItem>
+                                            <CircularProgress size={24}/>
+                                        </MenuItem>
+                                    }
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Divider 
+                                    style={{
+                                        backgroundColor: 'rgb(58, 127, 187)',
+                                        opacity: '0.3'
+                                    }} 
+                                />
+                            </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField
                                     id="courseId"
@@ -343,6 +593,36 @@ class F20Form extends Component {
                                     error={!!this.state.courseTitleError}
                                     helperText={this.state.courseTitleError}
                                 />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    id="courseCreditId"
+                                    name="courseCreditId"
+                                    variant="outlined"
+                                    label="Course Credit"
+                                    onChange={this.onHandleChange}
+                                    value={this.state.courseCreditId}
+                                    error={!!this.state.courseCreditIdError}
+                                    helperText={this.state.courseCreditIdError}
+                                    required
+                                    fullWidth
+                                    select
+                                >
+                                    {this.state.courseCreditIdMenuItems ?
+                                        this.state.courseCreditIdMenuItems.map((dt, i) => (
+                                            <MenuItem 
+                                                key={"courseCreditIdMenuItems"+dt.ID} 
+                                                value={dt.ID}
+                                            >
+                                                {dt.Label}
+                                            </MenuItem>
+                                        ))
+                                        :
+                                        <MenuItem>
+                                            <CircularProgress size={24}/>
+                                        </MenuItem>
+                                    }
+                                </TextField>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField
