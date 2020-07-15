@@ -119,7 +119,7 @@ class F20Form extends Component {
 
     loadProgrammes = async(academicsSessionId) => {        
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C20CommonProgrammesView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C20CommonProgrammeGroupsView`;
         await fetch(url, {
             method: "POST",
             headers: new Headers({
@@ -436,6 +436,7 @@ class F20Form extends Component {
         this.loadAcademicSession();
         this.loadCourseCredit();
         if(this.state.recordId!=0){
+            //alert(this.state.recordId);
             this.loadData(this.state.recordId);
             this.setState({isCourseLabelAutoChangeable:false});
         }
