@@ -524,14 +524,19 @@ class F18Reports extends Component {
             :
             ([]);
 
+        //console.log("tableColumns", tableColumns);
+
         const tableColumnExtensions = columnsArr ? (columnsArr.columns.map((dt, i)=>(
-            dt=="ID"?{ columnName: dt, width:100, align:"center"}:"",
-            dt=="Action"?{ columnName: dt, width:120, align:"center"}:"",
-            dt!="ID"&&dt!="Action"?{ columnName: dt, wordWrapEnabled:true, align:"center"}:""
+            dt=="ID" ? 
+                {columnName:dt, width:100, align:"center"}
+                    : dt=="Action" ? {columnName:dt, width:120, align:"center"} 
+                        : dt!="ID"&&dt!="Action" ? {columnName:dt, wordWrapEnabled:true, align:"center"}:""
         )))
         :
         ([]);
         
+        //console.log("tableColumnExtensions", tableColumnExtensions);
+
         return (
             <Fragment>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
