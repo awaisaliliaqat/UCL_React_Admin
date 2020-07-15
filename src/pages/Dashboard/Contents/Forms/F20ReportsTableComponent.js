@@ -52,10 +52,14 @@ class F06ReportsTableComponent extends Component {
               { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions:[
-              { columnName: 'ID', width:100},
-              { columnName: 'courseCode', wordWrapEnabled: true},
-              { columnName: 'courseTitle', wordWrapEnabled: true},
-              { columnName: 'courseLabel', wordWrapEnabled: true},
+              { columnName: 'ID', width:100, align:"center"},
+              { columnName: 'academicsSessionLabel', wordWrapEnabled: true, align:"center"},
+              { columnName: 'programmeGroupLabel', wordWrapEnabled: true, align:"center"},
+              { columnName: "courseId", wordWrapEnabled: true, align:"center"},
+              { columnName: 'courseCode', wordWrapEnabled: true, align:"center"},
+              { columnName: 'courseTitle', wordWrapEnabled: true, align:"center"},
+              { columnName: 'courseCreditLabel', wordWrapEnabled: true, align:"center"},
+              { columnName: 'courseLabel', wordWrapEnabled: true, align:"center"},
               { columnName: 'action', width:120}
             ],
             resizingMode:"widget",
