@@ -286,6 +286,16 @@ class F08Form extends Component {
         this.getProgrammesGroupData();
     }
 
+    componentWillReceiveProps(nextProps){
+        if(this.props.match.params.recordId!=nextProps.match.params.recordId){
+            if(nextProps.match.params.recordId!=0){
+                this.loadData(nextProps.match.params.recordId);
+            }else{
+                window.location.reload();
+            }
+        }
+    }
+
     render() {
 
         const { classes } = this.props;

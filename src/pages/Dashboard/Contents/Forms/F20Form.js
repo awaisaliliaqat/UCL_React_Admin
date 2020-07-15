@@ -227,7 +227,7 @@ class F20Form extends Component {
                                 courseLabel:json.DATA[0].courseLabel
                             });
                         }else{
-                            this.state({recordId:0});
+                            this.setState({recordId:0});
                             window.location = "#/dashboard/F20Form/"+this.state.recordId;
                         }
                     } else {
@@ -436,9 +436,19 @@ class F20Form extends Component {
         this.loadAcademicSession();
         this.loadCourseCredit();
         if(this.state.recordId!=0){
-            //alert(this.state.recordId);
             this.loadData(this.state.recordId);
             this.setState({isCourseLabelAutoChangeable:false});
+        }
+    }
+
+    componentWillReceiveProps(nextProps){
+        if(this.props.match.params.recordId!=nextProps.match.params.recordId){
+            if(nextProps.match.params.recordId!=0){
+                this.loadData(nextProps.match.params.recordId);
+                this.setState({isCourseLabelAutoChangeable:false});
+            }else{
+                window.location.reload();
+            }
         }
     }
 
