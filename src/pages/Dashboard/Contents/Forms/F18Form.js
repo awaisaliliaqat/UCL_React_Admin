@@ -398,7 +398,7 @@ class F18Form extends Component {
                                     onChange={this.onHandleChange}
                                     value={this.state.academicSession}
                                     error={!!this.state.academicSessionError}
-                                    helperText={this.state.academicSessionError}
+                                    helperText={this.state.academicSessionError?this.state.academicSessionError:<Typography color="primary" variant="caption">e.g.: 2020 - 2021</Typography>}
                                 />
                             </Grid>
                             <Divider style={{
