@@ -80,7 +80,6 @@ const Login = () => {
             window.localStorage.setItem("adminData", JSON.stringify(json));
             window.localStorage.setItem("uclAdminToken", json.jwttoken);
             window.location.replace("#/dashboard");
-            window.location.reload();
           } else {
             setError('Invalid Email or Password');
           }

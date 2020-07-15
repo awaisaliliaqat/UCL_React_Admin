@@ -3,9 +3,10 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Typography from "@material-ui/core/Typography";
 import AddmissionDecisionFilter from './Chunks/AddmissionDecisionFilter';
-import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
-import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
+import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
+import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 import DecisionActionMenu from './Chunks/DecisionActionMenu';
+import ExcelIcon from '../../../../../assets/Images/excel.png';
 import { format } from 'date-fns';
 
 function isEmpty(obj) {
@@ -334,6 +335,53 @@ class AddmissionDecision extends Component {
         })
     }
 
+    downloadExcelData = async () => {
+        if (this.state.isDownloadExcel === false) {
+            this.setState({
+                isDownloadExcel: true
+            })
+            const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C04AdmissionsProspectApplicationViewExcelDownload?applicationStatusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
+            await fetch(url, {
+                method: "GET",
+                headers: new Headers({
+                    Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+                })
+            })
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.blob();
+                    }
+                    return false;
+                })
+                .then(
+                    json => {
+                        if (json) {
+                            var csvURL = window.URL.createObjectURL(json);
+                            var tempLink = document.createElement("a");
+                            tempLink.setAttribute("download", `AdmissionDecisionStatus.xlsx`);
+                            tempLink.href = csvURL;
+                            tempLink.click();
+                            console.log(json);
+                        }
+                    },
+                    error => {
+                        if (error.status === 401) {
+                            this.setState({
+                                isLoginMenu: true,
+                                isReload: false
+                            })
+                        } else {
+                            alert('Failed to fetch, Please try again later.');
+                            console.log(error);
+                        }
+                    });
+            this.setState({
+                isDownloadExcel: false
+            })
+        }
+    }
+
 
     handleDateChange = (date) => {
         this.setState({
@@ -356,9 +404,7 @@ class AddmissionDecision extends Component {
             { name: "Age", dataIndex: "age", sortable: false, customStyleHeader: { width: '10%' } },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Submission Date", dataIndex: "submittedOn", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Reg Fee Payment Status", dataIndex: "paymentStatusLabel", sortable: false, customStyleHeader: { width: '17%' } },
-            { name: "Reg Fee Payment Date", dataIndex: "paymentDate", sortable: false, customStyleHeader: { width: '17%' } },
             { name: "Status", dataIndex: "statusLabel", sortable: false, customStyleHeader: { width: '15%' } },
             {
                 name: "Action", renderer: rowData => {
@@ -386,6 +432,11 @@ class AddmissionDecision extends Component {
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
                             Admission Decision Dashboard
             </Typography>
+                        <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
+                            height: 30, width: 32,
+                            cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
+                        }}
+                        />
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',

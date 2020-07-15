@@ -2,11 +2,11 @@ import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 // import ExcelIcon from '../../../../assets/Images/excel.png';
-import RegistrationFeeApprovelFilter from './Chunks/RegistrationFeeApprovelFilter';
-import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
+import TutionFeeApprovelFilter from './Chunks/TutionFeeApprovelFilter';
+import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
 import Button from '@material-ui/core/Button';
-import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import RegistrationFeeApprovelMenu from './Chunks/RegistrationFeeApprovelMenu';
+import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
+import TutionFeeApprovelMenu from './Chunks/TutionFeeApprovelMenu';
 
 import { format } from 'date-fns';
 
@@ -37,7 +37,6 @@ class RegistrationFeeApprovel extends Component {
             genderData: [],
             degreeData: [],
             documentData: [],
-            statusTypeData: [],
             studentName: "",
             referenceNo: "",
             genderId: 0,
@@ -58,9 +57,8 @@ class RegistrationFeeApprovel extends Component {
     }
 
     componentDidMount() {
-        this.getGenderData();
-        this.getDegreesData();
-        this.getStatusTypeData();
+        // this.getGenderData();
+        // this.getDegreesData();
         this.getMethodData();
         this.getData();
     }
@@ -99,43 +97,8 @@ class RegistrationFeeApprovel extends Component {
             );
     };
 
-    getStatusTypeData = async () => {
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03CommonAcademicsFeePayableStatusTypesView`;
-        await fetch(url, {
-            method: "GET",
-            headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-            })
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    throw res;
-                }
-                return res.json();
-            })
-            .then(
-                (json) => {
-                    this.setState({
-                        statusTypeData: json.DATA,
-                    });
-                    console.log(json.DATA);
-                },
-                (error) => {
-                    if (error.status === 401) {
-                        this.setState({
-                            isLoginMenu: true,
-                            isReload: true
-                        })
-                    } else {
-                        alert('Failed to fetch, Please try again later.');
-                        console.log(error);
-                    }
-                }
-            );
-    };
-
     getMethodData = async () => {
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03CommonAcademicsFeePayablePaymentMethodsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C12FinanceStudentsLegacyFeePaymentMethods`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -293,7 +256,7 @@ class RegistrationFeeApprovel extends Component {
         })
         const paymentDate = this.state.eventDate ? `&paymentDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
         const reload = this.state.applicationStatusId === 0 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.referenceNo === "" && this.state.studentName === "" && this.state.eventDate === null;
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalView?paymentStatusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C12FinanceStudentsLegacyFeeVouchersView?paymentStatusId=${this.state.applicationStatusId}&studentId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -335,13 +298,76 @@ class RegistrationFeeApprovel extends Component {
 
     }
 
+    onDownload = (fileName) => {
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${
+            process.env.REACT_APP_SUB_API_NAME
+            }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
+
+        fetch(url, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+            }),
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    return res.blob();
+                } else if (res.status === 401) {
+                    this.setState({
+                        isLoginMenu: true,
+                        isReload: false
+                    })
+                    return {}
+                } else {
+                    alert('Operation Failed, Please try again later.');
+                    return {}
+                }
+            })
+            .then((result) => {
+                var csvURL = window.URL.createObjectURL(result);
+                var tempLink = document.createElement("a");
+                tempLink.href = csvURL;
+                tempLink.setAttribute("download", fileName);
+                tempLink.click();
+                console.log(csvURL);
+                if (result.CODE === 1) {
+                    //Code
+                } else if (result.CODE === 2) {
+                    alert(
+                        "SQL Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.CODE === 3) {
+                    alert(
+                        "Other Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.error === 1) {
+                    alert(result.error_message);
+                } else if (result.success === 0 && result.redirect_url !== "") {
+                    window.location = result.redirect_url;
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     onConfirmClick = async (e, id) => {
         e.preventDefault();
         this.setState({
             isSubmitLoading: true
         })
         if (this.state.methodId) {
-            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03CommonAcademicsFeePayableChangeStatus?paymentId=${id}&paymentMethodId=${this.state.methodId}`;
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C12FinanceStudentsLegacyFeeVouchersChangeStatus?paymentId=${id}&paymentMethodId=${this.state.methodId}`;
             await fetch(url, {
                 method: "GET",
                 headers: new Headers({
@@ -357,6 +383,7 @@ class RegistrationFeeApprovel extends Component {
                 .then(
                     json => {
                         if (json.CODE === 1) {
+                            alert('confirmed');
                             this.setState({
                                 isOpenApprovelMenu: false,
                                 methodId: 0,
@@ -401,7 +428,7 @@ class RegistrationFeeApprovel extends Component {
 
     render() {
         const columns = [
-            { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+            { name: "Nucleus Id", dataIndex: "studentId", sortable: false, customStyleHeader: { width: '10%', textAlign: 'center' } },
             {
                 name: "Name", renderer: rowData => {
                     return (
@@ -409,14 +436,16 @@ class RegistrationFeeApprovel extends Component {
                     )
                 }, sortable: false, customStyleHeader: { width: '12%' }
             },
-            { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '9%' } },
-            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
+            { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '13%' } },
+            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '20%', textAlign: 'center' } },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
+            { name: "Bill No", dataIndex: "billNo", sortable: false, customStyleHeader: { width: '10%' } },
+            { name: "Bill Amount", dataIndex: "billAmount", sortable: false, customStyleHeader: { width: '13%' } },
             { name: "Payment Reference No", dataIndex: "paymentReferenceNo", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Payment Method", dataIndex: "paymentMethodLabel", sortIndex: "paymentMethodLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Payment Date", dataIndex: "paymentDate", sortIndex: "submittedOnMillis", sortable: true, customStyleHeader: { width: '13%' } },
-            { name: "Status", dataIndex: "paymentStatusLabel", sortIndex: "paymentStatusLabel", sortable: true, customStyleHeader: { width: '12%' } },
+            { name: "Payment Date", dataIndex: "paymentDate", sortIndex: "paymentDateMillis", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Status", dataIndex: "statusLabel", sortIndex: "statusLabel", sortable: true, customStyleHeader: { width: '12%' } },
             {
                 name: "Action", renderer: rowData => {
                     return (
@@ -432,7 +461,7 @@ class RegistrationFeeApprovel extends Component {
         return (
             <Fragment>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
-                <RegistrationFeeApprovelMenu methodIdError={this.state.methodIdError} submitLoading={this.state.isSubmitLoading} onHandleChange={e => this.onHandleChange(e)} methodId={this.state.methodId}
+                <TutionFeeApprovelMenu onDownload={name => this.onDownload(name)} methodIdError={this.state.methodIdError} submitLoading={this.state.isSubmitLoading} onHandleChange={e => this.onHandleChange(e)} methodId={this.state.methodId}
                     methodData={this.state.methodData} data={this.state.selectedData} open={this.state.isOpenApprovelMenu}
                     handleClose={() => this.setState({ isOpenApprovelMenu: false })} onConfirmClick={(e, id) => this.onConfirmClick(e, id)} />
                 <div style={{
@@ -443,7 +472,7 @@ class RegistrationFeeApprovel extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Registration Fee Approval Dashboard
+                            Tuition Fee Approval Dashboard
             </Typography>
                         {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
@@ -455,7 +484,7 @@ class RegistrationFeeApprovel extends Component {
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <RegistrationFeeApprovelFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
+                    <TutionFeeApprovelFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
 
                     <TablePanel isShowIndexColumn data={this.state.admissionData} isLoading={this.state.isLoading} sortingEnabled columns={columns} />
 

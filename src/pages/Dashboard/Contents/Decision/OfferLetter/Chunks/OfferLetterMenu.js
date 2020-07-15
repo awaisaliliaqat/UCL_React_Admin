@@ -14,7 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import DialogActions from '@material-ui/core/DialogActions';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
-import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
+import TablePanel from '../../../../../../components/ControlledTable/RerenderTable/TablePanel';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
@@ -113,14 +113,14 @@ const OfferLetterMenu = props => {
     const { selectedData = {}, sendLoading, uploadLoading, isLoading, files = [], filesError } = values;
     const columns = [
         //{ name: "SR#", dataIndex: "serialNo", sortable: false, customStyleHeader: { width: '7%' } },
-        { name: "Id", dataIndex: "offerLetterId", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
+        { name: "Id", dataIndex: "offerLetterId", sortable: false, customStyleHeader: { width: '12%', textAlign: 'center' } },
         {
             // eslint-disable-next-line react/display-name
             name: "File", renderer: rowData => {
                 return <Fragment>
                     <span>{rowData.offerLetterFileName}</span>
                 </Fragment>
-            }, sortable: false, customStyleHeader: { width: '40%' }
+            }, sortable: false, customStyleHeader: { width: '35%' }
         },
         {
             // eslint-disable-next-line react/display-name

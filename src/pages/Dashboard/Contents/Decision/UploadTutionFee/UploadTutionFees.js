@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import UploadTutionFessAction from './Chunks/UploadTutionFeesAction';
-import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
+import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 
 class DocumentRequest extends Component {
 
@@ -90,7 +90,7 @@ class DocumentRequest extends Component {
                 (result) => {
                     console.log(result);
                     if (result["CODE"] === 1) {
-                        window.location.reload();
+                        this.getData();
                     } else {
                         alert(result["SYSTEM_MESSAGE"]);
                     }

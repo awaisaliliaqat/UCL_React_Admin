@@ -4,8 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import { TextField, Button, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { DatePicker } from "@material-ui/pickers";
-
 const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
@@ -48,46 +46,18 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const AddmissionDecisionFilter = props => {
+const DocumentRequestFilter = props => {
     const classes = useStyles();
-    const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading, handleDateChange } = props;
+    const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading } = props;
 
 
     return (
         <Fragment>
             <div className={classes.container}>
-
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>
-                    <span className={classes.label}>Admission Decision</span>
-
-                    <TextField
-                        placeholder="Decision"
-                        variant="outlined"
-                        name="applicationStatusId"
-                        id="applicationStatusId"
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.applicationStatusId}
-                        onChange={e => {
-                            onHandleChange(e);
-                        }}
-                        select
-                    >
-                        <MenuItem value={0}>
-                            All
-                        </MenuItem>
-                        {values.DecisionData.map((item) => (
-                            <MenuItem key={item.ID} value={item.ID}>
-                                {item.Label}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </div>
-                <div className={classes.item} style={{
-                    width: '8%'
-                }}>
-                    <span className={classes.label}>ID</span>
+                    <span className={classes.label}>Application ID</span>
                     <TextField
                         placeholder="ID"
                         variant="outlined"
@@ -104,47 +74,35 @@ const AddmissionDecisionFilter = props => {
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>
-                    <span className={classes.label}>Name</span>
-                    <TextField
-                        placeholder="Name"
-                        variant="outlined"
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.studentName}
-                        name="studentName"
-                        onChange={e => {
-                            onHandleChange(e)
+                    <span className={classes.label}>Status</span>
 
-                        }}
-                    />
-                </div>
-                <div className={classes.item} style={{
-                    width: '12%'
-                }}>
-                    <span className={classes.label}>Gender</span>
                     <TextField
-                        placeholder="Gender"
+                        placeholder="Status"
                         variant="outlined"
+                        name="applicationStatusId"
+                        id="applicationStatusId"
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.applicationStatusId}
+                        onChange={e => {
+                            onHandleChange(e);
+                        }}
                         select
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.genderId}
-                        name="genderId"
-                        onChange={e => {
-                            onHandleChange(e)
-
-                        }}
-
                     >
                         <MenuItem value={0}>
                             All
-                          </MenuItem>
-                        {values.genderData.map((item) => (
-                            <MenuItem key={item.id} value={item.id}>
-                                {item.label}
-                            </MenuItem>
-                        ))}
+                        </MenuItem>
+                        <MenuItem value={1}>
+                            Not Requested
+                        </MenuItem>
+                        <MenuItem value={2}>
+                            Requested
+                        </MenuItem>
+                        <MenuItem value={3}>
+                            Documents Uploaded
+                        </MenuItem>
                     </TextField>
                 </div>
-                <div className={classes.item} style={{
+                {/* <div className={classes.item} style={{
                     width: '20%'
                 }}>
                     <span className={classes.label}>Degree Programme</span>
@@ -175,31 +133,7 @@ const AddmissionDecisionFilter = props => {
                             );
                         })}
                     </TextField>
-                </div>
-                <div className={classes.item} style={{
-                    width: '20%'
-                }}>
-                    <span className={classes.label}>Submission Date</span>
-                    <DatePicker
-                        autoOk
-                        invalidDateMessage=""
-                        placeholder="Date"
-                        disableFuture
-                        variant="inline"
-                        inputVariant="outlined"
-                        format="dd-MMM-yyyy"
-                        fullWidth
-                        value={e => values.eventDate(e, 'name')}
-                        InputProps={{
-
-                            classes: { input: classes.resize }
-                        }}
-                        onChange={(event) => {
-                            handleDateChange(event);
-                        }}
-
-                    />
-                </div>
+                </div> */}
                 <div className={classes.actions}>
                     <Button
                         variant="contained"
@@ -228,13 +162,11 @@ const AddmissionDecisionFilter = props => {
     );
 }
 
-AddmissionDecisionFilter.defaultProps = {
+DocumentRequestFilter.defaultProps = {
     onHandleChange: fn => fn,
     getDataByStatus: fn => fn,
     values: {},
     onClearFilters: fn => fn,
-    handleDateChange: fn => fn,
-    getDataFilters: fn => fn,
     isLoading: false
 
 
@@ -242,14 +174,12 @@ AddmissionDecisionFilter.defaultProps = {
 
 };
 
-AddmissionDecisionFilter.propTypes = {
+DocumentRequestFilter.propTypes = {
     onHandleChange: PropTypes.func,
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
     onClearFilters: PropTypes.func,
-    handleDateChange: PropTypes.func,
-    getDataFilters: PropTypes.func,
     isLoading: PropTypes.bool,
 };
 
-export default AddmissionDecisionFilter;
+export default DocumentRequestFilter;
