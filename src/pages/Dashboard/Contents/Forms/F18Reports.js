@@ -523,6 +523,14 @@ class F18Reports extends Component {
             )))
             :
             ([]);
+
+        const tableColumnExtensions = columnsArr ? (columnsArr.columns.map((dt, i)=>(
+            dt=="ID"?{ columnName: dt, width:100, align:"center"}:"",
+            dt=="Action"?{ columnName: dt, width:120, align:"center"}:"",
+            dt!="ID"&&dt!="Action"?{ columnName: dt, wordWrapEnabled:true, align:"center"}:""
+        )))
+        :
+        ([]);
         
         return (
             <Fragment>
@@ -578,6 +586,7 @@ class F18Reports extends Component {
                         data={this.state.tableData}
                         columns={tableColumns} 
                         showFilter={this.state.showTableFilter}
+                        tableColumnExtensions={tableColumnExtensions}
                     />
                     <CustomizedSnackbar
                         isOpen={this.state.isOpenSnackbar}
