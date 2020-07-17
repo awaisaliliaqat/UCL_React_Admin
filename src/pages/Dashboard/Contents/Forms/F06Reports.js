@@ -1,11 +1,9 @@
 import React, { Component, Fragment } from 'react';
-import {Divider, IconButton, Tooltip, Hidden} from '@material-ui/core';
-
+import {Divider, IconButton, Tooltip, CircularProgress, Grid} from '@material-ui/core';
 import Typography from "@material-ui/core/Typography";
 import ExcelIcon from '../../../../assets/Images/excel.png';
 import F06ReportsFilter from './F06ReportsFilter';
 import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
-import Button from '@material-ui/core/Button';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { format } from 'date-fns'; 
 import F06ReportsTableComponent from './F06ReportsTableComponent';
@@ -36,7 +34,7 @@ class F06Reports extends Component {
             showSearchBar:false,
             isDownloadExcel: false,
             applicationStatusId: 1,
-            admissionData: [],
+            admissionData: null,
             genderData: [],
             degreeData: [],
             studentName: "",
@@ -509,8 +507,8 @@ class F06Reports extends Component {
 
         const columns = [
             { name: "ID", title: "ID"},
-            { name: "shortLabel", title: "Short\xa0Label"},
             { name: "label", title: "School\xa0Name"},
+            { name: "shortLabel", title: "Short\xa0Name"},
             { name: "action", title:"Action"}
         ]
 
@@ -567,11 +565,21 @@ class F06Reports extends Component {
                         :
                         <br/>
                     }
-                    <F06ReportsTableComponent 
-                        data={this.state.admissionData} 
-                        columns={columns} 
-                        showFilter={this.state.showTableFilter}
-                    />
+                    { this.state.admissionData ?
+                        <F06ReportsTableComponent 
+                            data={this.state.admissionData} 
+                            columns={columns} 
+                            showFilter={this.state.showTableFilter}
+                        />
+                        :
+                        <Grid 
+                            container 
+                            justify="center"
+                            alignItems="center"
+                        >
+                            <CircularProgress />
+                        </Grid>
+                    }
                     <CustomizedSnackbar
                         isOpen={this.state.isOpenSnackbar}
                         message={this.state.snackbarMessage}
