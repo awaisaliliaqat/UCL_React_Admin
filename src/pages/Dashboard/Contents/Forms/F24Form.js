@@ -35,14 +35,16 @@ const styles = () => ({
 function CourseRow (props) {
 
     const {rowIndex, rowData, prerequisiteCoursesArray, ...rest} = props;
-
-    console.log("rowData", rowData);
     
-    const [prerequisiteCourse, setPrerequisiteCourse] = useState([]);
+    const [prerequisiteCourse, setPrerequisiteCourse] = useState(rowData.coursePrerequisitesSelected);
+   
     const [prerequisiteCoursesInputValue, setPrerequisiteCoursesInputValue] = useState("");
+
+    const handleSetPrerequisiteCourse = (event, value, rason) => {
+        setPrerequisiteCourse = (value);
+    }
     
-    const handlePrerequisiteCourse = (event, value, rason) => {
-        setPrerequisiteCourse(value);
+    const handlePrerequisiteCourse = (value) => {
         let ObjArray = value;
         let selectedPCIdsString = "";
         for(let i=0; i<ObjArray.length; i++){
@@ -53,14 +55,17 @@ function CourseRow (props) {
             }
         }
         setPrerequisiteCoursesInputValue(selectedPCIdsString);
+        console.log("selectedPCIdsString", selectedPCIdsString);
     }
 
     const isPrerequisiteCourseSelected = (option) => {
         return prerequisiteCourse.some(selectedOption => selectedOption.ID == option.ID);
     }
-    
-    useEffect(()=>{  });
 
+    useEffect(()=>{
+        handlePrerequisiteCourse(prerequisiteCourse);
+    });
+    
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -263,7 +268,9 @@ class F24Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.setState({programmeGroupCoursesArray:json.DATA});
+                       this.setState({
+                           programmeGroupCoursesArray:json.DATA
+                        });
                        let prerequisiteCourseArray = [];
                        for(let i=0; i<json.DATA.length; i++){
                             let obj = {
@@ -399,13 +406,13 @@ class F24Form extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-                        setTimeout(()=>{
-                            if(this.state.recordId!=0){
-                                window.location="#/dashboard/F06Reports";
-                            }else{
-                                window.location.reload();
-                            }
-                        }, 2000);
+                        // setTimeout(()=>{
+                        //     if(this.state.recordId!=0){
+                        //         window.location="#/dashboard/F06Reports";
+                        //     }else{
+                        //         window.location.reload();
+                        //     }
+                        // }, 2000);
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }

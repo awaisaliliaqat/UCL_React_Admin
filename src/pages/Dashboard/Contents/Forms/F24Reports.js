@@ -106,9 +106,8 @@ class F24Reports extends Component {
                             admissionData: json.DATA || []
                         });
                         for (var i = 0; i < json.DATA.length; i++) {
-                            let bojNew = [];
-                            let ar = json.DATA[i].programmeCourseIdPrereq.split(', ');
-                            json.DATA[i].programmeCourseIdPrereq = ar.map((data, index) =>
+                            let prerequisiteArray = json.DATA[i].programmeCourseIdPrereq;
+                            json.DATA[i].programmeCourseIdPrereq = prerequisiteArray.map((data, index) =>
                                 <Fragment key={"pcpr"+index}>{data}<br/></Fragment>
                             );
                             json.DATA[i].action = (
