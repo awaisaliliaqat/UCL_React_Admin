@@ -1,9 +1,12 @@
-import React, { Component, Fragment, useState } from 'react';
+import React, { Component, Fragment, useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 //import { alphabetExp, numberExp, emailExp } from '../../../../utils/regularExpression';
 import { TextField, Grid, MenuItem, FormControl, FormLabel, FormGroup, FormControlLabel,
-    Checkbox, Card, CardContent, FormHelperText, CircularProgress, Divider, Typography} from '@material-ui/core';
+    Checkbox, Card, CardContent, FormHelperText, CircularProgress, Divider, Typography, Chip} from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
@@ -32,6 +35,189 @@ const styles = () => ({
         textAlign: 'center',
     },
 });
+
+function CourseRow (props) {
+
+    const {rowIndex, rowData, prerequisiteCoursesArray, ...rest} = props;
+
+    console.log("rowData", rowData);
+    
+    const [prerequisiteCourse, setPrerequisiteCourse] = useState([{ID:1,Label: "Label 1"},{ID:2,Label: "Label 2"}]);
+    const [prerequisiteCoursesInputValue, setPrerequisiteCoursesInputValue] = useState("");
+    
+    const handlePrerequisiteCourse = (event, value, rason) => {
+        setPrerequisiteCourse(value);
+        let ObjArray = value;
+        let selectedPCIdsString = "";
+        for(let i=0; i<ObjArray.length; i++){
+            if(i==0){
+                selectedPCIdsString = ObjArray[i].ID;
+            }else{
+                selectedPCIdsString += ","+ObjArray[i].ID;
+            }
+        }
+        setPrerequisiteCoursesInputValue(selectedPCIdsString);
+    }
+
+    const isPrerequisiteCourseSelected = (option) => {
+        return prerequisiteCourse.some(selectedOption => selectedOption.ID == option.ID);
+    }
+    
+    useEffect(()=>{  });
+
+    const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+    const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+    return(
+        <Fragment>
+        <Grid item xs={12}></Grid>
+        <Grid 
+            container
+            direction="row"
+            justify="space-evenly"
+            alignItems="center"
+            spacing={2}
+        >
+            <Typography 
+                color="primary" 
+                variant="subtitle1"
+                component="div"
+                style={{float:"left"}}
+            >
+                <b>{rowIndex}:</b>
+            </Typography>
+            <Grid item xs={12} md={3}>
+                <Autocomplete
+                    fullWidth
+                    id="checkboxes-tags-demo"
+                    name="checkboxes-tags-demo"
+                    options={prerequisiteCoursesArray}
+                    // value={prerequisiteCourse}
+                    // onChange={handlePrerequisiteCourse}
+                    disableCloseOnSelect
+                    getOptionLabel={(option) => option.Label}
+                    renderTags={(tagValue, getTagProps) =>
+                        tagValue.map((option, index) => (
+                            <Chip
+                                label={option.Label}
+                                color="primary"
+                                variant="outlined"
+                                {...getTagProps({ index })}
+                            />
+                        ))
+                    }
+                    renderOption={(option, {selected}) => (
+                        <Fragment>
+                            <Checkbox
+                                icon={icon}
+                                checkedIcon={checkedIcon}
+                                style={{ marginRight: 8 }}
+                                checked={ selected }
+                                color="primary"
+                            />
+                            {option.Label}
+                        </Fragment>
+                    )}
+                    renderInput={(params) => (
+                        <TextField 
+                            {...params} 
+                            variant="outlined" 
+                            label="Courses Label" 
+                            placeholder="Search and Select" 
+                        />
+                    )}
+                />
+            </Grid>
+            <Grid item xs={12} md={2}>
+                <TextField
+                    id="courseCredit"
+                    name="courseCredit"
+                    label="Course Credit"
+                    required
+                    fullWidth
+                    inputProps={{
+                        "aria-readonly":true
+                    }}
+                    variant="outlined"
+                    value={rowData.courseCreditLabel}
+                />
+            </Grid>
+            <Grid item xs={12} md={4}>
+                <Autocomplete
+                    multiple
+                    fullWidth
+                    id="checkboxes-tags-demo"
+                    name="checkboxes-tags-demo"
+                    options={prerequisiteCoursesArray}
+                    value={prerequisiteCourse}
+                    onChange={handlePrerequisiteCourse}
+                    disableCloseOnSelect
+                    getOptionLabel={(option) => option.Label}
+                    renderTags={(tagValue, getTagProps) =>
+                        tagValue.map((option, index) => (
+                            <Chip
+                                label={option.Label}
+                                color="primary"
+                                variant="outlined"
+                                {...getTagProps({ index })}
+                            />
+                        ))
+                    }
+                    renderOption={(option) => (
+                        <Fragment>
+                            <Checkbox
+                                icon={icon}
+                                checkedIcon={checkedIcon}
+                                style={{ marginRight: 8 }}
+                                checked={ isPrerequisiteCourseSelected(option) }
+                                color="primary"
+                            />
+                            {option.Label}
+                        </Fragment>
+                    )}
+                    renderInput={(params) => (
+                        <TextField 
+                            {...params} 
+                            variant="outlined" 
+                            label="Prerequisite Courses" 
+                            placeholder="Search and Select"
+                        />
+                    )}
+                />
+            </Grid>
+            <TextField 
+                type="hidden"
+                name="programmeCourseIdPrereq" 
+                value={prerequisiteCoursesInputValue}
+            />
+            <Grid item xs={2}>
+                <TextField
+                    id="academicSessionId1"
+                    name="academicSessionId1"
+                    variant="outlined"
+                    label="Choice Group"
+                    // onChange={this.onHandleChange}
+                    // value={this.state.academicSessionId}
+                    // error={!!this.state.academicSessionIdError}
+                    // helperText={this.state.academicSessionIdError}
+                    required
+                    fullWidth
+                    select
+                >
+                    {[{ID:1,Label: "Label 1"},{ID:2,Label: "Label 2"}, {ID:3,Label: "Label 3"}].map((dt, i) => (
+                        <MenuItem 
+                            key={"academicSessionIdMenuItems"+dt.ID} 
+                            value={dt.ID}
+                        >
+                            {dt.Label}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            </Grid>
+        </Grid>
+        </Fragment>
+    );
+}
 
 function ProgrammesCheckBox(props) {
    
@@ -89,7 +275,9 @@ class F09Form extends Component {
             academicSessionIdError:"",
             programmeCoursesArray:[],
             programmeCoursesArraySelected:null,
-            programmeCoursesError:""
+            programmeCoursesError:"",
+
+            prerequisiteCourseArray:[]
         }
     }
 
@@ -148,6 +336,7 @@ class F09Form extends Component {
         this.setState({isLoading: false})
     }
 
+    
     loadProgrammeCourses = async() => {        
         this.setState({isLoading: true});
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonProgrammeCoursesView`;
@@ -376,6 +565,17 @@ class F09Form extends Component {
     componentDidMount() {
         this.loadAcademicSession();
         this.loadProgrammeCourses();
+        
+        let prerequisiteCourseArray = [];
+        for(let i=0; i<4; i++){
+            let obj = {
+                    ID:++i, 
+                    Label: "Label"+(++i)
+            }
+            prerequisiteCourseArray.push(obj);
+        }
+        this.setState({prerequisiteCourseArray:prerequisiteCourseArray});
+
         if(this.state.recordId!=0){
             this.loadData(this.state.recordId);
         }
@@ -481,6 +681,29 @@ class F09Form extends Component {
                                     helperText={this.state.shortLabelError}
                                 />
                             </Grid>
+                            {this.state.programmeGroupCoursesArray||true ? 
+                                [1,2].map((dt, i) => (
+                                    <CourseRow 
+                                        key={"programmeGroupCoursesArray"+i}
+                                        rowIndex={++i}
+                                        rowData={dt}
+                                        prerequisiteCoursesArray={this.state.prerequisiteCourseArray}
+                                    />
+                                ))
+                                :
+                                this.state.isLoading ?
+                                <Grid 
+                                    container 
+                                    justify="center" 
+                                    alignContent="center"
+                                    style={{padding:"1em"}}
+                                >
+                                    <CircularProgress />
+                                </Grid>
+                                :
+                                ""
+                            }
+                            {/*
                             <Grid item xs={12}>
                                 <Card>
                                     <CardContent>
@@ -534,6 +757,7 @@ class F09Form extends Component {
                                     </CardContent>
                                 </Card>
                             </Grid>
+                         */}
                         </Grid>
                     </Grid>
                 </form>
