@@ -2,8 +2,10 @@ import React, { Component, Fragment, useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 //import { alphabetExp, numberExp, emailExp } from '../../../../utils/regularExpression';
-import { TextField, Grid, MenuItem, FormControl, FormLabel, FormGroup, FormControlLabel,
-    Checkbox, Card, CardContent, FormHelperText, CircularProgress, Divider, Typography, Chip} from '@material-ui/core';
+import { TextField, Grid, MenuItem, CircularProgress, Divider, Typography, Chip, Select,
+    IconButton, Tooltip, Checkbox, Fab} from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
@@ -38,29 +40,21 @@ const styles = () => ({
 
 function CourseRow (props) {
 
-    const {rowIndex, rowData, prerequisiteCoursesArray, ...rest} = props;
+    const {rowIndex, rowData, onDelete, programmeCoursesArray, choiceGroupIdMenuItems, ...rest} = props;
 
-    console.log("rowData", rowData);
-    
-    const [prerequisiteCourse, setPrerequisiteCourse] = useState([{ID:1,Label: "Label 1"},{ID:2,Label: "Label 2"}]);
-    const [prerequisiteCoursesInputValue, setPrerequisiteCoursesInputValue] = useState("");
-    
-    const handlePrerequisiteCourse = (event, value, rason) => {
-        setPrerequisiteCourse(value);
-        let ObjArray = value;
-        let selectedPCIdsString = "";
-        for(let i=0; i<ObjArray.length; i++){
-            if(i==0){
-                selectedPCIdsString = ObjArray[i].ID;
-            }else{
-                selectedPCIdsString += ","+ObjArray[i].ID;
-            }
+    console.log("props",props);
+
+    let cLabel = ""; 
+    let cCredit = "";
+    let cProgrammeCoursesArray = []; 
+
+    for(let i=0;i<programmeCoursesArray.length; i++){
+        if(programmeCoursesArray[i].ID==rowData.courseId){
+            cLabel = programmeCoursesArray[i].courseLabel;
+            cCredit = programmeCoursesArray[i].courseCreditLabel;
+            cProgrammeCoursesArray = programmeCoursesArray[i].coursePrerequisitesList
+            break;
         }
-        setPrerequisiteCoursesInputValue(selectedPCIdsString);
-    }
-
-    const isPrerequisiteCourseSelected = (option) => {
-        return prerequisiteCourse.some(selectedOption => selectedOption.ID == option.ID);
     }
     
     useEffect(()=>{  });
@@ -84,62 +78,35 @@ function CourseRow (props) {
                 component="div"
                 style={{float:"left"}}
             >
-                <b>{rowIndex}:</b>
+                <b>{rowIndex+1}:</b>
             </Typography>
             <Grid item xs={12} md={3}>
-                <Autocomplete
-                    fullWidth
-                    id="checkboxes-tags-demo"
-                    name="checkboxes-tags-demo"
-                    options={prerequisiteCoursesArray}
-                    // value={prerequisiteCourse}
-                    // onChange={handlePrerequisiteCourse}
-                    disableCloseOnSelect
-                    getOptionLabel={(option) => option.Label}
-                    renderTags={(tagValue, getTagProps) =>
-                        tagValue.map((option, index) => (
-                            <Chip
-                                label={option.Label}
-                                color="primary"
-                                variant="outlined"
-                                {...getTagProps({ index })}
-                            />
-                        ))
-                    }
-                    renderOption={(option, {selected}) => (
-                        <Fragment>
-                            <Checkbox
-                                icon={icon}
-                                checkedIcon={checkedIcon}
-                                style={{ marginRight: 8 }}
-                                checked={ selected }
-                                color="primary"
-                            />
-                            {option.Label}
-                        </Fragment>
-                    )}
-                    renderInput={(params) => (
-                        <TextField 
-                            {...params} 
-                            variant="outlined" 
-                            label="Courses Label" 
-                            placeholder="Search and Select" 
-                        />
-                    )}
-                />
-            </Grid>
-            <Grid item xs={12} md={2}>
                 <TextField
-                    id="courseCredit"
-                    name="courseCredit"
-                    label="Course Credit"
+                    id="course"
+                    name="course"
+                    label="Course"
                     required
                     fullWidth
                     inputProps={{
                         "aria-readonly":true
                     }}
                     variant="outlined"
-                    value={rowData.courseCreditLabel}
+                    value={cLabel}
+                />
+                <TextField type="hidden" name="programmeCourseId" value={rowData.courseId} />
+            </Grid>
+            <Grid item xs={12} md={1}>
+                <TextField
+                    id="courseCredit"
+                    name="courseCredit"
+                    label="Credit"
+                    required
+                    fullWidth
+                    inputProps={{
+                        "aria-readonly":true
+                    }}
+                    variant="outlined"
+                    value={cCredit}
                 />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -147,15 +114,15 @@ function CourseRow (props) {
                     multiple
                     fullWidth
                     id="checkboxes-tags-demo"
-                    name="checkboxes-tags-demo"
-                    options={prerequisiteCoursesArray}
-                    value={prerequisiteCourse}
-                    onChange={handlePrerequisiteCourse}
+                    options={cProgrammeCoursesArray}
+                    value={cProgrammeCoursesArray}
                     disableCloseOnSelect
-                    getOptionLabel={(option) => option.Label}
+                    getOptionLabel={(option) => " "}
+                    readOnly={true}
                     renderTags={(tagValue, getTagProps) =>
                         tagValue.map((option, index) => (
                             <Chip
+                                key={"chipTag"+option.ID}
                                 label={option.Label}
                                 color="primary"
                                 variant="outlined"
@@ -163,95 +130,48 @@ function CourseRow (props) {
                             />
                         ))
                     }
-                    renderOption={(option) => (
-                        <Fragment>
-                            <Checkbox
-                                icon={icon}
-                                checkedIcon={checkedIcon}
-                                style={{ marginRight: 8 }}
-                                checked={ isPrerequisiteCourseSelected(option) }
-                                color="primary"
-                            />
-                            {option.Label}
-                        </Fragment>
-                    )}
                     renderInput={(params) => (
                         <TextField 
                             {...params} 
                             variant="outlined" 
                             label="Prerequisite Courses" 
-                            placeholder="Search and Select"
+                            placeholder=""
+                            readOnly={true}
                         />
                     )}
                 />
             </Grid>
-            <TextField 
-                type="hidden"
-                name="programmeCourseIdPrereq" 
-                value={prerequisiteCoursesInputValue}
-            />
             <Grid item xs={2}>
                 <TextField
-                    id="academicSessionId1"
-                    name="academicSessionId1"
+                    id="choiceGroup"
                     variant="outlined"
                     label="Choice Group"
-                    // onChange={this.onHandleChange}
-                    // value={this.state.academicSessionId}
-                    // error={!!this.state.academicSessionIdError}
-                    // helperText={this.state.academicSessionIdError}
+                    value={rowData.choiceGroupId?choiceGroupIdMenuItems.find(x => x.ID == rowData.choiceGroupId).Label:""}
                     required
                     fullWidth
-                    select
+                />
+                 <TextField type="hidden" name="choiceGroupId" value={rowData.choiceGroupId?rowData.choiceGroupId:0} />
+            </Grid>
+            <Grid item xs={12} md={1} style={{textAlign:"center"}}>
+                <IconButton 
+                    color="primary" 
+                    aria-label="Add" 
+                    component="span"
+                    onClick={() => onDelete(rowIndex)}
                 >
-                    {[{ID:1,Label: "Label 1"},{ID:2,Label: "Label 2"}, {ID:3,Label: "Label 3"}].map((dt, i) => (
-                        <MenuItem 
-                            key={"academicSessionIdMenuItems"+dt.ID} 
-                            value={dt.ID}
+                    <Tooltip title="Delete">
+                        <Fab 
+                            color="secondary" 
+                            aria-label="add"
+                            size="small"    
                         >
-                            {dt.Label}
-                        </MenuItem>
-                    ))}
-                </TextField>
+                            <DeleteIcon />
+                        </Fab>
+                    </Tooltip>
+                </IconButton>
             </Grid>
         </Grid>
         </Fragment>
-    );
-}
-
-function ProgrammesCheckBox(props) {
-   
-    const [isChecked, setIsChecked] = useState(props.isChecked);
-
-    const handleChecked = () => {
-        setIsChecked(!isChecked);
-        props.removeProgrammeCoursesError();
-    }
-
-    return (
-        <Grid 
-            item 
-            md={3}
-        >
-            <FormControlLabel
-                control={
-                    <Checkbox 
-                        checked={isChecked} 
-                        onChange={handleChecked} 
-                        name="programmeCourseId" 
-                        color="primary" 
-                        value={props.id}
-                    />}
-                label={props.label}
-                style={{
-                    color:'#1d5f98', 
-                    fontWeight:600,
-                    marginBottom:5, 
-                    fontSize:12,
-                    wordBreak: "break-word"
-                }}
-            />
-        </Grid>
     );
 }
 
@@ -273,10 +193,21 @@ class F09Form extends Component {
             academicSessionIdMenuItems:[],
             academicSessionId:"",
             academicSessionIdError:"",
+            programmeGroupIdMenuItems:[],
+            programmeGroupId:"",
+            programmeGroupIdError:"",
+            preCourseId:"",
+            preCourseIdField:"",
+            preCourseIdError:"",
+            preCourseLabel:"",
+            preChoiceGroupId:"",
+            preChoiceGroupIdError:"",
+            preChoiceGroupIdMenuItems:[],
             programmeCoursesArray:[],
+            programmeCoursesListArray:[],
             programmeCoursesArraySelected:null,
             programmeCoursesError:"",
-
+            courseRowDataArray:[],
             prerequisiteCourseArray:[]
         }
     }
@@ -336,10 +267,9 @@ class F09Form extends Component {
         this.setState({isLoading: false})
     }
 
-    
-    loadProgrammeCourses = async() => {        
+    loadProgrammeGroups = async() => {  
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonProgrammeCoursesView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonProgrammeGroupsView`;
         await fetch(url, {
             method: "POST",
             headers: new Headers({
@@ -355,11 +285,100 @@ class F09Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
+                       this.setState({programmeGroupIdMenuItems:json.DATA});
+                    } else {
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                    }
+                    console.log("loadProgrammeGroups", json);
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        console.log(error);
+                        this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+                    }
+                });
+        this.setState({isLoading: false})
+    }
+
+    loadProgrammeCourses = async(programmeGroupId) => {
+        let data = new FormData();
+        data.append("programmeGroupId", programmeGroupId);
+        this.setState({isLoading: true});
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonProgrammeCoursesView`;
+        await fetch(url, {
+            method: "POST",
+            body: data,
+            headers: new Headers({
+                Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
                        this.setState({programmeCoursesArray:json.DATA});
+                       let prerequisiteCourseArray = [];
+                       for(let i=0; i<json.DATA.length; i++){
+                            let obj = {
+                                    ID:json.DATA[i].ID, 
+                                    Label: json.DATA[i].courseLabel
+                            }
+                            prerequisiteCourseArray.push(obj);
+                       }
+                       this.setState({programmeCoursesListArray:prerequisiteCourseArray});
+                       console.log("programmeCoursesListArray", prerequisiteCourseArray);
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
                     console.log("loadProgrammeCourses", json);
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        console.log(error);
+                        this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+                    }
+                });
+        this.setState({isLoading: false})
+    }
+
+    loadChoiceGroup = async() => {  
+        this.setState({isLoading: true});
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupChoicesView`;
+        await fetch(url, {
+            method: "POST",
+            headers: new Headers({
+                Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                       this.setState({preChoiceGroupIdMenuItems:json.DATA});
+                    } else {
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                    }
+                    console.log("loadChoiceGroup", json);
                 },
                 error => {
                     if (error.status == 401) {
@@ -396,11 +415,13 @@ class F09Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
+                       this.loadProgrammeCourses(json.DATA[0].programmeGroupId);
                        this.setState({
                            academicSessionId : json.DATA[0].academicSessionId,
                            label : json.DATA[0].label,
                            shortLabel : json.DATA[0].shortLabel,
-                           programmeCoursesArraySelected : json.DATA[0].programmeCourseId
+                           programmeGroupId : json.DATA[0].programmeGroupId,
+                           courseRowDataArray: json.DATA[0].programmeCourseSelectedArray
                        });
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
@@ -432,6 +453,18 @@ class F09Form extends Component {
         }
         return isValid;
     }
+
+    isProgrammeValid = () => {
+        let isValid = true;
+        if (!this.state.programmeGroupId) {
+            this.setState({programmeGroupIdError:"Please select Programme."});
+            document.getElementById("programmeGroupId").focus();
+            isValid = false;
+        } else {
+            this.setState({programmeGroupIdError:""});
+        }
+        return isValid;
+    }
     
     islabelValid = () => {
         let isValid = true;
@@ -457,36 +490,125 @@ class F09Form extends Component {
         return isValid;
     }
 
-    isProgrammeCoursesValid = () => {
-        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        var checkedOne = Array.prototype.slice.call(checkboxes).some(x => x.checked);
-        let isValid = true;
-        if (!checkedOne) {
-            this.setState({programmeCoursesError:"Please select at least one Programme Course."});
+    isProgrammeCourseValid = () => {
+        let isValid = true;        
+        if (!this.state.preCourseIdField) {
+            this.setState({preCourseIdError:"Please select Course."});
+            document.getElementById("preCourseId").focus();
             isValid = false;
-        } 
+        } else {
+            this.setState({preCourseIdError:""});
+        }
+        return isValid;
+    }
+
+    isChoiceGroupValid = () => {
+        let isValid = true;
+        if (!this.state.preChoiceGroupId) {
+            this.setState({preChoiceGroupIdError:"Please select choice group."});
+            document.getElementById("preChoiceGroupId").focus();
+            isValid = false;
+        } else {
+            this.setState({preChoiceGroupIdError:""});
+        }
+        return isValid;
+    }
+
+    isCoursesListValid = () => {
+        let programmeCourseId = document.getElementsByName("programmeCourseId");
+        let isValid = true;
+        if (programmeCourseId.length==0) {
+            this.handleOpenSnackbar("Please add one course in list.","error");
+            document.getElementById("preCourseId").focus();
+            isValid = false;
+        }
         return isValid;
     }
 
     onHandleChange = e => {
         const { name, value } = e.target;
         const errName = `${name}Error`;
-        //let regex = "";
-        // switch (name) {
-        //     case "label":
-        //     case "shortLabel":
-        //         regex = new RegExp(alphabetExp);
-        //         if (value && !regex.test(value)) {
-        //             return;
-        //         }
-        //         break;
-        // default:
-        //     break;
-        // }
+        let regex = "";
+        switch (name) {
+            case "programmeGroupId":
+                this.loadProgrammeCourses(value);
+                this.setState({
+                    preCourseId:"",
+                    preCourseLabel:"",
+                    courseRowDataArray:[]
+                });
+                break;
+        default:
+            break;
+        }
+
         this.setState({
             [name]: value,
             [errName]: ""
         })
+    }
+
+    onPreCourseChange = (v) => {
+
+        this.setState({
+            preCourseLabel : v.Label,
+            preCourseIdError: ""
+        });
+
+        if(v=""){
+            this.setState({preCourseId:""});
+        }
+
+    }    
+
+    onPreCourseIdChange = (v) => {
+        this.setState({
+            preCourseId: v,
+            preCourseIdError: "",
+            preCourseIdField:v.ID
+        })
+    }
+
+    handeAddCourseRow = () => {
+        if( 
+            !this.isProgrammeCourseValid() 
+            //|| !this.isChoiceGroupValid() 
+        ){ return; }
+
+        let courseRowDataArray = this.state.courseRowDataArray;        
+        let preCourseId = this.state.preCourseIdField;
+        let preChoiceGroupId = this.state.preChoiceGroupId;
+
+        let programmeCourseId = document.getElementsByName("programmeCourseId");
+        for(let i=0; i<programmeCourseId.length; i++){
+            if(programmeCourseId[i].value==preCourseId){
+                this.handleOpenSnackbar("Course already added.","error");
+                return;
+            }
+        }
+
+        let courseRowDataObject = {
+            courseId:preCourseId,
+            choiceGroupId:preChoiceGroupId
+        };
+        courseRowDataArray.push(courseRowDataObject);
+        this.setState({
+            courseRowDataArray:courseRowDataArray,
+            preCourseLabel:"",
+            preCourseId:"",
+            preCourseIdField:"",
+            preChoiceGroupId:""
+        });
+        console.log("courseRowDataObject", courseRowDataObject);
+    }
+
+    handeDeleteCourseRow = (index) => {
+        let courseRowDataArray = this.state.courseRowDataArray;
+        courseRowDataArray.splice(index, 1);
+        this.setState({courseRowDataArray:courseRowDataArray});
+        if(courseRowDataArray){
+            this.setState({isAcademicSessionAndProgrammeChangeable:true});
+        }
     }
 
     clickOnFormSubmit=()=>{
@@ -496,9 +618,10 @@ class F09Form extends Component {
      onFormSubmit = async(e) => {
         if(
             !this.isAcademicSessionValid () ||
+            !this.isProgrammeValid () ||
             !this.islabelValid() || 
             !this.isshortLabelValid() ||
-            !this.isProgrammeCoursesValid()
+            !this.isCoursesListValid()
         ){ return; }
         let myForm = document.getElementById('myForm');
         const data = new FormData(myForm);
@@ -546,17 +669,6 @@ class F09Form extends Component {
                 });
         this.setState({isLoading: false})
     }
-
-    removeProgrammeCoursesError = () => {
-        this.setState({programmeCoursesError:""});
-    }
-
-    checkProgrammeCourseIsSelected = (val) => {
-        let array = this.state.programmeCoursesArraySelected;
-        if(array){
-            return array.some(arrVal => val === arrVal);
-        }
-    }
     
     viewReport = () => {
         window.location = "#/dashboard/F09Reports"; 
@@ -564,18 +676,8 @@ class F09Form extends Component {
 
     componentDidMount() {
         this.loadAcademicSession();
-        this.loadProgrammeCourses();
-        
-        let prerequisiteCourseArray = [];
-        for(let i=0; i<4; i++){
-            let obj = {
-                    ID:++i, 
-                    Label: "Label"+(++i)
-            }
-            prerequisiteCourseArray.push(obj);
-        }
-        this.setState({prerequisiteCourseArray:prerequisiteCourseArray});
-
+        this.loadProgrammeGroups();
+        this.loadChoiceGroup();
         if(this.state.recordId!=0){
             this.loadData(this.state.recordId);
         }
@@ -599,7 +701,7 @@ class F09Form extends Component {
             <Fragment>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
                 <form id="myForm" onSubmit={this.isFormValid}>
-                    <TextField type="hidden" name="recordId" value={this.state.recordId}/>
+                    <TextField type="hidden" name="id" value={this.state.recordId}/>
                     <Grid container component="main" className={classes.root}>
                         <Typography 
                             style={{
@@ -627,7 +729,7 @@ class F09Form extends Component {
                                 marginRight: 10 
                             }}
                         >
-                            <Grid item xs={12}>
+                            <Grid item xs={12} md={6}>
                                 <TextField
                                     id="academicSessionId"
                                     name="academicSessionId"
@@ -649,6 +751,37 @@ class F09Form extends Component {
                                             {dt.Label}
                                         </MenuItem>
                                     ))}
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    id="programmeGroupId"
+                                    name="programmeGroupId"
+                                    variant="outlined"
+                                    label="Programme"
+                                    onChange={this.onHandleChange}
+                                    value={this.state.programmeGroupId}
+                                    error={!!this.state.programmeGroupIdError}
+                                    helperText={this.state.programmeGroupIdError}
+                                    disabled={!this.state.academicSessionId}
+                                    required
+                                    fullWidth
+                                    select
+                                >
+                                    {this.state.programmeGroupIdMenuItems ?
+                                        this.state.programmeGroupIdMenuItems.map((dt, i) => (
+                                            <MenuItem 
+                                                key={"programmeGroupIdMenuItems"+dt.ID} 
+                                                value={dt.ID}
+                                            >
+                                                {dt.Label}
+                                            </MenuItem>
+                                        ))
+                                        :
+                                        <MenuItem>
+                                            <CircularProgress size={24}/>
+                                        </MenuItem>
+                                    }
                                 </TextField>
                             </Grid>
                             <Grid item xs={12} md={6}>
@@ -681,13 +814,112 @@ class F09Form extends Component {
                                     helperText={this.state.shortLabelError}
                                 />
                             </Grid>
-                            {this.state.programmeGroupCoursesArray||true ? 
-                                [1,2].map((dt, i) => (
+                            <Grid item xs={12}>
+                                <Divider 
+                                    style={{
+                                        backgroundColor: 'rgb(58, 127, 187)',
+                                        opacity: '0.3'
+                                    }} 
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Autocomplete
+                                    freeSolo
+                                    id="preCourseId"
+                                    disableClearable
+                                    disabled={!this.state.programmeGroupId}
+                                    options={this.state.programmeCoursesListArray}
+                                    getOptionLabel={(option) => option.Label}
+                                    value={this.state.preCourseId}
+                                    onChange={(event, newValue) => {
+                                        this.onPreCourseIdChange(newValue);
+                                    }}
+                                    inputValue={this.preCourseLabel}
+                                    onInputChange={(event, newInputValue) => {
+                                        this.onPreCourseChange(newInputValue);
+                                    }}
+                                    style={{marginTop:"-1em", marginBottom:"-1em"}}
+                                    renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Course"
+                                        placeholder="Search and Select"
+                                        margin="normal"
+                                        variant="outlined"
+                                        required
+                                        InputProps={{ ...params.InputProps, type: 'search' }}
+                                        error={!!this.state.preCourseIdError}
+                                        helperText={this.state.preCourseIdError?this.state.preCourseIdError:""}
+                                    />
+                                    )}
+                                />
+                                <TextField type="hidden" id="preCourseIdHidden" value={this.state.preCourseIdField} />
+                            </Grid>
+                            <Grid item xs={12} md={5}>
+                                <TextField
+                                    id="preChoiceGroupId"
+                                    name="preChoiceGroupId"
+                                    variant="outlined"
+                                    label="Choice Group"
+                                    onChange={this.onHandleChange}
+                                    value={this.state.preChoiceGroupId}
+                                    error={!!this.state.preChoiceGroupIdError}
+                                    helperText={this.state.preChoiceGroupIdError}
+                                    required
+                                    fullWidth
+                                    select
+                                >
+                                     {this.state.preChoiceGroupIdMenuItems ?
+                                        this.state.preChoiceGroupIdMenuItems.map((dt, i) => (
+                                            <MenuItem 
+                                                key={"PCGID"+dt.ID} 
+                                                value={dt.ID}
+                                            >
+                                                {dt.Label}
+                                            </MenuItem>
+                                        ))
+                                        :
+                                        <MenuItem>
+                                            <CircularProgress size={24}/>
+                                        </MenuItem>
+                                    }
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={1} style={{textAlign:"center"}}>
+                                <IconButton 
+                                    color="primary" 
+                                    aria-label="Add" 
+                                    component="span"
+                                    onClick={this.handeAddCourseRow}
+                                >
+                                    <Tooltip title="Add New">
+                                        <Fab 
+                                            color="primary" 
+                                            aria-label="add"
+                                            size="small"    
+                                        >
+                                            <AddIcon />
+                                        </Fab>
+                                    </Tooltip>
+                                </IconButton>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Divider 
+                                    style={{
+                                        backgroundColor: 'rgb(58, 127, 187)',
+                                        opacity: '0.3'
+                                    }} 
+                                />
+                            </Grid>
+                            {this.state.programmeCoursesArray ? 
+                                this.state.courseRowDataArray.map((dt, i) => (
                                     <CourseRow 
-                                        key={"programmeGroupCoursesArray"+i}
-                                        rowIndex={++i}
+                                        key={"CRDA"+i}
+                                        rowIndex={i}
                                         rowData={dt}
-                                        prerequisiteCoursesArray={this.state.prerequisiteCourseArray}
+                                        onDelete={(i) => this.handeDeleteCourseRow(i)}
+                                        programmeCoursesArray={this.state.programmeCoursesArray}
+                                        choiceGroupIdMenuItems={this.state.preChoiceGroupIdMenuItems}
                                     />
                                 ))
                                 :
@@ -703,62 +935,9 @@ class F09Form extends Component {
                                 :
                                 ""
                             }
-                            {/*
-                            <Grid item xs={12}>
-                                <Card>
-                                    <CardContent>
-                                        <FormControl
-                                            component="fieldset" 
-                                            className={classes.formControl}
-                                            required 
-                                            error={!!this.state.programmeCoursesError}
-                                        >
-                                            <FormLabel 
-                                                component="legend" 
-                                                style={{
-                                                    marginBottom:"0.5em"
-                                                }}
-                                            >
-                                                Programme Courses
-                                            </FormLabel>
-                                            <FormGroup>
-                                                <Grid 
-                                                    container
-                                                    direction="row"
-                                                    justify="flex-start"
-                                                    alignItems="center"
-                                                >
-                                                {this.state.programmeCoursesArraySelected ?
-                                                    this.state.programmeCoursesArray.map( (dt, i) => (
-                                                        <ProgrammesCheckBox 
-                                                            key={"programmeCoursesArray"+i} 
-                                                            id={dt.ID}
-                                                            label={dt.Label}
-                                                            isChecked={this.checkProgrammeCourseIsSelected(dt.ID)}
-                                                            removeProgrammeCoursesError={this.removeProgrammeCoursesError}
-                                                        />
-                                                    ))
-                                                    :
-                                                    this.state.programmeCoursesArray.map( (dt, i) => (
-                                                        <ProgrammesCheckBox 
-                                                            key={"programmeCoursesArray2"+i} 
-                                                            id={dt.ID}
-                                                            label={dt.Label}
-                                                            isChecked={false}
-                                                            removeProgrammeCoursesError={this.removeProgrammeCoursesError}
-                                                        />
-                                                    
-                                                    ))
-                                                }
-                                                </Grid>
-                                            </FormGroup>
-                                            <FormHelperText>{this.state.programmeCoursesError}</FormHelperText>
-                                        </FormControl>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                         */}
                         </Grid>
+                        <br/>
+                        <br/>
                     </Grid>
                 </form>
                 <BottomBar

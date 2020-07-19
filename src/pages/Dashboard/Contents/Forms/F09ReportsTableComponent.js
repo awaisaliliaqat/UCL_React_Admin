@@ -49,22 +49,26 @@ class F09ReportsTableComponent extends Component {
               { columnName: 'action', sortingEnabled: false },
             ],
             defaultSorting:[
-              { columnName: 'ID', direction: 'asc' }
+              { columnName: 'SRNo', direction: 'asc' }
             ],
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions:[
-              { columnName: 'ID', width:120},
+              { columnName: 'SRNo', width:250},
               { columnName: "academicSessionLabel", wordWrapEnabled:true},
+              { columnName: "programmeGroupLabel", wordWrapEnabled:true},
               { columnName: 'shortLabel', wordWrapEnabled:true},
               { columnName: 'label', wordWrapEnabled:true},
-              { columnName: 'programmeCourseLabel', wordWrapEnabled:true},
-              { columnName: 'action', width:120}
+              { columnName: 'programmeCourseLabels', wordWrapEnabled:true},
+              { columnName: 'programmeCourseChoices', wordWrapEnabled:true},
+              { columnName: 'action', width:120, align:"center"}
             ],
             defaultFilters:[],
             filteringStateColumnExtensions:[
               { columnName: 'action', filteringEnabled: false },
+              { columnName: 'programmeCourseLabels', filteringEnabled: false},
+              { columnName: 'programmeCourseChoices', filteringEnabled: false},
             ]
         };
     }
@@ -96,10 +100,7 @@ class F09ReportsTableComponent extends Component {
               <Grid rows={rows} columns={columns}>
               <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
-                <PagingState 
-                  defaultCurrentPage={1}
-                  defaultPageSize={10} 
-                />
+                <PagingState  defaultCurrentPage={1} defaultPageSize={10} />
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />
@@ -110,7 +111,7 @@ class F09ReportsTableComponent extends Component {
                     props.children!="Action" ?
                       <b>{props.children}</b>
                       :
-                      <b>&emsp;{props.children}</b>
+                      <b>{props.children}</b>
                   )}
                 />
                 {showFilter?
