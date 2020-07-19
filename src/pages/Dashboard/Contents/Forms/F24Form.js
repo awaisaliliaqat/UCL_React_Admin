@@ -41,7 +41,7 @@ function CourseRow (props) {
     const [prerequisiteCoursesInputValue, setPrerequisiteCoursesInputValue] = useState("");
 
     const handleSetPrerequisiteCourse = (event, value, rason) => {
-        setPrerequisiteCourse = (value);
+        setPrerequisiteCourse(value);
     }
     
     const handlePrerequisiteCourse = (value) => {
@@ -128,7 +128,7 @@ function CourseRow (props) {
                     name="checkboxes-tags-demo"
                     options={prerequisiteCoursesArray}
                     value={prerequisiteCourse}
-                    onChange={handlePrerequisiteCourse}
+                    onChange={handleSetPrerequisiteCourse}
                     disableCloseOnSelect
                     getOptionLabel={(option) => option.Label}
                     renderTags={(tagValue, getTagProps) =>
@@ -369,6 +369,7 @@ class F24Form extends Component {
 
         switch (name) {
             case "programmeGroupId":
+                this.setState({programmeGroupCoursesArray:[]});
                 this.loadProgrammeGroupCourses(value);
                 break;
             default:
@@ -406,13 +407,13 @@ class F24Form extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-                        // setTimeout(()=>{
-                        //     if(this.state.recordId!=0){
-                        //         window.location="#/dashboard/F06Reports";
-                        //     }else{
-                        //         window.location.reload();
-                        //     }
-                        // }, 2000);
+                        setTimeout(()=>{
+                            if(this.state.recordId!=0){
+                                window.location="#/dashboard/F06Reports";
+                            }else{
+                                window.location.reload();
+                            }
+                        }, 2000);
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
