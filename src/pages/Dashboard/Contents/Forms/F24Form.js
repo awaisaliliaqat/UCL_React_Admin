@@ -41,7 +41,7 @@ function CourseRow (props) {
     const [prerequisiteCoursesInputValue, setPrerequisiteCoursesInputValue] = useState("");
 
     const handleSetPrerequisiteCourse = (event, value, rason) => {
-        setPrerequisiteCourse = (value);
+        setPrerequisiteCourse(value);
     }
     
     const handlePrerequisiteCourse = (value) => {
@@ -55,7 +55,6 @@ function CourseRow (props) {
             }
         }
         setPrerequisiteCoursesInputValue(selectedPCIdsString);
-        console.log("selectedPCIdsString", selectedPCIdsString);
     }
 
     const isPrerequisiteCourseSelected = (option) => {
@@ -125,15 +124,15 @@ function CourseRow (props) {
                     multiple
                     fullWidth
                     id="checkboxes-tags-demo"
-                    name="checkboxes-tags-demo"
                     options={prerequisiteCoursesArray}
                     value={prerequisiteCourse}
-                    onChange={handlePrerequisiteCourse}
+                    onChange={handleSetPrerequisiteCourse}
                     disableCloseOnSelect
                     getOptionLabel={(option) => option.Label}
                     renderTags={(tagValue, getTagProps) =>
                         tagValue.map((option, index) => (
                             <Chip
+                                key={"chipTag"+option.ID}
                                 label={option.Label}
                                 color="primary"
                                 variant="outlined"
@@ -369,6 +368,7 @@ class F24Form extends Component {
 
         switch (name) {
             case "programmeGroupId":
+                this.setState({programmeGroupCoursesArray:null});
                 this.loadProgrammeGroupCourses(value);
                 break;
             default:
@@ -406,17 +406,17 @@ class F24Form extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-                        // setTimeout(()=>{
-                        //     if(this.state.recordId!=0){
-                        //         window.location="#/dashboard/F06Reports";
-                        //     }else{
-                        //         window.location.reload();
-                        //     }
-                        // }, 2000);
+                        setTimeout(()=>{
+                            if(this.state.recordId!=0){
+                                window.location="#/dashboard/F06Reports";
+                            }else{
+                                window.location.reload();
+                            }
+                        }, 2000);
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
-                    console.log(json);
+                    console.log("onFormSubmit", json);
                 },
                 error => {
                     if (error.status == 401) {
