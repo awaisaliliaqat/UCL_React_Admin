@@ -60,7 +60,7 @@ class F06ReportsTableComponent extends Component {
       rows: [],
       formatColumns: [],
       currencyColumns: [],
-      defaultSorting: [{ columnName: "schoolLabel", direction: "asc" }],
+      defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
       ],
@@ -120,10 +120,10 @@ class F06ReportsTableComponent extends Component {
             defaultFilters={defaultFilters}
             columnExtensions={filteringStateColumnExtensions}
           />
-          {/* <SortingState
+          <SortingState
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
-          /> */}
+          />
           {/* 
                   <SelectionState /> 
                 */}

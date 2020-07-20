@@ -70,20 +70,20 @@ class F06ReportsTableComponent extends Component {
         "lessThanOrEqual",
       ],
       pageSizes: [5, 10, 15, 20],
-      defaultSorting: [{ columnName: "label", direction: "asc" }],
+      defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
-        { columnName: "srno", width: 100 },
-        { columnName: "ID", width: 100 },
-        { columnName: "shortLabel", wordWrapEnabled: true },
+        { columnName: "SRNo", width: 100 },
+        //{ columnName: "ID", width: 100 },
+        // { columnName: "shortLabel", wordWrapEnabled: true },
         { columnName: "label", wordWrapEnabled: true },
         { columnName: "action", width: 120 },
       ],
       defaultColumnWidths: [
         { columnName: "ID", minWidth: 100, maxWidth: 100 },
-        { columnName: "shortLabel", minWidth: 100, maxWidth: 100 },
+        // { columnName: "shortLabel", minWidth: 100, maxWidth: 100 },
         { columnName: "label", minWidth: 100, maxWidth: 100 },
         { columnName: "action", minWidth: 100, maxWidth: 100 },
       ],
@@ -123,10 +123,10 @@ class F06ReportsTableComponent extends Component {
             defaultFilters={defaultFilters}
             columnExtensions={filteringStateColumnExtensions}
           />
-          {/* <SortingState
+          <SortingState
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
-          /> */}
+          />
           {/* <SelectionState />  */}
           {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
           <PagingState defaultCurrentPage={1} defaultPageSize={10} />

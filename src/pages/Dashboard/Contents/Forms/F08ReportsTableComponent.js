@@ -70,7 +70,7 @@ class F08ReportsTableComponent extends Component {
         "lessThanOrEqual",
       ],
       pageSizes: [5, 10, 15, 20],
-      defaultSorting: [{ columnName: "ID", direction: "asc" }],
+      defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
       ],
@@ -123,10 +123,10 @@ class F08ReportsTableComponent extends Component {
             defaultFilters={defaultFilters}
             columnExtensions={filteringStateColumnExtensions}
           />
-          {/* <SortingState
+          <SortingState
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
-          /> */}
+          />
           {/* 
                   <SelectionState /> 
                 */}
