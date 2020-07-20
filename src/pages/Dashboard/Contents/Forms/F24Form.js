@@ -211,7 +211,7 @@ class F24Form extends Component {
 
     loadProgrammeGroups = async() => {        
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C24CommonProgrammesView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C24CommonProgrammeGroupsView`;
         await fetch(url, {
             method: "POST",
             headers: new Headers({
@@ -439,6 +439,7 @@ class F24Form extends Component {
     }
 
     componentDidMount() {
+        this.props.setDrawerOpen(false);
         this.loadProgrammeGroups();
         if(this.state.recordId!=0){
             this.loadData(this.state.recordId);
@@ -448,6 +449,7 @@ class F24Form extends Component {
     componentWillReceiveProps(nextProps){
         if(this.props.match.params.recordId!=nextProps.match.params.recordId){
             if(nextProps.match.params.recordId!=0){
+                this.props.setDrawerOpen(false);
                 this.loadData(nextProps.match.params.recordId);
             }else{
                 window.location.reload();

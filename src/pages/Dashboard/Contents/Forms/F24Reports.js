@@ -198,6 +198,7 @@ class F24Reports extends Component {
     }
 
     componentDidMount() {
+        this.props.setDrawerOpen(false);
         this.getData();
     }
 
