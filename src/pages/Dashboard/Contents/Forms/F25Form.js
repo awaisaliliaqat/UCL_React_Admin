@@ -53,7 +53,7 @@ function CourseRow (props) {
             if(i==0){
                 selectedPCIdsString = ObjArray[i].ID;
             }else{
-                selectedPCIdsString += ","+ObjArray[i].ID;
+                selectedPCIdsString += "~"+ObjArray[i].ID;
             }
         }
         setCoursesInputValue(selectedPCIdsString);
