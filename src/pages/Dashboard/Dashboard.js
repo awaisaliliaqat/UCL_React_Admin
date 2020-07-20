@@ -317,7 +317,15 @@ const Dashboard = (props) => {
                 name="F06Form"
                 exact
                 path="/dashboard/F06Reports"
-                component={F06Reports}
+                render={(props) => {
+                  return (
+                    <F06Reports 
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
@@ -453,7 +461,6 @@ const Dashboard = (props) => {
                 path="/dashboard/F20Reports"
                 component={F20Reports}
               />
-
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F24Form"
