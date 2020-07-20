@@ -59,6 +59,14 @@ function CourseRow (props) {
         setCoursesInputValue(selectedPCIdsString);
         console.log("handleCourse", selectedPCIdsString);
     }
+
+    const getPreCourseSelectionGroupById = (id) => {
+        if(courseSelectionGroupMenuItems.length>0 && id!="" && id!=0){
+            return courseSelectionGroupMenuItems.find(x => x.ID == id).Label;
+        }else{
+            return "";
+        }
+    }
     
     useEffect(()=>{ 
         handleCourse(rowData.preCourses);
@@ -134,12 +142,11 @@ function CourseRow (props) {
                         <Autocomplete
                             multiple
                             fullWidth
-                            id="checkboxes-tags-demo"
+                            style={{marginTop:"1em"}}
                             options={rowData.preCourses}
                             value={rowData.preCourses}
                             disableCloseOnSelect
                             getOptionLabel={(option) => " "}
-                            readOnly={true}
                             renderTags={(tagValue, getTagProps) =>
                                 tagValue.map((option, index) => (
                                     <Chip
@@ -161,7 +168,6 @@ function CourseRow (props) {
                                 />
                             )}
                         />
-                        
                         <TextField type="hidden" name="programmeCourseId" value={coursesInputValue} />
                         <TextField type="hidden" name="selectionGroupId" value="0"/>
                     </Fragment>
@@ -171,11 +177,7 @@ function CourseRow (props) {
                             id="choiceGroup"
                             variant="outlined"
                             label="Choice Group"
-                            value={courseSelectionGroupMenuItems.find(x => x.ID == rowData.preCourseSelectionGroupId).Label ?
-                                    courseSelectionGroupMenuItems.find(x => x.ID == rowData.preCourseSelectionGroupId).Label
-                                    :
-                                    ""
-                            }
+                            value={getPreCourseSelectionGroupById(rowData.preCourseSelectionGroupId)}
                             required
                             fullWidth
                         />
