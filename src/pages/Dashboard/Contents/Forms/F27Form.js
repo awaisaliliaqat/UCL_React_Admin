@@ -51,7 +51,7 @@ function CourseRow(props) {
   const [isChecked, setIsChecked] = useState(props.isChecked);
 
   const handleChecked = () => {
-    if (isChecked) {
+    if (!rowData.isOffered) {
       rowData.isOffered = true;
     } else {
       rowData.isOffered = false;
@@ -69,27 +69,16 @@ function CourseRow(props) {
         alignItems="center"
         spacing={2}
       >
-        <Typography
-          color="primary"
-          variant="subtitle1"
-          component="div"
-          style={{ float: "left" }}
-        >
-          <b>{rowIndex}:</b>
-        </Typography>
         <Grid item xs={12} md={4}>
-          <TextField
-            id="courseLabel"
-            name="courseLabel"
-            label="Course Label"
-            required
-            fullWidth
-            inputProps={{
-              "aria-readonly": true,
-            }}
-            variant="outlined"
-            value={rowData.courseId}
-          />
+          <Typography
+            color="normal"
+            variant="subtitle1"
+            component="div"
+            style={{ float: "left" }}
+          >
+            {rowData.courseId}
+          </Typography>
+
           <TextField
             type="hidden"
             name="programmeCourseId"
@@ -97,18 +86,19 @@ function CourseRow(props) {
           />
         </Grid>
         <Grid item xs={12} md={4}>
-          <TextField
-            id="prerequisiteCourses"
-            name="prerequisiteCourses"
-            label="Prerequisite Courses"
-            required
-            fullWidth
-            inputProps={{
-              "aria-readonly": true,
-            }}
-            variant="outlined"
-            value={rowData.coursePrerequisitesList[0].Label}
-          />
+          <Typography
+            color="normal"
+            variant="subtitle1"
+            component="div"
+            style={{ float: "left" }}
+          >
+            {rowData.coursePrerequisitesList.map((data, index) => (
+              <Fragment key={"pcpr" + index}>
+                {data.Label}
+                <br />
+              </Fragment>
+            ))}
+          </Typography>
         </Grid>
 
         <Grid item xs={12} md={2}>
@@ -119,10 +109,10 @@ function CourseRow(props) {
                 onChange={handleChecked}
                 name="isOfferedCheckbox"
                 color="primary"
-                value={rowData.isOffered}
+                value={isChecked}
               />
             }
-            label="Offered"
+            label=""
             style={{
               color: "#1d5f98",
               fontWeight: 600,
@@ -455,13 +445,9 @@ class F27Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-            // setTimeout(()=>{
-            //     if(this.state.recordId!=0){
-            //         window.location="#/dashboard/F06Reports";
-            //     }else{
-            //         window.location.reload();
-            //     }
-            // }, 2000);
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
           } else {
             this.handleOpenSnackbar(
               json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
@@ -616,7 +602,45 @@ class F27Form extends Component {
                   }}
                 />
               </Grid>
+              <Grid
+                container
+                direction="row"
+                justify="space-evenly"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item xs={12} md={4}>
+                  <Typography
+                    color="primary"
+                    variant="subtitle1"
+                    component="div"
+                    style={{ float: "left" }}
+                  >
+                    <b>Course Label</b>
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Typography
+                    color="primary"
+                    variant="subtitle1"
+                    component="div"
+                    style={{ float: "left" }}
+                  >
+                    <b>Prerequisite Courses</b>
+                  </Typography>
+                </Grid>
 
+                <Grid item xs={12} md={2}>
+                  <Typography
+                    color="primary"
+                    variant="subtitle1"
+                    component="div"
+                    style={{ float: "left" }}
+                  >
+                    <b>Offered</b>
+                  </Typography>
+                </Grid>
+              </Grid>
               {this.state.programmeGroupCoursesArray ? (
                 this.state.programmeGroupCoursesArray.map((dt, i) => (
                   <CourseRow
