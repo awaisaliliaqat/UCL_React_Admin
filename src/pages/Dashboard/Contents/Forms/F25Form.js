@@ -42,8 +42,6 @@ function CourseRow (props) {
 
     const {rowIndex, rowData, onDelete, moduleTypeMenuItems, courseSelectionGroupMenuItems, ...rest} = props;
 
-    console.log("props",props);
-
     const [coursesInputValue, setCoursesInputValue] = useState("");
 
     const handleCourse = (value) => {
@@ -57,7 +55,7 @@ function CourseRow (props) {
             }
         }
         setCoursesInputValue(selectedPCIdsString);
-        console.log("handleCourse", selectedPCIdsString);
+        //console.log("handleCourse", selectedPCIdsString);
     }
 
     const getPreCourseSelectionGroupById = (id) => {
@@ -698,7 +696,7 @@ class F25Form extends Component {
             preCourseSelectionGroupId:""
         });
 
-        console.log("courseRowDataObject", courseRowDataObject);
+        //console.log("courseRowDataObject", courseRowDataObject);
     
     }
 
