@@ -120,10 +120,10 @@ class F06ReportsTableComponent extends Component {
             defaultFilters={defaultFilters}
             columnExtensions={filteringStateColumnExtensions}
           />
-          <SortingState
+          {/* <SortingState
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
-          />
+          /> */}
           {/* 
                   <SelectionState /> 
                 */}

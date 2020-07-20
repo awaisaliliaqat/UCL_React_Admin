@@ -670,7 +670,7 @@ class F27Form extends Component {
         </form>
         <BottomBar
           left_button_text="View"
-          left_button_hide={false}
+          left_button_hide={true}
           bottomLeftButtonAction={this.viewReport}
           right_button_text="Save"
           bottomRightButtonAction={this.clickOnFormSubmit}
