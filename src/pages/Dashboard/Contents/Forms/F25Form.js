@@ -85,7 +85,7 @@ function CourseRow (props) {
             >
                 <b>{rowIndex+1}:</b>
             </Typography> */}
-            <Grid item xs={12} md={1}>
+            <Grid item xs={12} md={2}>
                 <TextField
                     id="module"
                     name="moduleNumber"
@@ -128,7 +128,7 @@ function CourseRow (props) {
                     value={rowData.preRemarks}
                 />
             </Grid>
-            <Grid item xs={12} md={5}>
+            <Grid item xs={12} md={4}>
                 { rowData.preModuleTypeId==1||rowData.preModuleTypeId==3 ?
                     <Fragment>
                         <Autocomplete
@@ -894,7 +894,7 @@ class F25Form extends Component {
                                     }} 
                                 />
                             </Grid>
-                            <Grid item xs={12} md={1}>
+                            <Grid item xs={12} md={2}>
                                 <TextField
                                     id="preModule"
                                     name="preModule"
@@ -953,7 +953,7 @@ class F25Form extends Component {
                                     helperText={this.state.preRemarksError}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={5}>
+                            <Grid item xs={12} md={4}>
                             {this.state.preModuleTypeId==1||this.state.preModuleTypeId==3 ?
                                 <Fragment>
                                     <Autocomplete
