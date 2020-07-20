@@ -77,7 +77,7 @@ function CourseRow (props) {
 
     return(
         <Fragment>
-        <Grid item xs={12}></Grid>
+        <Grid container></Grid>
         <Grid 
             container
             direction="row"
@@ -85,14 +85,6 @@ function CourseRow (props) {
             alignItems="center"
             spacing={2}
         >
-            {/* <Typography 
-                color="primary" 
-                variant="subtitle1"
-                component="div"
-                style={{float:"left"}}
-            >
-                <b>{rowIndex+1}:</b>
-            </Typography> */}
             <Grid item xs={12} md={2}>
                 <TextField
                     id="module"
@@ -142,7 +134,7 @@ function CourseRow (props) {
                         <Autocomplete
                             multiple
                             fullWidth
-                            style={{marginTop:"1em"}}
+                            style={{marginTop:"1.09em"}}
                             options={rowData.preCourses}
                             value={rowData.preCourses}
                             disableCloseOnSelect
