@@ -514,6 +514,7 @@ class F09Reports extends Component {
     }
 
     componentDidMount() {
+        this.props.setDrawerOpen(false);
         this.getData(this.state.applicationStatusId);
     }
 

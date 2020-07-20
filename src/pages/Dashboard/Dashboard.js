@@ -383,7 +383,14 @@ const Dashboard = (props) => {
                 name="F09Reports"
                 exact
                 path="/dashboard/F09Reports"
-                component={F09Reports}
+                render={(props) => {
+                  return( <F09Reports
+                    {...props}
+                    isDrawerOpen={isDrawerOpen}
+                    setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

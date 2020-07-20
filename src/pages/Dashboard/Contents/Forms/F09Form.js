@@ -675,6 +675,7 @@ class F09Form extends Component {
     }
 
     componentDidMount() {
+        this.props.setDrawerOpen(false);
         this.loadAcademicSession();
         this.loadProgrammeGroups();
         this.loadChoiceGroup();
@@ -686,6 +687,7 @@ class F09Form extends Component {
     componentWillReceiveProps(nextProps){
         if(this.props.match.params.recordId!=nextProps.match.params.recordId){
             if(nextProps.match.params.recordId!=0){
+                this.props.setDrawerOpen(false);
                 this.loadData(nextProps.match.params.recordId);
             }else{
                 window.location.reload();
