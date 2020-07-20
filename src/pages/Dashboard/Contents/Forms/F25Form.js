@@ -77,14 +77,14 @@ function CourseRow (props) {
             alignItems="center"
             spacing={2}
         >
-            <Typography 
+            {/* <Typography 
                 color="primary" 
                 variant="subtitle1"
                 component="div"
                 style={{float:"left"}}
             >
                 <b>{rowIndex+1}:</b>
-            </Typography>
+            </Typography> */}
             <Grid item xs={12} md={1}>
                 <TextField
                     id="module"
@@ -128,7 +128,7 @@ function CourseRow (props) {
                     value={rowData.preRemarks}
                 />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={5}>
                 { rowData.preModuleTypeId==1||rowData.preModuleTypeId==3 ?
                     <Fragment>
                         <Autocomplete
@@ -171,7 +171,11 @@ function CourseRow (props) {
                             id="choiceGroup"
                             variant="outlined"
                             label="Choice Group"
-                            value={rowData.preCourseSelectionGroupId ? courseSelectionGroupMenuItems.find(x => x.ID == rowData.preCourseSelectionGroupId).Label:""}
+                            value={courseSelectionGroupMenuItems.find(x => x.ID == rowData.preCourseSelectionGroupId).Label ?
+                                    courseSelectionGroupMenuItems.find(x => x.ID == rowData.preCourseSelectionGroupId).Label
+                                    :
+                                    ""
+                            }
                             required
                             fullWidth
                         />
@@ -185,14 +189,13 @@ function CourseRow (props) {
             </Grid>
             <Grid item xs={12} md={1} style={{textAlign:"center"}}>
                 <IconButton 
-                    color="primary" 
                     aria-label="Add" 
                     component="span"
                     onClick={() => onDelete(rowIndex)}
                 >
                     <Tooltip title="Delete">
                         <Fab 
-                            color="secondary" 
+                            color="secondary"
                             aria-label="add"
                             size="small"    
                         >
@@ -484,8 +487,24 @@ class F25Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
+                        let courseRowDataArray = [];
+                        let preModule = 0;
+                        for(let i=0; i<json.DATA.length; i++){
+                            let courseRowDataObject = {
+                                preModule : json.DATA[i].moduleNumber,
+                                preModuleTypeId : json.DATA[i].moduleTypeId,
+                                preRemarks : json.DATA[i].moduleRemarks,
+                                preCourses : json.DATA[i].coursesArray || [],
+                                preCourseSelectionGroupId : json.DATA[i].selectionGroupId
+                            };
+                            courseRowDataArray.push(courseRowDataObject);
+                            if(json.DATA[i].moduleNumber>preModule){
+                                preModule = json.DATA[i].moduleNumber;
+                            }
+                        }
                         this.setState({
-                            //courseRowDataArray: json.DATA[0].programmeCourseSelectedArray
+                            courseRowDataArray:courseRowDataArray,
+                            preModule:++preModule
                         });
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
@@ -657,13 +676,14 @@ class F25Form extends Component {
         let preCourses = this.state.preCourses;
         let preCourseSelectionGroupId = this.state.preCourseSelectionGroupId;
 
-        // let programmeCourseId = document.getElementsByName("programmeCourseId");
-        // for(let i=0; i<programmeCourseId.length; i++){
-        //     if(programmeCourseId[i].value==preCourseId){
-        //         this.handleOpenSnackbar("Course already added.","error");
-        //         return;
-        //     }
-        // }
+        let moduleNumber = document.getElementsByName("moduleNumber");
+        for(let i=0; i<moduleNumber.length; i++){
+            if(moduleNumber[i].value==preModule){
+                this.setState({preModuleError:"Module should be unique."});
+                document.getElementById("preModule").focus();
+                return;
+            }
+        }
 
         let courseRowDataObject = {
             preModule:preModule,
@@ -724,13 +744,13 @@ class F25Form extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-                        // setTimeout(()=>{
-                        //     if(this.state.recordId!=0){
-                        //         window.location="#/dashboard/F09Reports";
-                        //     }else{
-                        //         window.location.reload();
-                        //     }
-                        // }, 2000);
+                        setTimeout(()=>{
+                            if(this.state.recordId!=0){
+                                window.location="#/dashboard/F09Reports";
+                            }else{
+                                window.location.reload();
+                            }
+                        }, 2000);
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
@@ -1039,7 +1059,10 @@ class F25Form extends Component {
                                     }} 
                                 />
                             </Grid>
-                            {this.state.programmeCoursesArray ? 
+                            {
+                                this.state.programmeCoursesArray
+                                &&this.state.preModuleTypeMenuItems
+                                &&this.state.preCourseSelectionGroupMenuItems? 
                                 this.state.courseRowDataArray.map((dt, i) => (
                                     <CourseRow 
                                         key={"CRDA"+i}
