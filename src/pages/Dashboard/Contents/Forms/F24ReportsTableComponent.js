@@ -43,7 +43,7 @@ class F06ReportsTableComponent extends Component {
             ],
             pageSizes:[5,10,15,20],
             defaultSorting:[
-              { columnName: 'programmeCourseLabel', direction: 'asc' }
+              //{ columnName: 'programmeCourseLabel', direction: 'asc' }
             ],
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
@@ -57,7 +57,7 @@ class F06ReportsTableComponent extends Component {
               { columnName: 'action', width:120, align:"center"}
             ],
             defaultGrouping:[
-              { columnName: 'programmeGroupLabel'},
+              //{ columnName: 'programmeGroupLabel'},
             ],
             groupingStateColumnExtensions:[
               { columnName: 'SRNo', groupingEnabled: false},
