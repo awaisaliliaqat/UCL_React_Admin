@@ -854,7 +854,7 @@ class F25Form extends Component {
                                     id="programmeGroupId"
                                     name="programmeGroupId"
                                     variant="outlined"
-                                    label="Programme"
+                                    label="Programme Group"
                                     onChange={this.onHandleChange}
                                     value={this.state.programmeGroupId}
                                     error={!!this.state.programmeGroupIdError}
@@ -985,7 +985,7 @@ class F25Form extends Component {
                                             <TextField 
                                                 {...params} 
                                                 variant="outlined" 
-                                                label="Prerequisite Courses" 
+                                                label="Courses" 
                                                 placeholder="Search and Select"
                                                 error={!!this.state.preCoursesError}
                                                 helperText={!!this.state.preCoursesError}
