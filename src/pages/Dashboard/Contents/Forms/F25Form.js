@@ -117,7 +117,6 @@ function CourseRow (props) {
                     id="remarks"
                     name="moduleRemarks"
                     label="Remarks"
-                    required
                     fullWidth
                     inputProps={{
                         "aria-readonly":true
@@ -662,7 +661,7 @@ class F25Form extends Component {
             || !this.isProgrammeValid()
             || !this.isPreModuleValid()
             || !this.isPreModuleTypeIdValid()
-            || !this.isPreRemarksValid()
+            //|| !this.isPreRemarksValid()
             || !this.isPreCourseSelectionGroupIdValid()
             || !this.ispPreCoursesValid()
         ){ return; }
@@ -943,7 +942,6 @@ class F25Form extends Component {
                                     id="preRemarks"
                                     name="preRemarks"
                                     label="Remarks"
-                                    required
                                     fullWidth
                                     variant="outlined"
                                     onChange={this.onHandleChange}
