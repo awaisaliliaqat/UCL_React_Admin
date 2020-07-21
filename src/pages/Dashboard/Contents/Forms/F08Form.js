@@ -247,14 +247,12 @@ class F08Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  getProgrammesGroupData = async (index) => {
+  getProgrammesGroupData = async () => {
     const data = new FormData();
-    data.append("id", index);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C08CommonProgrammeGroupsView`;
     await fetch(url, {
       method: "POST",
-      body: data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
