@@ -214,9 +214,9 @@ class F25Form extends Component {
             academicSessionIdMenuItems:[],
             academicSessionId:"",
             academicSessionIdError:"",
-            programmeGroupIdMenuItems:[],
-            programmeGroupId:"",
-            programmeGroupIdError:"",
+            programmeIdMenuItems:[],
+            programmeId:"",
+            programmeIdError:"",
             preModule:1,
             preModuleError:"",
             preModuleTypeMenuItems:[],
@@ -319,7 +319,7 @@ class F25Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.setState({programmeGroupIdMenuItems:json.DATA});
+                       this.setState({programmeIdMenuItems:json.DATA});
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
@@ -377,10 +377,10 @@ class F25Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadProgrammeCourses = async(academicsSessionId,programmeGroupId) => {
+    loadProgrammeCourses = async(academicsSessionId,programmeId) => {
         let data = new FormData();
         data.append("academicsSessionId", academicsSessionId);
-        data.append("programmeId", programmeGroupId);
+        data.append("programmeId", programmeId);
         this.setState({isLoading: true});
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonProgrammeCoursesView`;
         await fetch(url, {
@@ -419,10 +419,10 @@ class F25Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadCourseSelectionGroup = async(academicsSessionId,programmeGroupId) => {
+    loadCourseSelectionGroup = async(academicsSessionId,programmeId) => {
         let data = new FormData();
         data.append("academicsSessionId", academicsSessionId);
-        data.append("programmeId", programmeGroupId);
+        data.append("programmeId", programmeId);
         this.setState({isLoading: true});
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonCourseSelectionGroupProgrammeGroupsView`;
         await fetch(url, {
@@ -461,10 +461,10 @@ class F25Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadData = async(academicSessionId, programmeGroupId) => {
+    loadData = async(academicSessionId, programmeId) => {
         const data = new FormData();
         data.append("academicsSessionId",academicSessionId);
-        data.append("programmeGroupId",programmeGroupId);
+        data.append("programmeId",programmeId);
         this.setState({isLoading: true});
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonProgrammeModulesView`;
         await fetch(url, {
@@ -535,12 +535,12 @@ class F25Form extends Component {
 
     isProgrammeValid = () => {
         let isValid = true;
-        if (!this.state.programmeGroupId) {
-            this.setState({programmeGroupIdError:"Please select Programme."});
-            document.getElementById("programmeGroupId").focus();
+        if (!this.state.programmeId) {
+            this.setState({programmeIdError:"Please select Programme."});
+            document.getElementById("programmeId").focus();
             isValid = false;
         } else {
-            this.setState({programmeGroupIdError:""});
+            this.setState({programmeIdError:""});
         }
         return isValid;
     }
@@ -614,12 +614,12 @@ class F25Form extends Component {
             case "academicSessionId":
                 this.loadProgrammes(value);
                 this.setState({
-                    programmeGroupId:"",
+                    programmeId:"",
                     courseRowDataArray:[],
                     preModule:1
                 });
                 break;
-            case "programmeGroupId":
+            case "programmeId":
                 this.loadProgrammeCourses(this.state.academicSessionId, value);
                 this.loadCourseSelectionGroup(this.state.academicSessionId,value);
                 this.loadData(this.state.academicSessionId, value);
@@ -855,21 +855,21 @@ class F25Form extends Component {
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField
-                                    id="programmeGroupId"
-                                    name="programmeGroupId"
+                                    id="programmeId"
+                                    name="programmeId"
                                     variant="outlined"
                                     label="Programme"
-                                    value={this.state.programmeGroupId}
+                                    value={this.state.programmeId}
                                     onChange={this.onHandleChange}
-                                    error={!!this.state.programmeGroupIdError}
-                                    helperText={this.state.programmeGroupIdError}
+                                    error={!!this.state.programmeIdError}
+                                    helperText={this.state.programmeIdError}
                                     disabled={!this.state.academicSessionId}
                                     required
                                     fullWidth
                                     select
                                 >
-                                    {this.state.programmeGroupIdMenuItems ?
-                                        this.state.programmeGroupIdMenuItems.map((dt, i) => (
+                                    {this.state.programmeIdMenuItems ?
+                                        this.state.programmeIdMenuItems.map((dt, i) => (
                                             <MenuItem 
                                                 key={"programmeIdMenuItems"+dt.ID} 
                                                 value={dt.ID}
