@@ -213,7 +213,7 @@ class F27Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", this.state.academicsSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C27CommonProgrammeGroupsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C27CommonAcademicsSessionsOfferedProgrammesView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
