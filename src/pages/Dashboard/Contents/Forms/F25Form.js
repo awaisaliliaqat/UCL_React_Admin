@@ -299,11 +299,14 @@ class F25Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadProgrammeGroups = async() => {  
+    loadProgrammes = async(academicsSessionId) => {  
+        let data = new FormData();
+        data.append("academicsSessionId", academicsSessionId);
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonProgrammeGroupsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonAcademicsSessionsOfferedProgrammesView`;
         await fetch(url, {
             method: "POST",
+            body:data,
             headers: new Headers({
                 Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
             })
@@ -321,7 +324,7 @@ class F25Form extends Component {
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
-                    console.log("loadProgrammeGroups", json);
+                    console.log("loadProgrammes", json);
                 },
                 error => {
                     if (error.status == 401) {
@@ -375,9 +378,10 @@ class F25Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadProgrammeCourses = async(programmeGroupId) => {
+    loadProgrammeCourses = async(academicsSessionId,programmeGroupId) => {
         let data = new FormData();
-        data.append("programmeGroupId", programmeGroupId);
+        data.append("academicsSessionId", academicsSessionId);
+        data.append("programmeId", programmeGroupId);
         this.setState({isLoading: true});
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonProgrammeCoursesView`;
         await fetch(url, {
@@ -416,9 +420,10 @@ class F25Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadCourseSelectionGroup = async(programmeGroupId) => {
+    loadCourseSelectionGroup = async(academicsSessionId,programmeGroupId) => {
         let data = new FormData();
-        data.append("programmeGroupId", programmeGroupId)  
+        data.append("academicsSessionId", academicsSessionId);
+        data.append("programmeId", programmeGroupId);
         this.setState({isLoading: true});
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonCourseSelectionGroupProgrammeGroupsView`;
         await fetch(url, {
@@ -608,6 +613,7 @@ class F25Form extends Component {
         let regex = "";
         switch (name) {
             case "academicSessionId":
+                this.loadProgrammes(value);
                 this.setState({
                     programmeGroupId:"",
                     courseRowDataArray:[],
@@ -615,8 +621,8 @@ class F25Form extends Component {
                 });
                 break;
             case "programmeGroupId":
-                this.loadProgrammeCourses(value)
-                this.loadCourseSelectionGroup(value);
+                this.loadProgrammeCourses(this.state.academicSessionId, value);
+                this.loadCourseSelectionGroup(this.state.academicSessionId,value);
                 this.loadData(this.state.academicSessionId, value);
                 this.setState({
                     courseRowDataArray:[]
@@ -769,7 +775,6 @@ class F25Form extends Component {
     componentDidMount() {
         this.props.setDrawerOpen(false);
         this.loadAcademicSession();
-        this.loadProgrammeGroups();
         this.loadModuleType();
         if(this.state.recordId!=0){
             this.loadData(this.state.recordId);
@@ -854,9 +859,9 @@ class F25Form extends Component {
                                     id="programmeGroupId"
                                     name="programmeGroupId"
                                     variant="outlined"
-                                    label="Programme Group"
-                                    onChange={this.onHandleChange}
+                                    label="Programme"
                                     value={this.state.programmeGroupId}
+                                    onChange={this.onHandleChange}
                                     error={!!this.state.programmeGroupIdError}
                                     helperText={this.state.programmeGroupIdError}
                                     disabled={!this.state.academicSessionId}
@@ -867,7 +872,7 @@ class F25Form extends Component {
                                     {this.state.programmeGroupIdMenuItems ?
                                         this.state.programmeGroupIdMenuItems.map((dt, i) => (
                                             <MenuItem 
-                                                key={"programmeGroupIdMenuItems"+dt.ID} 
+                                                key={"programmeIdMenuItems"+dt.ID} 
                                                 value={dt.ID}
                                             >
                                                 {dt.Label}
