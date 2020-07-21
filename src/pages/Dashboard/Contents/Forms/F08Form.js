@@ -367,13 +367,6 @@ class F08Form extends Component {
                 marginRight: 10,
               }}
             >
-              {/*
-                            <Grid xs={12}>
-                                <span className={classes.sectionTitle}>
-                                    Course Applied For
-                                </span>
-                            </Grid>
-                            */}
               <Grid item xs={6}>
                 <TextField
                   id="label"
@@ -421,38 +414,10 @@ class F08Form extends Component {
                 >
                   {this.state.ProgrammeGroups.map((item) => (
                     <MenuItem key={item.ID} value={item.ID}>
-                      {item.shortLabel} - {item.label}
+                      {item.label}
                     </MenuItem>
                   ))}
                 </TextField>
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                style={{
-                  paddingBottom: 20,
-                  paddingTop: 20,
-                  display: "flex",
-                }}
-              >
-                {/* 
-                                <Button 
-                                    disabled={this.state.isLoading} 
-                                    onClick={this.onFormSubmit}
-                                    color="primary" 
-                                    variant="contained" 
-                                    fullWidth={true}
-                                    style={{ 
-                                        backgroundColor: '#174A84' 
-                                    }}
-                                >
-                                    {this.state.isLoading ? 
-                                        <CircularProgress style={{ color: 'white' }} size={24} /> 
-                                        : 
-                                        "Save"
-                                    }
-                                </Button>  
-                                */}
               </Grid>
             </Grid>
           </Grid>
