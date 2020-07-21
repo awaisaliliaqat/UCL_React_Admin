@@ -3,11 +3,7 @@ import { withStyles } from "@material-ui/styles";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import {
-  alphabetExp,
-  numberExp,
-  emailExp,
-} from "../../../../utils/regularExpression";
+import {nameExp, alphabetExp, numberExp, emailExp} from "../../../../utils/regularExpression";
 import { TextField, Grid, Button, CircularProgress } from "@material-ui/core";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -188,29 +184,6 @@ class F06Form extends Component {
   clickOnFormSubmit = () => {
     this.onFormSubmit();
   };
-
-  // getSchoolsData = async () => {
-  //     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C07CommonSchoolsView`;
-  //     await fetch(url, {
-  //       method: "GET",
-  //     })
-  //       .then((res) => {
-  //         if (!res.ok) {
-  //           throw res;
-  //         }
-  //         return res.json();
-  //       })
-  //       .then(
-  //         (json) => {
-  //           this.setState({
-  //             schools : json.DATA,
-  //           });
-  //         },
-  //         (error) => {
-  //           console.log(error);
-  //         }
-  //       );
-  //   };
 
   getSchoolsData = async (index) => {
     const data = new FormData();
@@ -406,7 +379,6 @@ class F06Form extends Component {
                   required
                   fullWidth
                   variant="outlined"
-                  onKeyDown={this.StopEnter}
                   onChange={this.onHandleChange}
                   value={this.state.label}
                   error={!!this.state.labelError}
@@ -421,7 +393,6 @@ class F06Form extends Component {
                   required
                   fullWidth
                   variant="outlined"
-                  onKeyDown={this.StopEnter}
                   onChange={this.onHandleChange}
                   value={this.state.shortLabel}
                   error={!!this.state.shortLabelError}
@@ -432,19 +403,18 @@ class F06Form extends Component {
                 <TextField
                   id="schoolId"
                   name="schoolId"
+                  label="School"
                   required
                   fullWidth
                   variant="outlined"
-                  select
-                  label="School"
-                  //  variant="outlined"
                   onChange={this.onHandleChange}
                   value={this.state.schoolId}
                   error={this.state.schoolIdError}
+                  select
                 >
                   {this.state.schools.map((item) => (
-                    <MenuItem key={item.ID} value={item.ID}>
-                      {item.shortLabel} - {item.label}
+                    <MenuItem key={"schools"+item.ID} value={item.ID}>
+                      {item.label}
                     </MenuItem>
                   ))}
                 </TextField>

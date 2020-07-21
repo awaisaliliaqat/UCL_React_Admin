@@ -760,7 +760,7 @@ class F09Form extends Component {
                                     id="programmeGroupId"
                                     name="programmeGroupId"
                                     variant="outlined"
-                                    label="Programme"
+                                    label="Programme Group"
                                     onChange={this.onHandleChange}
                                     value={this.state.programmeGroupId}
                                     error={!!this.state.programmeGroupIdError}
