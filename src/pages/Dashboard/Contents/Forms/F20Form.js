@@ -371,7 +371,7 @@ class F20Form extends Component {
 
      onFormSubmit = async(e) => {
         if( 
-            !this.isAcademicSessionValid() ||
+            //!this.isAcademicSessionValid() ||
             !this.isProgrammeValid() ||
             !this.isCourseIdValid() ||
             !this.isCourseCodeValid() ||
@@ -483,6 +483,7 @@ class F20Form extends Component {
                                 marginRight: 10 
                             }}
                         >
+                            {/* 
                             <Grid item xs={12} md={6}>
                                 <TextField
                                     id="academicsSessionId"
@@ -512,7 +513,8 @@ class F20Form extends Component {
                                         </MenuItem>
                                     }
                                 </TextField>
-                            </Grid>
+                            </Grid> 
+                            */}
                             <Grid item xs={12} md={6}>
                                 <TextField
                                     id="programmeGroupId"
@@ -523,7 +525,7 @@ class F20Form extends Component {
                                     value={this.state.programmeGroupId}
                                     error={!!this.state.programmeGroupIdError}
                                     helperText={this.state.programmeGroupIdError}
-                                    disabled={!this.state.academicsSessionId}
+                                    //disabled={!this.state.academicsSessionId}
                                     required
                                     fullWidth
                                     select
@@ -544,6 +546,7 @@ class F20Form extends Component {
                                     }
                                 </TextField>
                             </Grid>
+                            {/* 
                             <Grid item xs={12}>
                                 <Divider 
                                     style={{
@@ -551,7 +554,8 @@ class F20Form extends Component {
                                         opacity: '0.3'
                                     }} 
                                 />
-                            </Grid>
+                            </Grid> 
+                            */}
                             <Grid item xs={12} md={6}>
                                 <TextField
                                     id="courseId"

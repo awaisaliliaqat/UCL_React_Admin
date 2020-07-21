@@ -46,21 +46,21 @@ class F06ReportsTableComponent extends Component {
             ],
             pageSizes:[5,10,15,20],
             defaultSorting:[
-              { columnName: 'ID', direction: 'asc' }
+              //{ columnName: 'ID', direction: 'asc' }
             ],
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions:[
-              { columnName: 'ID', width:100, align:"center"},
-              { columnName: 'academicsSessionLabel', wordWrapEnabled: true, align:"center"},
+              { columnName: 'SRNo', width:100},
+              // { columnName: 'academicsSessionLabel', wordWrapEnabled: true, align:"center"},
               { columnName: 'programmeGroupLabel', wordWrapEnabled: true, align:"center"},
               { columnName: "courseId", wordWrapEnabled: true, align:"center"},
               { columnName: 'courseCode', wordWrapEnabled: true, align:"center"},
               { columnName: 'courseTitle', wordWrapEnabled: true, align:"center"},
               { columnName: 'courseCreditLabel', wordWrapEnabled: true, align:"center"},
               { columnName: 'courseLabel', wordWrapEnabled: true, align:"center"},
-              { columnName: 'action', width:120}
+              { columnName: 'action', width:120, align:"center"}
             ],
             resizingMode:"widget",
             defaultFilters:[],
@@ -99,7 +99,7 @@ class F06ReportsTableComponent extends Component {
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
                 {/* <SelectionState />  */}
                 {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
-                <PagingState defaultCurrentPage={0} defaultPageSize={10}/>
+                <PagingState defaultCurrentPage={1} defaultPageSize={10}/>
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />
