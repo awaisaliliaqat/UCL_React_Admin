@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/styles";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import {nameExp, alphabetExp, numberExp, emailExp} from "../../../../utils/regularExpression";
+import { numberFreeExp } from "../../../../utils/regularExpression";
 import { TextField, Grid, Button, CircularProgress } from "@material-ui/core";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -167,7 +167,7 @@ class F06Form extends Component {
     switch (name) {
       case "label":
       case "shortLabel":
-        regex = new RegExp(alphabetExp);
+        regex = new RegExp(numberFreeExp);
         if (value && !regex.test(value)) {
           return;
         }

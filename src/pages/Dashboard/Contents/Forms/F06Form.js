@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { withStyles, ThemeProvider } from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import { alphabetExp, numberExp, emailExp } from '../../../../utils/regularExpression';
+import { numberFreeExp } from '../../../../utils/regularExpression';
 import { TextField, Grid, Button, CircularProgress, Snackbar, Divider, Typography  } from '@material-ui/core';
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
@@ -144,7 +144,7 @@ class F06Form extends Component {
         switch (name) {
             case "label":
             case "shortLabel":
-                regex = new RegExp(alphabetExp);
+                regex = new RegExp(numberFreeExp);
                 if (value && !regex.test(value)) {
                     return;
                 }

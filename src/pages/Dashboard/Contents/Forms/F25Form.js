@@ -1,7 +1,7 @@
 import React, { Component, Fragment, useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import { alphabetExp, numberExp, emailExp } from '../../../../utils/regularExpression';
+import { numberFreeExp, numberExp } from '../../../../utils/regularExpression';
 import { TextField, Grid, MenuItem, CircularProgress, Divider, Typography, Chip, Select,
     IconButton, Tooltip, Checkbox, Fab} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
