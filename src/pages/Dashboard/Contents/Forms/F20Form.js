@@ -117,7 +117,7 @@ class F20Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadProgrammes = async(academicsSessionId) => {        
+    loadProgrammes = async() => {        
         this.setState({isLoading: true});
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C20CommonProgrammeGroupsView`;
         await fetch(url, {
@@ -216,7 +216,6 @@ class F20Form extends Component {
                     if (json.CODE === 1) {
                         console.log("loadData", json);
                         if(json.DATA.length){
-                            this.loadProgrammes(json.DATA[0].academicsSessionId);
                             this.setState({
                                 academicsSessionId:json.DATA[0].academicsSessionId,
                                 programmeGroupId:json.DATA[0].programmeGroupId,
@@ -352,7 +351,7 @@ class F20Form extends Component {
 
         switch (name) {
             case "academicsSessionId":
-                this.loadProgrammes(value);
+                this.loadProgrammes();
                 break;
             default:
                 break;
@@ -433,7 +432,8 @@ class F20Form extends Component {
     }
 
     componentDidMount() {
-        this.loadAcademicSession();
+        //this.loadAcademicSession();
+        this.loadProgrammes();
         this.loadCourseCredit();
         if(this.state.recordId!=0){
             this.loadData(this.state.recordId);
