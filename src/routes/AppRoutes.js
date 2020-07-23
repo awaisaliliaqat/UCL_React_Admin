@@ -26,6 +26,7 @@ const CheckLogin = () => {
 };
 
 const AppRoute = () => {
+
   return (
     <>
       <Router>
@@ -46,6 +47,11 @@ const AppRoute = () => {
               path="/dashboard/edit-student-information/:id"
               component={Dashboard}
             />
+      <PrivateRoutes exact path="/view-application/:id" component={DisplayAdmissionApplication} />
+                        <PrivateRoutes exact path="/dashboard/define-teachers/:recordId" component={Dashboard} />
+                        <PrivateRoutes exact path="/dashboard/create-sections/:recordId" component={Dashboard} />
+                        <PrivateRoutes exact path="/dashboard/assign-section-to-students/:recordId" component={Dashboard} />
+                        <PrivateRoutes exact path="/dashboard/assign-section-to-teacher/:recordId" component={Dashboard} />
             <PrivateRoutes
               exact
               path="/view-application/:id"
@@ -118,5 +124,6 @@ const AppRoute = () => {
     </>
   );
 };
+
 
 export default AppRoute;
