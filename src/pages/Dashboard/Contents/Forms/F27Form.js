@@ -209,13 +209,14 @@ class F27Form extends Component {
       );
     this.setState({ isLoading: false });
   };
-  loadProgrammeGroups = async () => {
+  loadProgrammeGroups = async (AcademicsSessionId) => {
     this.setState({ isLoading: true });
     let data = new FormData();
-    data.append("academicsSessionId", this.state.academicsSessionId);
+    data.append("academicsSessionId", AcademicsSessionId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C27CommonAcademicsSessionsOfferedProgrammesView`;
     await fetch(url, {
       method: "POST",
+      body: data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -406,11 +407,15 @@ class F27Form extends Component {
       [name]: value,
       [errName]: "",
     });
-
+    console.log("value===========>", { name, value });
     switch (name) {
+      case "academicsSessionId":
+        this.loadProgrammeGroups(value);
+        break;
       case "programmeGroupId":
         this.loadProgrammeGroupCourses(value);
         break;
+
       default:
         break;
     }
@@ -480,7 +485,7 @@ class F27Form extends Component {
 
   componentDidMount() {
     this.loadAcademicSession();
-    this.loadProgrammeGroups();
+    //this.loadProgrammeGroups();
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
     }
