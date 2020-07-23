@@ -116,8 +116,8 @@ ChangePasswordMenu.propTypes = {
     isLoading: PropTypes.bool,
     newPassword: PropTypes.string,
     confirmPassword: PropTypes.string,
-    newPasswordError: "",
-    confirmPasswordError: "",
+    newPasswordError: PropTypes.string,
+    confirmPasswordError: PropTypes.string,
 };
 
 ChangePasswordMenu.defaultProps = {
