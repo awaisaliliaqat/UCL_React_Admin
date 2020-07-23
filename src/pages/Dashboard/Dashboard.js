@@ -13,7 +13,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import WelcomePage from './Contents/WelcomePage';
 import Leaf from '../../assets/Images/svg/leaf.svg';
 import AdmissionApplicationReports from './Contents/Reports/AdmissionApplicationReports/AdmissionApplicationReports';
-// import ApplicantRegistrationAnalytics from './Contents/Analytics/ApplicantRegistrationAnalytics';
 import AdmissionDecision from './Contents/Decision/AdmissionDecision/AddmissionDecision';
 import RegistrationFeeApprovel from './Contents/Decision/RegistrationFeeApproval/RegistrationFeeApprovel';
 import OfferLetter from './Contents/Decision/OfferLetter/OfferLetter';
@@ -24,6 +23,15 @@ import UploadDocuments from './Contents/Decision/DocumentRequest/DocumentRequest
 import DocumentRequestAction from './Contents/Decision/DocumentRequest/Chunks/DocumentRequestAction';
 import EditStudentInformation from './Contents/Decision/EditStudentInformation/EditStudentInformation';
 import EditStudentInformationAction from './Contents/Decision/EditStudentInformation/Chunks/EditStudentInformationAction';
+import DefineTeacherFrom from './Contents/Forms/DefineTeacher/DefineTeacherForm';
+import DefineTeacherReports from './Contents/Forms/DefineTeacher/DefineTeacherReports';
+import CreateSectionForm from './Contents/Forms/CreateSection/CreateSectionForm';
+import CreateSectionReports from './Contents/Forms/CreateSection/CreateSectionReports';
+import AssignSectionToStudentFrom from './Contents/Forms/AssignSectionToStudent/AssignSectionToStudentForm';
+import AssignSectionToTeacherForm from './Contents/Forms/AssignSectionToTeacher/AssignSectionToTeacherForm';
+import StudentCourseSelection from './Contents/Forms/StudentCourseSelection/StudentCourseSelection';
+import AssignSectionToStudentReport from './Contents/Forms/AssignSectionToStudent/AssignSectionToStudentReports';
+import AssignSectionToTeacherReport from './Contents/Forms/AssignSectionToTeacher/AssignSectionToTeacherReports';
 import F06Form from './Contents/Forms/F06Form';
 import F06Reports from './Contents/Forms/F06Reports';
 import F07Form from './Contents/Forms/F07Form';
@@ -69,15 +77,17 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'left',
     paddingTop: 3,
     paddingBottom: 3,
+    paddingLeft: 15,
     color: 'white',
-    width: drawerWidth - 20,
-    marginLeft: 40
+    width: drawerWidth - 60,
+    marginLeft: 25,
+    textOverflow: 'clip',
+    whiteSpace: 'break-spaces'
   },
   active: {
     backgroundColor: "#103C6E",
-    paddingRight: 10,
-    width: drawerWidth - 20,
-    height: 30
+    paddingTop: 5,
+    paddingBottom: 5
   },
   content: {
     flexGrow: 1,
@@ -178,9 +188,9 @@ const Dashboard = props => {
                       {
                         items.map(option => {
                           return (
-                            <MenuItem key={option.id} className={`${classes.menuItemPadding} ${viewValue === `${option.action}` && classes.active}`}>
+                            <MenuItem key={option.id} className={`${classes.menuItemPadding}`}>
                               <Link style={{ textDecoration: 'none' }} to={option.webUrl}>
-                                <Typography className={classes.menuItemText}
+                                <Typography className={`${classes.menuItemText} ${viewValue === `${option.action}` && classes.active}`}
                                   noWrap variant="body2">{option.label}</Typography>
                               </Link>
                             </MenuItem>
@@ -213,7 +223,6 @@ const Dashboard = props => {
             <Switch>
               <SetRoute setValue={value => handleValueChange(value)} name="home" exact path="/dashboard" component={WelcomePage} />
               <SetRoute setValue={value => handleValueChange(value)} name="admission-application-reports" exact path="/dashboard/admission-application-reports" component={AdmissionApplicationReports} />
-              {/* <SetRoute setValue={value => handleValueChange(value)} name="applicant-registration-analytics" exact path="/dashboard/applicant-registration-analytics" component={ApplicantRegistrationAnalytics} /> */}
               <SetRoute setValue={value => handleValueChange(value)} name="admission-decision" exact path="/dashboard/admission-decision" component={AdmissionDecision} />
               <SetRoute setValue={value => handleValueChange(value)} name="registration-fee-approval" exact path="/dashboard/registration-fee-approval" component={RegistrationFeeApprovel} />
               <SetRoute setValue={value => handleValueChange(value)} name="raise-document-requests" exact path="/dashboard/raise-document-requests" component={UploadDocuments} />
@@ -250,7 +259,7 @@ const Dashboard = props => {
                 )
               }} />
               <SetRoute setValue={value => handleValueChange(value)} name="F18Reports" exact path="/dashboard/F18Reports" component={F18Reports} />
-  
+
 
               <SetRoute setValue={value => handleValueChange(value)} name="F19Form" exact path="/dashboard/F19Form/:recordId" render={(props) => {
                 return (
@@ -259,10 +268,10 @@ const Dashboard = props => {
               }} />
 
               <SetRoute setValue={value => handleValueChange(value)} name="F20Form" exact path="/dashboard/F20Form/:recordId" render={(props) => {
-                  return (
-                    <F20Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
-                  )
-                }} 
+                return (
+                  <F20Form {...props} isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                )
+              }}
               />
               <SetRoute setValue={value => handleValueChange(value)} name="F20Reports" exact path="/dashboard/F20Reports" component={F20Reports} />
 
@@ -271,6 +280,31 @@ const Dashboard = props => {
               <SetRoute setValue={value => handleValueChange(value)} name="tuition-fee-approval" exact path="/dashboard/tuition-fee-approval" component={TutionFeeApproval} />
               <SetRoute setValue={value => handleValueChange(value)} name="edit-student-information" exact path="/dashboard/edit-student-information" component={EditStudentInformation} />
               <SetRoute setValue={value => handleValueChange(value)} name="edit-student-information" exact path="/dashboard/edit-student-information/:id" component={EditStudentInformationAction} />
+              <SetRoute setValue={value => handleValueChange(value)} name="define-teachers" exact path="/dashboard/define-teachers/:recordId" render={(props) => {
+                return (
+                  <DefineTeacherFrom {...props} isDrawerOpen={isDrawerOpen} />
+                )
+              }} />
+              <SetRoute setValue={value => handleValueChange(value)} name="define-teachers" exact path="/dashboard/teacher-reports" component={DefineTeacherReports} />
+              <SetRoute setValue={value => handleValueChange(value)} name="create-sections" exact path="/dashboard/create-sections/:recordId" render={(props) => {
+                return (
+                  <CreateSectionForm {...props} isDrawerOpen={isDrawerOpen} />
+                )
+              }} />
+              <SetRoute setValue={value => handleValueChange(value)} name="create-sections" exact path="/dashboard/section-reports" component={CreateSectionReports} />
+              <SetRoute setValue={value => handleValueChange(value)} name="assign-section-to-students" exact path="/dashboard/assign-section-to-student-reports" component={AssignSectionToStudentReport} />
+              <SetRoute setValue={value => handleValueChange(value)} name="assign-section-to-students" exact path="/dashboard/assign-section-to-students/:recordId" render={(props) => {
+                return (
+                  <AssignSectionToStudentFrom {...props} isDrawerOpen={isDrawerOpen} />
+                )
+              }} />
+              <SetRoute setValue={value => handleValueChange(value)} name="assign-section-to-teacher" exact path="/dashboard/assign-section-to-teacher-reports" component={AssignSectionToTeacherReport} />
+              <SetRoute setValue={value => handleValueChange(value)} name="assign-section-to-teacher" exact path="/dashboard/assign-section-to-teacher/:recordId" render={(props) => {
+                return (
+                  <AssignSectionToTeacherForm {...props} isDrawerOpen={isDrawerOpen} />
+                )
+              }} />
+              <SetRoute setValue={value => handleValueChange(value)} name="student-course-selection" exact path="/dashboard/student-course-selection" component={StudentCourseSelection} />
               <SetRoute setValue={value => handleValueChange(value)} name="home" exact path="*" component={NoFound} />
             </Switch>
           </Suspense>
