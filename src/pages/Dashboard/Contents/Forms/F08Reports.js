@@ -12,7 +12,6 @@ import {
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
-
 import Typography from "@material-ui/core/Typography";
 import ExcelIcon from "../../../../assets/Images/excel.png";
 import F08ReportsFilter from "./F08ReportsFilter";
@@ -442,11 +441,8 @@ class F08Reports extends Component {
       this.state.genderId === 0 &&
       this.state.degreeId === 0 &&
       this.state.studentName === "";
-    const type =
-      status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
-    const eventDataQuery = this.state.eventDate
-      ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}`
-      : "";
+    const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
+    const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : "";
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C08CommonProgrammesView`;
     await fetch(url, {
       method: "GET",
@@ -637,25 +633,12 @@ class F08Reports extends Component {
   }
 
   render() {
-    // const columnsSubmitted = [
-    //     //{ name: "SR#", dataIndex: "serialNo", sortable: false, customStyleHeader: { width: '7%' } },
-    //     { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
-    //     {name: "Name", renderer: rowData => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}, sortable: false, customStyleHeader: { width: '10%' }},
-    //     { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
-    //     { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
-    //     { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
-    //     { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-    //     { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '15%' } },
-    //     { name: "Payment Method", dataIndex: "paymentMethod", sortIndex: "paymentMethod", sortable: true, customStyleHeader: { width: '15%' } },
-    //     { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
-    //     { name: "Profile", renderer: rowData => {return (<Button style={{fontSize: 12,textTransform: 'capitalize'}} variant="outlined" onClick={() => window.open(`#/view-application/${rowData.id}`, "_blank")} >View</Button>)}, sortable: false, customStyleHeader: { width: '15%' }},
-    // ]
-
+    
     const columnsPending = [
       { name: "SRNo", title: "SR#" },
       //{ name: "ID", title: "ID", customStyleHeader: { fontSize: "26px" } },
       //{ name: "shortLabel", title: "Short Label" },
-      { name: "label", title: "Programme Name – Short Name" },
+      { name: "label", title: "Programme Name – Short Name"},
       { name: "programmeGroupsLabel", title: "Programme Group" },
       { name: "action", title: "Action" },
     ];

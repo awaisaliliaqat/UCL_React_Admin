@@ -101,6 +101,11 @@ const AppRoute = () => {
               path="/dashboard/F27Form/:recordId"
               component={Dashboard}
             />
+            <PrivateRoutes
+              exact
+              path="/dashboard/F30Form/:recordId"
+              component={Dashboard}
+            />
             <Route exact path="*" component={NoMatchPage} />
           </Switch>
         </Suspense>
