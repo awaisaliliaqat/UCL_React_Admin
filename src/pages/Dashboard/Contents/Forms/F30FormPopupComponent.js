@@ -214,12 +214,12 @@ class F30FormPopupComponent extends Component {
                 json => {
                     if (json.CODE === 1) {
                         let courseRowDataArray = [];
-                        for(let i=0; i<json.DATA[0].studentDetails.length; i++){
+                        for(let i=0; i<json.DATA.length; i++){
                             let courseRowDataObject = {
-                                studentId:json.DATA[0].studentId,
-                                preModuleId:json.DATA[0].studentDetails[i].moduleNumber,
-                                preCourses:json.DATA[0].studentDetails[i].coursesArray,
-                                preMarks:0
+                                studentId:json.DATA[i].studentId,
+                                preModuleId:json.DATA[i].moduleNumber,
+                                preCourses:json.DATA[i].coursesArray,
+                                preMarks:json.DATA[i].marks
                             };
                             courseRowDataArray.push(courseRowDataObject);
                         }

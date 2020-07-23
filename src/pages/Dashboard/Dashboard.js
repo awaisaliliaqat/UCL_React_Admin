@@ -48,6 +48,7 @@ import F24Reports from "./Contents/Forms/F24Reports";
 import F25Form from "./Contents/Forms/F25Form";
 import F27Form from "./Contents/Forms/F27Form";
 import F30Form from "./Contents/Forms/F30Form";
+import F31Form from "./Contents/Forms/F31Form";
 
 const drawerWidth = 283;
 
@@ -530,6 +531,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F30Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F31Form"
+                exact
+                path="/dashboard/F31Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F31Form
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
