@@ -344,10 +344,23 @@ class F09Reports extends Component {
                             admissionData: json.DATA || []
                         });
                         for (var i = 0; i < json.DATA.length; i++) {
+
+                            let programmeCoursesArray = json.DATA[i].programmeCoursesArray;
+                            
+                            let programmeCourseLabels = programmeCoursesArray.map((data, index) =>
+                                <Fragment key={"pcl"+index}>{data.courseLabel}<br/></Fragment>
+                            );
+                            
+                            let programmeCourseChoices = programmeCoursesArray.map((data, index) =>
+                                <Fragment key={"pcl"+index}>{data.choiceLabel}<br/></Fragment>
+                            );
+                            
+                            json.DATA[i].programmeCourseLabels = (programmeCourseLabels);
+
+                            json.DATA[i].programmeCourseChoices = (programmeCourseChoices);
+
                             json.DATA[i].action = (
                               <EditDeleteTableRecord
-                               // getData={this.getData}
-                                // record_id={json.DATA[i].ID}
                                 recordId={json.DATA[i].ID}
                                 DeleteData={this.DeleteData}
                                 onEditURL={`#/dashboard/F09Form/${json.DATA[i].ID}`}
@@ -501,19 +514,22 @@ class F09Reports extends Component {
     }
 
     componentDidMount() {
+        this.props.setDrawerOpen(false);
         this.getData(this.state.applicationStatusId);
     }
 
     render() {
         
         const columnsPending = [
-            { name: "ID", title: "ID"},
+            { name: "SRNo", title: "SR#"},
             { name: "academicSessionLabel", title: "Academic Session"},
-            { name: "label", title: "Course Group"},
+            { name: "programmeGroupLabel", title: "Programme"},
+            { name: "label", title: "Selection Group"},
             { name: "shortLabel", title: "Short Name"},
-            { name: "programmeCourseLabel", title: "Programme Courses"},
+            { name: "programmeCourseLabels", title: "Courses"},
+            { name: "programmeCourseChoices", title: "Group Choices"},
             { name: "action", title:"Action"}
-        ]
+        ];
 
         return (
             <Fragment>

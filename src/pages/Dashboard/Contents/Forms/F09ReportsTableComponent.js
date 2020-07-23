@@ -49,22 +49,41 @@ class F09ReportsTableComponent extends Component {
               { columnName: 'action', sortingEnabled: false },
             ],
             defaultSorting:[
-              { columnName: 'ID', direction: 'asc' }
+              { columnName: 'SRNo', direction: 'asc' }
             ],
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions:[
-              { columnName: 'ID', width:120},
+              { columnName: 'SRNo', width:100},
               { columnName: "academicSessionLabel", wordWrapEnabled:true},
+              { columnName: "programmeGroupLabel", wordWrapEnabled:true},
               { columnName: 'shortLabel', wordWrapEnabled:true},
               { columnName: 'label', wordWrapEnabled:true},
-              { columnName: 'programmeCourseLabel', wordWrapEnabled:true},
-              { columnName: 'action', width:120}
+              { columnName: 'programmeCourseLabels', wordWrapEnabled:true},
+              { columnName: 'programmeCourseChoices', wordWrapEnabled:true},
+              { columnName: 'action', width:120, align:"center"}
             ],
             defaultFilters:[],
             filteringStateColumnExtensions:[
               { columnName: 'action', filteringEnabled: false },
+              { columnName: 'programmeCourseLabels', filteringEnabled: false},
+              { columnName: 'programmeCourseChoices', filteringEnabled: false},
+            ],
+            defaultGrouping:[
+              //{ columnName: 'academicSessionLabel'},
+            ],
+            groupingStateColumnExtensions:[
+              { columnName: 'SRNo', groupingEnabled: false},
+              { columnName: 'shortLabel', groupingEnabled: false },
+              { columnName: 'label', groupingEnabled: false },
+              { columnName: 'programmeCourseLabels', groupingEnabled: false },
+              { columnName: 'programmeCourseChoices', groupingEnabled: false },
+              { columnName: 'action', groupingEnabled: false }
+            ],
+            tableGroupColumnExtension:[
+              { columnName:"academicSessionLabel", showWhenGrouped: false },
+              { columnName: "programmeGroupLabel", showWhenGrouped:false},
             ]
         };
     }
@@ -83,7 +102,10 @@ class F09ReportsTableComponent extends Component {
             filteringStateColumnExtensions,
             defaultFilters,
             columnBands,
-            pageSizes
+            pageSizes,
+            defaultGrouping,
+            tableGroupColumnExtension,
+            groupingStateColumnExtensions
           } = this.state;
 
           const rows = this.props.data;
@@ -94,25 +116,28 @@ class F09ReportsTableComponent extends Component {
         return (
             <Paper>
               <Grid rows={rows} columns={columns}>
-              <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
+                <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
-                <PagingState 
-                  defaultCurrentPage={1}
-                  defaultPageSize={10} 
-                />
+                <GroupingState defaultGrouping={defaultGrouping} columnExtensions={groupingStateColumnExtensions}/>
+                <PagingState  defaultCurrentPage={1} defaultPageSize={10} />
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />
-                <Table tableColumnExtensions={tableColumnExtensions}/>
-                <TableHeaderRow 
+                <IntegratedGrouping />
+                <Table columnExtensions={tableColumnExtensions}/>
+                <TableHeaderRow
+                  showGroupingControls
                   showSortingControls={true} 
                   titleComponent={(props) => (
                     props.children!="Action" ?
                       <b>{props.children}</b>
                       :
-                      <b>&emsp;{props.children}</b>
+                      <b>{props.children}</b>
                   )}
                 />
+                <TableGroupRow icon columnExtensions={tableGroupColumnExtension}/>
+                <Toolbar />
+                <GroupingPanel showGroupingControls/>
                 {showFilter?
                   <TableFilterRow showFilterSelector={true} /> 
                   :

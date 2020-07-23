@@ -1,14 +1,19 @@
 import React, { Component } from "react";
+import PropTypes from 'prop-types';
 import { Paper } from "@material-ui/core";
-import {FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, 
-  SortingState} from "@devexpress/dx-react-grid";
-import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
+import {FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
+import {Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
 
-class F08ReportsTableComponent extends Component {
+class F30FormTableComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      columns: [],
+      columns: [
+        { name: "SRNo", title: "SR#" },
+        { name: "studentName", title: "Student\xa0Name" },
+        { name: "degreeLabel", title: "Degree" },
+        { name: "action", title: "Action"}
+      ],
       rows: [],
       formatColumns: [],
       currencyColumns: [],
@@ -27,38 +32,41 @@ class F08ReportsTableComponent extends Component {
       ],
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
-        { columnName: "label", wordWrapEnabled: true },
-        { columnName: "programmeGroupsLabel", wordWrapEnabled: true },
-        { columnName: "action", width: 120, align:"center" },
+        { columnName: "studentName", wordWrapEnabled: true },
+        { columnName: "degreeLabel", wordWrapEnabled: true },
+        { columnName: "action", width: 120, align:"center"},
       ],
+      defaultColumnWidths: [],
+      resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
-      ],
+      ]
     };
   }
 
+  
   render() {
+         
     const {
+      //rows,
+      columns,
       formatColumns,
       currencyColumns,
       availableFilterOperations,
       CurrencyEditor,
-      filter,
       tableColumnExtensions,
-      defaultFilters,
-      filteringStateColumnExtensions,
-      defaultColumnWidths,
-      sortingStateColumnExtensions,
+      resizingMode,
       defaultSorting,
+      sortingStateColumnExtensions,
+      filteringStateColumnExtensions,
+      defaultFilters,
+      defaultColumnWidths,
       columnBands,
-      pageSizes,
+      pageSizes
     } = this.state;
 
-    const rows = this.props.data;
-    const columns = this.props.columns;
-
-    const showFilter = this.props.showFilter;
+    const rows = this.props.rows || [];
 
     return (
       <Paper>
@@ -73,7 +81,7 @@ class F08ReportsTableComponent extends Component {
           />
           <PagingState 
             defaultCurrentPage={1} 
-            defaultPageSize={10} 
+            defaultPageSize={10}
           />
           <IntegratedFiltering />
           <IntegratedSorting />
@@ -84,14 +92,13 @@ class F08ReportsTableComponent extends Component {
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children != "Action" ? (
-                <b>{props.children}</b>
-              ) : (
-                <b>{props.children}</b>
-              )
+              props.children!="action" ?
+              <b>{props.children}</b>
+              :
+              <b>&emsp;{props.children}</b>
             }
           />
-          {showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
+          {this.props.showFilter && <TableFilterRow showFilterSelector={true} />}
           <PagingPanel pageSizes={pageSizes} />
         </Grid>
       </Paper>
@@ -99,4 +106,15 @@ class F08ReportsTableComponent extends Component {
   }
 }
 
-export default F08ReportsTableComponent;
+export default F30FormTableComponent;
+
+F30FormTableComponent.propTypes = {
+  showFilter: PropTypes.bool,
+}
+
+F30FormTableComponent.defaultProps = {
+  showFilter: false,
+}
+
+
+

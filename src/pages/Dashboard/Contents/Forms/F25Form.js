@@ -1,7 +1,7 @@
 import React, { Component, Fragment, useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import { numberFreeExp } from '../../../../utils/regularExpression';
+import { numberFreeExp, numberExp } from '../../../../utils/regularExpression';
 import { TextField, Grid, MenuItem, CircularProgress, Divider, Typography, Chip, Select,
     IconButton, Tooltip, Checkbox, Fab} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
@@ -40,31 +40,42 @@ const styles = () => ({
 
 function CourseRow (props) {
 
-    const {rowIndex, rowData, onDelete, programmeCoursesArray, choiceGroupIdMenuItems, ...rest} = props;
+    const {rowIndex, rowData, onDelete, moduleTypeMenuItems, courseSelectionGroupMenuItems, ...rest} = props;
 
-    console.log("props",props);
+    const [coursesInputValue, setCoursesInputValue] = useState("");
 
-    let cLabel = ""; 
-    let cCredit = "";
-    let cProgrammeCoursesArray = []; 
+    const handleCourse = (value) => {
+        let ObjArray = value;
+        let selectedPCIdsString = "";
+        for(let i=0; i<ObjArray.length; i++){
+            if(i==0){
+                selectedPCIdsString = ObjArray[i].ID;
+            }else{
+                selectedPCIdsString += "~"+ObjArray[i].ID;
+            }
+        }
+        setCoursesInputValue(selectedPCIdsString);
+        //console.log("handleCourse", selectedPCIdsString);
+    }
 
-    for(let i=0;i<programmeCoursesArray.length; i++){
-        if(programmeCoursesArray[i].ID==rowData.courseId){
-            cLabel = programmeCoursesArray[i].courseLabel;
-            cCredit = programmeCoursesArray[i].courseCreditLabel;
-            cProgrammeCoursesArray = programmeCoursesArray[i].coursePrerequisitesList
-            break;
+    const getPreCourseSelectionGroupById = (id) => {
+        if(courseSelectionGroupMenuItems.length>0 && id!="" && id!=0){
+            return courseSelectionGroupMenuItems.find(x => x.ID == id).Label;
+        }else{
+            return "";
         }
     }
     
-    useEffect(()=>{  });
+    useEffect(()=>{ 
+        handleCourse(rowData.preCourses);
+     });
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
     return(
         <Fragment>
-        <Grid item xs={12}></Grid>
+        <Grid container></Grid>
         <Grid 
             container
             direction="row"
@@ -72,96 +83,110 @@ function CourseRow (props) {
             alignItems="center"
             spacing={2}
         >
-            <Typography 
-                color="primary" 
-                variant="subtitle1"
-                component="div"
-                style={{float:"left"}}
-            >
-                <b>{rowIndex+1}:</b>
-            </Typography>
+            <Grid item xs={12} md={2}>
+                <TextField
+                    id="module"
+                    name="moduleNumber"
+                    label="Module"
+                    required
+                    fullWidth
+                    inputProps={{
+                        "aria-readonly":true
+                    }}
+                    variant="outlined"
+                    value={rowData.preModule}
+                />
+            </Grid>
+            <Grid item xs={12} md={2}>
+                <TextField
+                    id="moduleType"
+                    name="moduleType"
+                    label="Module Type"
+                    required
+                    fullWidth
+                    inputProps={{
+                        "aria-readonly":true
+                    }}
+                    variant="outlined"
+                    value={rowData.preModuleTypeId ? moduleTypeMenuItems.find(x => x.ID == rowData.preModuleTypeId).Label:""}
+                />
+                <TextField type="hidden" name="moduleTypeId" value={rowData.preModuleTypeId} />
+            </Grid>
             <Grid item xs={12} md={3}>
                 <TextField
-                    id="course"
-                    name="course"
-                    label="Course"
-                    required
+                    id="remarks"
+                    name="moduleRemarks"
+                    label="Remarks"
                     fullWidth
                     inputProps={{
                         "aria-readonly":true
                     }}
                     variant="outlined"
-                    value={cLabel}
-                />
-                <TextField type="hidden" name="programmeCourseId" value={rowData.courseId} />
-            </Grid>
-            <Grid item xs={12} md={1}>
-                <TextField
-                    id="courseCredit"
-                    name="courseCredit"
-                    label="Credit"
-                    required
-                    fullWidth
-                    inputProps={{
-                        "aria-readonly":true
-                    }}
-                    variant="outlined"
-                    value={cCredit}
+                    value={rowData.preRemarks}
                 />
             </Grid>
             <Grid item xs={12} md={4}>
-                <Autocomplete
-                    multiple
-                    fullWidth
-                    id="checkboxes-tags-demo"
-                    options={cProgrammeCoursesArray}
-                    value={cProgrammeCoursesArray}
-                    disableCloseOnSelect
-                    getOptionLabel={(option) => " "}
-                    readOnly={true}
-                    renderTags={(tagValue, getTagProps) =>
-                        tagValue.map((option, index) => (
-                            <Chip
-                                key={"chipTag"+option.ID}
-                                label={option.Label}
-                                color="primary"
-                                variant="outlined"
-                                {...getTagProps({ index })}
-                            />
-                        ))
-                    }
-                    renderInput={(params) => (
-                        <TextField 
-                            {...params} 
-                            variant="outlined" 
-                            label="Prerequisite Courses" 
-                            placeholder=""
-                            readOnly={true}
+                { rowData.preModuleTypeId==1||rowData.preModuleTypeId==3 ?
+                    <Fragment>
+                        <Autocomplete
+                            multiple
+                            fullWidth
+                            style={{marginTop:"1.09em"}}
+                            options={rowData.preCourses}
+                            value={rowData.preCourses}
+                            disableCloseOnSelect
+                            getOptionLabel={(option) => " "}
+                            renderTags={(tagValue, getTagProps) =>
+                                tagValue.map((option, index) => (
+                                    <Chip
+                                        key={"chipTag"+option.ID}
+                                        label={option.Label}
+                                        color="primary"
+                                        variant="outlined"
+                                        {...getTagProps({ index })}
+                                    />
+                                ))
+                            }
+                            renderInput={(params) => (
+                                <TextField 
+                                    {...params} 
+                                    variant="outlined" 
+                                    label="Courses" 
+                                    placeholder=""
+                                    type="hidden"
+                                />
+                            )}
                         />
-                    )}
-                />
-            </Grid>
-            <Grid item xs={2}>
-                <TextField
-                    id="choiceGroup"
-                    variant="outlined"
-                    label="Choice Group"
-                    value={rowData.choiceGroupId?choiceGroupIdMenuItems.find(x => x.ID == rowData.choiceGroupId).Label:""}
-                    required
-                    fullWidth
-                />
-                 <TextField type="hidden" name="choiceGroupId" value={rowData.choiceGroupId?rowData.choiceGroupId:0} />
+                        <TextField type="hidden" name="programmeCourseId" value={coursesInputValue} />
+                        <TextField type="hidden" name="selectionGroupId" value="0"/>
+                    </Fragment>
+                    : rowData.preModuleTypeId==2 ?
+                    <Fragment>
+                        <TextField
+                            id="choiceGroup"
+                            variant="outlined"
+                            label="Choice Group"
+                            value={getPreCourseSelectionGroupById(rowData.preCourseSelectionGroupId)}
+                            required
+                            fullWidth
+                        />
+                        <TextField type="hidden" name="programmeCourseId" value="0"/>
+                        <TextField type="hidden" name="selectionGroupId" value={rowData.preCourseSelectionGroupId} />
+
+                    </Fragment>
+                    :
+                    ""
+                }
             </Grid>
             <Grid item xs={12} md={1} style={{textAlign:"center"}}>
                 <IconButton 
-                    color="primary" 
                     aria-label="Add" 
                     component="span"
                     onClick={() => onDelete(rowIndex)}
                 >
                     <Tooltip title="Delete">
                         <Fab 
-                            color="secondary" 
+                            color="secondary"
                             aria-label="add"
                             size="small"    
                         >
@@ -175,7 +200,7 @@ function CourseRow (props) {
     );
 }
 
-class F09Form extends Component {
+class F25Form extends Component {
 
     constructor(props) {
         super(props);
@@ -183,22 +208,28 @@ class F09Form extends Component {
             recordId: this.props.match.params.recordId,
             isLoading: false,
             isReload: false,
-            label:"",
-            labelError:"",
-            shortLabel:"",
-            shortLabelError:"",
             isOpenSnackbar:false,
             snackbarMessage:"",
-            snackbarSeverity:"",
+            snackbarSeverity:"", 
             academicSessionIdMenuItems:[],
             academicSessionId:"",
             academicSessionIdError:"",
-            programmeGroupIdMenuItems:[],
-            programmeGroupId:"",
-            programmeGroupIdError:"",
-            preCourseId:"",
-            preCourseIdField:"",
-            preCourseIdError:"",
+            programmeIdMenuItems:[],
+            programmeId:"",
+            programmeIdError:"",
+            preModule:1,
+            preModuleError:"",
+            preModuleTypeMenuItems:[],
+            preModuleTypeId:"",
+            preModuleTypeIdError:"",
+            preRemarks:"",
+            preRemarksError:"",
+            preCourseMenuItems:[],
+            preCourses:[],
+            preCoursesError:"",
+            preCourseSelectionGroupMenuItems:[],
+            preCourseSelectionGroupId:"",
+            preCourseSelectionGroupIdError:"",
             preCourseLabel:"",
             preChoiceGroupId:"",
             preChoiceGroupIdError:"",
@@ -267,11 +298,14 @@ class F09Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadProgrammeGroups = async() => {  
+    loadProgrammes = async(academicsSessionId) => {  
+        let data = new FormData();
+        data.append("academicsSessionId", academicsSessionId);
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonProgrammeGroupsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonAcademicsSessionsOfferedProgrammesView`;
         await fetch(url, {
             method: "POST",
+            body:data,
             headers: new Headers({
                 Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
             })
@@ -285,11 +319,11 @@ class F09Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.setState({programmeGroupIdMenuItems:json.DATA});
+                       this.setState({programmeIdMenuItems:json.DATA});
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
-                    console.log("loadProgrammeGroups", json);
+                    console.log("loadProgrammes", json);
                 },
                 error => {
                     if (error.status == 401) {
@@ -305,11 +339,50 @@ class F09Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadProgrammeCourses = async(programmeGroupId) => {
-        let data = new FormData();
-        data.append("programmeGroupId", programmeGroupId);
+    loadModuleType = async() => {  
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonProgrammeCoursesView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonProgrammeModulesTypesView`;
+        await fetch(url, {
+            method: "POST",
+            headers: new Headers({
+                Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                       this.setState({preModuleTypeMenuItems:json.DATA});
+                    } else {
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                    }
+                    console.log("loadModuleType", json);
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        console.log(error);
+                        this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+                    }
+                });
+        this.setState({isLoading: false})
+    }
+
+    loadProgrammeCourses = async(academicsSessionId,programmeId) => {
+        let data = new FormData();
+        data.append("academicsSessionId", academicsSessionId);
+        data.append("programmeId", programmeId);
+        this.setState({isLoading: true});
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonProgrammeCoursesView`;
         await fetch(url, {
             method: "POST",
             body: data,
@@ -326,17 +399,7 @@ class F09Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.setState({programmeCoursesArray:json.DATA});
-                       let prerequisiteCourseArray = [];
-                       for(let i=0; i<json.DATA.length; i++){
-                            let obj = {
-                                    ID:json.DATA[i].ID, 
-                                    Label: json.DATA[i].courseLabel
-                            }
-                            prerequisiteCourseArray.push(obj);
-                       }
-                       this.setState({programmeCoursesListArray:prerequisiteCourseArray});
-                       console.log("programmeCoursesListArray", prerequisiteCourseArray);
+                       this.setState({preCourseMenuItems:json.DATA});
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
@@ -356,11 +419,15 @@ class F09Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadChoiceGroup = async() => {  
+    loadCourseSelectionGroup = async(academicsSessionId,programmeId) => {
+        let data = new FormData();
+        data.append("academicsSessionId", academicsSessionId);
+        data.append("programmeId", programmeId);
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupChoicesView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonCourseSelectionGroupProgrammeGroupsView`;
         await fetch(url, {
             method: "POST",
+            body:data,
             headers: new Headers({
                 Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
             })
@@ -374,11 +441,11 @@ class F09Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.setState({preChoiceGroupIdMenuItems:json.DATA});
+                       this.setState({preCourseSelectionGroupMenuItems:json.DATA});
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
-                    console.log("loadChoiceGroup", json);
+                    console.log("loadCourseSelectionGroup", json);
                 },
                 error => {
                     if (error.status == 401) {
@@ -394,11 +461,12 @@ class F09Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadData = async(index) => {
+    loadData = async(academicSessionId, programmeId) => {
         const data = new FormData();
-        data.append("id",index);
+        data.append("academicsSessionId",academicSessionId);
+        data.append("programmeId",programmeId);
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonProgrammeModulesView`;
         await fetch(url, {
             method: "POST",
             body: data, 
@@ -415,14 +483,25 @@ class F09Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.loadProgrammeCourses(json.DATA[0].programmeGroupId);
-                       this.setState({
-                           academicSessionId : json.DATA[0].academicSessionId,
-                           label : json.DATA[0].label,
-                           shortLabel : json.DATA[0].shortLabel,
-                           programmeGroupId : json.DATA[0].programmeGroupId,
-                           courseRowDataArray: json.DATA[0].programmeCourseSelectedArray
-                       });
+                        let courseRowDataArray = [];
+                        let preModule = 0;
+                        for(let i=0; i<json.DATA.length; i++){
+                            let courseRowDataObject = {
+                                preModule : json.DATA[i].moduleNumber,
+                                preModuleTypeId : json.DATA[i].moduleTypeId,
+                                preRemarks : json.DATA[i].moduleRemarks,
+                                preCourses : json.DATA[i].coursesArray || [],
+                                preCourseSelectionGroupId : json.DATA[i].selectionGroupId
+                            };
+                            courseRowDataArray.push(courseRowDataObject);
+                            if(json.DATA[i].moduleNumber>preModule){
+                                preModule = json.DATA[i].moduleNumber;
+                            }
+                        }
+                        this.setState({
+                            courseRowDataArray:courseRowDataArray,
+                            preModule:++preModule
+                        });
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }
@@ -456,71 +535,73 @@ class F09Form extends Component {
 
     isProgrammeValid = () => {
         let isValid = true;
-        if (!this.state.programmeGroupId) {
-            this.setState({programmeGroupIdError:"Please select Programme."});
-            document.getElementById("programmeGroupId").focus();
+        if (!this.state.programmeId) {
+            this.setState({programmeIdError:"Please select Programme."});
+            document.getElementById("programmeId").focus();
             isValid = false;
         } else {
-            this.setState({programmeGroupIdError:""});
+            this.setState({programmeIdError:""});
         }
         return isValid;
     }
     
-    islabelValid = () => {
+    isPreModuleValid = () => {
         let isValid = true;
-        if (!this.state.label) {
-            this.setState({labelError:"Please enter Course Selection Group."});
-            document.getElementById("label").focus();
+        if (!this.state.preModule) {
+            this.setState({preModuleError:"Please enter module."});
+            document.getElementById("preModule").focus();
             isValid = false;
         } else {
-            this.setState({labelError:""});
+            this.setState({preModuleError:""});
         }
         return isValid;
     }
 
-    isshortLabelValid = () => {
+    isPreModuleTypeIdValid = () => {
         let isValid = true;        
-        if (!this.state.shortLabel) {
-            this.setState({shortLabelError:"Please enter Short Name."});
-            document.getElementById("shortLabel").focus();
+        if (!this.state.preModuleTypeId) {
+            this.setState({preModuleTypeIdError:"Please enter module type."});
+            document.getElementById("preModuleTypeId").focus();
             isValid = false;
         } else {
-            this.setState({shortLabelError:""});
+            this.setState({preModuleTypeIdError:""});
         }
         return isValid;
     }
 
-    isProgrammeCourseValid = () => {
+    isPreRemarksValid = () => {
         let isValid = true;        
-        if (!this.state.preCourseIdField) {
-            this.setState({preCourseIdError:"Please select Course."});
-            document.getElementById("preCourseId").focus();
+        if (!this.state.preRemarks) {
+            this.setState({preRemarksError:"Please enter remarks."});
+            document.getElementById("preRemarks").focus();
             isValid = false;
         } else {
-            this.setState({preCourseIdError:""});
+            this.setState({preRemarksError:""});
         }
         return isValid;
     }
 
-    isChoiceGroupValid = () => {
+    isPreCourseSelectionGroupIdValid = () => {
         let isValid = true;
-        if (!this.state.preChoiceGroupId) {
-            this.setState({preChoiceGroupIdError:"Please select choice group."});
-            document.getElementById("preChoiceGroupId").focus();
+        if (!this.state.preCourseSelectionGroupId && this.state.preModuleTypeId==2) {
+            this.setState({preCourseSelectionGroupIdError:"Please select choice group."});
+            document.getElementById("preCourseSelectionGroupId").focus();
             isValid = false;
         } else {
-            this.setState({preChoiceGroupIdError:""});
+            this.setState({preCourseSelectionGroupIdError:""});
         }
         return isValid;
     }
 
-    isCoursesListValid = () => {
-        let programmeCourseId = document.getElementsByName("programmeCourseId");
+    ispPreCoursesValid = () => {
+        let preCourses = this.state.preCourses;
         let isValid = true;
-        if (programmeCourseId.length==0) {
-            this.handleOpenSnackbar("Please add one course in list.","error");
-            document.getElementById("preCourseId").focus();
+        if (preCourses.length==0 && (this.state.preModuleTypeId==3 || this.state.preModuleTypeId==1)) {
+            this.setState({preCoursesError:"Please select course."});
+            document.getElementById("preCourses").focus();
             isValid = false;
+        } else {
+            this.setState({preCoursesError:""});
         }
         return isValid;
     }
@@ -530,14 +611,29 @@ class F09Form extends Component {
         const errName = `${name}Error`;
         let regex = "";
         switch (name) {
-            case "programmeGroupId":
-                this.loadProgrammeCourses(value);
+            case "academicSessionId":
+                this.loadProgrammes(value);
                 this.setState({
-                    preCourseId:"",
-                    preCourseLabel:"",
+                    programmeId:"",
+                    courseRowDataArray:[],
+                    preModule:1
+                });
+                break;
+            case "programmeId":
+                this.loadProgrammeCourses(this.state.academicSessionId, value);
+                this.loadCourseSelectionGroup(this.state.academicSessionId,value);
+                this.loadData(this.state.academicSessionId, value);
+                this.setState({
                     courseRowDataArray:[]
                 });
                 break;
+            case "preModule":
+                regex = new RegExp(numberExp);
+                if (value && !regex.test(value)) {
+                    return;
+                }
+                break;
+            
         default:
             break;
         }
@@ -548,67 +644,71 @@ class F09Form extends Component {
         })
     }
 
-    onPreCourseChange = (v) => {
+    isCourseSelected = (option) => {
+        return this.state.preCourses.some(selectedOption => selectedOption.ID == option.ID);
+    }
 
+    handleSetPreCourses = (value) => {
         this.setState({
-            preCourseLabel : v.Label,
-            preCourseIdError: ""
+            preCourses:value,
+            preCoursesError:""
         });
-
-        if(v=""){
-            this.setState({preCourseId:""});
-        }
-
-    }    
-
-    onPreCourseIdChange = (v) => {
-        this.setState({
-            preCourseId: v,
-            preCourseIdError: "",
-            preCourseIdField:v.ID
-        })
     }
 
     handeAddCourseRow = () => {
         if( 
-            !this.isProgrammeCourseValid() 
-            //|| !this.isChoiceGroupValid() 
+            !this.isAcademicSessionValid()
+            || !this.isProgrammeValid()
+            || !this.isPreModuleValid()
+            || !this.isPreModuleTypeIdValid()
+            //|| !this.isPreRemarksValid()
+            || !this.isPreCourseSelectionGroupIdValid()
+            || !this.ispPreCoursesValid()
         ){ return; }
 
         let courseRowDataArray = this.state.courseRowDataArray;        
-        let preCourseId = this.state.preCourseIdField;
-        let preChoiceGroupId = this.state.preChoiceGroupId;
+        let preModule = this.state.preModule;
+        let preModuleTypeId = this.state.preModuleTypeId;
+        let preRemarks = this.state.preRemarks;
+        let preCourses = this.state.preCourses;
+        let preCourseSelectionGroupId = this.state.preCourseSelectionGroupId;
 
-        let programmeCourseId = document.getElementsByName("programmeCourseId");
-        for(let i=0; i<programmeCourseId.length; i++){
-            if(programmeCourseId[i].value==preCourseId){
-                this.handleOpenSnackbar("Course already added.","error");
+        let moduleNumber = document.getElementsByName("moduleNumber");
+        for(let i=0; i<moduleNumber.length; i++){
+            if(moduleNumber[i].value==preModule){
+                this.setState({preModuleError:"Module should be unique."});
+                document.getElementById("preModule").focus();
                 return;
             }
         }
 
         let courseRowDataObject = {
-            courseId:preCourseId,
-            choiceGroupId:preChoiceGroupId
+            preModule:preModule,
+            preModuleTypeId:preModuleTypeId,
+            preRemarks:preRemarks,
+            preCourses:preCourses,
+            preCourseSelectionGroupId:preCourseSelectionGroupId,
         };
+
         courseRowDataArray.push(courseRowDataObject);
+        
         this.setState({
             courseRowDataArray:courseRowDataArray,
-            preCourseLabel:"",
-            preCourseId:"",
-            preCourseIdField:"",
-            preChoiceGroupId:""
+            preModule:++this.state.preModule,
+            preModuleTypeId:"",
+            preRemarks:"",
+            preCourses:[],
+            preCourseSelectionGroupId:""
         });
-        console.log("courseRowDataObject", courseRowDataObject);
+
+        //console.log("courseRowDataObject", courseRowDataObject);
+    
     }
 
     handeDeleteCourseRow = (index) => {
         let courseRowDataArray = this.state.courseRowDataArray;
         courseRowDataArray.splice(index, 1);
         this.setState({courseRowDataArray:courseRowDataArray});
-        if(courseRowDataArray){
-            this.setState({isAcademicSessionAndProgrammeChangeable:true});
-        }
     }
 
     clickOnFormSubmit=()=>{
@@ -618,15 +718,12 @@ class F09Form extends Component {
      onFormSubmit = async(e) => {
         if(
             !this.isAcademicSessionValid () ||
-            !this.isProgrammeValid () ||
-            !this.islabelValid() || 
-            !this.isshortLabelValid() ||
-            !this.isCoursesListValid()
+            !this.isProgrammeValid ()
         ){ return; }
         let myForm = document.getElementById('myForm');
         const data = new FormData(myForm);
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupSave`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C25CommonProgrammeModulesSave`;
         await fetch(url, {
             method: "POST", 
             body: data, 
@@ -677,8 +774,7 @@ class F09Form extends Component {
     componentDidMount() {
         this.props.setDrawerOpen(false);
         this.loadAcademicSession();
-        this.loadProgrammeGroups();
-        this.loadChoiceGroup();
+        this.loadModuleType();
         if(this.state.recordId!=0){
             this.loadData(this.state.recordId);
         }
@@ -698,6 +794,8 @@ class F09Form extends Component {
     render() {
 
         const { classes } = this.props;
+        const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+        const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
         return (
             <Fragment>
@@ -716,7 +814,7 @@ class F09Form extends Component {
                             }} 
                             variant="h5"
                         >
-                            Define Course Selection Group
+                            Define Programme Modules
                         </Typography>
                         <Divider style={{
                                 backgroundColor: 'rgb(58, 127, 187)',
@@ -757,23 +855,23 @@ class F09Form extends Component {
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <TextField
-                                    id="programmeGroupId"
-                                    name="programmeGroupId"
+                                    id="programmeId"
+                                    name="programmeId"
                                     variant="outlined"
-                                    label="Programme Group"
+                                    label="Programme"
+                                    value={this.state.programmeId}
                                     onChange={this.onHandleChange}
-                                    value={this.state.programmeGroupId}
-                                    error={!!this.state.programmeGroupIdError}
-                                    helperText={this.state.programmeGroupIdError}
+                                    error={!!this.state.programmeIdError}
+                                    helperText={this.state.programmeIdError}
                                     disabled={!this.state.academicSessionId}
                                     required
                                     fullWidth
                                     select
                                 >
-                                    {this.state.programmeGroupIdMenuItems ?
-                                        this.state.programmeGroupIdMenuItems.map((dt, i) => (
+                                    {this.state.programmeIdMenuItems ?
+                                        this.state.programmeIdMenuItems.map((dt, i) => (
                                             <MenuItem 
-                                                key={"programmeGroupIdMenuItems"+dt.ID} 
+                                                key={"programmeIdMenuItems"+dt.ID} 
                                                 value={dt.ID}
                                             >
                                                 {dt.Label}
@@ -786,36 +884,6 @@ class F09Form extends Component {
                                     }
                                 </TextField>
                             </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    id="label"
-                                    name="label"
-                                    label="Course Selection Group"
-                                    required
-                                    fullWidth
-                                    variant="outlined"
-                                    onKeyDown={this.StopEnter}
-                                    onChange={this.onHandleChange}
-                                    value={this.state.label}
-                                    error={!!this.state.labelError}
-                                    helperText={this.state.labelError}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    id="shortLabel"
-                                    name="shortLabel"
-                                    label="Short Name"
-                                    required
-                                    fullWidth
-                                    variant="outlined"
-                                    onKeyDown={this.StopEnter}
-                                    onChange={this.onHandleChange}
-                                    value={this.state.shortLabel}
-                                    error={!!this.state.shortLabelError}
-                                    helperText={this.state.shortLabelError}
-                                />
-                            </Grid>
                             <Grid item xs={12}>
                                 <Divider 
                                     style={{
@@ -824,55 +892,37 @@ class F09Form extends Component {
                                     }} 
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Autocomplete
-                                    freeSolo
-                                    id="preCourseId"
-                                    disableClearable
-                                    disabled={!this.state.programmeGroupId}
-                                    options={this.state.programmeCoursesListArray}
-                                    getOptionLabel={(option) => option.Label}
-                                    value={this.state.preCourseId}
-                                    onChange={(event, newValue) => {
-                                        this.onPreCourseIdChange(newValue);
-                                    }}
-                                    inputValue={this.preCourseLabel}
-                                    onInputChange={(event, newInputValue) => {
-                                        this.onPreCourseChange(newInputValue);
-                                    }}
-                                    style={{marginTop:"-1em", marginBottom:"-1em"}}
-                                    renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Course"
-                                        placeholder="Search and Select"
-                                        margin="normal"
-                                        variant="outlined"
-                                        required
-                                        InputProps={{ ...params.InputProps, type: 'search' }}
-                                        error={!!this.state.preCourseIdError}
-                                        helperText={this.state.preCourseIdError?this.state.preCourseIdError:""}
-                                    />
-                                    )}
-                                />
-                                <TextField type="hidden" id="preCourseIdHidden" value={this.state.preCourseIdField} />
-                            </Grid>
-                            <Grid item xs={12} md={5}>
+                            <Grid item xs={12} md={2}>
                                 <TextField
-                                    id="preChoiceGroupId"
-                                    name="preChoiceGroupId"
+                                    id="preModule"
+                                    name="preModule"
+                                    label="Module"
+                                    type="number"
+                                    required
+                                    fullWidth
                                     variant="outlined"
-                                    label="Choice Group"
                                     onChange={this.onHandleChange}
-                                    value={this.state.preChoiceGroupId}
-                                    error={!!this.state.preChoiceGroupIdError}
-                                    helperText={this.state.preChoiceGroupIdError}
+                                    value={this.state.preModule}
+                                    error={!!this.state.preModuleError}
+                                    helperText={this.state.preModuleError}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={2}>
+                                <TextField
+                                    id="preModuleTypeId"
+                                    name="preModuleTypeId"
+                                    variant="outlined"
+                                    label="Module Type"
+                                    onChange={this.onHandleChange}
+                                    value={this.state.preModuleTypeId}
+                                    error={!!this.state.preModuleTypeIdError}
+                                    helperText={this.state.preModuleTypeIdError}
                                     required
                                     fullWidth
                                     select
                                 >
-                                     {this.state.preChoiceGroupIdMenuItems ?
-                                        this.state.preChoiceGroupIdMenuItems.map((dt, i) => (
+                                     {this.state.preModuleTypeMenuItems ?
+                                        this.state.preModuleTypeMenuItems.map((dt, i) => (
                                             <MenuItem 
                                                 key={"PCGID"+dt.ID} 
                                                 value={dt.ID}
@@ -886,6 +936,99 @@ class F09Form extends Component {
                                         </MenuItem>
                                     }
                                 </TextField>
+                            </Grid>
+                            <Grid item xs={12} md={3}>
+                                <TextField
+                                    id="preRemarks"
+                                    name="preRemarks"
+                                    label="Remarks"
+                                    fullWidth
+                                    variant="outlined"
+                                    onChange={this.onHandleChange}
+                                    value={this.state.preRemarks}
+                                    error={!!this.state.preRemarksError}
+                                    helperText={this.state.preRemarksError}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={4}>
+                            {this.state.preModuleTypeId==1||this.state.preModuleTypeId==3 ?
+                                <Fragment>
+                                    <Autocomplete
+                                        multiple
+                                        fullWidth
+                                        id="preCourses"
+                                        options={this.state.preCourseMenuItems}
+                                        value={this.state.preCourses}
+                                        onChange={(event, value) => this.handleSetPreCourses(value) }
+                                        disableCloseOnSelect
+                                        getOptionLabel={(option) => option.Label}
+                                        renderTags={(tagValue, getTagProps) =>
+                                            tagValue.map((option, index) => (
+                                                <Chip
+                                                    label={option.Label}
+                                                    color="primary"
+                                                    variant="outlined"
+                                                    {...getTagProps({ index })}
+                                                />
+                                            ))
+                                        }
+                                        renderOption={(option) => (
+                                            <Fragment>
+                                                <Checkbox
+                                                    icon={icon}
+                                                    checkedIcon={checkedIcon}
+                                                    style={{ marginRight: 8 }}
+                                                    checked={ this.isCourseSelected(option) }
+                                                    color="primary"
+                                                />
+                                                {option.Label}
+                                            </Fragment>
+                                        )}
+                                        renderInput={(params) => (
+                                            <TextField 
+                                                {...params} 
+                                                variant="outlined" 
+                                                label="Courses" 
+                                                placeholder="Search and Select"
+                                                error={!!this.state.preCoursesError}
+                                                helperText={!!this.state.preCoursesError}
+                                            />
+                                        )}
+                                    />
+                                </Fragment>
+                                :
+                                this.state.preModuleTypeId==2 ?
+                                    <TextField
+                                        id="preCourseSelectionGroupId"
+                                        name="preCourseSelectionGroupId"
+                                        variant="outlined"
+                                        label="Course Selection Group"
+                                        onChange={this.onHandleChange}
+                                        value={this.state.preCourseSelectionGroupId}
+                                        error={!!this.state.preCourseSelectionGroupIdError}
+                                        helperText={this.state.preCourseSelectionGroupIdError}
+                                        required
+                                        fullWidth
+                                        select
+                                    >
+                                        {this.state.preCourseSelectionGroupMenuItems ?
+                                            this.state.preCourseSelectionGroupMenuItems.map((dt, i) => (
+                                                <MenuItem 
+                                                    key={"PCGID"+dt.ID} 
+                                                    value={dt.ID}
+                                                >
+                                                    {dt.Label}
+                                                </MenuItem>
+                                            ))
+                                            :
+                                            <MenuItem>
+                                                <CircularProgress size={24}/>
+                                            </MenuItem>
+                                        }
+                                    </TextField>
+                                    :
+                                    ""
+                                }
                             </Grid>
                             <Grid item xs={1} style={{textAlign:"center"}}>
                                 <IconButton 
@@ -913,15 +1056,18 @@ class F09Form extends Component {
                                     }} 
                                 />
                             </Grid>
-                            {this.state.programmeCoursesArray ? 
+                            {
+                                this.state.programmeCoursesArray
+                                &&this.state.preModuleTypeMenuItems
+                                &&this.state.preCourseSelectionGroupMenuItems? 
                                 this.state.courseRowDataArray.map((dt, i) => (
                                     <CourseRow 
                                         key={"CRDA"+i}
                                         rowIndex={i}
                                         rowData={dt}
                                         onDelete={(i) => this.handeDeleteCourseRow(i)}
-                                        programmeCoursesArray={this.state.programmeCoursesArray}
-                                        choiceGroupIdMenuItems={this.state.preChoiceGroupIdMenuItems}
+                                        moduleTypeMenuItems={this.state.preModuleTypeMenuItems}
+                                        courseSelectionGroupMenuItems={this.state.preCourseSelectionGroupMenuItems}
                                     />
                                 ))
                                 :
@@ -944,7 +1090,7 @@ class F09Form extends Component {
                 </form>
                 <BottomBar
                     left_button_text="View"
-                    left_button_hide={false}
+                    left_button_hide={true}
                     bottomLeftButtonAction={this.viewReport}
                     right_button_text="Save"
                     bottomRightButtonAction={this.clickOnFormSubmit}
@@ -961,4 +1107,4 @@ class F09Form extends Component {
         );
     }
 }
-export default withStyles(styles)(F09Form);
+export default withStyles(styles)(F25Form);

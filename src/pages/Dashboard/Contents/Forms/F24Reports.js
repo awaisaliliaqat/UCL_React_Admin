@@ -1,14 +1,10 @@
 import React, { Component, Fragment } from 'react';
-import {Divider, IconButton, Tooltip, Hidden} from '@material-ui/core';
-
+import {Divider, IconButton, Tooltip, CircularProgress, Grid} from '@material-ui/core';
 import Typography from "@material-ui/core/Typography";
-import ExcelIcon from '../../../../assets/Images/excel.png';
-import F20ReportsFilter from './F20ReportsFilter';
-import TablePanel from '../../../../components/ControlledTable/RerenderTable/TablePanel';
-import Button from '@material-ui/core/Button';
+import F24ReportsFilter from './F24ReportsFilter';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { format } from 'date-fns'; 
-import F20ReportsTableComponent from './F20ReportsTableComponent';
+import F24ReportsTableComponent from './F24ReportsTableComponent';
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
@@ -26,7 +22,7 @@ function isEmpty(obj) {
     return true;
 }
 
-class F20Reports extends Component {
+class F24Reports extends Component {
 
     constructor(props) {
         super(props);
@@ -36,7 +32,7 @@ class F20Reports extends Component {
             showSearchBar:false,
             isDownloadExcel: false,
             applicationStatusId: 1,
-            programmeCoursesData: [],
+            admissionData: null,
             genderData: [],
             degreeData: [],
             studentName: "",
@@ -86,13 +82,11 @@ class F20Reports extends Component {
     };
 
     getData = async status => {
-        this.setState({
-            isLoading: true
-        })
+        this.setState({isLoading: true})
         const reload = status === 1 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
         const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
         const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C20CommonProgrammeCoursesView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C24CommonCoursePrerequisitesView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -109,20 +103,23 @@ class F20Reports extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.setState({
-                            programmeCoursesData: json.DATA || []
+                            admissionData: json.DATA || []
                         });
                         for (var i = 0; i < json.DATA.length; i++) {
+                            let prerequisiteArray = json.DATA[i].programmeCourseIdPrereq;
+                            json.DATA[i].programmeCourseIdPrereq = prerequisiteArray.map((data, index) =>
+                                <Fragment key={"pcpr"+index}>{data}<br/></Fragment>
+                            );
                             json.DATA[i].action = (
                               <EditDeleteTableRecord
-                                recordId={json.DATA[i].ID}
+                                recordId={json.DATA[i].programmeCourseId}
                                 DeleteData={this.DeleteData}
-                                onEditURL={`#/dashboard/F20Form/${json.DATA[i].ID}`}
+                                onEditURL={`#/dashboard/F24Form/${json.DATA[i].programmeGroupId}`}
                                 handleOpenSnackbar={this.handleOpenSnackbar}
                               />
                             );
                           }
                     } else {
-                        //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
                         this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
                     }
                     console.log(json);
@@ -147,7 +144,7 @@ class F20Reports extends Component {
      DeleteData = async (event) => {
         event.preventDefault();
         const data = new FormData(event.target);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C20CommonProgrammeCoursesDelete`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C24CommonCoursePrerequisitesDelete`;
         await fetch(url, {
           method: "POST",
           body:data,
@@ -167,7 +164,6 @@ class F20Reports extends Component {
                       this.handleOpenSnackbar("Deleted","success");
                       this.getData();
                   } else {
-                      //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
                       this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
                   }
                   console.log(json);
@@ -180,7 +176,7 @@ class F20Reports extends Component {
                       })
                   } else {
                       //alert('Failed to fetch, Please try again later.');
-                      this.handleOpenSnackbar("Failed to delete, Please try again later.","error")
+                      this.handleOpenSnackbar("Failed to fetch, Please try again later.","error")
                       console.log(error);
                   }
               });
@@ -202,20 +198,17 @@ class F20Reports extends Component {
     }
 
     componentDidMount() {
-        this.getData(this.state.applicationStatusId);
+        this.props.setDrawerOpen(false);
+        this.getData();
     }
 
     render() {
         
         const columns = [
             { name: "SRNo", title: "SR#"},
-            // {name: "academicsSessionLabel", title: "Session"},
-            {name: "programmeGroupLabel", title: "Programme Group"},
-            { name: "courseId", title: "Course\xa0ID"},
-            { name: "courseCode", title: "Course\xa0Code"},
-            { name: "courseTitle", title: "Course\xa0Title"},
-            { name: "courseCreditLabel", title: "Course\xa0Credit"},
-            { name: "courseLabel", title: "Course\xa0Label"},
+            { name: "programmeGroupLabel", title: "Programme\xa0Group"},
+            { name: "programmeCourseLabel", title: "Programme\xa0Course"},
+            { name: "programmeCourseIdPrereq", title: "Prerequisite\xa0Courses"},
             { name: "action", title:"Action"}
         ]
 
@@ -236,7 +229,7 @@ class F20Reports extends Component {
                                     <ArrowBackIcon fontSize="small" color="primary"/>
                                 </IconButton>
                             </Tooltip>
-                            Programme Courses
+                            Course Prerequisite Reports
                         </Typography>
                         {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
@@ -268,15 +261,25 @@ class F20Reports extends Component {
                         opacity: '0.3',
                     }} />
                     {this.state.showSearchBar ? 
-                        <F20ReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
+                        <F24ReportsFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={status => this.getData(status)} onHandleChange={e => this.onHandleChange(e)} />
                         :
                         <br/>
                     }
-                    <F20ReportsTableComponent 
-                        data={this.state.programmeCoursesData} 
-                        columns={columns} 
-                        showFilter={this.state.showTableFilter}
-                    />
+                    { this.state.admissionData ?
+                        <F24ReportsTableComponent 
+                            data={this.state.admissionData} 
+                            columns={columns} 
+                            showFilter={this.state.showTableFilter}
+                        />
+                        :
+                        <Grid 
+                            container 
+                            justify="center"
+                            alignItems="center"
+                        >
+                            <CircularProgress />
+                        </Grid>
+                    }
                     <CustomizedSnackbar
                         isOpen={this.state.isOpenSnackbar}
                         message={this.state.snackbarMessage}
@@ -288,4 +291,4 @@ class F20Reports extends Component {
         );
     }
 }
-export default F20Reports;
+export default F24Reports;

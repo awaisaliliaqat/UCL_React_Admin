@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import {Paper, Input, Typography} from '@material-ui/core';
-import { createStyles, withStyles, WithStyles, Theme, responsiveFontSizes } from '@material-ui/core/styles';
-import { Column, FilteringState, GroupingState, IntegratedFiltering, IntegratedGrouping, IntegratedPaging, 
-    IntegratedSelection, IntegratedSorting, PagingState, SelectionState, SortingState, DataTypeProvider, 
-    DataTypeProviderProps} from '@devexpress/dx-react-grid';
-import { DragDropProvider, Grid, GroupingPanel, PagingPanel, Table, TableFilterRow, TableGroupRow,
-    TableHeaderRow, TableSelection, Toolbar, VirtualTable, TableColumnResizing} from '@devexpress/dx-react-grid-material-ui';
-
+import {Paper} from '@material-ui/core';
+import { Column, FilteringState, GroupingState, IntegratedFiltering,  IntegratedPaging, 
+  IntegratedSorting, PagingState, SortingState, IntegratedGrouping} from '@devexpress/dx-react-grid';
+import { DragDropProvider, Grid, PagingPanel, Table, TableFilterRow, TableGroupRow,
+  GroupingPanel, TableHeaderRow, Toolbar} from '@devexpress/dx-react-grid-material-ui';
   
   const getInputValue = (value) =>
     (value === undefined ? '' : value);
@@ -46,26 +43,36 @@ class F06ReportsTableComponent extends Component {
             ],
             pageSizes:[5,10,15,20],
             defaultSorting:[
-              //{ columnName: 'ID', direction: 'asc' }
+              //{ columnName: 'programmeCourseLabel', direction: 'asc' }
             ],
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
+              { columnName: 'programmeCourseIdPrereq', sortingEnabled: false }
             ],
             tableColumnExtensions:[
               { columnName: 'SRNo', width:100},
-              // { columnName: 'academicsSessionLabel', wordWrapEnabled: true, align:"center"},
-              { columnName: 'programmeGroupLabel', wordWrapEnabled: true, align:"center"},
-              { columnName: "courseId", wordWrapEnabled: true, align:"center"},
-              { columnName: 'courseCode', wordWrapEnabled: true, align:"center"},
-              { columnName: 'courseTitle', wordWrapEnabled: true, align:"center"},
-              { columnName: 'courseCreditLabel', wordWrapEnabled: true, align:"center"},
-              { columnName: 'courseLabel', wordWrapEnabled: true, align:"center"},
+              { columnName: 'programmeGroupLabel', wordWrapEnabled:true},
+              { columnName: 'programmeCourseLabel', wordWrapEnabled:true},
+              { columnName: 'programmeCourseIdPrereq', wordWrapEnabled:true},
               { columnName: 'action', width:120, align:"center"}
+            ],
+            defaultGrouping:[
+              //{ columnName: 'programmeGroupLabel'},
+            ],
+            groupingStateColumnExtensions:[
+              { columnName: 'SRNo', groupingEnabled: false},
+              { columnName: 'programmeCourseLabel', groupingEnabled: false },
+              { columnName: 'programmeCourseIdPrereq', groupingEnabled: false },
+              { columnName: 'action', groupingEnabled: false }
+            ],
+            tableGroupColumnExtension:[
+              { columnName:"programmeGroupLabel", showWhenGrouped: false }
             ],
             resizingMode:"widget",
             defaultFilters:[],
             filteringStateColumnExtensions:[
               { columnName: 'action', filteringEnabled: false },
+              { columnName: 'programmeCourseIdPrereq', filteringEnabled: false }
             ]
         };
     }
@@ -85,7 +92,10 @@ class F06ReportsTableComponent extends Component {
           defaultFilters,
           defaultColumnWidths,
           columnBands,
-          pageSizes
+          pageSizes,
+          defaultGrouping,
+          tableGroupColumnExtension,
+          groupingStateColumnExtensions
         } = this.state;
 
         const rows = this.props.data;
@@ -97,33 +107,32 @@ class F06ReportsTableComponent extends Component {
               <Grid rows={rows} columns={columns}>
                 <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
-                {/* <SelectionState />  */}
-                {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
+                <GroupingState defaultGrouping={defaultGrouping} columnExtensions={groupingStateColumnExtensions}/>
+                <DragDropProvider />
                 <PagingState defaultCurrentPage={1} defaultPageSize={10}/>
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />
-                {/* <IntegratedSelection /> */}
-                {/* <DragDropProvider /> */}
+                <IntegratedGrouping />
                 <Table columnExtensions={tableColumnExtensions} />
-                {/* <TableColumnResizing columnExtensions={defaultColumnWidths}/> */}
-                {/* <TableSelection showSelectAll={true} /> */}
-                <TableHeaderRow
+                <TableHeaderRow showGroupingControls
                   showSortingControls={true} 
                   titleComponent={(props) => (
                     props.children!="Action" ?
                       <b>{props.children}</b>
                       :
-                      <b>&emsp;{props.children}</b>
+                      <b>{props.children}</b>
                   )}
                 />
+                <TableGroupRow icon columnExtensions={tableGroupColumnExtension}/>
+                <Toolbar />
+                <GroupingPanel showGroupingControls/>
                 {showFilter?
                   <TableFilterRow showFilterSelector={true} /> 
                   :
                   ""
                 }
                 <PagingPanel pageSizes={pageSizes}/>
-                {/* <Toolbar /> */}
               </Grid>
             </Paper>
         );
