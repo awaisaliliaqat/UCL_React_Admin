@@ -179,6 +179,7 @@ class F31FormPopupComponent extends Component {
       preTimeDuration: "",
       preTimeDurationError: "",
       preDaysMenuItems: [],
+      preDayId: "",
       preDay: "",
       preDayError: "",
       preTimeStartMenuItems: [],
@@ -297,9 +298,9 @@ class F31FormPopupComponent extends Component {
 
   isPreDayValid = () => {
     let isValid = true;
-    if (!this.state.preDay) {
+    if (!this.state.preDayId) {
       this.setState({ preDayError: "Please select day." });
-      document.getElementById("preDay").focus();
+      document.getElementById("preDayId").focus();
       isValid = false;
     } else {
       this.setState({ preDayError: "" });
@@ -342,20 +343,30 @@ class F31FormPopupComponent extends Component {
     }
 
     let rowDataArray = this.state.rowDataArray;
+    let preDayId = this.state.preDayId;
     let preDay = this.state.preDay;
+    console.log();
+    let preDaysMenuItemsTemp = this.state.preDaysMenuItems;
+    for (let i = 0; i < preDaysMenuItemsTemp.length; i++) {
+      if (preDaysMenuItemsTemp[i].id == preDayId) {
+        preDay = preDaysMenuItemsTemp[i].label;
+        console.log(preDaysMenuItemsTemp[i].label);
+      }
+    }
     let preTimeStart = this.state.preTimeStart;
     let preTimeDuration = this.state.preTimeDuration;
 
     let day = document.getElementsByName("day");
     for (let i = 0; i < day.length; i++) {
-      if (day[i].value == preDay) {
+      if (day[i].value == preDayId) {
         this.setState({ preDayError: "Day should be unique." });
-        document.getElementById("preDay").focus();
+        document.getElementById("preDayId").focus();
         return;
       }
     }
 
     let rowDataObject = {
+      preDayId: preDayId,
       preDay: preDay,
       preTimeStart: preTimeStart,
       preTimeDuration: preTimeDuration,
@@ -365,6 +376,7 @@ class F31FormPopupComponent extends Component {
 
     this.setState({
       rowDataArray: rowDataArray,
+      preDayId: "",
       preDay: "",
       preTimeStart: "",
       preTimeDuration: "",
@@ -387,9 +399,18 @@ class F31FormPopupComponent extends Component {
       [errName]: "",
     });
   };
+  onHandleChangePreDay = (e) => {
+    const { name, value } = e.target;
+    const errName = `${name}Error`;
+    this.setState({
+      [name]: value,
+      [errName]: "",
+    });
+  };
 
   handleChangePreDate = (date) => {
     this.setState({
+      preDayId: "",
       preDay: "",
       preTimeStart: "",
       preTimeDuration: "",
@@ -523,12 +544,12 @@ class F31FormPopupComponent extends Component {
                     value={this.props.sectionId}
                   />
                   <TextField
-                    id="preDay"
-                    name="preDay"
+                    id="preDayId"
+                    name="preDayId"
                     variant="outlined"
                     label="Day"
-                    onChange={this.onHandleChange}
-                    value={this.state.preDay}
+                    onChange={this.onHandleChangePreDay}
+                    value={this.state.preDayId}
                     error={!!this.state.preDayError}
                     helperText={
                       this.state.preDayError ? this.state.preDayError : " "
