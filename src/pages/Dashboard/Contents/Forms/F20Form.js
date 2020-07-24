@@ -220,7 +220,7 @@ class F20Form extends Component {
                                 academicsSessionId:json.DATA[0].academicsSessionId,
                                 programmeGroupId:json.DATA[0].programmeGroupId,
                                 courseCreditId:json.DATA[0].courseCreditId,
-                                courseId:json.DATA[0].courseLabel,
+                                courseId:json.DATA[0].courseId,
                                 courseCode:json.DATA[0].courseCode,
                                 courseTitle:json.DATA[0].courseTitle,
                                 courseLabel:json.DATA[0].courseLabel
@@ -639,7 +639,7 @@ class F20Form extends Component {
                                     variant="outlined"
                                     value={this.state.courseLabel}
                                     error={!!this.state.courseLabelError}
-                                    helperText={this.state.courseLabelError!=""?this.state.courseLabelError:<Typography color="primary" variant="caption">Auto generated before change.</Typography>}
+                                    helperText={this.state.courseLabelError}
                                 />
                             </Grid>
                         </Grid>

@@ -46,7 +46,7 @@ class F06ReportsTableComponent extends Component {
             ],
             pageSizes:[5,10,15,20],
             defaultSorting:[
-              { columnName: 'ID', direction: 'asc' }
+              { columnName: 'SRNo', direction: 'asc' }
             ],
             sortingStateColumnExtensions:[
               { columnName: 'admissionActivation', sortingEnabled: false },
