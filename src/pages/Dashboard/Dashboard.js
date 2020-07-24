@@ -20,7 +20,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import WelcomePage from "./Contents/WelcomePage";
 import Leaf from "../../assets/Images/svg/leaf.svg";
 import AdmissionApplicationReports from "./Contents/Reports/AdmissionApplicationReports/AdmissionApplicationReports";
-// import ApplicantRegistrationAnalytics from './Contents/Analytics/ApplicantRegistrationAnalytics';
 import AdmissionDecision from "./Contents/Decision/AdmissionDecision/AddmissionDecision";
 import RegistrationFeeApprovel from "./Contents/Decision/RegistrationFeeApproval/RegistrationFeeApprovel";
 import OfferLetter from "./Contents/Decision/OfferLetter/OfferLetter";
@@ -90,16 +89,17 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "left",
     paddingTop: 3,
     paddingBottom: 3,
-
-    color: "white",
-    width: drawerWidth - 20,
-    marginLeft: 40,
+    paddingLeft: 15,
+    color: 'white',
+    width: drawerWidth - 60,
+    marginLeft: 25,
+    textOverflow: 'clip',
+    whiteSpace: 'break-spaces'
   },
   active: {
     backgroundColor: "#103C6E",
-    paddingRight: 10,
-    width: drawerWidth - 20,
-    height: 30,
+    paddingTop: 5,
+    paddingBottom: 5
   },
   content: {
     flexGrow: 1,
@@ -191,46 +191,33 @@ const Dashboard = (props) => {
         <Toolbar />
         <div className={classes.drawerContainer}>
           <div>
-            {featureList.map((feature) => {
-              const { items = [] } = feature;
-              return (
-                <div key={feature.typeId} className={classes.menuListContainer}>
-                  <Typography className={classes.menuTitle} noWrap variant="h6">
-                    <img alt="" className={classes.menuTitleIcon} src={Leaf} />{" "}
-                    <div>{feature.typeLabel}</div>
-                  </Typography>
-                  <MenuList
-                    style={{
-                      outline: "none",
-                    }}
-                  >
-                    {items.map((option) => {
-                      return (
-                        <MenuItem
-                          key={option.id}
-                          className={`${classes.menuItemPadding} ${
-                            viewValue === `${option.action}` && classes.active
-                          }`}
-                        >
-                          <Link
-                            style={{ textDecoration: "none" }}
-                            to={option.webUrl}
-                          >
-                            <Typography
-                              className={classes.menuItemText}
-                              noWrap
-                              variant="body2"
-                            >
-                              {option.label}
-                            </Typography>
-                          </Link>
-                        </MenuItem>
-                      );
-                    })}
-                  </MenuList>
-                </div>
-              );
-            })}
+            {
+              featureList.map(feature => {
+                const { items = [] } = feature;
+                return (
+                  <div key={feature.typeId} className={classes.menuListContainer}>
+                    <Typography className={classes.menuTitle} noWrap variant="h6">
+                      <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>{feature.typeLabel}</div>
+                    </Typography>
+                    <MenuList style={{
+                      outline: 'none'
+                    }}>
+                      {
+                        items.map(option => {
+                          return (
+                            <MenuItem key={option.id} className={`${classes.menuItemPadding}`}>
+                              <Link style={{ textDecoration: 'none' }} to={option.webUrl}>
+                                <Typography className={`${classes.menuItemText} ${viewValue === `${option.action}` && classes.active}`}
+                                  noWrap variant="body2">{option.label}</Typography>
+                              </Link>
+                            </MenuItem>
+                          );
+                        })
+                      }
+                    </MenuList>
+                  </div>
+                );
+              })}
           </div>
           <div
             style={{
