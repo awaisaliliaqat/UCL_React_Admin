@@ -375,16 +375,16 @@ class F30Form extends Component {
             !this.isProgrammeValid ()
         ){ return; }
 
-        let studentId = document.getElementsByName("studentId");
+        let studentId = document.getElementById("studentId").value;
         let moduleNumber = document.getElementsByName("moduleNumber");
         let programmeCourseId = document.getElementsByName("programmeCourseId");
         let marks = document.getElementsByName("marks");
-        
+
         let myForm = document.getElementById("myForm");
         let data = new FormData(myForm);
-        if(studentId!=null){
-            for(let i=0; i<studentId.length; i++){
-                data.append("studentId",studentId[i].value);
+        data.append("studentId",studentId);
+        if(moduleNumber!=null){
+            for(let i=0; i<moduleNumber.length; i++) {
                 data.append("moduleNumber",moduleNumber[i].value);
                 data.append("programmeCourseId",programmeCourseId[i].value);
                 data.append("marks",marks[i].value);
