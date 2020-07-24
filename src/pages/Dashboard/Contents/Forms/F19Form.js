@@ -314,7 +314,7 @@ class F19Form extends Component {
         
 
         const columns = [
-            { name: "ID", title: "ID"},
+            { name: "SRNo", title: "SR#"},
             { name: "label", title: "Session\xa0Name"},
             { name: "admissionActivation", title: "Admission\xa0Activation"},
             { name: "classesActivation", title:"Classes\xa0Activation"},

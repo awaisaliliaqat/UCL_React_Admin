@@ -57,9 +57,9 @@ function CourseRow (props) {
         //console.log("handleCourse", selectedPCIdsString);
     }
 
-    const getPreCourseSelectionGroupById = (id) => {
-        if(courseMenuItems.length>0 && id!="" && id!=0){
-            return courseMenuItems.find(x => x.ID == id).Label;
+    const getPreModuleById = (id) => {
+        if(moduleMenuItems.length>0 && id!="" && id!=0){
+            return moduleMenuItems.find(x => x.ID == id).Label;
         }else{
             return "";
         }
@@ -87,7 +87,6 @@ function CourseRow (props) {
             >
                 <b>{(rowIndex+1)}:</b>
             </Typography>
-            <TextField type="hidden" name="studentId" value={rowData.studentId} />
             <Grid item xs={12} md={3}>
                 <TextField
                     id="module"
@@ -99,7 +98,7 @@ function CourseRow (props) {
                         "aria-readonly":true
                     }}
                     variant="outlined"
-                    value={rowData.preModuleId ? moduleMenuItems.find(x => x.ID == rowData.preModuleId).Label:""}
+                    value={getPreModuleById(rowData.preModuleId)}
                 />
                 <TextField type="hidden" name="moduleNumber" value={rowData.preModuleId} />
             </Grid>
@@ -216,7 +215,6 @@ class F30FormPopupComponent extends Component {
                         let courseRowDataArray = [];
                         for(let i=0; i<json.DATA.length; i++){
                             let courseRowDataObject = {
-                                studentId:json.DATA[i].studentId,
                                 preModuleId:json.DATA[i].moduleNumber,
                                 preCourses:json.DATA[i].coursesArray,
                                 preMarks:json.DATA[i].marks
@@ -310,7 +308,6 @@ class F30FormPopupComponent extends Component {
         let preModuleId = this.state.preModuleId;
         let preCourses = this.state.preCourses;
         let preMarks = this.state.preMarks;
-        let studentId = this.props.studentId;
 
         let moduleNumber = document.getElementsByName("moduleNumber");
         for(let i=0; i<moduleNumber.length; i++){
@@ -322,7 +319,6 @@ class F30FormPopupComponent extends Component {
         }
 
         let courseRowDataObject = {
-            studentId:studentId,
             preModuleId:preModuleId,
             preCourses:preCourses,
             preMarks:preMarks
@@ -445,6 +441,7 @@ class F30FormPopupComponent extends Component {
                                 alignItems="center"
                                 spacing={2}
                             >
+                                <TextField type="hidden" id="studentId" name="studentId" value={this.props.studentId} />
                                 <Grid item xs={12} md={3}>
                                     <TextField
                                         id="preModuleId"

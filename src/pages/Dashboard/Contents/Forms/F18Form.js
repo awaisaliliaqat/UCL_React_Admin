@@ -225,10 +225,14 @@ class F18Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                        this.setState({
-                            academicSession: json.DATA[0].academicSession,
-                            selectedProgrammesArray: json.DATA[0].programmesId
-                        });
+                        if(json.DATA.length){
+                            this.setState({
+                                academicSession: json.DATA[0].academicSession,
+                                selectedProgrammesArray: json.DATA[0].programmesId
+                            });
+                        }else{
+                            window.location = "#/dashboard/F18Form/0";
+                        }
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
                     }

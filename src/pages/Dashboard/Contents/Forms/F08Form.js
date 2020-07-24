@@ -90,11 +90,15 @@ class F08Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({
-              label: json.DATA[0].label,
-              shortLabel: json.DATA[0].shortLabel,
-              programmeGroupsId: json.DATA[0].programmeGroupsId,
-            });
+            if(json.DATA.length){
+              this.setState({
+                label: json.DATA[0].label,
+                shortLabel: json.DATA[0].shortLabel,
+                programmeGroupsId: json.DATA[0].programmeGroupsId,
+              });
+            }else{
+              window.location = "#/dashboard/F08Form/0";
+            }
           } else {
             this.handleOpenSnackbar(
               json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
