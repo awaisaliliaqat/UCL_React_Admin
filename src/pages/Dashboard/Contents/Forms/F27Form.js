@@ -586,8 +586,8 @@ class F27Form extends Component {
                   {this.state.programmeGroupMenuItems ? (
                     this.state.programmeGroupMenuItems.map((dt, i) => (
                       <MenuItem
-                        key={"programmeGroupMenuItems" + dt.ID}
-                        value={dt.ID}
+                        key={"programmeGroupMenuItems" + dt.Id}
+                        value={dt.Id}
                       >
                         {dt.Label}
                       </MenuItem>
