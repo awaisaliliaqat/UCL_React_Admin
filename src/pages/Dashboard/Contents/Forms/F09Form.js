@@ -415,14 +415,18 @@ class F09Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.loadProgrammeCourses(json.DATA[0].programmeGroupId);
-                       this.setState({
-                           academicSessionId : json.DATA[0].academicSessionId,
-                           label : json.DATA[0].label,
-                           shortLabel : json.DATA[0].shortLabel,
-                           programmeGroupId : json.DATA[0].programmeGroupId,
-                           courseRowDataArray: json.DATA[0].programmeCourseSelectedArray
-                       });
+                        if(json.DATA.length){
+                            this.loadProgrammeCourses(json.DATA[0].programmeGroupId);
+                            this.setState({
+                                academicSessionId : json.DATA[0].academicSessionId,
+                                label : json.DATA[0].label,
+                                shortLabel : json.DATA[0].shortLabel,
+                                programmeGroupId : json.DATA[0].programmeGroupId,
+                                courseRowDataArray: json.DATA[0].programmeCourseSelectedArray
+                            });
+                        }else{
+                            window.location = "#/dashboard/F09Form/0";
+                        }
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
                     }

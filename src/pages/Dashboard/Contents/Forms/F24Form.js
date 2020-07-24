@@ -320,10 +320,14 @@ class F24Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.setState({
-                           label:json.DATA[0].label,
-                           shortLabel:json.DATA[0].shortLabel
-                       });
+                        if(json.DATA.length){
+                        this.setState({
+                            label:json.DATA[0].label,
+                            shortLabel:json.DATA[0].shortLabel
+                        });
+                        }else{
+                            window.location = "#/dashboard/F24Form/0";
+                        }
                     } else {
                         //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
@@ -409,7 +413,7 @@ class F24Form extends Component {
                         this.handleOpenSnackbar(json.USER_MESSAGE,"success");
                         setTimeout(()=>{
                             if(this.state.recordId!=0){
-                                window.location="#/dashboard/F06Reports";
+                                window.location="#/dashboard/F24Reports";
                             }else{
                                 window.location.reload();
                             }

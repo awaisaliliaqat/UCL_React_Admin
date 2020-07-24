@@ -90,12 +90,16 @@ class F06Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            // alert("json.DATA[0].schoolId"+json.DATA[0].schoolId);
-            this.setState({
-              label: json.DATA[0].label,
-              shortLabel: json.DATA[0].shortLabel,
-              schoolId: json.DATA[0].schoolId,
-            });
+            if(json.DATA.length){
+              // alert("json.DATA[0].schoolId"+json.DATA[0].schoolId);
+              this.setState({
+                label: json.DATA[0].label,
+                shortLabel: json.DATA[0].shortLabel,
+                schoolId: json.DATA[0].schoolId,
+              });
+            }else{
+              window.location = "#/dashboard/F07Form/0";
+            }
           } else {
             this.handleOpenSnackbar(
               json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,

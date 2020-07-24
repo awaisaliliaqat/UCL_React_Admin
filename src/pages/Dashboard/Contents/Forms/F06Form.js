@@ -86,10 +86,14 @@ class F06Form extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                       this.setState({
-                           label:json.DATA[0].label,
-                           shortLabel:json.DATA[0].shortLabel
-                       });
+                        if(json.DATA.length){
+                            this.setState({
+                                label:json.DATA[0].label,
+                                shortLabel:json.DATA[0].shortLabel
+                            });
+                        }else{
+                            window.location = "#/dashboard/F06Form/0";
+                        }
                     } else {
                         //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
