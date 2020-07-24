@@ -3,11 +3,10 @@ import { withStyles } from '@material-ui/styles';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
-import { TextField, Grid, FormControl, FormControlLabel, Checkbox, FormLabel, FormGroup, FormHelperText,
-    Card, CardContent} from '@material-ui/core';
+import { TextField, Grid, FormControl, FormControlLabel, Checkbox, FormLabel, FormGroup,
+    Card, CardContent, CircularProgress} from '@material-ui/core';
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import MenuItem from "@material-ui/core/MenuItem";
 
 const styles = () => ({
     root: {
@@ -75,7 +74,16 @@ function ProgrammeGroup(props) {
     const data = programmesGroupData;
 
     const checkIsSelected = (val) => {
-        return selectedProgrammesArray.some(arrVal => val === arrVal);
+        if(
+            selectedProgrammesArray!=null 
+            && selectedProgrammesArray.length>0 
+            && val!=null 
+            && val!=""
+        ){
+            return selectedProgrammesArray.some(arrVal => val === arrVal);
+        }else{
+            return false;
+        }
     }
         
     return (
@@ -236,7 +244,7 @@ class F18Form extends Component {
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
                     }
-                    console.log(json);
+                    console.log("loadData", json);
                 },
                 error => {
                     if (error.status == 401) {
@@ -426,17 +434,24 @@ class F18Form extends Component {
                             <Grid item xs={12}>
                                 <Card className={classes.root}>
                                     <CardContent>
-                                        {this.state.programmesGroup.map((dt, i)=>(
-                                            this.state.programmesGroup ? 
-                                            <ProgrammeGroup
-                                                key={"ProgrammeGroup"+i}
-                                                programmesGroupData={dt}
-                                                selectedProgrammesArray={this.state.selectedProgrammesArray}
-                                                classes={classes}
-                                            />
+                                        {this.state.isLoading ? 
+                                            <CircularProgress/>
                                             :
-                                            ""
-                                        ))
+                                            this.state.programmesGroup.map((dt, i) => (
+                                                this.state.selectedProgrammesArray.length > 0 ? 
+                                                <ProgrammeGroup
+                                                    key={"PGWD"+i}
+                                                    programmesGroupData={dt}
+                                                    selectedProgrammesArray={this.state.selectedProgrammesArray}
+                                                    classes={classes}
+                                                />
+                                                :
+                                                <ProgrammeGroup
+                                                    key={"PGWOD"+i}
+                                                    programmesGroupData={dt}
+                                                    classes={classes}
+                                                />
+                                            ))
                                         }
                                     </CardContent>
                                 </Card>
