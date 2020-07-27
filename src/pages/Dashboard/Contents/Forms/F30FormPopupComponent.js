@@ -92,6 +92,7 @@ function CourseRow (props) {
                     id="module"
                     name="module"
                     label="Module"
+                    size='small'
                     required
                     fullWidth
                     inputProps={{
@@ -106,6 +107,7 @@ function CourseRow (props) {
                 <Autocomplete
                     multiple
                     fullWidth
+                    size='small'
                     style={{paddingTop:"1.4em"}}
                     options={rowData.preCourses}
                     value={rowData.preCourses}
@@ -139,6 +141,7 @@ function CourseRow (props) {
                     id="Marks"
                     name="marks"
                     label="Marks"
+                    size='small'
                     fullWidth
                     inputProps={{
                         "aria-readonly":true
@@ -454,6 +457,7 @@ class F30FormPopupComponent extends Component {
                                         helperText={this.state.preModuleIdError?this.state.preModuleIdError:" "}
                                         required
                                         fullWidth
+                                        size='small'
                                         select
                                     >
                                         {this.state.preModuleMenuItems ?
@@ -476,6 +480,7 @@ class F30FormPopupComponent extends Component {
                                     <Autocomplete
                                         multiple
                                         fullWidth
+                                        size='small'
                                         id="preCourses"
                                         options={this.state.preCourseMenuItems}
                                         value={this.state.preCourses}
@@ -522,6 +527,7 @@ class F30FormPopupComponent extends Component {
                                         name="preMarks"
                                         label="Marks"
                                         type="number"
+                                        size='small'
                                         required
                                         fullWidth
                                         variant="outlined"
