@@ -332,6 +332,7 @@ class F30Form extends Component {
             for (var i = 0; i < json.DATA[0].students.length; i++) {
               json.DATA[0].students[i].action = (
                 <F30FormPopupComponent
+                  dialogTitle={json.DATA[0].students[i].studentName+" - "+json.DATA[0].students[i].degreeLabel}
                   studentId={json.DATA[0].students[i].ID}
                   preModuleMenuItems={this.state.preModuleMenuItems}
                   preCourseMenuItems={this.state.preCourseMenuItems}
