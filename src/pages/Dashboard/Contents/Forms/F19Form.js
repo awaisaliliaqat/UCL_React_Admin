@@ -190,15 +190,7 @@ class F19Form extends Component {
                     if (json.CODE === 1) {
                         let result = {};
                         if(json.DATA){
-                            result= { 
-                                ID:"", 
-                                label: "", 
-                                admissionActivation:  <Typography color="primary">One at a time</Typography>,
-                                classesActivation: <Typography color="primary">One at a time</Typography>,
-                                activatedOn:"",
-                                deactivatedOn:""
-                            }; 
-                           
+                                                       
                             for (var i = 0; i < json.DATA.length; i++) {
                                 json.DATA[i].admissionActivation = (
                                     <Switches 
@@ -214,9 +206,7 @@ class F19Form extends Component {
                                         onChangeAction={this.onClassesActivationSave}
                                     />
                                 );
-                            }   
-                            
-                            json.DATA.unshift(result);
+                            }
 
                             this.setState({
                                 tableData: json.DATA || []
@@ -374,8 +364,8 @@ class F19Form extends Component {
         const columns = [
             { name: "SRNo", title: "SR#"},
             { name: "label", title: "Session\xa0Name"},
-            { name: "admissionActivation", title: "Admission\xa0Activation"},
-            { name: "classesActivation", title:"Classes\xa0Activation"},
+            { name: "admissionActivation", title: <span>{"Admission\xa0Activation"}<br/><Typography color="primary" variant="caption">(One at a time)</Typography></span>},
+            { name: "classesActivation", title:<span>{"Classes\xa0Activation"}<br/><Typography color="primary" variant="caption">(One at a time)</Typography></span>},
             { name: "activatedOn", title:"Activation\xa0Date"},
             { name: "deactivatedOn", title:"Deactivation\xa0Date"}
         ]
