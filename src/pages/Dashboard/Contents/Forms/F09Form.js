@@ -282,9 +282,9 @@ class F09Form extends Component {
               i++
             ) {
               if (this.state.academicSessionIdMenuItems[i].isActive == "1") {
-                this.state.academicSessionId = this.state.academicSessionIdMenuItems[
-                  i
-                ].ID;
+                var tempid = this.state.academicSessionIdMenuItems[i].ID;
+                this.loadProgrammeGroups(tempid);
+                this.state.academicSessionId = tempid;
               }
             }
           } else {
@@ -313,11 +313,14 @@ class F09Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadProgrammeGroups = async () => {
+  loadProgrammeGroups = async (AcademicSessionId) => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonProgrammeGroupsView`;
+    let data = new FormData();
+    data.append("academicsSessionId", AcademicSessionId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonAcademicsSessionsOfferedProgrammesView`;
     await fetch(url, {
       method: "POST",
+      body: data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -768,7 +771,7 @@ class F09Form extends Component {
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.loadAcademicSession();
-    this.loadProgrammeGroups();
+    //this.loadProgrammeGroups();
     this.loadChoiceGroup();
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
