@@ -83,7 +83,12 @@ function CourseRow(props) {
   };
 
   const getPreModuleById = (id) => {
-    if (moduleMenuItems.length > 0 && id != "" && id != 0) {
+    if (
+      moduleMenuItems.length > 0 &&
+      id != "" &&
+      id != 0 &&
+      moduleMenuItems.find((x) => x.ID == id) != undefined
+    ) {
       return moduleMenuItems.find((x) => x.ID == id).Label;
     } else {
       return "";
@@ -181,6 +186,7 @@ function CourseRow(props) {
         <Typography color="primary" variant="caption">
           {rowData.preMarks}
         </Typography>
+        <TextField type="hidden" name="marks" value={rowData.preMarks} />
         {/* <TextField
           id="Marks"
           name="marks"
