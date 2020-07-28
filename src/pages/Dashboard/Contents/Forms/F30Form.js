@@ -531,6 +531,7 @@ class F30Form extends Component {
               variant="h5"
             >
               Student Achievement
+              {/* 
               <div style={{ float: "right" }}>
                 <Tooltip title="Table Filter">
                   <IconButton
@@ -540,7 +541,8 @@ class F30Form extends Component {
                     <FilterIcon fontSize="default" color="primary" />
                   </IconButton>
                 </Tooltip>
-              </div>
+              </div> 
+              */}
             </Typography>
             <Divider
               style={{

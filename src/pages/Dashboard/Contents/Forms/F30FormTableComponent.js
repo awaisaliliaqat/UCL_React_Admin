@@ -92,7 +92,7 @@ class F30FormTableComponent extends Component {
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children!="action" ?
+              props.children!="Action" ?
               <b>{props.children}</b>
               :
               <b>&emsp;{props.children}</b>

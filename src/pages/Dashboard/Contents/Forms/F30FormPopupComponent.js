@@ -118,7 +118,7 @@ function CourseRow(props) {
             >
                 <b>{(rowIndex+1)}:</b>
             </Typography> */}
-      <Grid item xs={12} md={3}>
+      <Grid item xs={3} md={3}>
         {/* <TextField
           id="module"
           name="module"
@@ -131,18 +131,18 @@ function CourseRow(props) {
           variant="outlined"
           value={getPreModuleById(rowData.preModuleId)}
         /> */}
-        <Typography color="primary" variant="caption">
+        {/* <Typography color="primary" variant="caption"> */}
           {getPreModuleById(rowData.preModuleId)}
-        </Typography>
+        {/* </Typography> */}
         <TextField
           type="hidden"
           name="moduleNumber"
           value={rowData.preModuleId}
         />
       </Grid>
-      <Grid item xs={12} md={4}>
+      <Grid item xs={4} md={4}>
         {rowData.preCourses.map((option, index) => (
-          <Typography color="primary" variant="caption">
+          <Typography component="div">
             {index != 0 ? <br /> : ""} {option.Label}
           </Typography>
         ))}
@@ -182,7 +182,7 @@ function CourseRow(props) {
           value={coursesInputValue}
         />
       </Grid>
-      <Grid item xs={12} md={3}>
+      <Grid item xs={3} md={3}>
         <Typography color="primary" variant="caption">
           {rowData.preMarks}
         </Typography>
@@ -199,15 +199,24 @@ function CourseRow(props) {
           value={rowData.preMarks}
         /> */}
       </Grid>
-      <Grid item xs={12} md={1} style={{ textAlign: "center" }}>
+      <Grid item xs={2} md={1} style={{ textAlign: "center" }}>
         <IconButton
-          aria-label="Add"
+          aria-label="Delete"
           component="span"
           onClick={() => onDelete(rowIndex)}
         >
           <Tooltip title="Delete">
-            <Fab color="secondary" aria-label="Delete" size="small">
-              <DeleteIcon />
+            <Fab 
+              color="secondary" 
+              aria-label="Delete" 
+              size="small"
+              style={{
+                height:36,
+                width:36
+              }}
+            >
+              <DeleteIcon 
+                fontSize="small"/>
             </Fab>
           </Tooltip>
         </IconButton>
@@ -628,22 +637,22 @@ class F30FormPopupComponent extends Component {
                   justify="space-evenly"
                   alignItems="center"
                 >
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={3} md={3}>
                     <Typography color="primary" variant="title">
                       Module
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={4} md={4}>
                     <Typography color="primary" variant="title">
                       Courses
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={3} md={3}>
                     <Typography color="primary" variant="title">
                       Marks
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} md={1} style={{ textAlign: "center" }}>
+                  <Grid item xs={2} md={1} style={{ textAlign: "center" }}>
                     <Typography color="primary" variant="title">
                       Delete
                     </Typography>
