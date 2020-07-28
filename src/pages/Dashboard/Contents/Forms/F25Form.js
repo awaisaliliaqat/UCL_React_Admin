@@ -101,7 +101,8 @@ function CourseRow(props) {
         alignItems="center"
         spacing={2}
       >
-        <Grid item xs={12} md={2}>
+        <Grid item xs={1} md={1}>
+          {/* 
           <TextField
             id="module"
             name="moduleNumber"
@@ -113,9 +114,17 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={rowData.preModule}
+          /> 
+          */}
+          <TextField
+            type="hidden"
+            name="moduleNumber"
+            value={rowData.preModule}
           />
+          {rowData.preModule}
         </Grid>
-        <Grid item xs={12} md={2}>
+        <Grid item xs={2} md={2}>
+          {/* 
           <TextField
             id="moduleType"
             name="moduleType"
@@ -133,14 +142,23 @@ function CourseRow(props) {
                   ).Label
                 : ""
             }
-          />
+          /> 
+          */}
+          {rowData.preModuleTypeId
+              ? moduleTypeMenuItems.find(
+                  (x) => x.ID == rowData.preModuleTypeId
+                ).Label
+              : 
+              ""
+          }
           <TextField
             type="hidden"
             name="moduleTypeId"
             value={rowData.preModuleTypeId}
           />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={3} md={3}>
+          {/* 
           <TextField
             id="remarks"
             name="moduleRemarks"
@@ -151,11 +169,19 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={rowData.preRemarks}
+          /> 
+          */}
+           <TextField
+            type="hidden"
+            name="moduleRemarks"
+            value={rowData.preRemarks}
           />
+          {rowData.preRemarks}
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={5} md={5}>
           {rowData.preModuleTypeId == 1 || rowData.preModuleTypeId == 3 ? (
             <Fragment>
+              {/* 
               <Autocomplete
                 multiple
                 fullWidth
@@ -184,7 +210,13 @@ function CourseRow(props) {
                     type="hidden"
                   />
                 )}
-              />
+              /> 
+              */}
+              {rowData.preCourses.map((option, index) => (
+                <span>
+                  {index != 0 ? <br /> : ""} {option.Label}
+                </span>
+              ))}
               <TextField
                 type="hidden"
                 name="programmeCourseId"
@@ -194,6 +226,7 @@ function CourseRow(props) {
             </Fragment>
           ) : rowData.preModuleTypeId == 2 ? (
             <Fragment>
+              {/* 
               <TextField
                 id="choiceGroup"
                 variant="outlined"
@@ -203,7 +236,9 @@ function CourseRow(props) {
                 )}
                 required
                 fullWidth
-              />
+              /> 
+              */}
+              {getPreCourseSelectionGroupById(rowData.preCourseSelectionGroupId)}
               <TextField type="hidden" name="programmeCourseId" value="0" />
               <TextField
                 type="hidden"
@@ -215,15 +250,23 @@ function CourseRow(props) {
             ""
           )}
         </Grid>
-        <Grid item xs={12} md={1} style={{ textAlign: "center" }}>
+        <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
           <IconButton
             aria-label="Add"
             component="span"
             onClick={() => onDelete(rowIndex)}
           >
             <Tooltip title="Delete">
-              <Fab color="secondary" aria-label="add" size="small">
-                <DeleteIcon />
+              <Fab 
+                color="secondary" 
+                aria-label="add" 
+                size="small"
+                style={{
+                  height:36,
+                  width:36
+                }}
+              >
+                <DeleteIcon fontSize="small" />
               </Fab>
             </Tooltip>
           </IconButton>
@@ -1159,12 +1202,45 @@ class F25Form extends Component {
                   }}
                 />
               </Grid>
+              <Grid
+                  container
+                  direction="row"
+                  justify="space-evenly"
+                  alignItems="center"
+                >
+                  <Grid item xs={1} md={1}>
+                    <Typography color="primary" variant="title">
+                      Module
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2} md={2}>
+                    <Typography color="primary" variant="title">
+                      Course Type
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Typography color="primary" variant="title">
+                      Remarks
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={5} md={5}>
+                    <Typography color="primary" variant="title">
+                      Courses
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+                    <Typography color="primary" variant="title">
+                      Action
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}><br/></Grid>
+              </Grid>
               {this.state.programmeCoursesArray &&
               this.state.preModuleTypeMenuItems &&
               this.state.preCourseSelectionGroupMenuItems ? (
                 this.state.courseRowDataArray.map((dt, i) => (
                   <CourseRow
-                    key={"CRDA" + i}
+                    key={"CRDA"+i}
                     rowIndex={i}
                     rowData={dt}
                     onDelete={(i) => this.handeDeleteCourseRow(i)}
