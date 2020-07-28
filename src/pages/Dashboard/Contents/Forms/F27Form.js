@@ -76,7 +76,7 @@ function CourseRow(props) {
             component="div"
             style={{ float: "left" }}
           >
-            {rowData.courseId}
+            {rowData.courseTitle}
           </Typography>
 
           <TextField

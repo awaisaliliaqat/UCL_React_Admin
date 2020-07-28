@@ -61,7 +61,7 @@ class F31Form extends Component {
       programmeGroupIdError: "",
       preDaysMenuItems: [], //["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       preTimeStartMenuItems: [],
-      showTableFilter: true,
+      showTableFilter: false,
       CourseListArray: [],
     };
   }
