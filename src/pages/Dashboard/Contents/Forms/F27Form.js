@@ -184,6 +184,18 @@ class F27Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ academicsSessionIdMenuItems: json.DATA });
+            for (
+              var i = 0;
+              i < this.state.academicsSessionIdMenuItems.length;
+              i++
+            ) {
+              if (this.state.academicsSessionIdMenuItems[i].isActive == "1") {
+                this.state.academicsSessionId = this.state.academicsSessionIdMenuItems[
+                  i
+                ].ID;
+                this.loadProgrammeGroups(this.state.academicsSessionId);
+              }
+            }
           } else {
             this.handleOpenSnackbar(
               json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,

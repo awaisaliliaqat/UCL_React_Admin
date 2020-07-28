@@ -124,6 +124,18 @@ class F30Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ academicSessionIdMenuItems: json.DATA });
+            for (
+              var i = 0;
+              i < this.state.academicSessionIdMenuItems.length;
+              i++
+            ) {
+              if (this.state.academicSessionIdMenuItems[i].isActive == "1") {
+                this.state.academicSessionId = this.state.academicSessionIdMenuItems[
+                  i
+                ].ID;
+                this.loadProgrammes(this.state.academicSessionId);
+              }
+            }
           } else {
             this.handleOpenSnackbar(
               json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
