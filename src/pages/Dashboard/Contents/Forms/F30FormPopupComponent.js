@@ -142,9 +142,9 @@ function CourseRow(props) {
       </Grid>
       <Grid item xs={4} md={4}>
         {rowData.preCourses.map((option, index) => (
-          <Typography component="div">
+          <span>
             {index != 0 ? <br /> : ""} {option.Label}
-          </Typography>
+          </span>
         ))}
 
         {/* <Autocomplete
@@ -183,9 +183,9 @@ function CourseRow(props) {
         />
       </Grid>
       <Grid item xs={3} md={3}>
-        <Typography color="primary" variant="caption">
+        {/* <Typography color="primary" variant="caption"> */}
           {rowData.preMarks}
-        </Typography>
+        {/* </Typography> */}
         <TextField type="hidden" name="marks" value={rowData.preMarks} />
         {/* <TextField
           id="Marks"
