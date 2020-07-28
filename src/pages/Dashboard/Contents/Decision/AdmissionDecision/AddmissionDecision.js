@@ -395,7 +395,7 @@ class AddmissionDecision extends Component {
             {
                 name: "Name", renderer: rowData => {
                     return (
-                        <Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>
+                        <Fragment>{`${rowData.firstName} ${rowData.middleName} ${rowData.lastName}`}</Fragment>
                     )
                 }, sortable: false, customStyleHeader: { width: '13%' }
             },
