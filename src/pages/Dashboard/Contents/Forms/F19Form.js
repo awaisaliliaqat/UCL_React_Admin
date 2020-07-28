@@ -9,6 +9,13 @@ import FilterIcon from "mdi-material-ui/FilterOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
+import Button from '@material-ui/core/Button';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 function isEmpty(obj) {
     if (obj == null) return true;
@@ -23,10 +30,25 @@ function isEmpty(obj) {
 
 function Switches(props) {
 
+    const [open, setOpen] = React.useState(false);
+    const [dialogMsg, setDialogMsg] = React.useState("");
     const [switchState, setSwitchState] = React.useState(props.isChecked);
+    
+    const handleClickOpen = () => {
+        if(switchState){
+            setDialogMsg("Are you sure you want to deactivate?");
+        }else{
+            setDialogMsg("Are you sure you want to activate?");
+        }
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     const handleChange = (event) => {
-        if(!event.target.checked){
+        if(switchState){
             //setSwitchState(event.target.checked);
             props.onChangeAction(props.recordId, 0, setSwitchState);
         }else{
@@ -34,16 +56,52 @@ function Switches(props) {
             props.onChangeAction(props.recordId, 1, setSwitchState);
         }
     };
-    
 
     return (
-        <Switch
-          checked={switchState}
-          onChange={handleChange}
-          color="primary"
-          name="switch"
-          inputProps={{ 'aria-label': 'primary checkbox' }}
-        />
+        <Fragment>
+            <Switch
+                checked={switchState}
+                //onChange={handleChange}
+                onClick={handleClickOpen}
+                color="primary"
+                name="switch"
+                inputProps={{ 'aria-label': 'primary checkbox' }}
+            />
+            <div>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                    <Typography 
+                        variant="subtitle1"
+                        style={{ 
+                            color: '#1d5f98', 
+                            fontWeight: 600, 
+                            textTransform: 'capitalize' 
+                        }}
+                    >        
+                        Confirm !
+                    </Typography>
+                    </DialogTitle>
+                    <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {dialogMsg}&emsp;
+                    </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                    <Button onClick={handleClose} color="secondary">
+                        No
+                    </Button>
+                    <Button onClick={handleClose, handleChange} color="primary" variant="contained" autoFocus>
+                        Yes
+                    </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        </Fragment>
     );
   }
 
