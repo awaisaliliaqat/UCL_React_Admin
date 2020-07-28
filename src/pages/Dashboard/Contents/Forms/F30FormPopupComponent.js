@@ -490,7 +490,7 @@ class F30FormPopupComponent extends Component {
                 fontSize: 20,
               }}
             >
-              Add Achievements
+              {this.props.dialogTitle}
             </Typography>
           </DialogTitle>
           <DialogContent>
