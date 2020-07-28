@@ -249,9 +249,15 @@ class StudentCourseSelection extends Component {
                 (json) => {
                     if (json.CODE === 1) {
                         console.log("MODULES ==>> "+json.DATA );
+                        for (var i = 0; i < json.DATA.length; i++) {
+                            let coursesArray = json.DATA[i].courses.split(",");
+                            let courses = coursesArray.map((data, index) =>
+                                <Fragment key={"pmc"+data+index}>{data}<br/></Fragment>
+                            );
+                            json.DATA[i].courses = <div>{courses}</div>;
+                        }
                         this.setState({
                             moduleData: json.DATA || [],
-
                         });
                     } else {
                         alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
