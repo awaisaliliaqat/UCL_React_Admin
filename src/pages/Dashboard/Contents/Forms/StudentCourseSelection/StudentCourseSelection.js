@@ -15,6 +15,8 @@ class StudentCourseSelection extends Component {
             isLoading: false,
             admissionData: [],
             coursesData: [],
+            achivementsData:[],
+            moduleData:[],
             isOpenActionMenu: false,
             selectedData: {},
             isLoginMenu: false,
@@ -34,7 +36,111 @@ class StudentCourseSelection extends Component {
 
     componentDidMount() {
         this.getSessionData();
+        // this.setState({
+        //     achivementsData:[
+        //         {
+        //             "moduleNumber": "1",
+        //             "courses": "CS123 - Computer Sciences, 02 - Introduction to Economics, 4a - Statistics 1",
+        //             "marks": "30"
+        //         },
+        //         {
+        //             "moduleNumber": "2",
+        //             "courses": "5a - Mathematics1, CS123 - Computer Sciences, 66 - Microeconomics",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "3",
+        //             "courses": "CS123 - Computer Sciences, 15 - Economics of Labour",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "4",
+        //             "courses": "9626 - Information Technology, CS123 - Computer Sciences, L101 - Criminal Law",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "5",
+        //             "courses": "L103 - Legal Systems and Method, CS123 - Computer Sciences",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "6",
+        //             "courses": "CS123 - Computer Sciences",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "7",
+        //             "courses": "L104 - Contract Law, AS11 - Awais Course, CS123 - Computer Sciences",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "8",
+        //             "courses": "L104 - Contract Law, CS123 - Computer Sciences, 9704 - Art and Design",
+        //             "marks": "30"
+        //         },
+        //         {
+        //             "moduleNumber": "9",
+        //             "courses": "CS123 - Computer Sciences, 02 - Introduction to Economics, 4a - Statistics 1",
+        //             "marks": "30"
+        //         },
+        //         {
+        //             "moduleNumber": "10",
+        //             "courses": "5a - Mathematics1, CS123 - Computer Sciences, 66 - Microeconomics",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "11",
+        //             "courses": "CS123 - Computer Sciences, 15 - Economics of Labour",
+        //             "marks": "30"
+        //         },
+        //     ],
+        //     moduleData:[
+        //         {
+        //             "moduleNumber": "1",
+        //             "courses": "CS123 - Computer Sciences, 02 - Introduction to Economics, 4a - Statistics 1",
+        //             "marks": "30"
+        //         },
+        //         {
+        //             "moduleNumber": "2",
+        //             "courses": "5a - Mathematics1, CS123 - Computer Sciences, 66 - Microeconomics",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "3",
+        //             "courses": "CS123 - Computer Sciences, 15 - Economics of Labour",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "4",
+        //             "courses": "9626 - Information Technology, CS123 - Computer Sciences, L101 - Criminal Law",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "5",
+        //             "courses": "L103 - Legal Systems and Method, CS123 - Computer Sciences",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "6",
+        //             "courses": "CS123 - Computer Sciences",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "7",
+        //             "courses": "L104 - Contract Law, AS11 - Awais Course, CS123 - Computer Sciences",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "8",
+        //             "courses": "L104 - Contract Law, CS123 - Computer Sciences, 9704 - Art and Design",
+        //             "marks": "30"
+        //         },
+        //         {
+        //             "moduleNumber": "9",
+        //             "courses": "CS123 - Computer Sciences, 02 - Introduction to Economics, 4a - Statistics 1",
+        //             "marks": "30"
+        //         },
+        //         {
+        //             "moduleNumber": "10",
+        //             "courses": "5a - Mathematics1, CS123 - Computer Sciences, 66 - Microeconomics",
+        //             "marks": "30"
+        //         }, {
+        //             "moduleNumber": "11",
+        //             "courses": "CS123 - Computer Sciences, 15 - Economics of Labour",
+        //             "marks": "30"
+        //         },
+        //     ]
+        // });
+
     }
+
 
     getSessionData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsView`;
@@ -97,7 +203,107 @@ class StudentCourseSelection extends Component {
                         this.setState({
                             coursesData: json.DATA || [],
                             isOpenActionMenu: true,
-                            selectedData: rowData
+                            selectedData: rowData,
+                        });
+                    } else {
+                        alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                    }
+                },
+                (error) => {
+                    if (error.status === 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: true
+                        })
+                    } else {
+                        alert('Failed to fetch, Please try again later.');
+                        console.log(error);
+                    }
+                }
+            );
+        this.setState({
+            viewLoading: false
+        })
+    };
+
+
+
+    getModulesData = async (rowData) => {
+        this.setState({
+            viewLoading: true
+        })
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonProgrammeModulesView?academicsSessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}`;
+        await fetch(url, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                (json) => {
+                    if (json.CODE === 1) {
+                        console.log("MODULES ==>> "+json.DATA );
+                        for (var i = 0; i < json.DATA.length; i++) {
+                            let coursesArray = json.DATA[i].courses.split(",");
+                            let courses = coursesArray.map((data, index) =>
+                                <Fragment key={"pmc"+data+index}>{data}<br/></Fragment>
+                            );
+                            json.DATA[i].courses = <div>{courses}</div>;
+                        }
+                        this.setState({
+                            moduleData: json.DATA || [],
+                        });
+                    } else {
+                        alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                    }
+                },
+                (error) => {
+                    if (error.status === 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: true
+                        })
+                    } else {
+                        alert('Failed to fetch, Please try again later.');
+                        console.log(error);
+                    }
+                }
+            );
+        this.setState({
+            viewLoading: false
+        })
+    };
+
+
+    getStudentAchivementsData = async (rowData) => {
+        this.setState({
+            viewLoading: true
+        })
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsCoursesStudentsAchievementsView?academicsSessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&studentId=${rowData.id}`;
+        await fetch(url, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                (json) => {
+                    if (json.CODE === 1) {
+                        this.setState({
+                            achivementsData: json.DATA || [],
+
                         });
                     } else {
                         alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
@@ -348,7 +554,10 @@ class StudentCourseSelection extends Component {
                             fontSize: 12,
                             cursor: `${this.state.viewLoading ? 'wait' : 'pointer'}`,
                             textTransform: 'capitalize'
-                        }} variant="outlined" onClick={() => this.getCouresData(rowData)
+                        }} variant="outlined" onClick={() => {this.getCouresData(rowData)
+                            this.getModulesData(rowData)
+                            this.getStudentAchivementsData(rowData)
+                            }
                         } >View</Button>
                     )
                 }, sortable: false, customStyleHeader: { width: '15%' }
@@ -360,7 +569,7 @@ class StudentCourseSelection extends Component {
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
 
                 <StudentCourseSelectionAction onSave={() => this.onSaveClick()} open={this.state.isOpenActionMenu} handleClose={() => this.setState({ isOpenActionMenu: false })}
-                    selectedData={this.state.selectedData} coursesData={this.state.coursesData} onClear={() => this.onCheckClear()}
+                    selectedData={this.state.selectedData} coursesData={this.state.coursesData} moduleData={this.state.moduleData} achivementsData={this.state.achivementsData} onClear={() => this.onCheckClear()}
                     handleCheckboxChange={(e, value, type) => this.handleCheckboxChange(e, value, type)} />
 
                 <div style={{
