@@ -259,7 +259,7 @@ function CourseRow(props) {
             <Tooltip title="Delete">
               <Fab 
                 color="secondary" 
-                aria-label="add" 
+                aria-label="Delete" 
                 size="small"
                 style={{
                   height:36,

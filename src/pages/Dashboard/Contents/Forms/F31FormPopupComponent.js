@@ -91,15 +91,18 @@ function CourseRow(props) {
         justify="space-evenly"
         alignItems="center"
       >
+        <Grid item xs={1} md={1}>
         <Typography
           color="primary"
           variant="subtitle1"
           component="div"
           style={{ float: "left" }}
         >
-          <b>{rowIndex + 1}:</b>
+          {rowIndex + 1}:
         </Typography>
-        <Grid item xs={12} md={3}>
+        </Grid>
+        <Grid item xs={3} md={3}>
+          {/* 
           <TextField
             id="dayIdLabel"
             name="dayIdLabel"
@@ -111,7 +114,9 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={rowData.preDay}
-          />
+          /> 
+          */}
+          {rowData.preDay}
           <TextField
             type="hidden"
             id="dayId"
@@ -119,7 +124,8 @@ function CourseRow(props) {
             value={rowData.preDayId}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={4} md={4}>
+          {/* 
           <TextField
             id="startTime"
             name="startTime"
@@ -131,9 +137,18 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={rowData.preTimeStart}
+          /> 
+          */}
+          {rowData.preTimeStart}
+          <TextField
+            type="hidden"
+            id="startTime"
+            name="startTime"
+            value={rowData.preTimeStart}
           />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={3} md={3}>
+          {/* 
           <TextField
             id="module"
             name="duration"
@@ -145,17 +160,33 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={rowData.preTimeDuration}
+          /> 
+          */}
+          {rowData.preTimeDuration}
+          <TextField
+            type="hidden"
+            id="duration"
+            name="duration"
+            value={rowData.preTimeDuration}
           />
         </Grid>
-        <Grid item xs={12} md={1} style={{ textAlign: "center" }}>
+        <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
           <IconButton
             aria-label="Add"
             component="span"
             onClick={() => onDelete(rowIndex)}
           >
             <Tooltip title="Delete">
-              <Fab color="secondary" aria-label="Delete" size="small">
-                <DeleteIcon />
+              <Fab 
+                color="secondary" 
+                aria-label="Delete" 
+                size="small"
+                style={{
+                  height:36,
+                  width:36
+                }}
+              >
+                <DeleteIcon fontSize="small"/>
               </Fab>
             </Tooltip>
           </IconButton>
@@ -649,6 +680,38 @@ class F31FormPopupComponent extends Component {
                       opacity: "0.3",
                     }}
                   />
+                </Grid>
+                <Grid
+                  container
+                  direction="row"
+                  justify="space-evenly"
+                  alignItems="center"
+                >
+                  <Grid item xs={1} md={1}>
+                    <Typography color="primary" variant="title">
+                      SR#
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Typography color="primary" variant="title">
+                      Day
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={4}>
+                    <Typography color="primary" variant="title">
+                      Start Time
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Typography color="primary" variant="title">
+                      Duration
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+                    <Typography color="primary" variant="title">
+                      Action
+                    </Typography>
+                  </Grid>
                 </Grid>
                 {this.state.rowDataArray.length > 0
                   ? this.state.rowDataArray.map((dt, i) => (
