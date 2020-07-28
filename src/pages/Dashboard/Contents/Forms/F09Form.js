@@ -623,6 +623,10 @@ class F09Form extends Component {
           courseRowDataArray: [],
         });
         break;
+      case "academicSessionId":
+        this.loadProgrammeGroups(value);
+
+        break;
       default:
         break;
     }
