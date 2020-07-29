@@ -12,7 +12,7 @@ class F30FormTableComponent extends Component {
         { name: "SRNo", title: "SR#" },
         { name: "nucleusId", title: "Nucleus\xa0ID" },
         { name: "studentName", title: "Student\xa0Name" },
-        { name: "programmeLabel", title: "Degree" },
+        { name: "programmeLabel", title: "Programme" },
         { name: "action", title: "Action"}
       ],
       rows: [],
