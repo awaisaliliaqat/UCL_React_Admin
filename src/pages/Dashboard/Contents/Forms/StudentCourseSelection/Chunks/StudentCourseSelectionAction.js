@@ -67,18 +67,11 @@ class StudentCourseSelectionAction extends Component {
     render() {
         const { achivementsData,moduleData,coursesData, handleCheckboxChange, selectedData, open, handleClose, onClear, onSave } = this.props;
         const columns = [
-            { name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '14%' } },
-            { name: "Course Code", dataIndex: "courseCode", sortable: false, customStyleHeader: { width: '14%' } },
-            {
-                name: "Course Title", renderer: rowData => {
-                    return (
-                        <Fragment>{rowData.courseTitle}</Fragment>
-                    )
-                }, sortable: false, customStyleHeader: { width: '20%' }
-            },
+            //{ name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '14%' } },
+            //{ name: "Course Code", dataIndex: "courseCode", sortable: false, customStyleHeader: { width: '14%' } },
+            { name: "Course Title", renderer: rowData => { return ( <Fragment>{rowData.courseTitle}</Fragment> )}, sortable: false, customStyleHeader: { width: '20%' }},
             { name: "Prerequisite Course", dataIndex: "prerequisites", sortable: false, customStyleHeader: { width: '20%' } },
-            {
-                name: "Register", renderer: rowData => {
+            { name: "Register", renderer: rowData => {
                     return (
                         <Fragment>
                             <Checkbox
@@ -117,8 +110,7 @@ class StudentCourseSelectionAction extends Component {
 
         const modulesColumns = [
             { name: "Module Number", dataIndex: "moduleNumber", sortable: false, customStyleHeader: { width: '8%' } },
-            { name: "Courses",dataIndex: "courses", sortable: false, customStyleHeader: { width: '10%' } },
-           
+            { name: "Courses",dataIndex: "courses", sortable: false, customStyleHeader: { width: '20%' } },
         ]
 
         const achievementsColumns = [
@@ -141,10 +133,10 @@ class StudentCourseSelectionAction extends Component {
                         <div style={{
                             color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize', marginLeft: 5,
                             fontSize: 18,
-                            marginBottom: 10,width:"120%"
+                            marginBottom: 10,width:"100%"
                         }}> 
                              <Grid container spacing={2}>
-                                <Grid item xs={6} style={{
+                                <Grid item xs={5} style={{
                                     borderLeftColor:'rgb(58, 127, 187)'
                                    
                                 }}>
@@ -155,9 +147,9 @@ class StudentCourseSelectionAction extends Component {
                                     }}>
                                         Offered Courses
                                     </div>
-                                    <TablePanel isShowIndexColumn  data={coursesData} sortingEnabled columns={columns} />
+                                    <TablePanel data={coursesData} sortingEnabled columns={columns} />
                                 </Grid>  
-                                <Grid item xs={2}>
+                                <Grid item xs={3}>
                                     <div style={{
                                         color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize', marginLeft: 5,
                                         fontSize: 18,
@@ -165,9 +157,9 @@ class StudentCourseSelectionAction extends Component {
                                     }}>
                                         Programme Module
                                     </div>
-                                    <TablePanel  data={moduleData} sortingEnabled columns={modulesColumns} />
+                                    <TablePanel data={moduleData} sortingEnabled columns={modulesColumns} />
                                 </Grid> 
-                                <Grid item xs={3}>
+                                <Grid item xs={4}>
                                     <div style={{
                                         color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize', marginLeft: 5,
                                         fontSize: 18,
@@ -175,7 +167,7 @@ class StudentCourseSelectionAction extends Component {
                                     }}>
                                        Student Achivements
                                     </div>
-                                    <TablePanel  data={achivementsData} sortingEnabled columns={achievementsColumns} />
+                                    <TablePanel data={achivementsData} sortingEnabled columns={achievementsColumns} />
                                 </Grid>  
                             </Grid>
                         </div>
