@@ -317,7 +317,7 @@ class F09Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", AcademicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonAcademicsSessionsOfferedProgrammesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonCourseSelectionGroupProgrammeGroupsView`;
     await fetch(url, {
       method: "POST",
       body: data,
