@@ -162,16 +162,15 @@ class StudentCourseSelection extends Component {
                         this.setState({
                             sessionData: json.DATA || [],
                         });
-                        for (let i=0; i<json.DATA.length; i++) {
-                            if (json.DATA[i].isActive == "1") {
-                                this.setState({
-                                    sessionId:json.DATA[i].ID,
-                                    programmeId: "",
-                                    admissionData: []
-                                });
-                                this.getProgrammeData(json.DATA[i].ID);
-                            }
-                          }
+                        let selectedRow = json.DATA.find(data =>data.isActive==1);
+                        if (selectedRow) {
+                            this.setState({
+                                sessionId: selectedRow.ID,
+                                programmeId: "",
+                                admissionData: []
+                            });
+                            this.getProgrammeData(selectedRow.ID);
+                        }
                     } else {
                         alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
                     }
