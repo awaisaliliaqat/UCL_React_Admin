@@ -110,14 +110,16 @@ function CourseRow(props) {
       alignItems="center"
       alignContent="space-around"
     >
-      {/* <Typography 
-                color="primary" 
-                variant="subtitle1"
-                component="div"
-                style={{float:"left"}}
-            >
-                <b>{(rowIndex+1)}:</b>
-            </Typography> */}
+      {/* 
+        <Typography 
+            color="primary" 
+            variant="subtitle1"
+            component="div"
+            style={{float:"left"}}
+        >
+            <b>{(rowIndex+1)}:</b>
+        </Typography> 
+      */}
       <Grid item xs={3} md={3}>
         {/* <TextField
           id="module"
@@ -143,7 +145,7 @@ function CourseRow(props) {
       </Grid>
       <Grid item xs={4} md={4}>
         {rowData.preCourses.map((option, index) => (
-          <span>
+          <span key={option.Label.toString()}>
             {index != 0 ? <br /> : ""} {option.Label}
           </span>
         ))}
@@ -494,7 +496,7 @@ class F30FormPopupComponent extends Component {
             </Typography>
           </DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            {/* <DialogContentText> */}
               <Grid
                 container
                 direction="row"
@@ -638,22 +640,22 @@ class F30FormPopupComponent extends Component {
                   alignItems="center"
                 >
                   <Grid item xs={3} md={3}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Module
                     </Typography>
                   </Grid>
                   <Grid item xs={4} md={4}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Courses
                     </Typography>
                   </Grid>
                   <Grid item xs={3} md={3}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Marks
                     </Typography>
                   </Grid>
                   <Grid item xs={2} md={1} style={{ textAlign: "center" }}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Delete
                     </Typography>
                   </Grid>
@@ -661,7 +663,7 @@ class F30FormPopupComponent extends Component {
                 {this.state.courseRowDataArray.length > 0 &&
                   this.state.courseRowDataArray.map((dt, i) => (
                     <CourseRow
-                      key={"SMC" + i}
+                      key={"SMC"+i}
                       rowIndex={i}
                       rowData={dt}
                       onDelete={(i) => this.handeDeleteCourseRow(i)}
@@ -672,7 +674,7 @@ class F30FormPopupComponent extends Component {
                 <br />
                 <br />
               </Grid>
-            </DialogContentText>
+            {/* </DialogContentText> */}
           </DialogContent>
           <Divider
             style={{
