@@ -162,7 +162,7 @@ class StudentCourseSelection extends Component {
                         this.setState({
                             sessionData: json.DATA || [],
                         });
-                        let selectedRow = json.DATA.find(data =>data.isActive==1);
+                        let selectedRow = json.DATA.find( data => data.isActive==1 );
                         if (selectedRow) {
                             this.setState({
                                 sessionId: selectedRow.ID,
