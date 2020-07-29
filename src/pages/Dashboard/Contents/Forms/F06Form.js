@@ -96,7 +96,7 @@ class F06Form extends Component {
                         }
                     } else {
                         //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -204,7 +204,7 @@ class F06Form extends Component {
                         }, 2000);
                     } else {
                         //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },

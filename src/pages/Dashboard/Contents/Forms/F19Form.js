@@ -267,7 +267,7 @@ class F19Form extends Component {
                     } else {
                         //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
                         changeSwitch(false);
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -317,7 +317,7 @@ class F19Form extends Component {
                     } else {
                         //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
                         changeSwitch(false);
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },
