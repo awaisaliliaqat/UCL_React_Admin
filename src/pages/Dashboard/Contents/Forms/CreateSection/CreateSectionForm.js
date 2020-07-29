@@ -565,7 +565,7 @@ class CreateSectionForm extends Component {
                             <TextField
                                 id="programmeId"
                                 name="programmeId"
-                                label="Programme"
+                                label="Programme Group"
                                 disabled={!this.state.sessionId}
                                 required
                                 fullWidth

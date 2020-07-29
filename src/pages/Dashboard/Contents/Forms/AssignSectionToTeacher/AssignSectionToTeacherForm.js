@@ -578,7 +578,7 @@ class AssignSectionToTeacherForm extends Component {
                             <TextField
                                 id="programmeId"
                                 name="programmeId"
-                                label="Programme"
+                                label="Programme Group"
                                 required
                                 fullWidth
                                 variant="outlined"
