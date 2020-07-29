@@ -113,6 +113,17 @@ class AssignSectionToTeacherForm extends Component {
                         this.setState({
                             sessionData: json.DATA || []
                         });
+                        let selectedRow = json.DATA.find( data => data.isActive==1 );
+                        if (selectedRow) {
+                            this.setState({
+                                sessionId: selectedRow.ID,
+                                programmeId: "",
+                                programmeIdError: "",
+                                offeredCoursesId: "",
+                                offeredCoursesIdError: "",
+                            })
+                            this.getprogrammesData(selectedRow.ID);
+                        }
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
                     }

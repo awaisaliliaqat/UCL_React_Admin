@@ -119,6 +119,19 @@ class CreateSectionForm extends Component {
                         this.setState({
                             sessionData: json.DATA || []
                         });
+                        let selectedRow = json.DATA.find( data => data.isActive==1 );
+                        if (selectedRow) {
+                            this.setState({
+                                sessionId: selectedRow.ID,
+                                programmeId: "",
+                                programmeIdError: "",
+                                offeredCoursesId: "",
+                                offeredCoursesIdError: "",
+                                sectionDataError: "",
+                                nameError: ""
+                            });
+                            this.getProgrammeData(selectedRow.ID);
+                        }
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
                     }
