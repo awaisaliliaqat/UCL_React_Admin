@@ -272,7 +272,7 @@ class F31FormPopupComponent extends Component {
             this.setState({ rowDataArray: rowDataArray });
           } else {
             this.props.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }

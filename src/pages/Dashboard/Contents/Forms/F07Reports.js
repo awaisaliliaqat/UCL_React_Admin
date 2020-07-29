@@ -323,7 +323,7 @@ class F07Reports extends Component {
               alert("Geting Data empty, Please try again later.");
             }
           } else {
-            alert(json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE);
+            alert(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE);
           }
           console.log(json);
         },

@@ -257,7 +257,7 @@ class F24Form extends Component {
             this.setState({ programmeGroupMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -321,7 +321,7 @@ class F24Form extends Component {
             this.setState({ prerequisiteCourseArray: prerequisiteCourseArray });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -373,7 +373,7 @@ class F24Form extends Component {
           } else {
             //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -469,7 +469,7 @@ class F24Form extends Component {
             }, 2000);
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }

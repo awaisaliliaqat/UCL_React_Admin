@@ -282,7 +282,7 @@ class F30FormPopupComponent extends Component {
             this.setState({ courseRowDataArray: courseRowDataArray });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
