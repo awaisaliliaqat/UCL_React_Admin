@@ -114,7 +114,7 @@ class StudentCourseSelectionAction extends Component {
         ]
 
         const achievementsColumns = [
-            { name: "Module  Number", dataIndex: "moduleNumber", sortable: false, customStyleHeader: { width: '14%' } },
+            { name: "Module  Number", dataIndex: "moduleNumber", sortable: false, customStyleHeader: { width: '8%' } },
             { name: "Courses", dataIndex: "courses", sortable: false, customStyleHeader: { width: '14%' } },
             { name: "Marks", dataIndex: "marks", sortable: false, customStyleHeader: { width: '10%' } },
         ]
