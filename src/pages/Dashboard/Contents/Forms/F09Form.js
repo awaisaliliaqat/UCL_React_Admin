@@ -317,7 +317,7 @@ class F09Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", AcademicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonAcademicsSessionsOfferedProgrammesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C09CommonAcademicsSessionsOfferedProgrammesGroupView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -623,6 +623,10 @@ class F09Form extends Component {
           courseRowDataArray: [],
         });
         break;
+      case "academicSessionId":
+        this.loadProgrammeGroups(value);
+
+        break;
       default:
         break;
     }
@@ -871,8 +875,8 @@ class F09Form extends Component {
                   {this.state.programmeGroupIdMenuItems ? (
                     this.state.programmeGroupIdMenuItems.map((dt, i) => (
                       <MenuItem
-                        key={"programmeGroupIdMenuItems" + dt.ID}
-                        value={dt.ID}
+                        key={"programmeGroupIdMenuItems" + dt.Id}
+                        value={dt.Id}
                       >
                         {dt.Label}
                       </MenuItem>

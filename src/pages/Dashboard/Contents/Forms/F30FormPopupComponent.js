@@ -132,7 +132,7 @@ function CourseRow(props) {
           value={getPreModuleById(rowData.preModuleId)}
         /> */}
         {/* <Typography color="primary" variant="caption"> */}
-          {getPreModuleById(rowData.preModuleId)}
+        {getPreModuleById(rowData.preModuleId)}
         {/* </Typography> */}
         <TextField
           type="hidden"
@@ -184,7 +184,7 @@ function CourseRow(props) {
       </Grid>
       <Grid item xs={3} md={3}>
         {/* <Typography color="primary" variant="caption"> */}
-          {rowData.preMarks}
+        {rowData.preMarks}
         {/* </Typography> */}
         <TextField type="hidden" name="marks" value={rowData.preMarks} />
         {/* <TextField
@@ -206,17 +206,16 @@ function CourseRow(props) {
           onClick={() => onDelete(rowIndex)}
         >
           <Tooltip title="Delete">
-            <Fab 
-              color="secondary" 
-              aria-label="Delete" 
+            <Fab
+              color="secondary"
+              aria-label="Delete"
               size="small"
               style={{
-                height:36,
-                width:36
+                height: 36,
+                width: 36,
               }}
             >
-              <DeleteIcon 
-                fontSize="small"/>
+              <DeleteIcon fontSize="small" />
             </Fab>
           </Tooltip>
         </IconButton>
@@ -339,7 +338,7 @@ class F30FormPopupComponent extends Component {
       isValid = false;
     } else if (this.state.preCourses.length > 2) {
       this.setState({
-        preCoursesError: "Max selected courses not more then two.",
+        preCoursesError: "One full or two half couses can be selected",
       });
       document.getElementById("preCourses").focus();
       isValid = false;
