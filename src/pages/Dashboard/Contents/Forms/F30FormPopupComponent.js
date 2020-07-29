@@ -132,7 +132,8 @@ function CourseRow(props) {
           value={getPreModuleById(rowData.preModuleId)}
         /> */}
         {/* <Typography color="primary" variant="caption"> */}
-        {getPreModuleById(rowData.preModuleId)}
+        {/* {getPreModuleById(rowData.preModuleId)} */}
+        {rowData.preModuleId}
         {/* </Typography> */}
         <TextField
           type="hidden"
