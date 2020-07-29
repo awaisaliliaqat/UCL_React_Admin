@@ -216,10 +216,16 @@ class F31FormPopupComponent extends Component {
       preTimeStartMenuItems: [],
       preTimeStart: "",
       preTimeStartError: "",
-      preDate: new Date(),
+      preDate: this.getTomorrowDate(),
       preDateError: "",
       rowDataArray: [],
     };
+  }
+
+  getTomorrowDate = () => {
+    let a = new Date();
+    let b = new Date(a.setDate(a.getDate() + 1));
+    return b;
   }
 
   getDateInString = (todayDate) => {
@@ -540,6 +546,7 @@ class F31FormPopupComponent extends Component {
               label="Effective Date"
               invalidDateMessage=""
               disablePast
+              minDate={this.getTomorrowDate()}
               placeholder=""
               variant="inline"
               inputVariant="outlined"
@@ -643,7 +650,7 @@ class F31FormPopupComponent extends Component {
                   <TextField
                     id="preTimeDuration"
                     name="preTimeDuration"
-                    label="Duration"
+                    label={"Duration (Minutes)"}
                     type="number"
                     required
                     fullWidth
@@ -704,7 +711,7 @@ class F31FormPopupComponent extends Component {
                   </Grid>
                   <Grid item xs={3} md={3}>
                     <Typography color="primary" variant="title">
-                      Duration
+                      Duration <small>(Minutes)</small>
                     </Typography>
                   </Grid>
                   <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
