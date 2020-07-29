@@ -90,15 +90,18 @@ function CourseRow(props) {
         alignItems="center"
         spacing={2}
       >
-        <Typography
-          color="primary"
-          variant="subtitle1"
-          component="div"
-          style={{ float: "left" }}
-        >
-          <b>{rowIndex + 1}:</b>
-        </Typography>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={1} md={1}>
+          <Typography
+            color="primary"
+            variant="subtitle1"
+            component="div"
+            style={{ float: "left" }}
+          >
+            {rowIndex + 1}:
+          </Typography>
+        </Grid>
+        <Grid item xs={3} md={3}>
+          {/* 
           <TextField
             id="course"
             name="course"
@@ -110,14 +113,17 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={cLabel}
-          />
+          /> 
+          */}
+          {cLabel}
           <TextField
             type="hidden"
             name="programmeCourseId"
             value={rowData.courseId}
           />
         </Grid>
-        <Grid item xs={12} md={1}>
+        <Grid item xs={2} md={2}>
+          {/* 
           <TextField
             id="courseCredit"
             name="courseCredit"
@@ -129,9 +135,12 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={cCredit}
-          />
+          /> 
+          */}
+          {cCredit}
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={3} md={3}>
+          {/* 
           <Autocomplete
             multiple
             fullWidth
@@ -161,9 +170,16 @@ function CourseRow(props) {
                 readOnly={true}
               />
             )}
-          />
+          /> 
+          */}
+          {cProgrammeCoursesArray.map((option, index) => (
+            <span>
+              {index != 0 ? <br /> : ""} {option.Label}
+            </span>
+          ))}
         </Grid>
         <Grid item xs={2}>
+          {/* 
           <TextField
             id="choiceGroup"
             variant="outlined"
@@ -177,14 +193,22 @@ function CourseRow(props) {
             }
             required
             fullWidth
-          />
+          /> 
+          */}
+            {
+              rowData.choiceGroupId
+                ? choiceGroupIdMenuItems.find(
+                    (x) => x.ID == rowData.choiceGroupId
+                  ).Label
+                : ""
+            }
           <TextField
             type="hidden"
             name="choiceGroupId"
             value={rowData.choiceGroupId ? rowData.choiceGroupId : 0}
           />
         </Grid>
-        <Grid item xs={12} md={1} style={{ textAlign: "center" }}>
+        <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
           <IconButton
             color="primary"
             aria-label="Add"
@@ -192,8 +216,16 @@ function CourseRow(props) {
             onClick={() => onDelete(rowIndex)}
           >
             <Tooltip title="Delete">
-              <Fab color="secondary" aria-label="add" size="small">
-                <DeleteIcon />
+              <Fab 
+                color="secondary" 
+                aria-label="add" 
+                size="small"
+                style={{
+                  height:36,
+                  width:36
+                }}
+              >
+                <DeleteIcon fontSize="small" />
               </Fab>
             </Tooltip>
           </IconButton>
@@ -1015,6 +1047,43 @@ class F09Form extends Component {
                     opacity: "0.3",
                   }}
                 />
+              </Grid>
+              <Grid
+                  container
+                  direction="row"
+                  justify="space-evenly"
+                  alignItems="center"
+                >
+                  <Grid item xs={1} md={1}>
+                    <Typography color="primary" variant="title">
+                      SR#
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Typography color="primary" variant="title">
+                      Course
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2} md={2}>
+                    <Typography color="primary" variant="title">
+                      Credit
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Typography color="primary" variant="title">
+                      Prerequisite Courses
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2} md={2}>
+                    <Typography color="primary" variant="title">
+                      Choice Group
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+                    <Typography color="primary" variant="title">
+                      Action
+                    </Typography>
+                  </Grid>
               </Grid>
               {this.state.programmeCoursesArray ? (
                 this.state.courseRowDataArray.map((dt, i) => (
