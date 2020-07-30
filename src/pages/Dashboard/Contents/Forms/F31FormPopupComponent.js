@@ -216,10 +216,16 @@ class F31FormPopupComponent extends Component {
       preTimeStartMenuItems: [],
       preTimeStart: "",
       preTimeStartError: "",
-      preDate: new Date(),
+      preDate: this.getTomorrowDate(),
       preDateError: "",
       rowDataArray: [],
     };
+  }
+
+  getTomorrowDate = () => {
+    let a = new Date();
+    let b = new Date(a.setDate(a.getDate() + 1));
+    return b;
   }
 
   getDateInString = (todayDate) => {
@@ -272,7 +278,7 @@ class F31FormPopupComponent extends Component {
             this.setState({ rowDataArray: rowDataArray });
           } else {
             this.props.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -540,6 +546,7 @@ class F31FormPopupComponent extends Component {
               label="Effective Date"
               invalidDateMessage=""
               disablePast
+              minDate={this.getTomorrowDate()}
               placeholder=""
               variant="inline"
               inputVariant="outlined"
@@ -556,7 +563,7 @@ class F31FormPopupComponent extends Component {
             />
           </DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            {/* <DialogContentText> */}
               <Grid
                 container
                 direction="row"
@@ -643,7 +650,7 @@ class F31FormPopupComponent extends Component {
                   <TextField
                     id="preTimeDuration"
                     name="preTimeDuration"
-                    label="Duration"
+                    label={"Duration (Minutes)"}
                     type="number"
                     required
                     fullWidth
@@ -688,27 +695,27 @@ class F31FormPopupComponent extends Component {
                   alignItems="center"
                 >
                   <Grid item xs={1} md={1}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       SR#
                     </Typography>
                   </Grid>
                   <Grid item xs={3} md={3}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Day
                     </Typography>
                   </Grid>
                   <Grid item xs={3} md={4}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Start Time
                     </Typography>
                   </Grid>
                   <Grid item xs={3} md={3}>
-                    <Typography color="primary" variant="title">
-                      Duration
+                    <Typography color="primary">
+                      Duration <small>(Minutes)</small>
                     </Typography>
                   </Grid>
                   <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Action
                     </Typography>
                   </Grid>
@@ -735,7 +742,7 @@ class F31FormPopupComponent extends Component {
                 <br />
                 <br />
               </Grid>
-            </DialogContentText>
+            {/* </DialogContentText> */}
           </DialogContent>
           <Divider
             style={{

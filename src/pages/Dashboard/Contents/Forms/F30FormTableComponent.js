@@ -10,8 +10,9 @@ class F30FormTableComponent extends Component {
     this.state = {
       columns: [
         { name: "SRNo", title: "SR#" },
+        { name: "nucleusId", title: "Nucleus\xa0ID" },
         { name: "studentName", title: "Student\xa0Name" },
-        { name: "degreeLabel", title: "Degree" },
+        { name: "programmeLabel", title: "Programme" },
         { name: "action", title: "Action"}
       ],
       rows: [],
@@ -32,8 +33,9 @@ class F30FormTableComponent extends Component {
       ],
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
+        { columnName: "nucleusId"},
         { columnName: "studentName", wordWrapEnabled: true },
-        { columnName: "degreeLabel", wordWrapEnabled: true },
+        { columnName: "programmeLabel", wordWrapEnabled: true },
         { columnName: "action", width: 120, align:"center"},
       ],
       defaultColumnWidths: [],

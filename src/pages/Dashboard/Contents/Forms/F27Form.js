@@ -198,7 +198,7 @@ class F27Form extends Component {
             }
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -245,7 +245,7 @@ class F27Form extends Component {
             this.setState({ programmeGroupMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -308,7 +308,7 @@ class F27Form extends Component {
             console.log("programmeCoursesListArray", prerequisiteCourseArray);
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -360,7 +360,7 @@ class F27Form extends Component {
           } else {
             //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -467,7 +467,7 @@ class F27Form extends Component {
             }, 1500);
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }

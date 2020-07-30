@@ -368,7 +368,7 @@ class F25Form extends Component {
             }
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -416,7 +416,7 @@ class F25Form extends Component {
             this.setState({ programmeIdMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -461,7 +461,7 @@ class F25Form extends Component {
             this.setState({ preModuleTypeMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -510,7 +510,7 @@ class F25Form extends Component {
             this.setState({ preCourseMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -559,7 +559,7 @@ class F25Form extends Component {
             this.setState({ preCourseSelectionGroupMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -626,7 +626,7 @@ class F25Form extends Component {
             });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -732,13 +732,30 @@ class F25Form extends Component {
   ispPreCoursesValid = () => {
     let preCourses = this.state.preCourses;
     let isValid = true;
-    if (
-      preCourses.length == 0 &&
-      (this.state.preModuleTypeId == 3 || this.state.preModuleTypeId == 1)
-    ) {
+    if (preCourses.length == 0 && (this.state.preModuleTypeId == 3 || this.state.preModuleTypeId == 1)) {
       this.setState({ preCoursesError: "Please select course." });
       document.getElementById("preCourses").focus();
       isValid = false;
+    } else if (preCourses.length >= 1 && this.state.preModuleTypeId == 1) {
+      let CourseCreditIdSum = 0;
+      for(let i=0;i<preCourses.length;i++){
+        CourseCreditIdSum += preCourses[i].courseCreditId;
+      }
+      if(CourseCreditIdSum!=2){
+        this.setState({ preCoursesError: "Please select two half or one full credit course." });
+        document.getElementById("preCourses").focus();
+        isValid = false;
+      }
+    } else if (preCourses.length >= 1 && this.state.preModuleTypeId == 3) {
+      let CourseCreditIdSum = 0;
+      for(let i=0;i<preCourses.length;i++){
+        CourseCreditIdSum += preCourses[i].courseCreditId;
+      }
+      if(CourseCreditIdSum!=4){
+        this.setState({ preCoursesError: "Please select four half or tow full credit course." });
+        document.getElementById("preCourses").focus();
+        isValid = false;
+      }
     } else {
       this.setState({ preCoursesError: "" });
     }
@@ -891,7 +908,7 @@ class F25Form extends Component {
             }, 2000);
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -1143,7 +1160,7 @@ class F25Form extends Component {
                           label="Courses"
                           placeholder="Search and Select"
                           error={!!this.state.preCoursesError}
-                          helperText={!!this.state.preCoursesError}
+                          helperText={this.state.preCoursesError}
                         />
                       )}
                     />

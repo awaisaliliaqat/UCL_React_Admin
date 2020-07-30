@@ -36,7 +36,7 @@ const DecisionActionMenu = props => {
         { name: "courseLabel", title: "Course Label" },
         { name: "sectionTypeLabel", title: "Class Type" },
         { name: "label", title: "Section" },
-        { name: "degreeProgram", title: "Degree Program" },
+        //{ name: "degreeProgram", title: "Degree Program" },
     ]
 
     const selectionData = data.mainData.filter(item => item.isChecked === true) || [];

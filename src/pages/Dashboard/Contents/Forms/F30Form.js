@@ -138,7 +138,7 @@ class F30Form extends Component {
             }
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -186,7 +186,7 @@ class F30Form extends Component {
             this.setState({ programmeIdMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -235,7 +235,7 @@ class F30Form extends Component {
             this.setState({ preModuleMenuItems: json.DATA || [] });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -284,7 +284,7 @@ class F30Form extends Component {
             this.setState({ preCourseMenuItems: json.DATA || [] });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -332,7 +332,7 @@ class F30Form extends Component {
             for (var i = 0; i < json.DATA[0].students.length; i++) {
               json.DATA[0].students[i].action = (
                 <F30FormPopupComponent
-                  dialogTitle={json.DATA[0].students[i].studentName+" - "+json.DATA[0].students[i].degreeLabel}
+                  dialogTitle={json.DATA[0].students[i].nucleusId+" - "+json.DATA[0].students[i].studentName+" - "+json.DATA[0].students[i].programmeLabel}
                   studentId={json.DATA[0].students[i].ID}
                   preModuleMenuItems={this.state.preModuleMenuItems}
                   preCourseMenuItems={this.state.preCourseMenuItems}
@@ -343,7 +343,7 @@ class F30Form extends Component {
             this.setState({ studentListArray: json.DATA[0].students || [] });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -480,7 +480,7 @@ class F30Form extends Component {
             }, 2000);
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
