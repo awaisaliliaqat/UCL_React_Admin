@@ -459,6 +459,7 @@ class StudentCourseSelection extends Component {
                     if (json.CODE === 1) {
                         alert('Saved');
                         this.getData();
+                        this.setState({ isOpenActionMenu: false });
                     } else {
                         alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
                     }
