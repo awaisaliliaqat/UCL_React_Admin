@@ -186,16 +186,18 @@ class StudentCourseSelectionAction extends Component {
                                 color="primary" variant="contained" style={{
                                     textTransform: 'capitalize',
                                     width: 100,
-                                    marginRight: 20,
+                                    //marginRight: 20,
                                 }}>
                                 Save
                         </Button>
-                            <Button onClick={() => onClear()} color="primary" variant="contained" style={{
+                        {/* 
+                        <Button onClick={() => onClear()} color="primary" variant="contained" style={{
                                 textTransform: 'capitalize',
                                 width: 100
                             }}>
                                 Clear
-                        </Button>
+                        </Button> 
+                        */}
                         </div>
                     </DialogActions>
                 </Dialog>
