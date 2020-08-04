@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
-import Divider from "@material-ui/core/Divider";
+//import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { numberExp } from "../../../../utils/regularExpression";
@@ -506,14 +506,18 @@ class F34Form extends Component {
                   fullWidth
                   select
                 >
-                  {this.state.subjectIdMenuItems.map((dt, i) => (
-                    <MenuItem
-                      key={"academicSessionIdMenuItems" + dt.ID}
-                      value={dt.ID}
-                    >
-                      {dt.Label}
-                    </MenuItem>
-                  ))}
+                  {this.state.subjectIdMenuItems ? 
+                    this.state.subjectIdMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"subjectIdMenuItems"+dt.ID}
+                        value={dt.ID}
+                      >
+                        {dt.Label}
+                      </MenuItem>
+                    ))
+                  :
+                    this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
+                  }
                 </TextField>
               </Grid>
             </Grid>
