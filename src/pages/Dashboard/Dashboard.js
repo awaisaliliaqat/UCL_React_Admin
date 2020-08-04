@@ -58,6 +58,7 @@ import F25Form from "./Contents/Forms/F25Form";
 import F27Form from "./Contents/Forms/F27Form";
 import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form";
+import F33Form from "./Contents/Forms/F33Form";
 
 const drawerWidth = 283;
 
@@ -552,6 +553,22 @@ const Dashboard = (props) => {
                 }}
               />
 
+            <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F33Form"
+                exact
+                path="/dashboard/F33Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F33Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"
@@ -672,6 +689,8 @@ const Dashboard = (props) => {
                 path="/dashboard/student-course-selection"
                 component={StudentCourseSelection}
               />
+
+             
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"
