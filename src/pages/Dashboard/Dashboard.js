@@ -59,6 +59,7 @@ import F27Form from "./Contents/Forms/F27Form";
 import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form";
 import F33Form from "./Contents/Forms/F33Form";
+import F34Form from "./Contents/Forms/F34Form";
 
 const drawerWidth = 283;
 
@@ -552,7 +553,6 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-
             <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F33Form"
@@ -568,7 +568,21 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F34Form"
+                exact
+                path="/dashboard/F34Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F34Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"

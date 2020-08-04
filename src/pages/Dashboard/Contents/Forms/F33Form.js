@@ -5,8 +5,9 @@ import {TextField, Grid} from "@material-ui/core";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Paper from '@material-ui/core/Paper';
 import { ViewState } from '@devexpress/dx-react-scheduler';
-import { Scheduler, DayView, MonthView, Appointments, Toolbar, DateNavigator, TodayButton} from '@devexpress/dx-react-scheduler-material-ui';
+import { Scheduler, DayView, MonthView, Appointments, Toolbar, DateNavigator, TodayButton,ConfirmationDialog } from '@devexpress/dx-react-scheduler-material-ui';
 // import { appointments } from "./monthappointments";
+import F33FormInitials from "./F33FormInitials";
 
 const styles = () => ({
   root: {
@@ -45,18 +46,8 @@ class F33Form extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-      academicSessionIdMenuItems: [],
-      academicSessionId: "",
-      academicSessionIdError: "",
-      programmeGroupIdMenuItems: [],
-      programmeGroupId: "",
-      programmeGroupIdError: "",
-      preDaysMenuItems: [], //["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-      preTimeStartMenuItems: [],
-      showTableFilter: false,
-      TimeTableDataArray: [],
-      date:[],
-      currentDate: new Date(),
+      timeTableDataArray: [],
+      upcomingClassesDataArray: []
     };
   }
 
@@ -78,15 +69,11 @@ class F33Form extends Component {
     });
   };
 
-  
-  loadTimeTableData = async (teacherId) => {
-    let data = new FormData();
-    data.append("teacherId", teacherId);
+  loadTimeTableData = async () => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C33CommonAcademicsTimeTableView`;
     await fetch(url, {
       method: "POST",
-      body: data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -100,7 +87,7 @@ class F33Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ TimeTableDataArray: json.DATA });
+            this.setState({ timeTableDataArray: json.DATA });
           } else {
             this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
           }
@@ -121,6 +108,44 @@ class F33Form extends Component {
     this.setState({ isLoading: false });
   };
   
+  loadUpcomingClassesData = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C33CommonAcademicsTimeTableUpcomingClassesView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ upcomingClassesDataArray: json.DATA });
+          } else {
+            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
+          }
+          console.log("loadUpcomingClassesData", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
 
   clickOnFormSubmit = () => {
     this.onFormSubmit();
@@ -204,7 +229,8 @@ class F33Form extends Component {
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.loadTimeTableData(2216);
+    this.loadTimeTableData();
+    this.loadUpcomingClassesData();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -225,17 +251,35 @@ class F33Form extends Component {
         <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })}/>
         <form id="myForm" onSubmit={this.isFormValid}>
           <TextField type="hidden" name="id" value={this.state.recordId} />
-          <Grid container component="main" className={classes.root}>
-            <Paper>
-              <Scheduler data={this.state.TimeTableDataArray}>
-                <ViewState defaultCurrentDate={new Date()}/>
-                <MonthView />
-                <Appointments />
-                <Toolbar />
-                <DateNavigator />
-                <TodayButton />
-              </Scheduler>
-            </Paper>
+          <Grid 
+            container
+            component="main" 
+            className={classes.root}
+            spacing={2}
+          >
+            <Grid item sm={8} md={9}>
+              <Paper>
+                <Scheduler data={this.state.timeTableDataArray}>
+                  <ViewState defaultCurrentDate={new Date()}/>
+                  <MonthView />
+                  <Appointments />
+                  {/* 
+                  <AppointmentTooltip
+                    showCloseButton
+                    showOpenButton
+                  /> 
+                  */}
+                  <Toolbar />
+                  <DateNavigator />
+                  <TodayButton />
+                </Scheduler>
+              </Paper>
+            </Grid>
+            <Grid item sm={4} md={3}>
+              <F33FormInitials 
+                data={this.state.upcomingClassesDataArray}
+              />
+            </Grid>
           </Grid>
         </form>
         <CustomizedSnackbar
