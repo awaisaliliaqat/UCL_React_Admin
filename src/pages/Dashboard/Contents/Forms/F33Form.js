@@ -1,37 +1,12 @@
 import React, { Component, Fragment } from "react";
-import * as React2 from 'react';
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import {
-  TextField,
-  Grid,
-  MenuItem,
-  CircularProgress,
-  Divider,
-  Typography,
-  IconButton,
-  Tooltip,
-  List,
-} from "@material-ui/core";
-import FilterIcon from "mdi-material-ui/FilterOutline";
+import {TextField, Grid} from "@material-ui/core";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import F31FormFilter from "./F31FormFilter";
-import F31FormTableComponent from "./F31FormTableComponent";
-import F31FormPopupComponent from "./F31FormPopupComponent";
 import Paper from '@material-ui/core/Paper';
 import { ViewState } from '@devexpress/dx-react-scheduler';
-import {
-  Scheduler,
-  DayView,
-  MonthView,
-  Appointments,
-  Toolbar,
-  DateNavigator,
-  TodayButton
-} from '@devexpress/dx-react-scheduler-material-ui';
-
+import { Scheduler, DayView, MonthView, Appointments, Toolbar, DateNavigator, TodayButton} from '@devexpress/dx-react-scheduler-material-ui';
 // import { appointments } from "./monthappointments";
-
 
 const styles = () => ({
   root: {
@@ -58,7 +33,6 @@ const styles = () => ({
     textAlign: "center",
   },
 });
-
 
 class F33Form extends Component {
   
@@ -104,41 +78,7 @@ class F33Form extends Component {
     });
   };
 
-  handleToggleTableFilter = () => {
-    this.setState({ showTableFilter: !this.state.showTableFilter });
-  };
-
-  handleToggleSearchBar = () => {
-    this.setState({ showSearchBar: !this.state.showSearchBar });
-  };
-
-  getPreTimeSlotsMenuItems = () => {
-    var x = 15; //minutes interval
-    var times = []; // time array
-    var tt = 480; // start time 0 For 12 AM
-    var ap = ["AM", "PM"]; // AM-PM
-
-    //loop to increment the time and push results in array
-    for (var i = 0; tt < 24 * 60; i++) {
-      var hh = Math.floor(tt / 60); // getting hours of day in 0-24 format
-      var mm = tt % 60; // getting minutes of the hour in 0-55 format
-      times[i] =
-        ("0" + (hh % 12)).slice(-2) +
-        ":" +
-        ("0" + mm).slice(-2) +
-        " " +
-        ap[Math.floor(hh / 12)]; // pushing data in array in [00:00 - 12:00 AM/PM format]
-      tt = tt + x;
-      if (times[i] == "08:00 PM") {
-        break;
-      }
-    }
-    //console.log(times);
-    this.setState({ preTimeStartMenuItems: times });
-  };
-
- 
-
+  
   loadTimeTableData = async (teacherId) => {
     let data = new FormData();
     data.append("teacherId", teacherId);
@@ -161,26 +101,10 @@ class F33Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ TimeTableDataArray: json.DATA });
-
-            //  dataArray = new List();
-
-            // if (this.state.TimeTableDataArray != null) {
-            //   for (let i = 0; i < this.state.TimeTableDataArray.length; i++) {
-            //     // dataArray.append("title", dayId[i].value);
-            //     // dataArray.append("startDate", startTime[i].value);
-            //     // dataArray.append("endDate", duration[i].value);
-            //   }
-            // }
-        
-
-
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
           }
-          console.log("TimeTableDataArray", json);
+          console.log("loadTimeTableData", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -190,10 +114,7 @@ class F33Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -284,7 +205,6 @@ class F33Form extends Component {
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.loadTimeTableData(2216);
-   
   }
 
   componentWillReceiveProps(nextProps) {
@@ -302,22 +222,14 @@ class F33Form extends Component {
     const { data } = this.state;
     return (
       <Fragment>
-        <LoginMenu
-          reload={this.state.isReload}
-          open={this.state.isLoginMenu}
-          handleClose={() => this.setState({ isLoginMenu: false })}
-        />
+        <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })}/>
         <form id="myForm" onSubmit={this.isFormValid}>
           <TextField type="hidden" name="id" value={this.state.recordId} />
           <Grid container component="main" className={classes.root}>
             <Paper>
               <Scheduler data={this.state.TimeTableDataArray}>
-                <ViewState
-                  defaultCurrentDate="2020-08-01"
-                />
-                <MonthView 
-                 
-                />
+                <ViewState defaultCurrentDate={new Date()}/>
+                <MonthView />
                 <Appointments />
                 <Toolbar />
                 <DateNavigator />
@@ -326,7 +238,6 @@ class F33Form extends Component {
             </Paper>
           </Grid>
         </form>
-     
         <CustomizedSnackbar
           isOpen={this.state.isOpenSnackbar}
           message={this.state.snackbarMessage}
