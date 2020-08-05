@@ -58,6 +58,9 @@ import F25Form from "./Contents/Forms/F25Form";
 import F27Form from "./Contents/Forms/F27Form";
 import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form";
+import F33Form from "./Contents/Forms/F33Form";
+import F34Form from "./Contents/Forms/F34Form";
+import F34Reports from "./Contents/Forms/F34Reports";
 
 const drawerWidth = 283;
 
@@ -551,7 +554,51 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-
+            <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F33Form"
+                exact
+                path="/dashboard/F33Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F33Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F34Form"
+                exact
+                path="/dashboard/F34Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F34Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F34Form"
+                exact
+                path="/dashboard/F34Reports"
+                render={(props) => {
+                  return (
+                    <F34Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"
@@ -672,6 +719,8 @@ const Dashboard = (props) => {
                 path="/dashboard/student-course-selection"
                 component={StudentCourseSelection}
               />
+
+             
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"
