@@ -197,7 +197,7 @@ class F34Form extends Component {
     const data = new FormData();
     data.append("id", index);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C07CommonProgrammeGroupsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C34CommonAcademicsAssignmentsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -215,11 +215,13 @@ class F34Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             if(json.DATA.length){
-              // alert("json.DATA[0].schoolId"+json.DATA[0].schoolId);
               this.setState({
+                sectionId:json.DATA[0].sectionId,
                 label: json.DATA[0].label,
-                shortLabel: json.DATA[0].shortLabel,
-                schoolId: json.DATA[0].schoolId,
+                startDate: json.DATA[0].startDate,
+                dueDate: json.DATA[0].dueDate,
+                totalMarks: json.DATA[0].totalMarks,
+                instruction: json.DATA[0].instruction,
               });
             }else{
               window.location = "#/dashboard/F34Form/0";
@@ -416,7 +418,7 @@ class F34Form extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             setTimeout(() => {
               if (this.state.recordId != 0) {
-                window.location = "#/dashboard/F07Reports";
+                window.location = "#/dashboard/F34Reports";
               } else {
                 window.location.reload();
               }
@@ -641,6 +643,7 @@ class F34Form extends Component {
                 </Grid>
               </Grid>
             </Grid>
+            <br/>
           </Grid>
         </form>
         <BottomBar
