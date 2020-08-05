@@ -324,6 +324,7 @@ class F33Form extends Component {
             <Grid item sm={4} md={3}>
               <F33FormInitials 
                 data={this.state.upcomingClassesDataArray}
+                isLoading={this.state.isLoading}
               />
             </Grid>
           </Grid>

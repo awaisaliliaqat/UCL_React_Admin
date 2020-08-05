@@ -62,9 +62,7 @@ const styles = theme => ({
 
 const F33FormInitials = (props) => {
   
-  const classes = props.classes;
-
-  const data = props.data;
+  const {classes, data, isLoading} = props;
 
   const onJoinClick = (e, data = {}) => {
     e.preventDefault();
@@ -93,7 +91,7 @@ const F33FormInitials = (props) => {
         <List style={{
           marginTop: '-30px'
         }}>
-            {data ?
+            {data.length>0 ?
               data.map((dt, i) => (
                 <Fragment key={i}>
                   <ListItem 
@@ -141,6 +139,7 @@ const F33FormInitials = (props) => {
                 </Fragment>
               ))
               :
+              isLoading &&
               <Grid container justify="center">
                 <CircularProgress />
               </Grid>
