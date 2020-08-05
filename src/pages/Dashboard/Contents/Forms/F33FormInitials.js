@@ -62,7 +62,8 @@ const F33FormInitials = (props) => {
     e.preventDefault();
     //localStorage.setItem("meetingConfig", JSON.stringify(data));
     //window.location.href = "http://localhost:3001/lms/zoom";
-    window.location.href = data.meetingStartUrl;
+    //window.location.href = data.meetingStartUrl;
+    window.open(data.meetingStartUrl,'_blank');
   }
 
   return (
