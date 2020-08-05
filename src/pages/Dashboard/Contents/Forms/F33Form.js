@@ -273,7 +273,7 @@ class F33Form extends Component {
     const { classes } = this.props;
     const { data } = this.state;
     
-    const Header = withStyles(style, { name: 'Header' })(({children, appointmentData, classes, ...restProps}) => (
+    const Header = withStyles(style, {name:'Header'})(({children, appointmentData, classes, ...restProps}) => (
       <AppointmentTooltip.Header
         {...restProps}
         appointmentData={appointmentData}

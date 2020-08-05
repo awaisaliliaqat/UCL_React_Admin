@@ -224,7 +224,7 @@ const F33FormInitials = (props) => {
       <Divider variant="middle" />
       <CardActions style={{ textAlign: "center" }} className={classes.actions}>
         <div>
-          <Tooltip title="View All">
+          <Tooltip title="View">
             {/* <Link 
               style={{ textDecoration: 'none' }} 
               to="/dashboard/calendar" 
