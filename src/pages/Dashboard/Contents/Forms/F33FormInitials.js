@@ -28,6 +28,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 //import ProfilePlaceHolder from '../../../../assets/Images/ProfilePlaceholder.png';
 import ProfilePlaceHolder from '../../../../assets/Images/my_objectives_training.png';
 import ScheduleIcon from "@material-ui/icons/Schedule";
+import BookAssignments from "../../../../assets/Images/grade_book_assignments.png";
 
 const styles = theme => ({
 
@@ -42,6 +43,13 @@ const styles = theme => ({
   smallAvatar: {
     width: 30,
     height: 30,
+    marginTop: 5,
+    borderRadius:0    
+  },
+
+  bigAvatar: {
+    width: 40,
+    height: 40,
     marginTop: 5,
     borderRadius:0    
   },
@@ -75,7 +83,7 @@ const F33FormInitials = (props) => {
       <CardHeader
         title={<Typography color="primary">Classes</Typography>}
         subheader={"Join your virtual classes"}
-        avatar={<Avatar className={classes.bigAvatar} src={HelpIcon} />}
+        avatar={<Avatar className={classes.bigAvatar} src={ProfilePlaceHolder} />}
       />
       <CardContent 
         // style={{ 
@@ -95,7 +103,7 @@ const F33FormInitials = (props) => {
                   <ListItemAvatar>
                     <Avatar
                       alt="Img"
-                      src={ProfilePlaceHolder}
+                      src={BookAssignments}
                       className={classes.smallAvatar}
                     />
                   </ListItemAvatar>

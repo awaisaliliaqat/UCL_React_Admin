@@ -1,13 +1,33 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import {TextField, Grid} from "@material-ui/core";
+import {TextField, Grid, Divider, Tooltip} from "@material-ui/core";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Paper from '@material-ui/core/Paper';
-import { ViewState } from '@devexpress/dx-react-scheduler';
-import { Scheduler, DayView, MonthView, Appointments, Toolbar, DateNavigator, TodayButton,ConfirmationDialog } from '@devexpress/dx-react-scheduler-material-ui';
+import { ViewState, EditingState  } from '@devexpress/dx-react-scheduler';
+import { Scheduler, DayView, MonthView, Appointments, Toolbar, DateNavigator, TodayButton, AppointmentTooltip, EditRecurrenceMenu } from '@devexpress/dx-react-scheduler-material-ui';
 // import { appointments } from "./monthappointments";
 import F33FormInitials from "./F33FormInitials";
+import IconButton from '@material-ui/core/IconButton';
+import MoreIcon from '@material-ui/icons/MoreVert';
+import classNames from 'clsx';
+import QueuePlayNextOutlinedIcon from '@material-ui/icons/QueuePlayNextOutlined';
+
+const style = ({ palette }) => ({
+  icon: {
+    color: palette.action.active,
+  },
+  textCenter: {
+    textAlign: 'center',
+  },
+  header: {
+    height: '260px',
+    backgroundSize: 'cover',
+  },
+  commandButton: {
+    backgroundColor: 'rgba(255,255,255,0.65)',
+  },
+});
 
 const styles = () => ({
   root: {
@@ -227,6 +247,11 @@ class F33Form extends Component {
     this.setState({ isLoading: false });
   };
 
+  onJoinClick = (e, data = {}) => {
+    e.preventDefault();
+    window.open(data.meetingStartUrl,'_blank');
+  }
+
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.loadTimeTableData();
@@ -244,8 +269,29 @@ class F33Form extends Component {
   }
 
   render() {
+    
     const { classes } = this.props;
     const { data } = this.state;
+    
+    const Header = withStyles(style, { name: 'Header' })(({children, appointmentData, classes, ...restProps}) => (
+      <AppointmentTooltip.Header
+        {...restProps}
+        appointmentData={appointmentData}
+      >
+        {appointmentData.meetingStartUrl &&
+        <Tooltip title="Join">
+        <IconButton
+          //onClick={() => alert(JSON.stringify(appointmentData))}
+          onClick={(e)=>this.onJoinClick(e, {meetingStartUrl:appointmentData.meetingStartUrl})}
+          className={classes.commandButton}
+        >
+          <QueuePlayNextOutlinedIcon color="primary"/>
+        </IconButton>
+        </Tooltip>
+        }
+      </AppointmentTooltip.Header>
+    ));
+    
     return (
       <Fragment>
         <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })}/>
@@ -263,12 +309,12 @@ class F33Form extends Component {
                   <ViewState defaultCurrentDate={new Date()}/>
                   <MonthView />
                   <Appointments />
-                  {/* 
+                  <EditingState />
+                  <EditRecurrenceMenu title="title"/>
                   <AppointmentTooltip
                     showCloseButton
-                    showOpenButton
-                  /> 
-                  */}
+                    headerComponent={Header}                    
+                  />
                   <Toolbar />
                   <DateNavigator />
                   <TodayButton />
