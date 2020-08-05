@@ -4,11 +4,12 @@ import { withStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { numberExp } from "../../../../utils/regularExpression";
-import { TextField, Grid, Button, CircularProgress } from "@material-ui/core";
+import { TextField, Grid, Button, CircularProgress, Card, CardContent } from "@material-ui/core";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import MenuItem from "@material-ui/core/MenuItem";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { DatePicker } from "@material-ui/pickers";
+import { useDropzone } from "react-dropzone";
 
 const styles = () => ({
   root: {
@@ -32,7 +33,54 @@ const styles = () => ({
     width: "100%",
     textAlign: "center",
   },
+  inputFileFocused: {
+    width: '40%',
+    borderColor: '#80bdff',
+    boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+    backgroundColor: "#00FF00",
+  },
 });
+
+function MyDropzone(props) {
+
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+  const files = acceptedFiles.map((file, index) => {
+      const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
+      return (
+          <Typography key={index} variant="subtitle1" color="primary">
+              {file.path} - {size} Kb
+              <input type="hidden" name="file_name" value={file.path}></input>
+          </Typography>
+      )
+  });
+
+  let msg = files || [];
+  if (msg.length <= 0 || props.files.length <= 0) {
+      msg = <Typography variant="subtitle1">Please click here to  select and upload an file</Typography>;
+  }
+  
+  return (
+      <div 
+        id="contained-button-file-div" 
+        style={{ 
+          textAlign: "center"
+        }}
+          {...getRootProps({ className: "dropzone", onChange: event => props.onChange(event) })}
+      >
+          <Card style={{ backgroundColor: "#c7c7c7" }}>
+              <CardContent style={{
+                  paddingBottom: 14,
+                  paddingTop: 14,
+                  cursor:"pointer"
+              }}>
+                  <input name="contained-button-file" {...getInputProps()} disabled={props.disabled} />
+                  {msg}
+              </CardContent>
+          </Card>
+      </div>
+  );
+}
 
 class F34Form extends Component {
   constructor(props) {
@@ -44,6 +92,11 @@ class F34Form extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
+      files: [],
+      filesError: "",
+      uploadLoading:false,
+      label:"",
+      labelError:"",
       totalMarks: "",
       totalMarksError: "",
       instruction: "",
@@ -52,9 +105,9 @@ class F34Form extends Component {
       startDateError: "",
       dueDate: this.getTomorrowDate(),
       dueDateError:"",
-      subjectId:"",
-      subjectIdError:"",
-      subjectIdMenuItems:[]
+      sectionId:"",
+      sectionIdError:"",
+      sectionIdMenuItems:[]
     };
   }
 
@@ -96,9 +149,9 @@ class F34Form extends Component {
     return today;
   };
 
-  getSubjectsData = async() => {
+  getSectionsData = async() => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C07CommonSchoolsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C34CommonAcademicsSectionsTeachersView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -114,9 +167,9 @@ class F34Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let subjectIdMenuItems = json.DATA;
-            this.setState({subjectIdMenuItems: json.DATA});
-            console.log("getSubjectsData", subjectIdMenuItems)
+            let sectionIdMenuItems = json.DATA;
+            this.setState({sectionIdMenuItems: json.DATA});
+            console.log("getSectionsData", sectionIdMenuItems)
           } else {
             this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
           }
@@ -194,6 +247,18 @@ class F34Form extends Component {
     this.setState({ isLoading: false });
   };
 
+  isLabelValid = () => {
+    let isValid = true;
+    if (!this.state.label) {
+      this.setState({ labelError: "Please enter Assignment Label." });
+      document.getElementById("label").focus();
+      isValid = false;
+    } else {
+      this.setState({ labelError: "" });
+    }
+    return isValid;
+  };
+
   isTotalMarksValid = () => {
     let isValid = true;
     if (!this.state.totalMarks) {
@@ -242,17 +307,46 @@ class F34Form extends Component {
     return isValid;
   };
 
-  isSubjectIdValid = () => {
+  isSectionValid = () => {
     let isValid = true;
-    if (!this.state.subjectId) {
-      this.setState({ subjectIdError: "Please select subject." });
-      document.getElementById("subjectId").focus();
+    if (!this.state.sectionId) {
+      this.setState({ sectionIdError: "Please select section." });
+      document.getElementById("sectionId").focus();
       isValid = false;
     } else {
-      this.setState({ subjectIdError: "" });
+      this.setState({ sectionIdError: "" });
     }
     return isValid;
   };
+
+  isFileValid = () => {
+    let isValid = true;
+    if (this.state.files.length<1) {
+      this.setState({ filesError: "Please select file." });
+      document.getElementById("contained-button-file-div").focus();
+      isValid = false;
+    } else {
+      this.setState({ filesError: "" });
+    }
+    return isValid;
+  };
+
+  handleFileChange = event => {
+    const { files = [] } = event.target;
+    if (files.length > 0) {
+        if (files[0].type === "application/pdf" || files[0].type === "application/msword" || files[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+            this.setState({
+                files,
+                filesError: ""
+            })
+        } else {
+            this.setState({
+                filesError: "Please select only pdf, doc or docx file."
+            })
+        }
+    }
+
+}
 
   handleChangeStartDate = (date) => {
     this.setState({startDate: date});
@@ -289,19 +383,20 @@ class F34Form extends Component {
   onFormSubmit = async (e) => {
     //e.preventDefault();
     if (
-      !this.isTotalMarksValid() ||
-      !this.isInstructionValid() ||
+      !this.isSectionValid() ||
+      !this.isLabelValid() ||
       !this.isStartDateValid() ||
       !this.isDueDateValid() ||
-      !this.isSubjectIdValid()
+      !this.isInstructionValid() ||      
+      !this.isTotalMarksValid() ||
+      !this.isFileValid()
     ) {
       return;
     }
-    return;
     let myForm = document.getElementById("myForm");
     const data = new FormData(myForm);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C07CommonProgrammeGroupsSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C34CommonAcademicsAssignmentsSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -361,7 +456,7 @@ class F34Form extends Component {
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
     }
-    this.getSubjectsData();
+    this.getSectionsData();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -420,32 +515,44 @@ class F34Form extends Component {
             >
               <Grid item xs={12} md={6}>
                 <TextField
-                  id="totalMarks"
-                  name="totalMarks"
-                  label="Total Marks"
-                  type="number"
+                  id="sectionId"
+                  name="sectionId"
+                  variant="outlined"
+                  label="Section"
+                  onChange={this.onHandleChange}
+                  value={this.state.sectionId}
+                  error={!!this.state.sectionIdError}
+                  helperText={this.state.sectionIdError}
                   required
                   fullWidth
-                  variant="outlined"
-                  onChange={this.onHandleChange}
-                  value={this.state.totalMarks}
-                  error={!!this.state.totalMarksError}
-                  helperText={this.state.totalMarksError}
-                />
+                  select
+                >
+                  {this.state.sectionIdMenuItems ? 
+                    this.state.sectionIdMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"sectionIdMenuItems"+dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))
+                  :
+                    this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
+                  }
+                </TextField>
               </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
-                  id="instruction"
-                  name="instruction"
-                  label="Instruction"
+                  id="label"
+                  name="label"
+                  label="Label"
                   required
                   fullWidth
                   variant="outlined"
-                  multiline
                   onChange={this.onHandleChange}
-                  value={this.state.instruction}
-                  error={!!this.state.instructionError}
-                  helperText={this.state.instructionError}
+                  value={this.state.label}
+                  error={!!this.state.labelError}
+                  helperText={this.state.labelError}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -494,31 +601,44 @@ class F34Form extends Component {
               </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
-                  id="subjectId"
-                  name="subjectId"
-                  variant="outlined"
-                  label="Subject"
-                  onChange={this.onHandleChange}
-                  value={this.state.subjectId}
-                  error={!!this.state.subjectIdError}
-                  helperText={this.state.subjectIdError}
+                  id="instruction"
+                  name="instruction"
+                  label="Instruction"
                   required
                   fullWidth
-                  select
-                >
-                  {this.state.subjectIdMenuItems ? 
-                    this.state.subjectIdMenuItems.map((dt, i) => (
-                      <MenuItem
-                        key={"subjectIdMenuItems"+dt.ID}
-                        value={dt.ID}
-                      >
-                        {dt.Label}
-                      </MenuItem>
-                    ))
-                  :
-                    this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
-                  }
-                </TextField>
+                  variant="outlined"
+                  multiline
+                  rows={5}
+                  onChange={this.onHandleChange}
+                  value={this.state.instruction}
+                  error={!!this.state.instructionError}
+                  helperText={this.state.instructionError}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      id="totalMarks"
+                      name="totalMarks"
+                      label="Total Marks"
+                      type="number"
+                      required
+                      fullWidth
+                      variant="outlined"
+                      onChange={this.onHandleChange}
+                      value={this.state.totalMarks}
+                      error={!!this.state.totalMarksError}
+                      helperText={this.state.totalMarksError}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <MyDropzone files={this.state.files} onChange={event => this.handleFileChange(event)} disabled={this.state.uploadLoading} />
+                    <div style={{textAlign:'left', marginTop:5, fontSize:"0.8rem"}}>
+                        <span style={{color: '#f44336'}}>&emsp;{this.state.filesError}</span>
+                    </div>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
