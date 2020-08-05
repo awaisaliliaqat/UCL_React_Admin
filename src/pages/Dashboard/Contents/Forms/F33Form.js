@@ -71,7 +71,7 @@ class F33Form extends Component {
 
   loadTimeTableData = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C33CommonAcademicsTimeTableView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C33CommonAcademicsTimeTableView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -110,7 +110,7 @@ class F33Form extends Component {
   
   loadUpcomingClassesData = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C33CommonAcademicsTimeTableUpcomingClassesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C33CommonAcademicsTimeTableUpcomingClassesView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -176,7 +176,7 @@ class F33Form extends Component {
     }
 
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsScheduleSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C31CommonAcademicsScheduleSave`;
     await fetch(url, {
       method: "POST",
       body: data,
