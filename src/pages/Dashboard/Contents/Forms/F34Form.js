@@ -323,7 +323,7 @@ class F34Form extends Component {
 
   isFileValid = () => {
     let isValid = true;
-    if (this.state.files.length<1) {
+    if (this.state.files.length<1 && this.state.recordId==0) {
       this.setState({ filesError: "Please select file." });
       document.getElementById("contained-button-file-div").focus();
       isValid = false;
@@ -336,19 +336,18 @@ class F34Form extends Component {
   handleFileChange = event => {
     const { files = [] } = event.target;
     if (files.length > 0) {
-        if (files[0].type === "application/pdf" || files[0].type === "application/msword" || files[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+        if ( (files[0].type === "application/pdf" || files[0].type === "application/msword" || files[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && files[0].size/1000<10000) {
             this.setState({
                 files,
                 filesError: ""
             })
         } else {
             this.setState({
-                filesError: "Please select only pdf, doc or docx file."
+                filesError: "Please select only pdf, doc or docx file with size less than 10 MBs."
             })
         }
     }
-
-}
+  }
 
   handleChangeStartDate = (date) => {
     this.setState({startDate: date});
