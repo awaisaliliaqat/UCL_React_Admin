@@ -17,7 +17,6 @@ const TableHead = ({ columns, sortingEnabled, sortData, isShowIndexColumn }) => 
         {isShowIndexColumn &&
           <HeaderTableCell
             name={"SR#"}
-            sortable={false}
             align={'left'}
             customStyle={{
               width: '7%',

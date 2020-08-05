@@ -99,7 +99,7 @@ class F20Form extends Component {
                     if (json.CODE === 1) {
                        this.setState({academicsSessionIdMenuItems:json.DATA});
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log("loadAcademicSession",json);
                 },
@@ -117,7 +117,7 @@ class F20Form extends Component {
         this.setState({isLoading: false})
     }
 
-    loadProgrammes = async(academicsSessionId) => {        
+    loadProgrammes = async() => {        
         this.setState({isLoading: true});
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C20CommonProgrammeGroupsView`;
         await fetch(url, {
@@ -137,7 +137,7 @@ class F20Form extends Component {
                     if (json.CODE === 1) {
                         this.setState({programmeMenuItems:json.DATA});
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log("programmeMenuItems",json);
                 },
@@ -175,7 +175,7 @@ class F20Form extends Component {
                     if (json.CODE === 1) {
                         this.setState({courseCreditIdMenuItems:json.DATA});
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log("courseCreditIdMenuItems",json);
                 },
@@ -216,12 +216,11 @@ class F20Form extends Component {
                     if (json.CODE === 1) {
                         console.log("loadData", json);
                         if(json.DATA.length){
-                            this.loadProgrammes(json.DATA[0].academicsSessionId);
                             this.setState({
                                 academicsSessionId:json.DATA[0].academicsSessionId,
                                 programmeGroupId:json.DATA[0].programmeGroupId,
                                 courseCreditId:json.DATA[0].courseCreditId,
-                                courseId:json.DATA[0].courseLabel,
+                                courseId:json.DATA[0].courseId,
                                 courseCode:json.DATA[0].courseCode,
                                 courseTitle:json.DATA[0].courseTitle,
                                 courseLabel:json.DATA[0].courseLabel
@@ -231,7 +230,7 @@ class F20Form extends Component {
                             window.location = "#/dashboard/F20Form/"+this.state.recordId;
                         }
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log("loadData", json);
                 },
@@ -352,7 +351,7 @@ class F20Form extends Component {
 
         switch (name) {
             case "academicsSessionId":
-                this.loadProgrammes(value);
+                this.loadProgrammes();
                 break;
             default:
                 break;
@@ -371,7 +370,7 @@ class F20Form extends Component {
 
      onFormSubmit = async(e) => {
         if( 
-            !this.isAcademicSessionValid() ||
+            //!this.isAcademicSessionValid() ||
             !this.isProgrammeValid() ||
             !this.isCourseIdValid() ||
             !this.isCourseCodeValid() ||
@@ -408,7 +407,7 @@ class F20Form extends Component {
                             }
                         }, 2000);
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },
@@ -433,7 +432,8 @@ class F20Form extends Component {
     }
 
     componentDidMount() {
-        this.loadAcademicSession();
+        //this.loadAcademicSession();
+        this.loadProgrammes();
         this.loadCourseCredit();
         if(this.state.recordId!=0){
             this.loadData(this.state.recordId);
@@ -483,6 +483,7 @@ class F20Form extends Component {
                                 marginRight: 10 
                             }}
                         >
+                            {/* 
                             <Grid item xs={12} md={6}>
                                 <TextField
                                     id="academicsSessionId"
@@ -512,7 +513,8 @@ class F20Form extends Component {
                                         </MenuItem>
                                     }
                                 </TextField>
-                            </Grid>
+                            </Grid> 
+                            */}
                             <Grid item xs={12} md={6}>
                                 <TextField
                                     id="programmeGroupId"
@@ -523,7 +525,7 @@ class F20Form extends Component {
                                     value={this.state.programmeGroupId}
                                     error={!!this.state.programmeGroupIdError}
                                     helperText={this.state.programmeGroupIdError}
-                                    disabled={!this.state.academicsSessionId}
+                                    //disabled={!this.state.academicsSessionId}
                                     required
                                     fullWidth
                                     select
@@ -544,6 +546,7 @@ class F20Form extends Component {
                                     }
                                 </TextField>
                             </Grid>
+                            {/* 
                             <Grid item xs={12}>
                                 <Divider 
                                     style={{
@@ -551,7 +554,8 @@ class F20Form extends Component {
                                         opacity: '0.3'
                                     }} 
                                 />
-                            </Grid>
+                            </Grid> 
+                            */}
                             <Grid item xs={12} md={6}>
                                 <TextField
                                     id="courseId"
@@ -635,7 +639,7 @@ class F20Form extends Component {
                                     variant="outlined"
                                     value={this.state.courseLabel}
                                     error={!!this.state.courseLabelError}
-                                    helperText={this.state.courseLabelError!=""?this.state.courseLabelError:<Typography color="primary" variant="caption">Auto generated before change.</Typography>}
+                                    helperText={this.state.courseLabelError}
                                 />
                             </Grid>
                         </Grid>

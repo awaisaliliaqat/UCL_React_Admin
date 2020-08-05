@@ -46,7 +46,7 @@ class F06ReportsTableComponent extends Component {
             ],
             pageSizes:[5,10,15,20],
             defaultSorting:[
-              { columnName: 'ID', direction: 'asc' }
+              { columnName: 'SRNo', direction: 'asc' }
             ],
             sortingStateColumnExtensions:[
               { columnName: 'admissionActivation', sortingEnabled: false },
@@ -54,8 +54,9 @@ class F06ReportsTableComponent extends Component {
             ],
             tableColumnExtensions:[
               { columnName: "ID", width: 100},
-              { columnName: "admissionActivation", width:175},
-              { columnName: "classesActivation", width:175},
+              { columnName: "label", wordWrapEnabled:true},
+              { columnName: "admissionActivation", width:175, align:"center"},
+              { columnName: "classesActivation", width:175, align:"center"},
             ],
             defaultColumnWidths:[],
             resizingMode:"widget",

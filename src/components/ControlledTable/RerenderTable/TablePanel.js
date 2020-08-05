@@ -76,7 +76,7 @@ const descSort = (data, sortIndex) => {
   return sortedData;
 };
 
-const TablePanel = ({ classes, columns, data, onClick, sortingEnabled, isLoading, isShowIndexColumn }) => {
+const TablePanel = ({ classes, columns, data, onClick, sortingEnabled, isLoading, isShowIndexColumn, isDense }) => {
   const [sortedData, setSortedData] = React.useState(data);
   const [perData, setPerData] = React.useState(data);
   const [index, setIndex] = React.useState('');
@@ -103,7 +103,7 @@ const TablePanel = ({ classes, columns, data, onClick, sortingEnabled, isLoading
           </div>
         </div>
       )}
-      <Table className={classes.table}>
+      <Table size={isDense ? 'small' : 'medium'} className={classes.table}>
         <TableHead
           columns={columns}
           sortingEnabled={sortingEnabled}
@@ -133,7 +133,8 @@ TablePanel.defaultProps = {
   isLoading: false,
   data: [],
   columns: [],
-  isShowIndexColumn: false
+  isShowIndexColumn: false,
+  isDense: false
 };
 
 TablePanel.propTypes = {
@@ -143,7 +144,8 @@ TablePanel.propTypes = {
   onClick: PropTypes.func,
   sortingEnabled: PropTypes.bool,
   isLoading: PropTypes.bool,
-  isShowIndexColumn: PropTypes.bool
+  isShowIndexColumn: PropTypes.bool,
+  isDense: PropTypes.bool
 };
 
 export default withStyles(styles)(TablePanel);
