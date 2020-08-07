@@ -76,7 +76,7 @@ function CourseRow(props) {
             component="div"
             style={{ float: "left" }}
           >
-            {rowData.courseId}
+            {rowData.courseTitle}
           </Typography>
 
           <TextField
@@ -184,9 +184,21 @@ class F27Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ academicsSessionIdMenuItems: json.DATA });
+            for (
+              var i = 0;
+              i < this.state.academicsSessionIdMenuItems.length;
+              i++
+            ) {
+              if (this.state.academicsSessionIdMenuItems[i].isActive == "1") {
+                this.state.academicsSessionId = this.state.academicsSessionIdMenuItems[
+                  i
+                ].ID;
+                this.loadProgrammeGroups(this.state.academicsSessionId);
+              }
+            }
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -233,7 +245,7 @@ class F27Form extends Component {
             this.setState({ programmeGroupMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -296,7 +308,7 @@ class F27Form extends Component {
             console.log("programmeCoursesListArray", prerequisiteCourseArray);
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -348,7 +360,7 @@ class F27Form extends Component {
           } else {
             //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -455,7 +467,7 @@ class F27Form extends Component {
             }, 1500);
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }

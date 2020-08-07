@@ -61,7 +61,7 @@ class F31Form extends Component {
       programmeGroupIdError: "",
       preDaysMenuItems: [], //["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       preTimeStartMenuItems: [],
-      showTableFilter: true,
+      showTableFilter: false,
       CourseListArray: [],
     };
   }
@@ -135,9 +135,21 @@ class F31Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ academicSessionIdMenuItems: json.DATA });
+            for (
+              var i = 0;
+              i < this.state.academicSessionIdMenuItems.length;
+              i++
+            ) {
+              if (this.state.academicSessionIdMenuItems[i].isActive == "1") {
+                this.state.academicSessionId = this.state.academicSessionIdMenuItems[
+                  i
+                ].ID;
+                this.loadProgrammeGroups(this.state.academicSessionId);
+              }
+            }
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -185,7 +197,7 @@ class F31Form extends Component {
             this.setState({ programmeGroupIdMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -228,7 +240,7 @@ class F31Form extends Component {
             this.setState({ preDaysMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -290,7 +302,7 @@ class F31Form extends Component {
             this.setState({ CourseListArray: json.DATA || [] });
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -423,7 +435,7 @@ class F31Form extends Component {
             }, 2000);
           } else {
             this.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -489,6 +501,7 @@ class F31Form extends Component {
               variant="h5"
             >
               Define Timetable
+              {/* 
               <div style={{ float: "right" }}>
                 <Tooltip title="Table Filter">
                   <IconButton
@@ -498,7 +511,8 @@ class F31Form extends Component {
                     <FilterIcon fontSize="default" color="primary" />
                   </IconButton>
                 </Tooltip>
-              </div>
+              </div> 
+              */}
             </Typography>
             <Divider
               style={{

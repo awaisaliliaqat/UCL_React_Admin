@@ -80,7 +80,12 @@ const Login = () => {
             window.localStorage.setItem("adminData", JSON.stringify(json));
             window.localStorage.setItem("uclAdminToken", json.jwttoken);
             window.localStorage.setItem("isViewDialog", 0);
-            window.location.replace("#/dashboard");
+            window.localStorage.setItem("userTypeId", json.userTypeId);
+            if (json.userTypeId == 3) {
+              window.location.replace("#/dashboard/F33Form/0");
+            } else {
+              window.location.replace("#/dashboard");
+            }
           } else {
             setError('Invalid Email or Password');
           }

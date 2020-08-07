@@ -91,15 +91,18 @@ function CourseRow(props) {
         justify="space-evenly"
         alignItems="center"
       >
+        <Grid item xs={1} md={1}>
         <Typography
           color="primary"
           variant="subtitle1"
           component="div"
           style={{ float: "left" }}
         >
-          <b>{rowIndex + 1}:</b>
+          {rowIndex + 1}:
         </Typography>
-        <Grid item xs={12} md={3}>
+        </Grid>
+        <Grid item xs={3} md={3}>
+          {/* 
           <TextField
             id="dayIdLabel"
             name="dayIdLabel"
@@ -111,7 +114,9 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={rowData.preDay}
-          />
+          /> 
+          */}
+          {rowData.preDay}
           <TextField
             type="hidden"
             id="dayId"
@@ -119,7 +124,8 @@ function CourseRow(props) {
             value={rowData.preDayId}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={4} md={4}>
+          {/* 
           <TextField
             id="startTime"
             name="startTime"
@@ -131,9 +137,18 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={rowData.preTimeStart}
+          /> 
+          */}
+          {rowData.preTimeStart}
+          <TextField
+            type="hidden"
+            id="startTime"
+            name="startTime"
+            value={rowData.preTimeStart}
           />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={3} md={3}>
+          {/* 
           <TextField
             id="module"
             name="duration"
@@ -145,17 +160,33 @@ function CourseRow(props) {
             }}
             variant="outlined"
             value={rowData.preTimeDuration}
+          /> 
+          */}
+          {rowData.preTimeDuration}
+          <TextField
+            type="hidden"
+            id="duration"
+            name="duration"
+            value={rowData.preTimeDuration}
           />
         </Grid>
-        <Grid item xs={12} md={1} style={{ textAlign: "center" }}>
+        <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
           <IconButton
             aria-label="Add"
             component="span"
             onClick={() => onDelete(rowIndex)}
           >
             <Tooltip title="Delete">
-              <Fab color="secondary" aria-label="Delete" size="small">
-                <DeleteIcon />
+              <Fab 
+                color="secondary" 
+                aria-label="Delete" 
+                size="small"
+                style={{
+                  height:36,
+                  width:36
+                }}
+              >
+                <DeleteIcon fontSize="small"/>
               </Fab>
             </Tooltip>
           </IconButton>
@@ -179,15 +210,22 @@ class F31FormPopupComponent extends Component {
       preTimeDuration: "",
       preTimeDurationError: "",
       preDaysMenuItems: [],
+      preDayId: "",
       preDay: "",
       preDayError: "",
       preTimeStartMenuItems: [],
       preTimeStart: "",
       preTimeStartError: "",
-      preDate: new Date(),
+      preDate: this.getTomorrowDate(),
       preDateError: "",
       rowDataArray: [],
     };
+  }
+
+  getTomorrowDate = () => {
+    let a = new Date();
+    let b = new Date(a.setDate(a.getDate() + 1));
+    return b;
   }
 
   getDateInString = (todayDate) => {
@@ -240,7 +278,7 @@ class F31FormPopupComponent extends Component {
             this.setState({ rowDataArray: rowDataArray });
           } else {
             this.props.handleOpenSnackbar(
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
               "error"
             );
           }
@@ -297,9 +335,9 @@ class F31FormPopupComponent extends Component {
 
   isPreDayValid = () => {
     let isValid = true;
-    if (!this.state.preDay) {
+    if (!this.state.preDayId) {
       this.setState({ preDayError: "Please select day." });
-      document.getElementById("preDay").focus();
+      document.getElementById("preDayId").focus();
       isValid = false;
     } else {
       this.setState({ preDayError: "" });
@@ -342,20 +380,30 @@ class F31FormPopupComponent extends Component {
     }
 
     let rowDataArray = this.state.rowDataArray;
+    let preDayId = this.state.preDayId;
     let preDay = this.state.preDay;
+    console.log();
+    let preDaysMenuItemsTemp = this.state.preDaysMenuItems;
+    for (let i = 0; i < preDaysMenuItemsTemp.length; i++) {
+      if (preDaysMenuItemsTemp[i].id == preDayId) {
+        preDay = preDaysMenuItemsTemp[i].label;
+        console.log(preDaysMenuItemsTemp[i].label);
+      }
+    }
     let preTimeStart = this.state.preTimeStart;
     let preTimeDuration = this.state.preTimeDuration;
 
     let day = document.getElementsByName("day");
     for (let i = 0; i < day.length; i++) {
-      if (day[i].value == preDay) {
+      if (day[i].value == preDayId) {
         this.setState({ preDayError: "Day should be unique." });
-        document.getElementById("preDay").focus();
+        document.getElementById("preDayId").focus();
         return;
       }
     }
 
     let rowDataObject = {
+      preDayId: preDayId,
       preDay: preDay,
       preTimeStart: preTimeStart,
       preTimeDuration: preTimeDuration,
@@ -365,6 +413,7 @@ class F31FormPopupComponent extends Component {
 
     this.setState({
       rowDataArray: rowDataArray,
+      preDayId: "",
       preDay: "",
       preTimeStart: "",
       preTimeDuration: "",
@@ -387,9 +436,18 @@ class F31FormPopupComponent extends Component {
       [errName]: "",
     });
   };
+  onHandleChangePreDay = (e) => {
+    const { name, value } = e.target;
+    const errName = `${name}Error`;
+    this.setState({
+      [name]: value,
+      [errName]: "",
+    });
+  };
 
   handleChangePreDate = (date) => {
     this.setState({
+      preDayId: "",
       preDay: "",
       preTimeStart: "",
       preTimeDuration: "",
@@ -488,6 +546,7 @@ class F31FormPopupComponent extends Component {
               label="Effective Date"
               invalidDateMessage=""
               disablePast
+              minDate={this.getTomorrowDate()}
               placeholder=""
               variant="inline"
               inputVariant="outlined"
@@ -504,7 +563,7 @@ class F31FormPopupComponent extends Component {
             />
           </DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            {/* <DialogContentText> */}
               <Grid
                 container
                 direction="row"
@@ -523,12 +582,12 @@ class F31FormPopupComponent extends Component {
                     value={this.props.sectionId}
                   />
                   <TextField
-                    id="preDay"
-                    name="preDay"
+                    id="preDayId"
+                    name="preDayId"
                     variant="outlined"
                     label="Day"
-                    onChange={this.onHandleChange}
-                    value={this.state.preDay}
+                    onChange={this.onHandleChangePreDay}
+                    value={this.state.preDayId}
                     error={!!this.state.preDayError}
                     helperText={
                       this.state.preDayError ? this.state.preDayError : " "
@@ -591,7 +650,7 @@ class F31FormPopupComponent extends Component {
                   <TextField
                     id="preTimeDuration"
                     name="preTimeDuration"
-                    label="Duration"
+                    label={"Duration (Minutes)"}
                     type="number"
                     required
                     fullWidth
@@ -629,6 +688,38 @@ class F31FormPopupComponent extends Component {
                     }}
                   />
                 </Grid>
+                <Grid
+                  container
+                  direction="row"
+                  justify="space-evenly"
+                  alignItems="center"
+                >
+                  <Grid item xs={1} md={1}>
+                    <Typography color="primary">
+                      SR#
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Typography color="primary">
+                      Day
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={4}>
+                    <Typography color="primary">
+                      Start Time
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Typography color="primary">
+                      Duration <small>(Minutes)</small>
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+                    <Typography color="primary">
+                      Action
+                    </Typography>
+                  </Grid>
+                </Grid>
                 {this.state.rowDataArray.length > 0
                   ? this.state.rowDataArray.map((dt, i) => (
                       <CourseRow
@@ -651,7 +742,7 @@ class F31FormPopupComponent extends Component {
                 <br />
                 <br />
               </Grid>
-            </DialogContentText>
+            {/* </DialogContentText> */}
           </DialogContent>
           <Divider
             style={{

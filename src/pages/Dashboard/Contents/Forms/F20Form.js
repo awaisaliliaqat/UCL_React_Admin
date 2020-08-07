@@ -99,7 +99,7 @@ class F20Form extends Component {
                     if (json.CODE === 1) {
                        this.setState({academicsSessionIdMenuItems:json.DATA});
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log("loadAcademicSession",json);
                 },
@@ -137,7 +137,7 @@ class F20Form extends Component {
                     if (json.CODE === 1) {
                         this.setState({programmeMenuItems:json.DATA});
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log("programmeMenuItems",json);
                 },
@@ -175,7 +175,7 @@ class F20Form extends Component {
                     if (json.CODE === 1) {
                         this.setState({courseCreditIdMenuItems:json.DATA});
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log("courseCreditIdMenuItems",json);
                 },
@@ -230,7 +230,7 @@ class F20Form extends Component {
                             window.location = "#/dashboard/F20Form/"+this.state.recordId;
                         }
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log("loadData", json);
                 },
@@ -407,7 +407,7 @@ class F20Form extends Component {
                             }
                         }, 2000);
                     } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE,"error");
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
                     }
                     console.log(json);
                 },
