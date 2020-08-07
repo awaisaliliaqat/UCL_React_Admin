@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-import React, { Fragment, useState, Suspense } from "react";
+import React, { Fragment, useState, Suspense, useEffect } from "react";
 import clsx from "clsx";
 import {
   HashRouter as Router,
@@ -58,6 +58,7 @@ import F25Form from "./Contents/Forms/F25Form";
 import F27Form from "./Contents/Forms/F27Form";
 import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form";
+import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
 
 const drawerWidth = 283;
 
@@ -153,10 +154,16 @@ const Dashboard = (props) => {
   const classes = useStyles();
   const [viewValue, setViewValue] = useState(props.match.params.value || "");
   const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [isDialogOpen, setDialogOpen] = useState(false);
   const adminData = localStorage.getItem("adminData")
     ? JSON.parse(localStorage.getItem("adminData"))
     : {};
   const { featureList = [] } = adminData;
+
+  useEffect(() => {
+    const check = adminData.isZoomVerified === 0 && adminData.userTypeId === 3 && window.localStorage.getItem("isViewDialog") == 0;
+    setDialogOpen(check);
+  }, []);
 
   const handleValueChange = (value) => {
     setViewValue(value);
@@ -168,8 +175,12 @@ const Dashboard = (props) => {
     setDrawerOpen(!prevFlag);
   };
 
+
+
   return (
     <Fragment>
+      <ControlledDialog open={isDialogOpen} handleClose={() => { setDialogOpen(false); localStorage.setItem("isViewDialog", 1); }} title={'Error'}
+        content={'Please accept zoom invitation sent on your registered email id '} />
       <NavBar
         setOpenMenu={(e) => setOpenMenu(e)}
         isOpenMenu={isDrawerOpen}
