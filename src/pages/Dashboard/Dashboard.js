@@ -59,6 +59,7 @@ import F27Form from "./Contents/Forms/F27Form";
 import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form";
 import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
+import Attendance from './Contents/Reports/Attendance/Attendance';
 
 const drawerWidth = 283;
 
@@ -682,6 +683,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/student-course-selection"
                 component={StudentCourseSelection}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="attendance"
+                exact
+                path="/dashboard/attendance"
+                component={Attendance}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
