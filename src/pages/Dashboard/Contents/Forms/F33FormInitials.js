@@ -44,36 +44,29 @@ const styles = theme => ({
     width: 30,
     height: 30,
     marginTop: 5,
-    borderRadius:0    
+    borderRadius: 0
   },
 
   bigAvatar: {
     width: 40,
     height: 40,
     marginTop: 5,
-    borderRadius:0    
+    borderRadius: 0
   },
 
   card: {
     //cursor: "pointer"
   }
-  
+
 });
 
 const F33FormInitials = (props) => {
-  
+
   const {classes, data, isLoading} = props;
 
-  const onJoinClick = (e, data = {}) => {
-    e.preventDefault();
-    //localStorage.setItem("meetingConfig", JSON.stringify(data));
-    //window.location.href = "http://localhost:3001/lms/zoom";
-    //window.location.href = data.meetingStartUrl;
-    window.open(data.meetingStartUrl,'_blank');
-  }
 
   return (
-    <Card 
+    <Card
       //onClick={() => window.open('#/dashboard/calendar')} 
       //title="View Time Table" 
       className={classes.card}
@@ -83,14 +76,15 @@ const F33FormInitials = (props) => {
         subheader={"Join your virtual classes"}
         avatar={<Avatar className={classes.bigAvatar} src={ProfilePlaceHolder} />}
       />
-      <CardContent 
-        // style={{ 
-        //   height: '210px' 
-        // }}
+      <CardContent
+      // style={{ 
+      //   height: '210px' 
+      // }}
       >
         <List style={{
           marginTop: '-30px'
         }}>
+
             {data.length>0 ?
               data.map((dt, i) => (
                 <Fragment key={i}>
@@ -98,6 +92,7 @@ const F33FormInitials = (props) => {
                     style={{ paddingTop:0 }} 
                     alignItems="flex-start"
                   >
+
                   <ListItemAvatar>
                     <Avatar
                       alt="Img"
@@ -127,14 +122,15 @@ const F33FormInitials = (props) => {
                     }
                   />
                   <ListItemSecondaryAction style={{ right: 0 }}>
-                    <Button 
-                      onClick={(e) => onJoinClick(e, {meetingStartUrl:dt.meetingStartUrl})} 
+                    <Button
+                      onClick={(e) => props.onJoinClick(e, dt)}
                       color="primary"
                       disabled={!dt.meetingStartUrl}
                     >
                       Join
                     </Button>
                   </ListItemSecondaryAction>
+
                   </ListItem>
                 </Fragment>
               ))
@@ -144,6 +140,7 @@ const F33FormInitials = (props) => {
                 <CircularProgress />
               </Grid>
             }
+
           {/* 
           <ListItem style={{ paddingTop: 0 }} alignItems="flex-start">
             <ListItemAvatar>
@@ -229,9 +226,9 @@ const F33FormInitials = (props) => {
               to="/dashboard/calendar" 
               target="_blank"
             > */}
-              <IconButton aria-label="View">
-                <CreateIcon />
-              </IconButton>
+            <IconButton aria-label="View">
+              <CreateIcon />
+            </IconButton>
             {/* </Link> */}
           </Tooltip>
           <Tooltip title="In Progress">

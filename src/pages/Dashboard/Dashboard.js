@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-import React, { Fragment, useState, Suspense } from "react";
+import React, { Fragment, useState, Suspense, useEffect } from "react";
 import clsx from "clsx";
 import {
   HashRouter as Router,
@@ -61,6 +61,9 @@ import F31Form from "./Contents/Forms/F31Form";
 import F33Form from "./Contents/Forms/F33Form";
 import F34Form from "./Contents/Forms/F34Form";
 import F34Reports from "./Contents/Forms/F34Reports";
+import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
+import Attendance from './Contents/Reports/Attendance/Attendance';
+import StudentReports from './Contents/Reports/StudentReports/StudentReports';
 
 const drawerWidth = 283;
 
@@ -156,10 +159,16 @@ const Dashboard = (props) => {
   const classes = useStyles();
   const [viewValue, setViewValue] = useState(props.match.params.value || "");
   const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [isDialogOpen, setDialogOpen] = useState(false);
   const adminData = localStorage.getItem("adminData")
     ? JSON.parse(localStorage.getItem("adminData"))
     : {};
   const { featureList = [] } = adminData;
+
+  useEffect(() => {
+    const check = adminData.isZoomVerified === 0 && adminData.userTypeId === 3 && window.localStorage.getItem("isViewDialog") == 0;
+    setDialogOpen(check);
+  }, []);
 
   const handleValueChange = (value) => {
     setViewValue(value);
@@ -171,8 +180,12 @@ const Dashboard = (props) => {
     setDrawerOpen(!prevFlag);
   };
 
+
+
   return (
     <Fragment>
+      <ControlledDialog open={isDialogOpen} handleClose={() => { setDialogOpen(false); localStorage.setItem("isViewDialog", 1); }} title={'Error'}
+        content={'Please accept zoom invitation sent on your registered email id '} />
       <NavBar
         setOpenMenu={(e) => setOpenMenu(e)}
         isOpenMenu={isDrawerOpen}
@@ -554,7 +567,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-            <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F33Form"
                 exact
@@ -720,7 +733,21 @@ const Dashboard = (props) => {
                 component={StudentCourseSelection}
               />
 
-             
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="teacher-attendance-report"
+                exact
+                path="/dashboard/teacher-attendance-report"
+                component={Attendance}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="students-excel-report"
+                exact
+                path="/dashboard/students-excel-report"
+                component={StudentReports}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"
