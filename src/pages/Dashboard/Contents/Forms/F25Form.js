@@ -51,16 +51,11 @@ const styles = () => ({
 });
 
 function CourseRow(props) {
-  const {
-    rowIndex,
-    rowData,
-    onDelete,
-    moduleTypeMenuItems,
-    courseSelectionGroupMenuItems,
-    ...rest
-  } = props;
+
+  const { rowIndex, rowData, onDelete, moduleTypeMenuItems, ...rest} = props;
 
   const [coursesInputValue, setCoursesInputValue] = useState("");
+  const [courseSelectionGroupInputValue, setCourseSelectionGroupInputValue] = useState("");
 
   const handleCourse = (value) => {
     let ObjArray = value;
@@ -76,16 +71,34 @@ function CourseRow(props) {
     //console.log("handleCourse", selectedPCIdsString);
   };
 
-  const getPreCourseSelectionGroupById = (id) => {
-    if (courseSelectionGroupMenuItems.length > 0 && id != "" && id != 0) {
-      return courseSelectionGroupMenuItems.find((x) => x.ID == id).Label;
-    } else {
-      return "";
+  const handleCourseSelectionGroup = (value) => {
+    let ObjArray = value;
+    let selectedCSGIdsString = "";
+    for (let i = 0; i < ObjArray.length; i++) {
+      if (i == 0) {
+        selectedCSGIdsString = ObjArray[i].ID;
+      } else {
+        selectedCSGIdsString += "~" + ObjArray[i].ID;
+      }
     }
+    setCourseSelectionGroupInputValue(selectedCSGIdsString);
+    //console.log("handleCourse", selectedPCIdsString);
   };
+
+  // const getPreCourseSelectionGroupById = (id) => {
+  //   if (courseSelectionGroupMenuItems.length > 0 && id != "" && id != 0) {
+  //     let selected = courseSelectionGroupMenuItems.find((x) => x.ID == id);
+  //     if(selected){
+  //       return selected.Label;
+  //     }else{
+  //       return "";
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     handleCourse(rowData.preCourses);
+    handleCourseSelectionGroup(rowData.preCourseSelectionGroups)
   });
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -213,15 +226,11 @@ function CourseRow(props) {
               /> 
               */}
               {rowData.preCourses.map((option, index) => (
-                <span>
+                <span key={"pci"+index}>
                   {index != 0 ? <br /> : ""} {option.Label}
                 </span>
               ))}
-              <TextField
-                type="hidden"
-                name="programmeCourseId"
-                value={coursesInputValue}
-              />
+              <TextField type="hidden" name="programmeCourseId" value={coursesInputValue}/>
               <TextField type="hidden" name="selectionGroupId" value="0" />
             </Fragment>
           ) : rowData.preModuleTypeId == 2 ? (
@@ -238,12 +247,16 @@ function CourseRow(props) {
                 fullWidth
               /> 
               */}
-              {getPreCourseSelectionGroupById(rowData.preCourseSelectionGroupId)}
+              
+              {
+              //getPreCourseSelectionGroupById(rowData.preCourseSelectionGroupId)
+              rowData.preCourseSelectionGroups.map((option, index) => (
+                <span key={"csgi"+index}>
+                  {index != 0 ? <br /> : ""} {option.Label}
+                </span>
+              ))}
               <TextField type="hidden" name="programmeCourseId" value="0" />
-              <TextField
-                type="hidden"
-                name="selectionGroupId"
-                value={rowData.preCourseSelectionGroupId}
+              <TextField type="hidden" name="selectionGroupId"  value={courseSelectionGroupInputValue}
               />
             </Fragment>
           ) : (
@@ -303,8 +316,8 @@ class F25Form extends Component {
       preCourses: [],
       preCoursesError: "",
       preCourseSelectionGroupMenuItems: [],
-      preCourseSelectionGroupId: "",
-      preCourseSelectionGroupIdError: "",
+      preCourseSelectionGroups: [],
+      preCourseSelectionGroupsError: "",
       preCourseLabel: "",
       preChoiceGroupId: "",
       preChoiceGroupIdError: "",
@@ -613,7 +626,7 @@ class F25Form extends Component {
                 preModuleTypeId: json.DATA[i].moduleTypeId,
                 preRemarks: json.DATA[i].moduleRemarks,
                 preCourses: json.DATA[i].coursesArray || [],
-                preCourseSelectionGroupId: json.DATA[i].selectionGroupId,
+                preCourseSelectionGroups: json.DATA[i].selectionGroupId || [],
               };
               courseRowDataArray.push(courseRowDataObject);
               if (json.DATA[i].moduleNumber > preModule) {
@@ -712,19 +725,32 @@ class F25Form extends Component {
     return isValid;
   };
 
+  // isPreCourseSelectionGroupIdValid = () => {
+  //   let isValid = true;
+  //   if (
+  //     !this.state.preCourseSelectionGroupId &&
+  //     this.state.preModuleTypeId == 2
+  //   ) {
+  //     this.setState({
+  //       preCourseSelectionGroupIdError: "Please select choice group.",
+  //     });
+  //     document.getElementById("preCourseSelectionGroupId").focus();
+  //     isValid = false;
+  //   } else {
+  //     this.setState({ preCourseSelectionGroupIdError: "" });
+  //   }
+  //   return isValid;
+  // };
+
   isPreCourseSelectionGroupIdValid = () => {
+    let preCourseSelectionGroups = this.state.preCourseSelectionGroups;
     let isValid = true;
-    if (
-      !this.state.preCourseSelectionGroupId &&
-      this.state.preModuleTypeId == 2
-    ) {
-      this.setState({
-        preCourseSelectionGroupIdError: "Please select choice group.",
-      });
-      document.getElementById("preCourseSelectionGroupId").focus();
+    if (preCourseSelectionGroups.length == 0 && this.state.preModuleTypeId == 2 ) {
+      this.setState({ preCourseSelectionGroupsError: "Please select choice group." });
+      document.getElementById("preCourseSelectionGroups").focus();
       isValid = false;
-    } else {
-      this.setState({ preCourseSelectionGroupIdError: "" });
+    }else {
+      this.setState({ preCourseSelectionGroupsError: "" });
     }
     return isValid;
   };
@@ -736,27 +762,29 @@ class F25Form extends Component {
       this.setState({ preCoursesError: "Please select course." });
       document.getElementById("preCourses").focus();
       isValid = false;
-    } else if (preCourses.length >= 1 && this.state.preModuleTypeId == 1) {
-      let CourseCreditIdSum = 0;
-      for(let i=0;i<preCourses.length;i++){
-        CourseCreditIdSum += preCourses[i].courseCreditId;
-      }
-      if(CourseCreditIdSum!=2){
-        this.setState({ preCoursesError: "Please select two half or one full credit course." });
-        document.getElementById("preCourses").focus();
-        isValid = false;
-      }
-    } else if (preCourses.length >= 1 && this.state.preModuleTypeId == 3) {
-      let CourseCreditIdSum = 0;
-      for(let i=0;i<preCourses.length;i++){
-        CourseCreditIdSum += preCourses[i].courseCreditId;
-      }
-      if(CourseCreditIdSum!=4){
-        this.setState({ preCoursesError: "Please select four half or tow full credit course." });
-        document.getElementById("preCourses").focus();
-        isValid = false;
-      }
-    } else {
+    } 
+    // else if (preCourses.length >= 1 && this.state.preModuleTypeId == 1) {
+    //   let CourseCreditIdSum = 0;
+    //   for(let i=0;i<preCourses.length;i++){
+    //     CourseCreditIdSum += preCourses[i].courseCreditId;
+    //   }
+    //   if(CourseCreditIdSum!=2){
+    //     this.setState({ preCoursesError: "Please select two half or one full credit course." });
+    //     document.getElementById("preCourses").focus();
+    //     isValid = false;
+    //   }
+    // } else if (preCourses.length >= 1 && this.state.preModuleTypeId == 3) {
+    //   let CourseCreditIdSum = 0;
+    //   for(let i=0;i<preCourses.length;i++){
+    //     CourseCreditIdSum += preCourses[i].courseCreditId;
+    //   }
+    //   if(CourseCreditIdSum!=4){
+    //     this.setState({ preCoursesError: "Please select four half or tow full credit course." });
+    //     document.getElementById("preCourses").focus();
+    //     isValid = false;
+    //   }
+    // } 
+    else {
       this.setState({ preCoursesError: "" });
     }
     return isValid;
@@ -801,8 +829,7 @@ class F25Form extends Component {
   };
 
   isCourseSelected = (option) => {
-    return this.state.preCourses.some(
-      (selectedOption) => selectedOption.ID == option.ID
+    return this.state.preCourses.some((selectedOption) => selectedOption.ID == option.ID
     );
   };
 
@@ -810,6 +837,17 @@ class F25Form extends Component {
     this.setState({
       preCourses: value,
       preCoursesError: "",
+    });
+  };
+
+  isGroupSelected = (option) => {
+    return this.state.preCourseSelectionGroups.some((selectedOption) => selectedOption.ID == option.ID);
+  };
+
+  handleSetPreGroups = (value) => {
+    this.setState({
+      preCourseSelectionGroups: value,
+      preCourseSelectionGroupsError: "",
     });
   };
 
@@ -831,7 +869,7 @@ class F25Form extends Component {
     let preModuleTypeId = this.state.preModuleTypeId;
     let preRemarks = this.state.preRemarks;
     let preCourses = this.state.preCourses;
-    let preCourseSelectionGroupId = this.state.preCourseSelectionGroupId;
+    let preCourseSelectionGroups = this.state.preCourseSelectionGroups;
 
     let moduleNumber = document.getElementsByName("moduleNumber");
     for (let i = 0; i < moduleNumber.length; i++) {
@@ -847,7 +885,7 @@ class F25Form extends Component {
       preModuleTypeId: preModuleTypeId,
       preRemarks: preRemarks,
       preCourses: preCourses,
-      preCourseSelectionGroupId: preCourseSelectionGroupId,
+      preCourseSelectionGroups: preCourseSelectionGroups,
     };
 
     courseRowDataArray.push(courseRowDataObject);
@@ -858,7 +896,7 @@ class F25Form extends Component {
       preModuleTypeId: "",
       preRemarks: "",
       preCourses: [],
-      preCourseSelectionGroupId: "",
+      preCourseSelectionGroups: [],
     });
 
     //console.log("courseRowDataObject", courseRowDataObject);
@@ -1166,33 +1204,79 @@ class F25Form extends Component {
                     />
                   </Fragment>
                 ) : this.state.preModuleTypeId == 2 ? (
-                  <TextField
-                    id="preCourseSelectionGroupId"
-                    name="preCourseSelectionGroupId"
-                    variant="outlined"
-                    label="Course Selection Group"
-                    onChange={this.onHandleChange}
-                    value={this.state.preCourseSelectionGroupId}
-                    error={!!this.state.preCourseSelectionGroupIdError}
-                    helperText={this.state.preCourseSelectionGroupIdError}
-                    required
-                    fullWidth
-                    select
-                  >
-                    {this.state.preCourseSelectionGroupMenuItems ? (
-                      this.state.preCourseSelectionGroupMenuItems.map(
-                        (dt, i) => (
-                          <MenuItem key={"PCGID" + dt.ID} value={dt.ID}>
-                            {dt.Label}
-                          </MenuItem>
-                        )
-                      )
-                    ) : (
-                      <MenuItem>
-                        <CircularProgress size={24} />
-                      </MenuItem>
-                    )}
-                  </TextField>
+                  <Fragment>
+                    <Autocomplete
+                      multiple
+                      fullWidth
+                      id="preCourseSelectionGroups"
+                      options={this.state.preCourseSelectionGroupMenuItems}
+                      value={this.state.preCourseSelectionGroups}
+                      onChange={(event, value) =>
+                        this.handleSetPreGroups(value)
+                      }
+                      disableCloseOnSelect
+                      getOptionLabel={(option) => option.Label}
+                      renderTags={(tagValue, getTagProps) =>
+                        tagValue.map((option, index) => (
+                          <Chip
+                            label={option.Label}
+                            color="primary"
+                            variant="outlined"
+                            {...getTagProps({ index })}
+                          />
+                        ))
+                      }
+                      renderOption={(option) => (
+                        <Fragment>
+                          <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={this.isGroupSelected(option)}
+                            color="primary"
+                          />
+                          {option.Label}
+                        </Fragment>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          label="Course Selection Group"
+                          placeholder="Search and Select"
+                          error={!!this.state.preCourseSelectionGroupsError}
+                          helperText={this.state.preCourseSelectionGroupsError}
+                        />
+                      )}
+                    />
+                  </Fragment>
+                  // <TextField
+                  //   id="preCourseSelectionGroupId"
+                  //   name="preCourseSelectionGroupId"
+                  //   variant="outlined"
+                  //   label="Course Selection Group"
+                  //   onChange={this.onHandleChange}
+                  //   value={this.state.preCourseSelectionGroupId}
+                  //   error={!!this.state.preCourseSelectionGroupIdError}
+                  //   helperText={this.state.preCourseSelectionGroupIdError}
+                  //   required
+                  //   fullWidth
+                  //   select
+                  // >
+                  //   {this.state.preCourseSelectionGroupMenuItems ? (
+                  //     this.state.preCourseSelectionGroupMenuItems.map(
+                  //       (dt, i) => (
+                  //         <MenuItem key={"PCGID" + dt.ID} value={dt.ID}>
+                  //           {dt.Label}
+                  //         </MenuItem>
+                  //       )
+                  //     )
+                  //   ) : (
+                  //     <MenuItem>
+                  //       <CircularProgress size={24} />
+                  //     </MenuItem>
+                  //   )}
+                  // </TextField>
                 ) : (
                   ""
                 )}
@@ -1226,27 +1310,27 @@ class F25Form extends Component {
                   alignItems="center"
                 >
                   <Grid item xs={1} md={1}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Module
                     </Typography>
                   </Grid>
                   <Grid item xs={2} md={2}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Course Type
                     </Typography>
                   </Grid>
                   <Grid item xs={3} md={3}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Remarks
                     </Typography>
                   </Grid>
                   <Grid item xs={5} md={5}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Courses
                     </Typography>
                   </Grid>
                   <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
-                    <Typography color="primary" variant="title">
+                    <Typography color="primary">
                       Action
                     </Typography>
                   </Grid>
@@ -1261,10 +1345,8 @@ class F25Form extends Component {
                     rowIndex={i}
                     rowData={dt}
                     onDelete={(i) => this.handeDeleteCourseRow(i)}
+                    courseSelectionGroups={this.state.preCourseSelectionGroups}
                     moduleTypeMenuItems={this.state.preModuleTypeMenuItems}
-                    courseSelectionGroupMenuItems={
-                      this.state.preCourseSelectionGroupMenuItems
-                    }
                   />
                 ))
               ) : this.state.isLoading ? (
