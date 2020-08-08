@@ -63,6 +63,7 @@ import F34Form from "./Contents/Forms/F34Form";
 import F34Reports from "./Contents/Forms/F34Reports";
 import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
 import Attendance from './Contents/Reports/Attendance/Attendance';
+import StudentReports from './Contents/Reports/StudentReports/StudentReports';
 
 const drawerWidth = 283;
 
@@ -735,10 +736,17 @@ const Dashboard = (props) => {
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="attendance"
+                name="teacher-attendance-report"
                 exact
-                path="/dashboard/attendance"
+                path="/dashboard/teacher-attendance-report"
                 component={Attendance}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="students-excel-report"
+                exact
+                path="/dashboard/students-excel-report"
+                component={StudentReports}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
