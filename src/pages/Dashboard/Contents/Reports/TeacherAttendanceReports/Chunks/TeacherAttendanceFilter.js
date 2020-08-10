@@ -48,7 +48,7 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const AttendanceFilter = props => {
+const TeacherAttendanceFilter = props => {
     const classes = useStyles();
     const { values, handleDateChange, getDataByStatus, onClearFilters, isLoading } = props;
 
@@ -109,7 +109,7 @@ const AttendanceFilter = props => {
     );
 }
 
-AttendanceFilter.defaultProps = {
+TeacherAttendanceFilter.defaultProps = {
     onHandleChange: fn => fn,
     getDataByStatus: fn => fn,
     values: {},
@@ -123,7 +123,7 @@ AttendanceFilter.defaultProps = {
 
 };
 
-AttendanceFilter.propTypes = {
+TeacherAttendanceFilter.propTypes = {
     onHandleChange: PropTypes.func,
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
@@ -133,4 +133,4 @@ AttendanceFilter.propTypes = {
     isLoading: PropTypes.bool,
 };
 
-export default AttendanceFilter;
+export default TeacherAttendanceFilter;

@@ -1,13 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
-import AttendanceFilter from './Chunks/AttendanceFilter';
+import TeacherAttendanceFilter from './Chunks/TeacherAttendanceFilter';
 import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
 import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { format } from 'date-fns';
 
-class Attendance extends Component {
+class TeacherAttendanceReports extends Component {
 
     constructor(props) {
         super(props);
@@ -159,7 +159,7 @@ class Attendance extends Component {
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <AttendanceFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
+                    <TeacherAttendanceFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
                     <div style={{
                         marginTop: 15,
                         marginBottom: 15,
@@ -181,4 +181,4 @@ class Attendance extends Component {
         );
     }
 }
-export default Attendance;
+export default TeacherAttendanceReports;
