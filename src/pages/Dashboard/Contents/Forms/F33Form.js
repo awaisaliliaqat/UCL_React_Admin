@@ -252,7 +252,7 @@ class F33Form extends Component {
     this.setState({
       isLoading: true
     })
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C35CommonAcademicsAttendanceTeachersLogSave?classId=${data.id}&typeId=${1}`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C33CommonAcademicsAttendanceTeachersLogSave?classId=${data.id}&typeId=${1}`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
