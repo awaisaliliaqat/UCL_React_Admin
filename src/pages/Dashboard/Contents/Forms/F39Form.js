@@ -164,12 +164,13 @@ function CourseRow(props) {
                 )
               )
             }
-            renderOption={(option) => (
+            renderOption={(option, {selected}) => (
               <Fragment>
                 <Checkbox
                   icon={icon}
                   checkedIcon={checkedIcon}
                   style={{ marginRight: 8 }}
+                  //checked={selected}
                   checked={isPrerequisiteCourseSelected(option)}
                   color="primary"
                 />
@@ -180,7 +181,7 @@ function CourseRow(props) {
               <TextField
                 {...params}
                 variant="outlined"
-                label="Prerequisite Courses"
+                label="Exclude Courses"
                 placeholder="Search and Select"
               />
             )}
