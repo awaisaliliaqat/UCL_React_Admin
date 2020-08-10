@@ -62,9 +62,8 @@ const styles = theme => ({
 
 const F33FormInitials = (props) => {
 
-  const classes = props.classes;
+  const {classes, data, isLoading} = props;
 
-  const data = props.data;
 
   return (
     <Card
@@ -85,13 +84,15 @@ const F33FormInitials = (props) => {
         <List style={{
           marginTop: '-30px'
         }}>
-          {data ?
-            data.map((dt, i) => (
-              <Fragment key={i}>
-                <ListItem
-                  style={{ paddingTop: 0 }}
-                  alignItems="flex-start"
-                >
+
+            {data.length>0 ?
+              data.map((dt, i) => (
+                <Fragment key={i}>
+                  <ListItem 
+                    style={{ paddingTop:0 }} 
+                    alignItems="flex-start"
+                  >
+
                   <ListItemAvatar>
                     <Avatar
                       alt="Img"
@@ -129,14 +130,17 @@ const F33FormInitials = (props) => {
                       Join
                     </Button>
                   </ListItemSecondaryAction>
-                </ListItem>
-              </Fragment>
-            ))
-            :
-            <Grid container justify="center">
-              <CircularProgress />
-            </Grid>
-          }
+
+                  </ListItem>
+                </Fragment>
+              ))
+              :
+              isLoading &&
+              <Grid container justify="center">
+                <CircularProgress />
+              </Grid>
+            }
+
           {/* 
           <ListItem style={{ paddingTop: 0 }} alignItems="flex-start">
             <ListItemAvatar>
