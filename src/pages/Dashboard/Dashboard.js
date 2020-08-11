@@ -64,6 +64,8 @@ import F34Reports from "./Contents/Forms/F34Reports";
 import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
 import Attendance from './Contents/Reports/Attendance/Attendance';
 import StudentReports from './Contents/Reports/StudentReports/StudentReports';
+import F39Form from "./Contents/Forms/F39Form";
+import F39Reports from "./Contents/Forms/F39Reports";
 
 const drawerWidth = 283;
 
@@ -614,6 +616,36 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="F39Form"
+                exact
+                path="/dashboard/F39Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F39Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F39Reports"
+                exact
+                path="/dashboard/F39Reports"
+                render={(props) => {
+                  return (
+                    <F39Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"
                 exact
                 path="/dashboard/assign-account-id"
@@ -732,8 +764,6 @@ const Dashboard = (props) => {
                 path="/dashboard/student-course-selection"
                 component={StudentCourseSelection}
               />
-
-
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="teacher-attendance-report"
