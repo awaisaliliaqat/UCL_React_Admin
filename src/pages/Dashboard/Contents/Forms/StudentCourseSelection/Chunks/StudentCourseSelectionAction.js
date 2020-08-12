@@ -135,20 +135,7 @@ class StudentCourseSelectionAction extends Component {
                             fontSize: 18,
                             marginBottom: 10,width:"100%"
                         }}> 
-                             <Grid container spacing={2}>
-                                <Grid item xs={5} style={{
-                                    borderLeftColor:'rgb(58, 127, 187)'
-                                   
-                                }}>
-                                    <div style={{
-                                        color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize', marginLeft: 5,
-                                        fontSize: 18,
-                                        marginBottom: 10
-                                    }}>
-                                        Offered Courses
-                                    </div>
-                                    <TablePanel data={coursesData} sortingEnabled columns={columns} />
-                                </Grid>  
+                             <Grid container spacing={2}>  
                                 <Grid item xs={3}>
                                     <div style={{
                                         color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize', marginLeft: 5,
@@ -168,7 +155,19 @@ class StudentCourseSelectionAction extends Component {
                                        Student Achivements
                                     </div>
                                     <TablePanel data={achivementsData} sortingEnabled columns={achievementsColumns} />
-                                </Grid>  
+                                </Grid>
+                                <Grid item xs={5} style={{
+                                    borderLeftColor:'rgb(58, 127, 187)'
+                                }}>
+                                    <div style={{
+                                        color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize', marginLeft: 5,
+                                        fontSize: 18,
+                                        marginBottom: 10
+                                    }}>
+                                        Offered Courses
+                                    </div>
+                                    <TablePanel data={coursesData} sortingEnabled columns={columns} />
+                                </Grid>
                             </Grid>
                         </div>
                       
