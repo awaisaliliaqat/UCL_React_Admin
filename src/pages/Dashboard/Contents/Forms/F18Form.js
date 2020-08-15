@@ -354,6 +354,7 @@ class F18Form extends Component {
     }
 
     componentDidMount() {
+        this.props.setDrawerOpen(false);
         this.getProgrammesGroupData();
         if (this.state.recordId != 0) {
             this.loadData(this.state.recordId);

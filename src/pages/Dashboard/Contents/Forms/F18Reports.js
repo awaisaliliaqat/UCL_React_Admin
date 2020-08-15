@@ -503,6 +503,7 @@ class F18Reports extends Component {
     }
 
     componentDidMount() {
+        this.props.setDrawerOpen(false);
         this.getData(this.state.applicationStatusId);
     }
 
@@ -536,6 +537,8 @@ class F18Reports extends Component {
         ([]);
         
         //console.log("tableColumnExtensions", tableColumnExtensions);
+
+        const columnBands = columnsArr ? columnsArr.columnsBand : [];
 
         return (
             <Fragment>
@@ -589,7 +592,8 @@ class F18Reports extends Component {
                     }
                     <F18ReportsTableComponent 
                         data={this.state.tableData}
-                        columns={tableColumns} 
+                        columnBands={columnBands}
+                        columns={tableColumns}
                         showFilter={this.state.showTableFilter}
                         tableColumnExtensions={tableColumnExtensions}
                     />
