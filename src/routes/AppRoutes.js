@@ -129,6 +129,11 @@ const AppRoute = () => {
             />
             <PrivateRoutes
               exact
+              path="/dashboard/F36Form/:recordId"
+              component={Dashboard}
+            />
+            <PrivateRoutes
+              exact
               path="/dashboard/F39Form/:recordId"
               component={Dashboard}
             />
