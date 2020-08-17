@@ -18,6 +18,7 @@ import {
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
@@ -52,7 +53,7 @@ const styles = () => ({
 
 function CourseRow(props) {
 
-  const { rowIndex, rowData, onDelete, moduleTypeMenuItems, ...rest} = props;
+  const { rowIndex, rowData, onEdit, onDelete, moduleTypeMenuItems, ...rest} = props;
 
   const [coursesInputValue, setCoursesInputValue] = useState("");
   const [courseSelectionGroupInputValue, setCourseSelectionGroupInputValue] = useState("");
@@ -191,7 +192,7 @@ function CourseRow(props) {
           />
           {rowData.preRemarks}
         </Grid>
-        <Grid item xs={5} md={5}>
+        <Grid item xs={4} md={4}>
           {rowData.preModuleTypeId == 1 || rowData.preModuleTypeId == 3 ? (
             <Fragment>
               {/* 
@@ -263,7 +264,27 @@ function CourseRow(props) {
             ""
           )}
         </Grid>
-        <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+        <Grid item xs={2} md={2} style={{ textAlign: "center" }}>
+        <IconButton
+            aria-label="Edit"
+            component="span"
+            onClick={() => onEdit(rowIndex)}
+          >
+            <Tooltip title="Edit">
+              <Fab 
+                color="primary" 
+                aria-label="Edit" 
+                size="small"
+                style={{
+                  height:36,
+                  width:36,
+                  backgroundColor:"rgb(255, 152, 0)"
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </Fab>
+            </Tooltip>
+          </IconButton>
           <IconButton
             aria-label="Add"
             component="span"
@@ -328,6 +349,7 @@ class F25Form extends Component {
       programmeCoursesError: "",
       courseRowDataArray: [],
       prerequisiteCourseArray: [],
+      rowEditMode: false
     };
   }
 
@@ -380,10 +402,7 @@ class F25Form extends Component {
               }
             }
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadAcademicSession", json);
         },
@@ -395,10 +414,7 @@ class F25Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -428,10 +444,7 @@ class F25Form extends Component {
           if (json.CODE === 1) {
             this.setState({ programmeIdMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadProgrammes", json);
         },
@@ -443,10 +456,7 @@ class F25Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -473,10 +483,7 @@ class F25Form extends Component {
           if (json.CODE === 1) {
             this.setState({ preModuleTypeMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadModuleType", json);
         },
@@ -488,10 +495,7 @@ class F25Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -522,10 +526,7 @@ class F25Form extends Component {
           if (json.CODE === 1) {
             this.setState({ preCourseMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadProgrammeCourses", json);
         },
@@ -537,10 +538,7 @@ class F25Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -571,10 +569,7 @@ class F25Form extends Component {
           if (json.CODE === 1) {
             this.setState({ preCourseSelectionGroupMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadCourseSelectionGroup", json);
         },
@@ -586,10 +581,7 @@ class F25Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -638,10 +630,7 @@ class F25Form extends Component {
               preModule: ++preModule,
             });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadData", json);
         },
@@ -653,10 +642,7 @@ class F25Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -796,20 +782,26 @@ class F25Form extends Component {
     let regex = "";
     switch (name) {
       case "academicSessionId":
-        this.loadProgrammes(value);
         this.setState({
           programmeId: "",
           courseRowDataArray: [],
           preModule: 1,
         });
+        this.loadProgrammes(value);
         break;
       case "programmeId":
+        this.setState({
+          courseRowDataArray: [],
+          preModule: 1,
+          preModuleTypeId: "",
+          preRemarks: "",
+          preCourses: [],
+          preCourseSelectionGroups: [],
+          rowEditMode: false
+        });
         this.loadProgrammeCourses(this.state.academicSessionId, value);
         this.loadCourseSelectionGroup(this.state.academicSessionId, value);
         this.loadData(this.state.academicSessionId, value);
-        this.setState({
-          courseRowDataArray: [],
-        });
         break;
       case "preModule":
         regex = new RegExp(numberExp);
@@ -829,8 +821,7 @@ class F25Form extends Component {
   };
 
   isCourseSelected = (option) => {
-    return this.state.preCourses.some((selectedOption) => selectedOption.ID == option.ID
-    );
+    return this.state.preCourses.some((selectedOption) => selectedOption.ID == option.ID);
   };
 
   handleSetPreCourses = (value) => {
@@ -873,7 +864,7 @@ class F25Form extends Component {
 
     let moduleNumber = document.getElementsByName("moduleNumber");
     for (let i = 0; i < moduleNumber.length; i++) {
-      if (moduleNumber[i].value == preModule) {
+      if (moduleNumber[i].value == preModule && !this.state.rowEditMode) {
         this.setState({ preModuleError: "Module should be unique." });
         document.getElementById("preModule").focus();
         return;
@@ -888,19 +879,51 @@ class F25Form extends Component {
       preCourseSelectionGroups: preCourseSelectionGroups,
     };
 
-    courseRowDataArray.push(courseRowDataObject);
+    if(this.state.rowEditMode){ 
+      for(let j=0; j<courseRowDataArray.length; j++){
+        if(courseRowDataArray[j].preModule===preModule){
+          courseRowDataArray[j].preCourses = preCourses;
+          courseRowDataArray[j].preCourseSelectionGroups = preCourseSelectionGroups;
+        }
+      }
+    }else{
+      courseRowDataArray.push(courseRowDataObject);
+    }
 
+    let moduleNumberMax = 1;
+    for (let i = 0; i < moduleNumber.length; i++) {
+      if (parseInt(moduleNumber[i].value) >= moduleNumberMax) {
+        moduleNumberMax = moduleNumber[i].value;
+      }
+    }
+
+    let rowEditMode = this.state.rowEditMode;
     this.setState({
       courseRowDataArray: courseRowDataArray,
-      preModule: ++this.state.preModule,
+      preModule: rowEditMode ? ++moduleNumberMax : ++this.state.preModule,
       preModuleTypeId: "",
       preRemarks: "",
       preCourses: [],
       preCourseSelectionGroups: [],
+      rowEditMode: false
     });
-
     //console.log("courseRowDataObject", courseRowDataObject);
   };
+
+  onEditClick = (rowIndex) => {
+    let courseRowDataArray = this.state.courseRowDataArray;
+    let courseRowData = courseRowDataArray[rowIndex];
+    this.setState({
+      preModule: courseRowData.preModule,
+      preModuleTypeId:courseRowData.preModuleTypeId,
+      preRemarks: courseRowData.preRemarks,
+      preCourses: courseRowData.preCourses || [],
+      preCourseSelectionGroups: courseRowData.preCourseSelectionGroups || [],
+      rowEditMode: true
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    //console.log("courseRowData", courseRowData);
+  }
 
   handeDeleteCourseRow = (index) => {
     let courseRowDataArray = this.state.courseRowDataArray;
@@ -939,16 +962,13 @@ class F25Form extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             setTimeout(() => {
               if (this.state.recordId != 0) {
-                window.location = "#/dashboard/F09Reports";
+                window.location = "#/dashboard/F25Form";
               } else {
                 window.location.reload();
               }
             }, 2000);
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
           }
           console.log(json);
         },
@@ -960,10 +980,7 @@ class F25Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -1112,6 +1129,7 @@ class F25Form extends Component {
                   value={this.state.preModule}
                   error={!!this.state.preModuleError}
                   helperText={this.state.preModuleError}
+                  disabled={this.state.rowEditMode}
                 />
               </Grid>
               <Grid item xs={12} md={2}>
@@ -1127,6 +1145,7 @@ class F25Form extends Component {
                   required
                   fullWidth
                   select
+                  disabled={this.state.rowEditMode}
                 >
                   {this.state.preModuleTypeMenuItems ? (
                     this.state.preModuleTypeMenuItems.map((dt, i) => (
@@ -1152,6 +1171,7 @@ class F25Form extends Component {
                   value={this.state.preRemarks}
                   error={!!this.state.preRemarksError}
                   helperText={this.state.preRemarksError}
+                  disabled={this.state.rowEditMode}
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -1282,18 +1302,22 @@ class F25Form extends Component {
                 )}
               </Grid>
               <Grid item xs={1} style={{ textAlign: "center" }}>
-                <IconButton
-                  color="primary"
-                  aria-label="Add"
-                  component="span"
-                  onClick={this.handeAddCourseRow}
-                >
-                  <Tooltip title="Add New">
-                    <Fab color="primary" aria-label="add" size="small">
-                      <AddIcon />
-                    </Fab>
-                  </Tooltip>
-                </IconButton>
+                  <IconButton
+                    color="primary"
+                    aria-label="Add"
+                    component="span"
+                    onClick={this.handeAddCourseRow}
+                  >
+                    <Tooltip title="Add New">
+                      <Fab 
+                        color="primary" 
+                        aria-label="add" 
+                        size="small"
+                      >
+                        { this.state.rowEditMode ? <EditIcon/> : <AddIcon /> }
+                      </Fab>
+                    </Tooltip>
+                  </IconButton>
               </Grid>
               <Grid item xs={12}>
                 <Divider
@@ -1324,12 +1348,12 @@ class F25Form extends Component {
                       Remarks
                     </Typography>
                   </Grid>
-                  <Grid item xs={5} md={5}>
+                  <Grid item xs={4} md={4}>
                     <Typography color="primary">
                       Courses
                     </Typography>
                   </Grid>
-                  <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+                  <Grid item xs={2} md={2} style={{ textAlign: "center" }}>
                     <Typography color="primary">
                       Action
                     </Typography>
@@ -1345,6 +1369,7 @@ class F25Form extends Component {
                     rowIndex={i}
                     rowData={dt}
                     onDelete={(i) => this.handeDeleteCourseRow(i)}
+                    onEdit={(i) => this.onEditClick(i)}
                     courseSelectionGroups={this.state.preCourseSelectionGroups}
                     moduleTypeMenuItems={this.state.preModuleTypeMenuItems}
                   />
@@ -1372,7 +1397,7 @@ class F25Form extends Component {
           bottomLeftButtonAction={this.viewReport}
           right_button_text="Save"
           bottomRightButtonAction={this.clickOnFormSubmit}
-          loading={this.state.isLoading}
+          loading={this.state.isLoading || this.state.rowEditMode}
           isDrawerOpen={this.props.isDrawerOpen}
         />
         <CustomizedSnackbar
