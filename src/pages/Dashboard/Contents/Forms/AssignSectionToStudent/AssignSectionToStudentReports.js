@@ -61,12 +61,12 @@ class CreateSectionReports extends Component {
                 json => {
                     if (json.CODE === 1) {
                         for (var i = 0; i < json.DATA.length; i++) {
+                            const id = json.DATA[i].ID;
                             json.DATA[i].action = (
                                 <EditDeleteTableComponent
-                                    recordId={json.DATA[i].ID}
-                                    DeleteData={this.DeleteData}
-                                    onEditURL={`#/dashboard/define-teachers/${json.DATA[i].ID}`}
-                                    handleOpenSnackbar={this.handleOpenSnackbar}
+                                    recordId={id}
+                                    deleteRecord={this.DeleteData}
+                                    editRecord={() => window.location.replace(`#/dashboard/define-teachers/${id}`)}
                                 />
                             );
                         }

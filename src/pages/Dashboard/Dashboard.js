@@ -67,6 +67,8 @@ import StudentReports from './Contents/Reports/StudentReports/StudentReports';
 import AttendanceReports from './Contents/Reports/AttendanceReports/AttendanceReports';
 import F39Form from "./Contents/Forms/F39Form";
 import F39Reports from "./Contents/Forms/F39Reports";
+import F40Form from './Contents/Forms/F40GradedDiscussion/F40Form';
+import F40Reports from './Contents/Forms/F40GradedDiscussion/F40Reports';
 
 const drawerWidth = 283;
 
@@ -647,6 +649,36 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="F40Form"
+                exact
+                path="/dashboard/F40Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F40Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F40Reports"
+                exact
+                path="/dashboard/F40Reports"
+                render={(props) => {
+                  return (
+                    <F40Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"
                 exact
                 path="/dashboard/assign-account-id"
@@ -781,9 +813,9 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="attendance-reports"
+                name="attendance-reports-admin"
                 exact
-                path="/dashboard/attendance-reports"
+                path="/dashboard/attendance-reports-admin"
                 component={AttendanceReports}
               />
               <SetRoute
