@@ -676,10 +676,10 @@ class StudentCourseSelection extends Component {
             value={this.state.selectedData.id}
             type="hidden"
           />
-          {this.state.coursesData.map((item) => {
+          {this.state.coursesData.map((item, i) => {
             if (item.isRegistered === 1) {
               return (
-                <Fragment>
+                <Fragment key={"coursesData"+i+item}>
                   <input name="courseId" value={item.id} type="hidden" />
                   <input
                     name="isRepeat"
