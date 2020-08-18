@@ -14,6 +14,7 @@ class StudentCourseSelection extends Component {
       isLoading: false,
       admissionData: [],
       coursesData: [],
+      selectedCoursesData: [],
       achivementsData: [],
       moduleData: [],
       isOpenActionMenu: false,
@@ -21,7 +22,6 @@ class StudentCourseSelection extends Component {
       isLoginMenu: false,
       isReload: false,
       viewLoading: false,
-
       sessionId: "",
       sessionData: [],
       programmeId: "",
@@ -205,10 +205,18 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            let coursesData = json.DATA || [];
+            let selectedCoursesData = [];
+            for(let i=0; i<coursesData.length; i++){
+                if(coursesData[i].isRegistered){
+                    selectedCoursesData.push(coursesData[i]);
+                }
+            }
             this.setState({
               coursesData: json.DATA || [],
               isOpenActionMenu: true,
               selectedData: rowData,
+              selectedCoursesData:selectedCoursesData
             });
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
@@ -251,7 +259,6 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            console.log("MODULES ==>> " + json.DATA);
             for (var i = 0; i < json.DATA.length; i++) {
               let coursesArray = json.DATA[i].courses.split(",");
               let courses = coursesArray.map((data, index) => (
@@ -524,6 +531,10 @@ class StudentCourseSelection extends Component {
     });
   };
 
+  handleSetCourses = (value = []) => {
+    this.setState({selectedCoursesData: value});
+  }
+
   render() {
     const columns = [
       {
@@ -613,6 +624,8 @@ class StudentCourseSelection extends Component {
           handleCheckboxChange={(e, value, type) =>
             this.handleCheckboxChange(e, value, type)
           }
+          selectedCoursesData={this.state.selectedCoursesData}
+          handleSetCourses={(value) => this.handleSetCourses(value)}
         />
 
         <div
@@ -668,24 +681,21 @@ class StudentCourseSelection extends Component {
           <input name="sessionId" value={this.state.sessionId} type="hidden" />
           <input
             name="programmeGroupId"
-            value={this.state.programmeId}
+            defaultValue={this.state.programmeId}
             type="hidden"
           />
           <input
             name="studentId"
-            value={this.state.selectedData.id}
+            defaultValue={this.state.selectedData.id}
             type="hidden"
           />
-          {this.state.coursesData.map((item, i) => {
+          {//this.state.coursesData.map((item, i) => {
+            this.state.selectedCoursesData.map((item, i) => {
             if (item.isRegistered === 1) {
               return (
                 <Fragment key={"coursesData"+i+item}>
                   <input name="courseId" value={item.id} type="hidden" />
-                  <input
-                    name="isRepeat"
-                    value={item.isRepeat || 0}
-                    type="hidden"
-                  />
+                  <input name="isRepeat" value={item.isRepeat || 0} type="hidden"/>
                 </Fragment>
               );
             }
