@@ -12,9 +12,6 @@ import ForgotPassword from "../pages/ForgotPassword/ForgotPassword";
 import PrivateRoutes from "./PrivateRoutes";
 import DisplayAdmissionApplication from "../components/DisplayAdmissionApplications";
 
-const NoMatchPage = () => {
-  return <Redirect to="/login" />;
-};
 
 const CheckLogin = () => {
   const uclAdminToken = localStorage.getItem("uclAdminToken");
@@ -35,90 +32,14 @@ const AppRoute = () => {
             <Route exact path="/login" component={CheckLogin} />
             <Route exact path="/registration" component={Registration} />
             <Route exact path="/forgot-password" component={ForgotPassword} />
-            <PrivateRoutes exact path="/dashboard" component={Dashboard} />
-            <PrivateRoutes exact path="/dashboard/:id" component={Dashboard} />
-            <PrivateRoutes
-              exact
-              path="/dashboard/raise-document-requests/:id"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/edit-student-information/:id"
-              component={Dashboard}
-            />
-      <PrivateRoutes exact path="/view-application/:id" component={DisplayAdmissionApplication} />
-                        <PrivateRoutes exact path="/dashboard/define-teachers/:recordId" component={Dashboard} />
-                        <PrivateRoutes exact path="/dashboard/create-sections/:recordId" component={Dashboard} />
-                        <PrivateRoutes exact path="/dashboard/assign-section-to-students/:recordId" component={Dashboard} />
-                        <PrivateRoutes exact path="/dashboard/assign-section-to-teacher/:recordId" component={Dashboard} />
+            <PrivateRoutes exact path="/view-application/:id" component={DisplayAdmissionApplication} />
             <PrivateRoutes
               exact
               path="/view-application/:id"
               component={DisplayAdmissionApplication}
             />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F06Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F07Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F08Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F09Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F18Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F19Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F20Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F24Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F25Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F27Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F30Form/:recordId"
-              component={Dashboard}
-            />
-            <PrivateRoutes
-              exact
-              path="/dashboard/F31Form/:recordId"
-              component={Dashboard}
-            />
-            <Route exact path="*" component={NoMatchPage} />
-          </Switch>
+            <PrivateRoutes exact path="*" component={Dashboard} />
+           </Switch>
         </Suspense>
       </Router>
     </>

@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-import React, { Fragment, useState, Suspense } from "react";
+import React, { Fragment, useState, Suspense, useEffect } from "react";
 import clsx from "clsx";
 import {
   HashRouter as Router,
@@ -58,6 +58,18 @@ import F25Form from "./Contents/Forms/F25Form";
 import F27Form from "./Contents/Forms/F27Form";
 import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form";
+import F33Form from "./Contents/Forms/F33Form";
+import F34Form from "./Contents/Forms/F34Form";
+import F34Reports from "./Contents/Forms/F34Reports";
+import F36Form from "./Contents/Forms/F36Form";
+import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
+import TeacherAttendanceReports from './Contents/Reports/TeacherAttendanceReports/TeacherAttendanceReports';
+import StudentReports from './Contents/Reports/StudentReports/StudentReports';
+import AttendanceReports from './Contents/Reports/AttendanceReports/AttendanceReports';
+import F39Form from "./Contents/Forms/F39Form";
+import F39Reports from "./Contents/Forms/F39Reports";
+import F40Form from './Contents/Forms/F40GradedDiscussion/F40Form';
+import F40Reports from './Contents/Forms/F40GradedDiscussion/F40Reports';
 
 const drawerWidth = 283;
 
@@ -153,10 +165,16 @@ const Dashboard = (props) => {
   const classes = useStyles();
   const [viewValue, setViewValue] = useState(props.match.params.value || "");
   const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [isDialogOpen, setDialogOpen] = useState(false);
   const adminData = localStorage.getItem("adminData")
     ? JSON.parse(localStorage.getItem("adminData"))
     : {};
   const { featureList = [] } = adminData;
+
+  useEffect(() => {
+    const check = adminData.isZoomVerified === 0 && adminData.userTypeId === 3 && window.localStorage.getItem("isViewDialog") == 0;
+    setDialogOpen(check);
+  }, []);
 
   const handleValueChange = (value) => {
     setViewValue(value);
@@ -168,8 +186,12 @@ const Dashboard = (props) => {
     setDrawerOpen(!prevFlag);
   };
 
+
+
   return (
     <Fragment>
+      <ControlledDialog open={isDialogOpen} handleClose={() => { setDialogOpen(false); localStorage.setItem("isViewDialog", 1); }} title={'Error'}
+        content={'Please accept zoom invitation sent on your registered email id '} />
       <NavBar
         setOpenMenu={(e) => setOpenMenu(e)}
         isOpenMenu={isDrawerOpen}
@@ -421,9 +443,16 @@ const Dashboard = (props) => {
                 name="F18Reports"
                 exact
                 path="/dashboard/F18Reports"
-                component={F18Reports}
+                render={(props) => {
+                  return (
+                    <F18Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
               />
-
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F19Form"
@@ -551,7 +580,126 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F33Form"
+                exact
+                path="/dashboard/F33Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F33Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F34Form"
+                exact
+                path="/dashboard/F34Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F34Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F34Form"
+                exact
+                path="/dashboard/F34Reports"
+                render={(props) => {
+                  return (
+                    <F34Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F36Form"
+                exact
+                path="/dashboard/F36Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F36Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F39Form"
+                exact
+                path="/dashboard/F39Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F39Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F39Reports"
+                exact
+                path="/dashboard/F39Reports"
+                render={(props) => {
+                  return (
+                    <F39Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F40Form"
+                exact
+                path="/dashboard/F40Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F40Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F40Reports"
+                exact
+                path="/dashboard/F40Reports"
+                render={(props) => {
+                  return (
+                    <F40Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"
@@ -671,6 +819,27 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/student-course-selection"
                 component={StudentCourseSelection}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="teacher-attendance-report"
+                exact
+                path="/dashboard/teacher-attendance-report"
+                component={TeacherAttendanceReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="students-excel-report"
+                exact
+                path="/dashboard/students-excel-report"
+                component={StudentReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="attendance-reports-admin"
+                exact
+                path="/dashboard/attendance-reports-admin"
+                component={AttendanceReports}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

@@ -535,6 +535,7 @@ class AssignSectionToStudentForm extends Component {
                     );
                 }
             },
+            { name: "programmeLabel", title: "Programme"},
             { name: "lectureSectionLabel", title: "Lecture Section" },
             { name: "tutorialSectionLabel", title: "Tutorial Section" },
         ]
