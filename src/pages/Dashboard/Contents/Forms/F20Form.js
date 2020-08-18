@@ -358,9 +358,9 @@ class F20Form extends Component {
         }
 
         if(this.state.isCourseLabelAutoChangeable){
-            let CID = document.getElementById("courseId").value;
+            let CCode = document.getElementById("courseCode").value;
             let CTitle = document.getElementById("courseTitle").value;
-            this.state.courseLabel = CID+" - "+CTitle;
+            this.state.courseLabel = CCode+" - "+CTitle;
         }
     }
 

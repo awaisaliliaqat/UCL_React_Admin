@@ -5,29 +5,22 @@ import { Column, FilteringState, GroupingState, IntegratedFiltering, IntegratedG
     IntegratedSelection, IntegratedSorting, PagingState, SelectionState, SortingState, DataTypeProvider, 
     DataTypeProviderProps, TreeDataState, CustomTreeData} from '@devexpress/dx-react-grid';
 import { DragDropProvider, Grid, GroupingPanel, PagingPanel, Table, TableFilterRow, TableGroupRow,
-    TableHeaderRow, TableTreeColumn} from '@devexpress/dx-react-grid-material-ui';
+    TableHeaderRow, TableBandHeader} from '@devexpress/dx-react-grid-material-ui';
 
-  const getInputValue = (value) =>
-    (value === undefined ? '' : value);
-  
-  const getColor = (amount) => {
-    if (amount < 3000) {
-      return '#F44336';
-    }
-    if (amount < 5000) {
-      return '#FFC107';
-    }
-    if (amount < 8000) {
-      return '#FF5722';
-    }
-    return '#009688';
-  };
+const BandCellBase = ({ children, tableRow, tableColumn, column, classes, ...restProps }) => {
+  return (
+    <TableBandHeader.Cell
+      {...restProps}
+      column={column}
+    >
+      <strong style={{color:"rgb(29, 95, 152)", whiteSpace:"initial"}}>
+        {children}
+      </strong>
+    </TableBandHeader.Cell>
+  );
+};
 
-  const getChildRows = (row, rootRows) => {
-    const childRows = rootRows.filter(r => r.parentId === (row ? row.id : null));
-    return childRows.length ? childRows : null;
-  };
-  
+const BandCell = withStyles({ name: 'BandCell' })(BandCellBase);
 
 class F18ReportsTableComponent extends Component {
 
@@ -49,17 +42,14 @@ class F18ReportsTableComponent extends Component {
                 "lessThanOrEqual",
             ],
             pageSizes:[5,10,15,20],
-            sortingStateColumnExtensions:[
-              { columnName: 'action', sortingEnabled: false },
-            ],
             defaultSorting:[
-              { columnName: 'ID', direction: 'asc' }
+              { columnName: 'SR#', direction: 'asc' }
             ],
             sortingStateColumnExtensions:[
-              { columnName: 'action', sortingEnabled: false },
+              { columnName: 'Action', sortingEnabled: false },
             ],
             tableColumnExtensions:[
-              // { columnName: 'ID',width:100},
+              // { columnName: 'SR#',width:100},
               // // { columnName: 'sessionLabel', wordWrapEnabled:true},
               // // { columnName: 'type1', wordWrapEnabled:true},
               // // { columnName: 'type2', wordWrapEnabled:true},
@@ -68,15 +58,10 @@ class F18ReportsTableComponent extends Component {
             ],
             defaultFilters:[],
             filteringStateColumnExtensions:[
-              { columnName: 'action', filteringEnabled: false },
+              { columnName: 'Action', filteringEnabled: false },
             ]
         };
     }
-
-    getChildRows = (row, rows) => {
-      const childRows = rows.filter(r => r.Parent_ID === (row ? row.ID : 0));
-      return childRows.length ? childRows : null;
-    };
 
     render() {
         
@@ -91,14 +76,14 @@ class F18ReportsTableComponent extends Component {
             defaultColumnWidths,
             filteringStateColumnExtensions,
             defaultFilters,
-            columnBands,
             pageSizes
           } = this.state;
 
           const rows = this.props.data;
           const columns = this.props.columns;
           const showFilter = this.props.showFilter;
-          const tableColumnExtensions = this.props.tableColumnExtensions
+          const tableColumnExtensions = this.props.tableColumnExtensions;
+          const columnBands = this.props.columnBands;
 
         return (
             <Paper>
@@ -124,6 +109,10 @@ class F18ReportsTableComponent extends Component {
                       :
                       <b>&emsp;{props.children}</b>
                   )}
+                />
+                <TableBandHeader
+                  columnBands={columnBands}
+                  cellComponent={BandCell}
                 />
                 {showFilter?
                   <TableFilterRow showFilterSelector={true} /> 
