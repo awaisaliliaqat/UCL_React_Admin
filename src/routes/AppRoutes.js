@@ -39,7 +39,7 @@ const AppRoute = () => {
               component={DisplayAdmissionApplication}
             />
             <PrivateRoutes exact path="*" component={Dashboard} />
-          </Switch>
+           </Switch>
         </Suspense>
       </Router>
     </>
