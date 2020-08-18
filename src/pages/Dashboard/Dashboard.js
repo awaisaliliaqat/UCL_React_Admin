@@ -63,10 +63,13 @@ import F34Form from "./Contents/Forms/F34Form";
 import F34Reports from "./Contents/Forms/F34Reports";
 import F36Form from "./Contents/Forms/F36Form";
 import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
-import Attendance from './Contents/Reports/Attendance/Attendance';
+import TeacherAttendanceReports from './Contents/Reports/TeacherAttendanceReports/TeacherAttendanceReports';
 import StudentReports from './Contents/Reports/StudentReports/StudentReports';
+import AttendanceReports from './Contents/Reports/AttendanceReports/AttendanceReports';
 import F39Form from "./Contents/Forms/F39Form";
 import F39Reports from "./Contents/Forms/F39Reports";
+import F40Form from './Contents/Forms/F40GradedDiscussion/F40Form';
+import F40Reports from './Contents/Forms/F40GradedDiscussion/F40Reports';
 
 const drawerWidth = 283;
 
@@ -669,6 +672,36 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="F40Form"
+                exact
+                path="/dashboard/F40Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F40Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F40Reports"
+                exact
+                path="/dashboard/F40Reports"
+                render={(props) => {
+                  return (
+                    <F40Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"
                 exact
                 path="/dashboard/assign-account-id"
@@ -792,7 +825,7 @@ const Dashboard = (props) => {
                 name="teacher-attendance-report"
                 exact
                 path="/dashboard/teacher-attendance-report"
-                component={Attendance}
+                component={TeacherAttendanceReports}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
@@ -800,6 +833,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/students-excel-report"
                 component={StudentReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="attendance-reports-admin"
+                exact
+                path="/dashboard/attendance-reports-admin"
+                component={AttendanceReports}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

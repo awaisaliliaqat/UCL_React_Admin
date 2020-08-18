@@ -1,108 +1,26 @@
 import React from "react";
-
-import { makeStyles, useTheme, withStyles } from "@material-ui/styles";
+import PropTypes from 'prop-types';
+import { makeStyles } from "@material-ui/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListSubheader,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-  Button
-} from "@material-ui/core";
+import { Button } from "@material-ui/core";
 
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex"
-  },
+const useStyles = makeStyles(() => ({
   grow: {
     flexGrow: 1
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20
-  },
-  title: {
-    display: "none",
-    [theme.breakpoints.up("sm")]: {
-      display: "block"
-    }
-  },
-
-  sectionDesktop: {
-    display: "none",
-    [theme.breakpoints.up("md")]: {
-      display: "flex"
-    }
-  },
-  sectionMobile: {
-    display: "flex",
-    [theme.breakpoints.up("md")]: {
-      display: "none"
-    }
-  },
-  bigAvatar: {
-    margin: 10
-  },
-  badgeMargin: {
-
-    margin: theme.spacing()
-
-  },
-  inline: {
-    display: "inline"
-  },
-  button: {
-
-    margin: theme.spacing()
-  },
-  leftIcon: {
-    marginRight: theme.spacing()
-  },
-  rightIcon: {
-    marginLeft: theme.spacing()
-
-  },
-  iconSmall: {
-    fontSize: 20
   }
 }));
 
 function BottomBar(props) {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const [open, setOpen] = React.useState(false);
-  const isMenuOpen = Boolean(anchorEl);
-  function handleProfileMenuOpen(event) {
-    setAnchorEl(event.currentTarget);
-  }
 
-  function handleMobileMenuClose() {
-    setMobileMoreAnchorEl(null);
-  }
-
-  function handleMenuClose() {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  }
-
-  function handleMobileMenuOpen(event) {
-    setMobileMoreAnchorEl(event.currentTarget);
-  }
-  function handleDrawerOpen() {
-    setOpen(true);
-  }
-  function bottomRightButtonAction(props) {
+  const bottomRightButtonAction = (props) => {
     props.bottomRightButtonAction();
   }
 
-  function bottomLeftButtonAction(props) {
+  const bottomLeftButtonAction = (props) => {
     props.bottomLeftButtonAction();
   }
   return (
@@ -122,9 +40,9 @@ function BottomBar(props) {
           <Button
             variant="contained"
             color="default"
-            onClick={event => bottomLeftButtonAction(props)}
-
-            style={{ display: props.left_button_hide == true ? "none" : "block" }}
+            onClick={() => bottomLeftButtonAction(props)}
+            disabled={props.disableLeftButton}
+            style={{ display: props.left_button_hide ? "none" : "block" }}
           >
             {props.left_button_text}
           </Button>
@@ -133,12 +51,13 @@ function BottomBar(props) {
           <Button
             variant="contained"
             color="primary"
-            variant="contained"
-            disabled={props.loading}
-            onClick={event => bottomRightButtonAction(props)}
+            disabled={props.disableRightButton || props.loading}
+            onClick={() => bottomRightButtonAction(props)}
             style={{
-              backgroundColor: '#174A84'
+              backgroundColor: '#174A84',
+              display: props.hideRightButton ? "none" : "block"
             }}
+
           >
 
             {props.loading ?
@@ -156,4 +75,31 @@ function BottomBar(props) {
     </div>
   );
 }
+
+BottomBar.propTypes = {
+  isDrawerOpen: PropTypes.bool,
+  disableLeftButton: PropTypes.bool,
+  left_button_hide: PropTypes.bool,
+  left_button_text: PropTypes.string,
+  bottomLeftButtonAction: PropTypes.func,
+  disableRightButton: PropTypes.bool,
+  hideRightButton: PropTypes.bool,
+  right_button_text: PropTypes.string,
+  bottomRightButtonAction: PropTypes.func,
+  loading: PropTypes.bool
+}
+
+BottomBar.defaultProps = {
+  isDrawerOpen: true,
+  disableLeftButton: false,
+  left_button_hide: false,
+  left_button_text: 'View',
+  bottomLeftButtonAction: fn => fn,
+  disableRightButton: false,
+  hideRightButton: false,
+  right_button_text: 'Save',
+  bottomRightButtonAction: fn => fn,
+  loading: false
+}
+
 export default BottomBar;
