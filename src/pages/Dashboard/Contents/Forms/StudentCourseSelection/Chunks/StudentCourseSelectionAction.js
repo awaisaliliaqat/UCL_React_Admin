@@ -251,13 +251,13 @@ class StudentCourseSelectionAction extends Component {
                                         <TableHead>
                                             <TableRow>
                                             {columns.map((row) => (
-                                                <StyledTableCell>{row.name}</StyledTableCell>
+                                                <StyledTableCell key={"H"+row.name}>{row.name}</StyledTableCell>
                                             ))}
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                         {selectedCoursesData.map((rowData, index) => (
-                                            <StyledTableRow key={rowData.courseTitle}>
+                                            <StyledTableRow key={"R"+rowData.courseTitle}>
                                                 <StyledTableCell>{rowData.courseTitle}</StyledTableCell>
                                                 <StyledTableCell>{rowData.prerequisites}</StyledTableCell>
                                                 <StyledTableCell>

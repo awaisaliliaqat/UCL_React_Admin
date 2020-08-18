@@ -681,12 +681,12 @@ class StudentCourseSelection extends Component {
           <input name="sessionId" value={this.state.sessionId} type="hidden" />
           <input
             name="programmeGroupId"
-            value={this.state.programmeId}
+            defaultValue={this.state.programmeId}
             type="hidden"
           />
           <input
             name="studentId"
-            value={this.state.selectedData.id}
+            defaultValue={this.state.selectedData.id}
             type="hidden"
           />
           {//this.state.coursesData.map((item, i) => {
