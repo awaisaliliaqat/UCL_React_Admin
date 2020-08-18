@@ -12,9 +12,41 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import { withStyles } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { Button, Chip, TextField } from '@material-ui/core';
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import Grid from '@material-ui/core/Grid';
+
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.common.black,
+      fontWeight: 900,
+      fontSize: 15
+    },
+    body: {
+      fontSize: 14,
+    },
+  }))(TableCell);
+  
+  const StyledTableRow = withStyles((theme) => ({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+      },
+    },
+  }))(TableRow);
 
 const styles = (theme) => ({
     root: {
@@ -65,7 +97,8 @@ class StudentCourseSelectionAction extends Component {
     }
 
     render() {
-        const { achivementsData,moduleData,coursesData, handleCheckboxChange, selectedData, open, handleClose, onClear, onSave } = this.props;
+        
+        const { achivementsData,moduleData, coursesData, handleSetCourses, selectedCoursesData, handleCheckboxChange, selectedData, open, handleClose, onClear, onSave } = this.props;
         const columns = [
             //{ name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '14%' } },
             //{ name: "Course Code", dataIndex: "courseCode", sortable: false, customStyleHeader: { width: '14%' } },
@@ -106,7 +139,6 @@ class StudentCourseSelectionAction extends Component {
                 }, sortable: false, customStyleHeader: { width: '10%', textAlign: 'center' }, align: 'center'
             },
         ]
-
 
         const modulesColumns = [
             { name: "Module Number", dataIndex: "moduleNumber", sortable: false, customStyleHeader: { width: '8%' } },
@@ -159,19 +191,110 @@ class StudentCourseSelectionAction extends Component {
                                 <Grid item xs={5} style={{
                                     borderLeftColor:'rgb(58, 127, 187)'
                                 }}>
-                                    <div style={{
-                                        color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize', marginLeft: 5,
-                                        fontSize: 18,
-                                        marginBottom: 10
-                                    }}>
+                                    <div 
+                                        style={{
+                                            color: '#1d5f98', 
+                                            fontWeight: 600, 
+                                            textTransform: 'capitalize', 
+                                            marginLeft: 5,
+                                            fontSize: 18,
+                                            marginBottom: 10
+                                        }}
+                                    >
                                         Offered Courses
                                     </div>
-                                    <TablePanel data={coursesData} sortingEnabled columns={columns} />
+                                    <br/>
+                                    <Autocomplete
+                                        multiple
+                                        fullWidth
+                                        id="preCourses"
+                                        options={coursesData}
+                                        value={selectedCoursesData}
+                                        onChange={(event, value) =>
+                                            handleSetCourses(value)
+                                        }
+                                        disableCloseOnSelect
+                                        getOptionLabel={(option) => option.courseTitle}
+                                        renderTags={(tagValue, getTagProps) =>
+                                            tagValue.map((option, index) => (
+                                            <Chip
+                                                label={option.courseTitle}
+                                                color="primary"
+                                                variant="outlined"
+                                                {...getTagProps({ index })}
+                                            />
+                                            ))
+                                        }
+                                        renderOption={(option , {selected}) => (
+                                            <Fragment>
+                                            <Checkbox
+                                                icon={icon}
+                                                checkedIcon={checkedIcon}
+                                                style={{ marginRight: 8 }}
+                                                checked={selected}
+                                                color="primary"
+                                            />
+                                            {option.courseTitle}
+                                            </Fragment>
+                                        )}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="outlined"
+                                            label="Courses"
+                                            placeholder="Search and Select"
+                                          />
+                                        )}
+                                    />
+                                    {console.log("selectedCoursesData", selectedCoursesData)}
+                                    {/* <TablePanel data={selectedCoursesData} sortingEnabled columns={columns} /> */}
+                                    <Table aria-label="customized table">
+                                        <TableHead>
+                                            <TableRow>
+                                            {columns.map((row) => (
+                                                <StyledTableCell>{row.name}</StyledTableCell>
+                                            ))}
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {selectedCoursesData.map((rowData, index) => (
+                                            <StyledTableRow key={rowData.courseTitle}>
+                                                <StyledTableCell>{rowData.courseTitle}</StyledTableCell>
+                                                <StyledTableCell>{rowData.prerequisites}</StyledTableCell>
+                                                <StyledTableCell>
+                                                    <Fragment>
+                                                        <Checkbox
+                                                            style={{ marginLeft: '-20px' }}
+                                                            icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 30 }} />}
+                                                            checkedIcon={<CheckBoxIcon style={{ fontSize: 30 }} />}
+                                                            color="primary"
+                                                            checked={rowData.isRegistered === 1}
+                                                            onChange={(e) => handleCheckboxChange(e, rowData, 0)}
+                                                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                        />
+                                                    </Fragment>
+                                                </StyledTableCell>
+                                                <StyledTableCell>
+                                                    <Fragment>
+                                                        <Checkbox
+                                                            style={{ marginLeft: '-20px' }}
+                                                            icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 30 }} />}
+                                                            checkedIcon={<CheckBoxIcon style={{ fontSize: 30 }} />}
+                                                            color="primary"
+                                                            disabled={rowData.isRegistered !== 1}
+                                                            checked={rowData.isRepeat === 1}
+                                                            onChange={(e) => handleCheckboxChange(e, rowData, 1)}
+                                                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                        />
+                                                    </Fragment>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        ))}
+                                        </TableBody>
+                                    </Table>
                                 </Grid>
                             </Grid>
                         </div>
-                      
-                   
                     </DialogContent>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',
@@ -181,13 +304,13 @@ class StudentCourseSelectionAction extends Component {
                         <div style={{
                             marginRight: 30,
                         }}>
-                            <Button onClick={() => onSave()}
-                                color="primary" variant="contained" style={{
-                                    textTransform: 'capitalize',
-                                    width: 100,
-                                    //marginRight: 20,
-                                }}>
-                                Save
+                        <Button onClick={() => onSave()}
+                            color="primary" variant="contained" style={{
+                                textTransform: 'capitalize',
+                                width: 100,
+                                //marginRight: 20,
+                            }}>
+                            Save
                         </Button>
                         {/* 
                         <Button onClick={() => onClear()} color="primary" variant="contained" style={{
