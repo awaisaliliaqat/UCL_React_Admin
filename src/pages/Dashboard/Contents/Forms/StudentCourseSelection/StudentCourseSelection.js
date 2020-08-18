@@ -259,7 +259,6 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            console.log("MODULES ==>> " + json.DATA);
             for (var i = 0; i < json.DATA.length; i++) {
               let coursesArray = json.DATA[i].courses.split(",");
               let courses = coursesArray.map((data, index) => (
@@ -440,7 +439,7 @@ class StudentCourseSelection extends Component {
       isLoading: true,
     });
     const formData = new FormData(e.target);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsCoursesStudentsSave1`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsCoursesStudentsSave`;
     await fetch(url, {
       method: "POST",
       body: formData,

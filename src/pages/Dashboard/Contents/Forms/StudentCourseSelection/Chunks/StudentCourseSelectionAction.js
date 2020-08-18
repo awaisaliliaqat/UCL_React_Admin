@@ -246,7 +246,6 @@ class StudentCourseSelectionAction extends Component {
                                           />
                                         )}
                                     />
-                                    {console.log("selectedCoursesData", selectedCoursesData)}
                                     {/* <TablePanel data={selectedCoursesData} sortingEnabled columns={columns} /> */}
                                     <Table aria-label="customized table">
                                         <TableHead>
