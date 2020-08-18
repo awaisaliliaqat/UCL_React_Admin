@@ -911,8 +911,19 @@ class F25Form extends Component {
   };
 
   onEditClick = (rowIndex) => {
+    let preCourseMenuItems = this.state.preCourseMenuItems;
     let courseRowDataArray = this.state.courseRowDataArray;
     let courseRowData = courseRowDataArray[rowIndex];
+    
+    let preCoursesArr = courseRowData.preCourses;
+    let preCoursesSelectedArr = [];
+    for(let k=0; k<preCoursesArr.length; k++){
+      let result = preCourseMenuItems.find((x)=>x.ID===preCoursesArr[k].ID);
+      if(result){
+        preCoursesSelectedArr.push(result);
+      }
+    }
+    courseRowData.preCourses = preCoursesSelectedArr;
     this.setState({
       preModule: courseRowData.preModule,
       preModuleTypeId:courseRowData.preModuleTypeId,
@@ -922,7 +933,7 @@ class F25Form extends Component {
       rowEditMode: true
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    //console.log("courseRowData", courseRowData);
+    console.log("courseRowData", courseRowData);
   }
 
   handeDeleteCourseRow = (index) => {
