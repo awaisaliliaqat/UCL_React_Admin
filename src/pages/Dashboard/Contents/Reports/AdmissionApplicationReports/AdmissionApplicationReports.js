@@ -300,7 +300,8 @@ class AdmissionApplicationReports extends Component {
 
     getData = async status => {
         this.setState({
-            isLoading: true
+            isLoading: true,
+            admissionData: []
         })
         const reload = status === 1 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
         const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
@@ -431,6 +432,7 @@ class AdmissionApplicationReports extends Component {
                 }, sortable: false, customStyleHeader: { width: '10%' }
             },
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
+            { name: "Date of Birth", dataIndex: "dateOfBirth", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
