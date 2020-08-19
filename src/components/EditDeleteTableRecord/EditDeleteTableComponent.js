@@ -86,6 +86,7 @@ function EditDeleteTableComponent(props) {
         <Tooltip title="Delete">
           <IconButton
             onClick={() => handleClickOpen()}
+            disabled={props.disabledDeleteAction}
           >
             <DeleteIcon
               fontSize="small"
@@ -97,6 +98,7 @@ function EditDeleteTableComponent(props) {
         <Tooltip title="Edit">
           <IconButton
             onClick={() => props.editRecord()}
+            disabled={props.disabledEditAction}
           >
             <EditIcon
               fontSize="small"
@@ -111,6 +113,8 @@ function EditDeleteTableComponent(props) {
 EditDeleteTableComponent.propTypes = {
   hideDeleteAction: PropTypes.bool,
   hideEditAction: PropTypes.bool,
+  disabledDeleteAction: PropTypes.bool,
+  disabledEditAction: PropTypes.bool,
   editRecord: PropTypes.func,
   deleteRecord: PropTypes.func,
   recordId: PropTypes.number
@@ -119,6 +123,8 @@ EditDeleteTableComponent.propTypes = {
 EditDeleteTableComponent.defaultProps = {
   hideDeleteAction: false,
   hideEditAction: false,
+  disabledDeleteAction: false,
+  disabledEditAction: false,
   editRecord: fn => fn,
   deleteRecord: fn => fn,
   recordId: 0

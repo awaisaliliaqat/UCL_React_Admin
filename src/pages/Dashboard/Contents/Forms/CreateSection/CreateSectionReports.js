@@ -67,7 +67,6 @@ class CreateSectionReports extends Component {
                                     recordId={id}
                                     deleteRecord={e => this.DeleteData(e)}
                                     editRecord={() => window.location.replace(`#/dashboard/create-sections/${id}`)}
-                                    handleOpenSnackbar={this.handleOpenSnackbar}
                                 />
                             );
                         }

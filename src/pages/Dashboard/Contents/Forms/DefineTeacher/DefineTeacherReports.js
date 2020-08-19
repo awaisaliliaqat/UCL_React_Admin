@@ -62,11 +62,12 @@ class F06Reports extends Component {
                 json => {
                     if (json.CODE === 1) {
                         for (let i = 0; i < json.DATA.length; i++) {
+                            const id = json.DATA[i].id;
                             json.DATA[i].action = (
                                 <EditDeleteTableComponent
-                                    recordId={json.DATA[i].id}
-                                    deleteRecord={(e) => this.DeleteData(e)}
-                                    editRecord={() => window.location.replace(`#/dashboard/define-teachers/${json.DATA[i].id}`)}
+                                    recordId={id}
+                                    deleteRecord={this.DeleteData}
+                                    editRecord={() => window.location.replace(`#/dashboard/define-teachers/${id}`)}
                                 />
                             );
                         }
