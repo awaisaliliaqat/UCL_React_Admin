@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Web site created using...UCL Admin" />
+  <meta name="description" content="UCL Admin" />
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
   <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
   <!--
@@ -41,7 +41,7 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
   <script>
-    const env = '%%NODE_ENV%%'
+    const env = '%NODE_ENV%'
     if (location.protocol !== 'https:' && env == 'production') {
       location.replace(`%REACT_APP_URL%`);
     }
