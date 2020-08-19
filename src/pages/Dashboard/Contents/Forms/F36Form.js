@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
-import {Divider, IconButton, Tooltip, CircularProgress, Grid} from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
+import {Divider, IconButton, Tooltip, CircularProgress, Grid, Typography, Button} from "@material-ui/core";
 import ExcelIcon from "../../../../assets/Images/excel.png";
 import F36FormFilter from "./F36FormFilter";
 import TablePanel from "../../../../components/ControlledTable/RerenderTable/TablePanel";
@@ -23,8 +22,9 @@ class F36Form extends Component {
       showTableFilter: false,
       showSearchBar: false,
       isDownloadExcel: false,
+      popupBoxOpen:false,
       applicationStatusId: 1,
-      admissionData: null,
+      assignmentsData: [],
       genderData: [],
       degreeData: [],
       studentName: "",
@@ -37,6 +37,9 @@ class F36Form extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
+      popupTitle:"",
+      recordId:"",
+      fileName:""
     };
   }
 
@@ -56,6 +59,24 @@ class F36Form extends Component {
       isOpenSnackbar: false,
     });
   };
+
+  handlePopupOpen = (popupTitle, recordId, fileName) => {
+    this.setState({ 
+      popupTitle: popupTitle,
+      recordId: recordId,
+      fileName: fileName,
+      popupBoxOpen: true
+    });
+  };
+
+  handlePopupClose = () => {
+    this.setState({
+      popupBoxOpen: false,
+      popupTitle:"",
+      recordId:"",
+      fileName:""
+    });
+  }
 
   onClearFilters = () => {
     this.setState({
@@ -88,23 +109,26 @@ class F36Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({admissionData: json.DATA || []});
+            this.setState({assignmentsData: json.DATA || []});
             for (var i = 0; i < json.DATA.length; i++) {
+              let recordId = json.DATA[i].id;
+              let popupTitle = json.DATA[i].nucleusId+" - "+json.DATA[i].studentName+" - "+json.DATA[i].sectionLabel;
+              let fileName = json.DATA[i].assignmentUrl;
               json.DATA[i].action = (
-                // <EditDeleteTableRecord
-                //   recordId={json.DATA[i].id}
-                //   DeleteData={this.DeleteData}
-                //   onEditURL={`#/dashboard/F34Form/${json.DATA[i].id}`}
-                //   handleOpenSnackbar={this.handleOpenSnackbar}
-                // />
-                <F36FormPopupComponent clickOnFormSubmit={e=>{}}/>
+                <Button 
+                  variant="outlined" 
+                  color="primary"
+                  onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName)}
+                >
+                  Primary
+                </Button>
               );
-              let fileName = json.DATA[i].fileName;
               json.DATA[i].fileDownload = (
                 <Fragment>
                   <IconButton 
-                    onClick={(e)=>this.DownloadFile(e, fileName)} 
+                    onClick={(e)=>this.downloadFile(e, fileName)} 
                     aria-label="download"
+                    color="primary"
                   >
                     <CloudDownloadIcon />
                   </IconButton>
@@ -113,7 +137,7 @@ class F36Form extends Component {
             }
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,"error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
           }
           console.log("getData", json);
         },
@@ -125,66 +149,61 @@ class F36Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar(
-              "Failed to fetch, Please try again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
             console.log(error);
           }
         }
       );
-    this.setState({
-      isLoading: false,
-    });
+    this.setState({isLoading: false});
   };
 
-  DeleteData = async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.target);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C34CommonAcademicsAssignmentsDelete`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.handleOpenSnackbar("Deleted", "success");
-            this.getData();
-          } else {
-            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error");
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status === 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar(
-              "Failed to fetch, Please try again later.",
-              "error"
-            );
-            console.log(error);
-          }
-        }
-      );
-  };
+  // DeleteData = async (event) => {
+  //   event.preventDefault();
+  //   const data = new FormData(event.target);
+  //   const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C34CommonAcademicsAssignmentsDelete`;
+  //   await fetch(url, {
+  //     method: "POST",
+  //     body: data,
+  //     headers: new Headers({
+  //       Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+  //     }),
+  //   })
+  //     .then((res) => {
+  //       if (!res.ok) {
+  //         throw res;
+  //       }
+  //       return res.json();
+  //     })
+  //     .then(
+  //       (json) => {
+  //         if (json.CODE === 1) {
+  //           this.handleOpenSnackbar("Deleted", "success");
+  //           this.getData();
+  //         } else {
+  //           //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+  //           this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
+  //         }
+  //         console.log(json);
+  //       },
+  //       (error) => {
+  //         if (error.status === 401) {
+  //           this.setState({
+  //             isLoginMenu: true,
+  //             isReload: true,
+  //           });
+  //         } else {
+  //           //alert('Failed to fetch, Please try again later.');
+  //           this.handleOpenSnackbar(
+  //             "Failed to fetch, Please try again later.",
+  //             "error"
+  //           );
+  //           console.log(error);
+  //         }
+  //       }
+  //     );
+  // };
 
-  DownloadFile = (e, fileName) => {
+  downloadFile = (e, fileName) => {
       e.preventDefault();
       const data = new FormData();
       data.append("fileName", fileName);
@@ -273,6 +292,16 @@ class F36Form extends Component {
           open={this.state.isLoginMenu}
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
+        <F36FormPopupComponent
+          recordId={this.state.recordId}
+          fileName={this.state.fileName}
+          downloadFile={this.downloadFile}
+          handlePopupClose={this.handlePopupClose}
+          popupBoxOpen={this.state.popupBoxOpen}
+          popupTitle={this.state.popupTitle}
+          handleOpenSnackbar={this.handleOpenSnackbar}
+          getData={this.getData}
+        />
         <div
           style={{
             padding: 20,
@@ -344,14 +373,18 @@ class F36Form extends Component {
           ) : (
             <br />
           )}
-          {this.state.admissionData ? (
+          {this.state.assignmentsData&&!this.state.isLoading ? (
             <F36FormTableComponent
-              data={this.state.admissionData}
+              data={this.state.assignmentsData}
               columns={columns}
               showFilter={this.state.showTableFilter}
             />
           ) : (
-            <Grid container justify="center" alignItems="center">
+            <Grid 
+              container 
+              justify="center" 
+              alignItems="center"
+            >
               <CircularProgress />
             </Grid>
           )}
