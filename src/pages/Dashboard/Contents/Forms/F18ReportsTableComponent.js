@@ -12,6 +12,9 @@ const BandCellBase = ({ children, tableRow, tableColumn, column, classes, ...res
     <TableBandHeader.Cell
       {...restProps}
       column={column}
+      style={{
+        textAlign: "center"
+      }}
     >
       <strong style={{color:"rgb(29, 95, 152)", whiteSpace:"initial"}}>
         {children}
