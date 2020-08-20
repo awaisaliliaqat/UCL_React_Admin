@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import {Divider, IconButton, Tooltip, CircularProgress, Grid, Typography, Button} from "@material-ui/core";
+import {Divider, IconButton, Tooltip, CircularProgress, Grid, Typography, Fab} from "@material-ui/core";
 import ExcelIcon from "../../../../assets/Images/excel.png";
 import F36FormFilter from "./F36FormFilter";
 import TablePanel from "../../../../components/ControlledTable/RerenderTable/TablePanel";
@@ -13,6 +13,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import EditIcon from '@material-ui/icons/Edit';
 
 class F36Form extends Component {
   constructor(props) {
@@ -39,7 +40,8 @@ class F36Form extends Component {
       snackbarSeverity: "",
       popupTitle:"",
       recordId:"",
-      fileName:""
+      fileName:"",
+      assignmentGradedData:{}
     };
   }
 
@@ -60,12 +62,13 @@ class F36Form extends Component {
     });
   };
 
-  handlePopupOpen = (popupTitle, recordId, fileName) => {
+  handlePopupOpen = (popupTitle, recordId, fileName, assignmentGradedData) => {
     this.setState({ 
       popupTitle: popupTitle,
       recordId: recordId,
       fileName: fileName,
-      popupBoxOpen: true
+      popupBoxOpen: true,
+      assignmentGradedData: assignmentGradedData
     });
   };
 
@@ -111,27 +114,63 @@ class F36Form extends Component {
           if (json.CODE === 1) {
             this.setState({assignmentsData: json.DATA || []});
             for (var i = 0; i < json.DATA.length; i++) {
-              let recordId = json.DATA[i].id;
-              let popupTitle = json.DATA[i].nucleusId+" - "+json.DATA[i].studentName+" - "+json.DATA[i].sectionLabel;
+              let recordId = json.DATA[i].studentAssignmentId;
+              let popupTitle = json.DATA[i].nucleusId+" - "+json.DATA[i].studentName+" - "+json.DATA[i].sectionLabel+"\xa0\xa0\xa0("+json.DATA[i].label+")";
               let fileName = json.DATA[i].assignmentUrl;
+              let isAssignmentGraded = json.DATA[i].isAssignmentGraded;
+              let gradedAssignmentUrl = json.DATA[i].gradedAssignmentUrl;
+              let obtainedMarks = json.DATA[i].obtainedMarks;
+              let remarks = json.DATA[i].remarks;
+              let assignmentGradedData = {};
+              if(isAssignmentGraded){
+                assignmentGradedData = {
+                  gradedAssignmentUrl:gradedAssignmentUrl,
+                  obtainedMarks: obtainedMarks,
+                  remarks:remarks
+                }
+              }
               json.DATA[i].action = (
-                <Button 
-                  variant="outlined" 
-                  color="primary"
-                  onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName)}
-                >
-                  Primary
-                </Button>
+                <Fragment>
+                  <Tooltip title={isAssignmentGraded ? "Change Grading":"Grading"}>
+                    <Fab 
+                      aria-label="add"
+                      size="small"
+                      color="secondary"
+                      style={
+                        isAssignmentGraded ?
+                          {height:36, width:36, backgroundColor:"#4caf50"}
+                          :
+                          {height:36, width:36, backgroundColor:"rgb(29, 95, 152)"}
+                      }
+                      onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName, assignmentGradedData)}
+                    >
+                      <EditIcon fontSize="small"/>
+                    </Fab>
+                  </Tooltip>
+                </Fragment>
               );
               json.DATA[i].fileDownload = (
                 <Fragment>
-                  <IconButton 
-                    onClick={(e)=>this.downloadFile(e, fileName)} 
-                    aria-label="download"
-                    color="primary"
-                  >
-                    <CloudDownloadIcon />
-                  </IconButton>
+                  <Tooltip title="Download Assignemt">
+                    <IconButton 
+                      onClick={(e)=>this.downloadFile(e, fileName)} 
+                      aria-label="download"
+                      color="primary"
+                    >
+                      <CloudDownloadIcon />
+                    </IconButton>
+                  </Tooltip>
+                  {gradedAssignmentUrl && 
+                  <Tooltip title="Download Graded Assignemt">
+                    <IconButton 
+                      onClick={(e)=>this.downloadFile(e, gradedAssignmentUrl)} 
+                      aria-label="download"
+                      style={{color:"rgb(76, 175, 80)"}}
+                    >
+                      <CloudDownloadIcon />
+                    </IconButton>
+                  </Tooltip>
+                  }
                 </Fragment>
               );
             }
@@ -276,7 +315,10 @@ class F36Form extends Component {
 
     const columns = [
       { name: "SRNo", title: "SR#" },
-      { name: "label", title: "Label" },
+      { name: "sectionLabel", title: "Section" },
+      { name: "label", title: "Assignment" },
+      { name: "nucleusId", title: "NucleusID" },
+      { name: "studentName", title: "Student Name" },
       { name: "startDateReport", title: "Start\xa0Date" },
       { name: "dueDateReport", title: "Due\xa0Date" },
       { name: "instruction", title: "Instruction" },
@@ -301,6 +343,7 @@ class F36Form extends Component {
           popupTitle={this.state.popupTitle}
           handleOpenSnackbar={this.handleOpenSnackbar}
           getData={this.getData}
+          assignmentGradedData={this.state.assignmentGradedData}
         />
         <div
           style={{

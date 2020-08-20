@@ -37,21 +37,6 @@ import {
   TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
 
-const getInputValue = (value) => (value === undefined ? "" : value);
-
-const getColor = (amount) => {
-  if (amount < 3000) {
-    return "#F44336";
-  }
-  if (amount < 5000) {
-    return "#FFC107";
-  }
-  if (amount < 8000) {
-    return "#FF5722";
-  }
-  return "#009688";
-};
-
 class F36FormTableComponent extends Component {
   constructor(props) {
     super(props);
@@ -77,13 +62,16 @@ class F36FormTableComponent extends Component {
       ],
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
+        { columnName: "sectionLabel", wordWrapEnabled: true },
+        { columnName: "label", wordWrapEnabled: true },
+        { columnName: "nucleusId", width: 80, align:"center" },
+        { columnName: "studentName", wordWrapEnabled: true },
         { columnName: "startDateReport", width: 100 },
         { columnName: "dueDateReport", width: 100 },
-        { columnName: "totalMarks", width: 100 },
-        { columnName: "fileDownload", width: 100 },
-        { columnName: "label", wordWrapEnabled: true },
+        { columnName: "totalMarks", width:100, align:"center" },
+        { columnName: "fileDownload", width:115, align:"center" },
         { columnName: "instruction", wordWrapEnabled: true },
-        { columnName: "action", width: 120 },
+        { columnName: "action", width: 120, align:"center" },
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
@@ -141,7 +129,7 @@ class F36FormTableComponent extends Component {
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children != "Action" ? (
+              props.children != "Action" && props.children != "Download" ? (
                 <b>{props.children}</b>
               ) : (
                 <b>&emsp;{props.children}</b>

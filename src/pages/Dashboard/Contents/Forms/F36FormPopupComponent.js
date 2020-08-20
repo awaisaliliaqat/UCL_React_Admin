@@ -103,8 +103,8 @@ class F36FormPopupComponent extends Component {
       isReload: false,
       files: [],
       filesError: "",
-      obtundedMarks: "",
-      obtundedMarksError: "",
+      obtainedMarks: "",
+      obtainedMarksError: "",
       remarks:"",
       remarksError:""
     };
@@ -119,8 +119,8 @@ class F36FormPopupComponent extends Component {
     this.setState({
       files: [],
       filesError: "",
-      obtundedMarks: "",
-      obtundedMarksError: "",
+      obtainedMarks: "",
+      obtainedMarksError: "",
       remarks:"",
       remarksError:""
     });
@@ -147,7 +147,7 @@ class F36FormPopupComponent extends Component {
     const errName = `${name}Error`;
     let regex = "";
     switch (name) {
-        case "obtundedMarks":
+        case "obtainedMarks":
             regex = new RegExp(numberExp);
             if (value && !regex.test(value)) {
                 return;
@@ -174,14 +174,14 @@ class F36FormPopupComponent extends Component {
     return isValid;
   };
 
-  isObtundedMarksValid = () => {
+  isobtainedMarksValid = () => {
     let isValid = true;
-    if (!this.state.obtundedMarks) {
-      this.setState({ obtundedMarksError: "Please enter marks." });
-      document.getElementById("obtundedMarks").focus();
+    if (!this.state.obtainedMarks) {
+      this.setState({ obtainedMarksError: "Please enter marks." });
+      document.getElementById("obtainedMarks").focus();
       isValid = false;
     } else {
-      this.setState({ obtundedMarksError: "" });
+      this.setState({ obtainedMarksError: "" });
     }
     return isValid;
   };
@@ -202,7 +202,7 @@ class F36FormPopupComponent extends Component {
     //e.preventDefault();
     if (
       !this.isFileValid() ||
-      !this.isObtundedMarksValid() ||
+      !this.isobtainedMarksValid() ||
       !this.isRemarksValid()
     ) {
       return;
@@ -210,7 +210,7 @@ class F36FormPopupComponent extends Component {
     let myForm = document.getElementById("myForm");
     const data = new FormData(myForm);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C34CommonAcademicsAssignmentsSave11`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsStudentsAssignmentsResultSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -228,6 +228,7 @@ class F36FormPopupComponent extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.props.handleOpenSnackbar(json.USER_MESSAGE, "success");
+            this.handlePopupClose();
             this.props.getData();
           } else {
             this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -249,10 +250,19 @@ class F36FormPopupComponent extends Component {
     this.setState({ isLoading: false });
   };
 
+  componentDidUpdate(prevProps){
+    if (this.props.recordId !== prevProps.recordId) {
+      this.setState({
+        obtainedMarks:this.props.assignmentGradedData.obtainedMarks,
+        remarks:this.props.assignmentGradedData.remarks
+      });
+    }
+  }
 
   render() {
 
-    const {popupBoxOpen, handlePopupClose, popupTitle, downloadFile, fileName} = this.props;
+    const {popupBoxOpen, handlePopupClose, popupTitle, downloadFile, fileName, assignmentGradedData} = this.props;
+    
     return (
       <Fragment>
         <CheckPopupFullScreen 
@@ -292,7 +302,7 @@ class F36FormPopupComponent extends Component {
             >
               {popupTitle}
               &nbsp;
-              <Tooltip title="Download File">
+              <Tooltip title="Download Assignment">
                 <IconButton 
                   onClick={(e)=>downloadFile(e, fileName)} 
                   aria-label="download"
@@ -301,6 +311,17 @@ class F36FormPopupComponent extends Component {
                   <CloudDownloadOutlinedIcon />
                 </IconButton>
               </Tooltip>
+              {assignmentGradedData.gradedAssignmentUrl && 
+              <Tooltip title="Download Graded Assignment">
+                <IconButton 
+                  onClick={(e)=>downloadFile(e, assignmentGradedData.gradedAssignmentUrl)} 
+                  aria-label="download"
+                  style={{color:"rgb(76, 175, 80)"}}
+                >
+                  <CloudDownloadOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+              }
             </Typography>
           </DialogTitle>
           <DialogContent>
@@ -326,18 +347,18 @@ class F36FormPopupComponent extends Component {
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <TextField
-                    id="obtundedMarks"
-                    name="obtundedMarks"
-                    label="Obtunded Marks"
+                    id="obtainedMarks"
+                    name="obtainedMarks"
+                    label="Obtained Marks"
                     type="number"
                     required
                     fullWidth
                     variant="outlined"
                     onChange={this.onHandleChange}
-                    value={this.state.obtundedMarks}
-                    error={!!this.state.obtundedMarksError}
+                    value={this.state.obtainedMarks}
+                    error={!!this.state.obtainedMarksError}
                     helperText={
-                      this.state.obtundedMarksError ? this.state.obtundedMarksError : " "
+                      this.state.obtainedMarksError ? this.state.obtainedMarksError : " "
                     }
                   />
                 </Grid>
