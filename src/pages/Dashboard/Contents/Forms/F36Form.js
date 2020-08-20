@@ -96,7 +96,7 @@ class F36Form extends Component {
     const reload = status === 1 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
     const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
     const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : "";
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsAssignmentsResults`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsAssignmentsResultsView`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -316,12 +316,12 @@ class F36Form extends Component {
     const columns = [
       { name: "SRNo", title: "SR#" },
       { name: "sectionLabel", title: "Section" },
+      { name: "courseLabel", title: "Course" },
       { name: "label", title: "Assignment" },
       { name: "nucleusId", title: "NucleusID" },
       { name: "studentName", title: "Student\xa0Name" },
       { name: "startDateReport", title: "Start\xa0Date" },
       { name: "dueDateReport", title: "Due\xa0Date" },
-      // { name: "instruction", title: "Instruction" },
       { name: "totalMarks", title: "Total\xa0Marks" },
       { name: "fileDownload", title: "Download" },
       { name: "action", title: "Action" },

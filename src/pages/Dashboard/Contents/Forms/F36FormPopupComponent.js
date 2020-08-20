@@ -1,10 +1,9 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
-import { withStyles, useTheme } from "@material-ui/styles";
-import { numberFreeExp, numberExp } from "../../../../utils/regularExpression";
-import {
-  TextField, Grid, CircularProgress, Divider, Typography, Button, IconButton,
-  Tooltip, Fab, Dialog, DialogActions, DialogContent, DialogTitle, 
-  useMediaQuery, Card, CardContent } from "@material-ui/core";
+import { useTheme } from "@material-ui/styles";
+import { numberExp } from "../../../../utils/regularExpression";
+import {TextField, Grid, CircularProgress, Divider, Typography, Button, IconButton,
+  Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, Card, 
+  CardContent } from "@material-ui/core";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import { useDropzone } from "react-dropzone";
 import CloudDownloadOutlinedIcon from '@material-ui/icons/CloudDownloadOutlined';
@@ -18,37 +17,9 @@ function CheckPopupFullScreen (props){
   return <Fragment/>;
 }
 
-const styles = (theme) => ({
-  root: {
-    // padding: 20,
-    // minWidth: 350,
-    // overFlowX: "auto",
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  formControl: {
-    minWidth: "100%",
-  },
-  sectionTitle: {
-    fontSize: 19,
-    color: "#174a84",
-  },
-  checkboxDividerLabel: {
-    marginTop: 10,
-    marginLeft: 5,
-    marginRight: 20,
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  rootProgress: {
-    width: "100%",
-    textAlign: "center",
-  },
-});
-
 function MyDropzone(props) {
 
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document', multiple:false });
 
   const files = acceptedFiles.map((file, index) => {
       const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
@@ -276,16 +247,18 @@ class F36FormPopupComponent extends Component {
           onClose={this.handlePopupClose}
           aria-labelledby="responsive-dialog-title"
         >
+          {/* 
           <span style={{ color: "#ffffff" }}>
             ________________________________________________________________________________________________________________________________________________________
-          </span>
+          </span> 
+          */}
           <DialogTitle id="responsive-dialog-title">
             <IconButton
               aria-label="close"
               onClick={this.handlePopupClose}
               style={{
                 position: "relative",
-                top: "-35px",
+                top: "-18px",
                 right: "-24px",
                 float: "right",
               }}
@@ -406,4 +379,4 @@ class F36FormPopupComponent extends Component {
     );
   }
 }
-export default withStyles(styles)(F36FormPopupComponent);
+export default F36FormPopupComponent;

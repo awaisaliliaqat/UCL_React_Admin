@@ -63,6 +63,7 @@ class F36FormTableComponent extends Component {
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
         { columnName: "sectionLabel", wordWrapEnabled: true },
+        { columnName: "courseLabel", wordWrapEnabled: true },
         { columnName: "label", wordWrapEnabled: true },
         { columnName: "nucleusId", width: 130},
         { columnName: "studentName", wordWrapEnabled: true },
