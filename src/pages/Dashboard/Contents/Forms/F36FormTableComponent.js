@@ -64,12 +64,12 @@ class F36FormTableComponent extends Component {
         { columnName: "SRNo", width: 100 },
         { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "label", wordWrapEnabled: true },
-        { columnName: "nucleusId", width: 80, align:"center" },
+        { columnName: "nucleusId", width: 130},
         { columnName: "studentName", wordWrapEnabled: true },
-        { columnName: "startDateReport", width: 100 },
-        { columnName: "dueDateReport", width: 100 },
-        { columnName: "totalMarks", width:100, align:"center" },
-        { columnName: "fileDownload", width:115, align:"center" },
+        { columnName: "startDateReport", width: 130 },
+        { columnName: "dueDateReport", width: 130 },
+        { columnName: "totalMarks", width:130, align:"center" },
+        { columnName: "fileDownload", width:130, align:"center" },
         { columnName: "instruction", wordWrapEnabled: true },
         { columnName: "action", width: 120, align:"center" },
       ],
@@ -79,6 +79,17 @@ class F36FormTableComponent extends Component {
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
         { columnName: "fileDownload", filteringEnabled: false },
+      ],
+      defaultGrouping:[
+        //{ columnName: 'programmeGroupLabel'},
+      ],
+      groupingStateColumnExtensions:[
+        { columnName: 'SRNo', groupingEnabled: false},
+        { columnName: 'fileDownload', groupingEnabled: false },
+        { columnName: 'action', groupingEnabled: false }
+      ],
+      tableGroupColumnExtension:[
+        { columnName:"programmeGroupLabel", showWhenGrouped: false }
       ],
     };
   }
@@ -98,6 +109,9 @@ class F36FormTableComponent extends Component {
       defaultColumnWidths,
       columnBands,
       pageSizes,
+      defaultGrouping,
+      tableGroupColumnExtension,
+      groupingStateColumnExtensions
     } = this.state;
 
     const rows = this.props.data;
@@ -107,26 +121,18 @@ class F36FormTableComponent extends Component {
     return (
       <Paper>
         <Grid rows={rows} columns={columns}>
-          <FilteringState
-            defaultFilters={defaultFilters}
-            columnExtensions={filteringStateColumnExtensions}
-          />
-          <SortingState
-            defaultSorting={defaultSorting}
-            columnExtensions={sortingStateColumnExtensions}
-          />
-          {/* <SelectionState />  */}
-          {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
+          <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions}/>
+          <SortingState   defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions}/>
+          <GroupingState defaultGrouping={defaultGrouping} columnExtensions={groupingStateColumnExtensions}/>
+          <DragDropProvider />
           <PagingState defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
-          {/* <IntegratedSelection /> */}
-          {/* <DragDropProvider /> */}
+          <IntegratedGrouping />
           <Table columnExtensions={tableColumnExtensions} />
-          {/* <TableColumnResizing columnExtensions={defaultColumnWidths}/> */}
-          {/* <TableSelection showSelectAll={true} /> */}
           <TableHeaderRow
+            showGroupingControls
             showSortingControls={true}
             titleComponent={(props) =>
               props.children != "Action" && props.children != "Download" ? (
@@ -136,9 +142,11 @@ class F36FormTableComponent extends Component {
               )
             }
           />
+          <TableGroupRow icon columnExtensions={tableGroupColumnExtension}/>
+          <Toolbar />
+          <GroupingPanel showGroupingControls/>
           {showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
           <PagingPanel pageSizes={pageSizes} />
-          {/* <Toolbar /> */}
         </Grid>
       </Paper>
     );
