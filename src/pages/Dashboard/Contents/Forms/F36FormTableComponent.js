@@ -66,7 +66,7 @@ class F36FormTableComponent extends Component {
         { columnName: "courseLabel", wordWrapEnabled: true },
         { columnName: "label", wordWrapEnabled: true },
         { columnName: "nucleusId", width: 130},
-        { columnName: "studentName", wordWrapEnabled: true },
+        { columnName: "studentName", wordWrapEnabled:true},
         { columnName: "startDateReport", width: 130 },
         { columnName: "dueDateReport", width: 130 },
         { columnName: "totalMarks", width:130, align:"center" },

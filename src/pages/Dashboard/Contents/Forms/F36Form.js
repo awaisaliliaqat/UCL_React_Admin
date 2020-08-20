@@ -319,10 +319,10 @@ class F36Form extends Component {
       { name: "courseLabel", title: "Course" },
       { name: "label", title: "Assignment" },
       { name: "nucleusId", title: "NucleusID" },
-      { name: "studentName", title: "Student\xa0Name" },
+      { name: "studentName", title: "Student Name" },
       { name: "startDateReport", title: "Start\xa0Date" },
       { name: "dueDateReport", title: "Due\xa0Date" },
-      { name: "totalMarks", title: "Total\xa0Marks" },
+      { name: "totalMarks", title: "Total Marks" },
       { name: "fileDownload", title: "Download" },
       { name: "action", title: "Action" },
     ];
