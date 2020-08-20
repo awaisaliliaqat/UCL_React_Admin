@@ -14,6 +14,7 @@ import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/Custom
 import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import EditIcon from '@material-ui/icons/Edit';
+import BottomBar from "../../../../components/BottomBar/BottomBar";
 
 class F36Form extends Component {
   constructor(props) {
@@ -306,6 +307,10 @@ class F36Form extends Component {
     this.setState({ showSearchBar: !this.state.showSearchBar });
   };
 
+  viewReport = () => {
+    window.location = "#/dashboard/F36Reports";
+  };
+
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.getData();
@@ -436,6 +441,16 @@ class F36Form extends Component {
             message={this.state.snackbarMessage}
             severity={this.state.snackbarSeverity}
             handleCloseSnackbar={() => this.handleCloseSnackbar()}
+          />
+          <BottomBar
+            left_button_text="View"
+            left_button_hide={false}
+            bottomLeftButtonAction={this.viewReport}
+            hideRightButton={true}
+            right_button_text="Save"
+            bottomRightButtonAction={this.clickOnFormSubmit}
+            loading={this.state.isLoading}
+            isDrawerOpen={this.props.isDrawerOpen}
           />
         </div>
       </Fragment>
