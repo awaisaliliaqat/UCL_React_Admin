@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import StudentCourseSelectionAction from "./Chunks/StudentCourseSelectionAction";
 import ExcelIcon from "../../../../../assets/Images/excel.png";
+import { color } from "highcharts";
 
 class StudentCourseSelection extends Component {
   constructor(props) {
@@ -241,10 +242,8 @@ class StudentCourseSelection extends Component {
   };
 
   getModulesData = async (rowData) => {
-    this.setState({
-      viewLoading: true,
-    });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonProgrammeModulesView?academicsSessionId=${this.state.sessionId}&programmeId=${rowData.programmeId}`;
+    this.setState({viewLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonProgrammeModulesView?academicsSessionId=${this.state.sessionId}&programmeId=${rowData.programmeId}&studentId=${rowData.id}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -260,11 +259,23 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            console.log("json.DATA:", json.DATA);
             for (var i = 0; i < json.DATA.length; i++) {
+              let achivedCoursesArray = json.DATA[i].isAchievedCoursesArray.split(",");
               let coursesArray = json.DATA[i].courses.split(",");
               let courses = coursesArray.map((data, index) => (
                 <Fragment key={"pmc" + data + index}>
-                  {data}
+                  {achivedCoursesArray.indexOf(data)!==-1 ?
+                    <span 
+                      style={{
+                        color:"#4caf50"
+                      }}
+                    >
+                      {data}
+                    </span>
+                    :
+                    data
+                  }
                   <br />
                 </Fragment>
               ));

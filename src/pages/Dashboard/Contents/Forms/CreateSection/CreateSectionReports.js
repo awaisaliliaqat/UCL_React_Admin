@@ -154,7 +154,7 @@ class CreateSectionReports extends Component {
         const columns = [
             { name: "id", title: "ID" },
             { name: "sessionLabel", title: "Session" },
-            { name: "programmeGroupLabel", title: "Programme" },
+            { name: "programmeGroupLabel", title: "Programme Group" },
             { name: "courseLabel", title: "Offered Course" },
             { name: "sectionTypeLabel", title: "Section Type" },
             { name: "label", title: "Section Name" },
