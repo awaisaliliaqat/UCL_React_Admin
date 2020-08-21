@@ -37,7 +37,22 @@ import {
   TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
 
-class F36FormTableComponent extends Component {
+const getInputValue = (value) => (value === undefined ? "" : value);
+
+const getColor = (amount) => {
+  if (amount < 3000) {
+    return "#F44336";
+  }
+  if (amount < 5000) {
+    return "#FFC107";
+  }
+  if (amount < 8000) {
+    return "#FF5722";
+  }
+  return "#009688";
+};
+
+class F36ReportsTableComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -62,17 +77,11 @@ class F36FormTableComponent extends Component {
       ],
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
-        { columnName: "sectionLabel", wordWrapEnabled: true },
-        { columnName: "courseLabel", wordWrapEnabled: true },
-        { columnName: "label", wordWrapEnabled: true },
-        { columnName: "nucleusId", width: 130},
-        { columnName: "studentName", wordWrapEnabled:true},
-        { columnName: "startDateReport", width: 130 },
-        { columnName: "dueDateReport", width: 130 },
-        { columnName: "totalMarks", width:130, align:"center" },
-        { columnName: "fileDownload", width:130, align:"center" },
-        { columnName: "instruction", wordWrapEnabled: true },
-        { columnName: "action", width: 120, align:"center" },
+        { columnName: "nucleusId", width: 100 },
+        { columnName: "studentName", wordWrapEnabled: true },
+        { columnName: "assignmentSubmitted", width: 100 },
+        { columnName: "obtainedMarks", width: 150 },
+        { columnName: "remarks", wordWrapEnabled: true},
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
@@ -80,17 +89,6 @@ class F36FormTableComponent extends Component {
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
         { columnName: "fileDownload", filteringEnabled: false },
-      ],
-      defaultGrouping:[
-        //{ columnName: 'programmeGroupLabel'},
-      ],
-      groupingStateColumnExtensions:[
-        { columnName: 'SRNo', groupingEnabled: false},
-        { columnName: 'fileDownload', groupingEnabled: false },
-        { columnName: 'action', groupingEnabled: false }
-      ],
-      tableGroupColumnExtension:[
-        { columnName:"programmeGroupLabel", showWhenGrouped: false }
       ],
     };
   }
@@ -110,9 +108,6 @@ class F36FormTableComponent extends Component {
       defaultColumnWidths,
       columnBands,
       pageSizes,
-      defaultGrouping,
-      tableGroupColumnExtension,
-      groupingStateColumnExtensions
     } = this.state;
 
     const rows = this.props.data;
@@ -122,36 +117,42 @@ class F36FormTableComponent extends Component {
     return (
       <Paper>
         <Grid rows={rows} columns={columns}>
-          <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions}/>
-          <SortingState   defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions}/>
-          <GroupingState defaultGrouping={defaultGrouping} columnExtensions={groupingStateColumnExtensions}/>
-          <DragDropProvider />
-          <PagingState defaultPageSize={10} />
+          <FilteringState
+            defaultFilters={defaultFilters}
+            columnExtensions={filteringStateColumnExtensions}
+          />
+          <SortingState
+            defaultSorting={defaultSorting}
+            columnExtensions={sortingStateColumnExtensions}
+          />
+          {/* <SelectionState />  */}
+          {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
+          <PagingState defaultCurrentPage={1} defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
-          <IntegratedGrouping />
+          {/* <IntegratedSelection /> */}
+          {/* <DragDropProvider /> */}
           <Table columnExtensions={tableColumnExtensions} />
+          {/* <TableColumnResizing columnExtensions={defaultColumnWidths}/> */}
+          {/* <TableSelection showSelectAll={true} /> */}
           <TableHeaderRow
-            showGroupingControls
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children != "Action" && props.children != "Download" ? (
+              props.children != "Action" ? (
                 <b>{props.children}</b>
               ) : (
                 <b>&emsp;{props.children}</b>
               )
             }
           />
-          <TableGroupRow icon columnExtensions={tableGroupColumnExtension}/>
-          <Toolbar />
-          <GroupingPanel showGroupingControls/>
           {showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
           <PagingPanel pageSizes={pageSizes} />
+          {/* <Toolbar /> */}
         </Grid>
       </Paper>
     );
   }
 }
 
-export default F36FormTableComponent;
+export default F36ReportsTableComponent;
