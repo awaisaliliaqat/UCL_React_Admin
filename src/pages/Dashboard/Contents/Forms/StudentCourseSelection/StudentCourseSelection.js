@@ -259,7 +259,6 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            console.log("json.DATA:", json.DATA);
             for (var i = 0; i < json.DATA.length; i++) {
               let achivedCoursesArray = json.DATA[i].isAchievedCoursesArray.split(",");
               let coursesArray = json.DATA[i].courses.split(",");
