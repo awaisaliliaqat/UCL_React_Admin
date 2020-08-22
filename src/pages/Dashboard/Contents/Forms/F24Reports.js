@@ -110,6 +110,12 @@ class F24Reports extends Component {
                             json.DATA[i].programmeCourseIdPrereq = prerequisiteArray.map((data, index) =>
                                 <Fragment key={"pcpr"+index}>{data}<br/></Fragment>
                             );
+                            
+                            let excludedArray = json.DATA[i].programmeCourseIdExclusions;
+                            json.DATA[i].programmeCourseIdExclusions = excludedArray.map((data, index) =>
+                                <Fragment key={"pcpr"+index}>{data}<br/></Fragment>
+                            );
+
                             json.DATA[i].action = (
                               <EditDeleteTableRecord
                                 recordId={json.DATA[i].programmeCourseId}
@@ -118,7 +124,7 @@ class F24Reports extends Component {
                                 handleOpenSnackbar={this.handleOpenSnackbar}
                               />
                             );
-                          }
+                        }
                     } else {
                         this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE,"error");
                     }
@@ -209,6 +215,7 @@ class F24Reports extends Component {
             { name: "programmeGroupLabel", title: "Programme\xa0Group"},
             { name: "programmeCourseLabel", title: "Programme\xa0Course"},
             { name: "programmeCourseIdPrereq", title: "Prerequisite\xa0Courses"},
+            { name: "programmeCourseIdExclusions", title: "Excluded\xa0Courses"},
             { name: "action", title:"Action"}
         ]
 

@@ -176,7 +176,9 @@ class StudentCourseSelectionAction extends Component {
                                     }}>
                                         Programme Module
                                     </div>
-                                    <TablePanel data={moduleData} sortingEnabled columns={modulesColumns} />
+                                    <div style={{height:(window.innerHeight-165),overflowY:"auto"}}>
+                                        <TablePanel data={moduleData} sortingEnabled columns={modulesColumns} />
+                                    </div>
                                 </Grid> 
                                 <Grid item xs={4}>
                                     <div style={{
