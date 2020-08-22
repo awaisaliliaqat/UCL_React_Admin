@@ -223,9 +223,9 @@ class F31FormPopupComponent extends Component {
   }
 
   getTomorrowDate = () => {
-    let a = new Date();
-    let b = new Date(a.setDate(a.getDate() + 1));
-    return b;
+    let tomorrowDate = new Date();
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+    return tomorrowDate;
   }
 
   getDateInString = (todayDate) => {
@@ -313,7 +313,7 @@ class F31FormPopupComponent extends Component {
   handleClose = () => {
     this.setState({
       popupBoxOpen: false,
-      preDate: new Date(),
+      preDate: this.getTomorrowDate(),
       preDay: "",
       preTimeStart: "",
       preTimeDuration: "",
