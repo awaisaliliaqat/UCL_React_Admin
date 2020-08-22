@@ -104,10 +104,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "left",
     paddingTop: 3,
     paddingBottom: 3,
-    paddingLeft: 15,
+    paddingLeft: 25,
     color: 'white',
-    width: drawerWidth - 60,
-    marginLeft: 25,
+    width: drawerWidth - 70,
     textOverflow: 'clip',
     whiteSpace: 'break-spaces'
   },
