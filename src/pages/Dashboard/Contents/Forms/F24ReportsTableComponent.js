@@ -47,13 +47,15 @@ class F06ReportsTableComponent extends Component {
             ],
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
-              { columnName: 'programmeCourseIdPrereq', sortingEnabled: false }
+              { columnName: 'programmeCourseIdPrereq', sortingEnabled: false },
+              { columnName: 'programmeCourseIdExclusions', sortingEnabled: false }
             ],
             tableColumnExtensions:[
               { columnName: 'SRNo', width:100},
               { columnName: 'programmeGroupLabel', wordWrapEnabled:true},
               { columnName: 'programmeCourseLabel', wordWrapEnabled:true},
               { columnName: 'programmeCourseIdPrereq', wordWrapEnabled:true},
+              { columnName: 'programmeCourseIdExclusions', wordWrapEnabled:true},
               { columnName: 'action', width:120, align:"center"}
             ],
             defaultGrouping:[
@@ -63,6 +65,7 @@ class F06ReportsTableComponent extends Component {
               { columnName: 'SRNo', groupingEnabled: false},
               { columnName: 'programmeCourseLabel', groupingEnabled: false },
               { columnName: 'programmeCourseIdPrereq', groupingEnabled: false },
+              { columnName: 'programmeCourseIdExclusions', groupingEnabled:true},
               { columnName: 'action', groupingEnabled: false }
             ],
             tableGroupColumnExtension:[
@@ -72,7 +75,8 @@ class F06ReportsTableComponent extends Component {
             defaultFilters:[],
             filteringStateColumnExtensions:[
               { columnName: 'action', filteringEnabled: false },
-              { columnName: 'programmeCourseIdPrereq', filteringEnabled: false }
+              { columnName: 'programmeCourseIdPrereq', filteringEnabled: false },
+              { columnName: 'programmeCourseIdExclusions', filteringEnabled: false }
             ]
         };
     }

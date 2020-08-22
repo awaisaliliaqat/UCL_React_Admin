@@ -1,11 +1,12 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
-import { withStyles, useTheme } from "@material-ui/styles";
-import { numberFreeExp, numberExp } from "../../../../utils/regularExpression";
-import {
-  TextField, Grid, CircularProgress, Divider, Typography, Button, IconButton,
-  Tooltip, Fab, Dialog, DialogActions, DialogContent, DialogTitle, 
-  useMediaQuery } from "@material-ui/core";
+import { useTheme } from "@material-ui/styles";
+import { numberExp } from "../../../../utils/regularExpression";
+import {TextField, Grid, CircularProgress, Divider, Typography, Button, IconButton,
+  Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, Card, 
+  CardContent } from "@material-ui/core";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
+import { useDropzone } from "react-dropzone";
+import CloudDownloadOutlinedIcon from '@material-ui/icons/CloudDownloadOutlined';
 
 function CheckPopupFullScreen (props){
   const theme = useTheme();
@@ -16,35 +17,49 @@ function CheckPopupFullScreen (props){
   return <Fragment/>;
 }
 
-const styles = (theme) => ({
-  root: {
-    // padding: 20,
-    // minWidth: 350,
-    // overFlowX: "auto",
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  formControl: {
-    minWidth: "100%",
-  },
-  sectionTitle: {
-    fontSize: 19,
-    color: "#174a84",
-  },
-  checkboxDividerLabel: {
-    marginTop: 10,
-    marginLeft: 5,
-    marginRight: 20,
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  rootProgress: {
-    width: "100%",
-    textAlign: "center",
-  },
-});
+function MyDropzone(props) {
+
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document', multiple:false });
+
+  const files = acceptedFiles.map((file, index) => {
+      const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
+      return (
+          <Typography key={index} variant="subtitle1" color="primary">
+              {file.path} - {size} Kb
+              <input type="hidden" name="file_name" value={file.path}></input>
+          </Typography>
+      )
+  });
+
+  let msg = files || [];
+  if (msg.length <= 0 || props.files.length <= 0) {
+      msg = <Typography variant="subtitle1">Please click here to  select and upload an file</Typography>;
+  }
+  
+  return (
+      <div 
+        id="contained-button-file-div" 
+        style={{ 
+          textAlign: "center"
+        }}
+          {...getRootProps({ className: "dropzone", onChange: event => props.onChange(event) })}
+      >
+          <Card style={{ backgroundColor: "#c7c7c7" }}>
+              <CardContent style={{
+                  paddingBottom: 14,
+                  paddingTop: 14,
+                  cursor:"pointer"
+              }}>
+                  <input name="contained-button-file" {...getInputProps()} disabled={props.disabled} />
+                  {msg}
+              </CardContent>
+          </Card>
+      </div>
+  );
+}
 
 class F36FormPopupComponent extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -54,16 +69,15 @@ class F36FormPopupComponent extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-      popupBoxOpen: false,
       isPopupFullScreen: false,
-      preMarks: "",
-      preMarksError: "",
-      preModuleMenuItems: [],
-      preModuleId: "",
-      preModuleIdError: "",
-      preCourseMenuItems: [],
-      preCourses: [],
-      courseRowDataArray: [],
+      isLoginMenu: false,
+      isReload: false,
+      files: [],
+      filesError: "",
+      obtainedMarks: "",
+      obtainedMarksError: "",
+      remarks:"",
+      remarksError:""
     };
   }
 
@@ -71,11 +85,103 @@ class F36FormPopupComponent extends Component {
     this.setState({isPopupFullScreen:val});
   }
 
-  loadData = async (studentId) => {
-    const data = new FormData();
-    data.append("studentId", studentId);
+  handlePopupClose = () => {
+    this.props.handlePopupClose();
+    this.setState({
+      files: [],
+      filesError: "",
+      obtainedMarks: "",
+      obtainedMarksError: "",
+      remarks:"",
+      remarksError:""
+    });
+  }
+
+  handleFileChange = event => {
+    const { files = [] } = event.target;
+    if (files.length > 0) {
+        if ( (files[0].type === "application/pdf" || files[0].type === "application/msword" || files[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && files[0].size/1000<10000) {
+            this.setState({
+                files,
+                filesError: ""
+            })
+        } else {
+            this.setState({
+                filesError: "Please select only pdf, doc or docx file with size less than 10 MBs."
+            })
+        }
+    }
+  }
+
+  onHandleChange = (e) => {
+    const { name, value } = e.target;
+    const errName = `${name}Error`;
+    let regex = "";
+    switch (name) {
+        case "obtainedMarks":
+            regex = new RegExp(numberExp);
+            if (value && !regex.test(value)) {
+                return;
+            }
+            break;
+    default:
+        break;
+    }
+    this.setState({
+      [name]: value,
+      [errName]: "",
+    });
+  };
+
+  isRemarksValid = () => {
+    let isValid = true;
+    if (!this.state.remarks) {
+      this.setState({ remarksError: "Please select module." });
+      document.getElementById("remarks").focus();
+      isValid = false;
+    } else {
+      this.setState({ remarksError: "" });
+    }
+    return isValid;
+  };
+
+  isobtainedMarksValid = () => {
+    let isValid = true;
+    if (!this.state.obtainedMarks) {
+      this.setState({ obtainedMarksError: "Please enter marks." });
+      document.getElementById("obtainedMarks").focus();
+      isValid = false;
+    } else {
+      this.setState({ obtainedMarksError: "" });
+    }
+    return isValid;
+  };
+
+  isFileValid = () => {
+    let isValid = true;
+    if (this.state.files.length<1 && this.state.recordId==0) {
+      this.setState({ filesError: "Please select file." });
+      document.getElementById("contained-button-file-div").focus();
+      isValid = false;
+    } else {
+      this.setState({ filesError: "" });
+    }
+    return isValid;
+  };
+
+  onFormSubmit = async (e) => {
+    //e.preventDefault();
+    if (
+      !this.isFileValid() ||
+      !this.isobtainedMarksValid() ||
+      !this.isRemarksValid()
+    ) {
+      return;
+    }
+    let myForm = document.getElementById("myForm");
+    const data = new FormData(myForm);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C30CommonAcademicsCoursesStudentsAchievementsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsStudentsAssignmentsResultSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -92,23 +198,13 @@ class F36FormPopupComponent extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let courseRowDataArray = [];
-            for (let i = 0; i < json.DATA.length; i++) {
-              let courseRowDataObject = {
-                preModuleId: json.DATA[i].moduleNumber,
-                preCourses: json.DATA[i].coursesArray,
-                preMarks: json.DATA[i].marks,
-              };
-              courseRowDataArray.push(courseRowDataObject);
-            }
-            this.setState({ courseRowDataArray: courseRowDataArray });
+            this.props.handleOpenSnackbar(json.USER_MESSAGE, "success");
+            this.handlePopupClose();
+            this.props.getData();
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("loadData", json);
+          console.log(json);
         },
         (error) => {
           if (error.status == 401) {
@@ -118,151 +214,51 @@ class F36FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
     this.setState({ isLoading: false });
   };
 
-  handleClickOpen = () => {
-    //this.loadData(this.props.studentId);
-    this.setState({ popupBoxOpen: true });
-  };
-
-  handleClose = () => {
-    this.setState({
-      popupBoxOpen: false,
-      preModuleId: "",
-      preCourses: [],
-      preMarks: "",
-      courseRowDataArray: [],
-    });
-  };
-
-  isPreModuleValid = () => {
-    let isValid = true;
-    if (!this.state.preModuleId) {
-      this.setState({ preModuleIdError: "Please select module." });
-      document.getElementById("preModuleId").focus();
-      isValid = false;
-    } else {
-      this.setState({ preModuleIdError: "" });
-    }
-    return isValid;
-  };
-
-  isPreCoursesValid = () => {
-    let isValid = true;
-    if (this.state.preCourses.length < 1) {
-      this.setState({ preCoursesError: "Please select course." });
-      document.getElementById("preCourses").focus();
-      isValid = false;
-    } else if (this.state.preCourses.length > 2) {
+  componentDidUpdate(prevProps){
+    if (this.props.recordId !== prevProps.recordId) {
       this.setState({
-        preCoursesError: "One full or two half couses can be selected",
+        obtainedMarks:this.props.assignmentGradedData.obtainedMarks,
+        remarks:this.props.assignmentGradedData.remarks
       });
-      document.getElementById("preCourses").focus();
-      isValid = false;
-    } else {
-      this.setState({ preCoursesError: "" });
     }
-    return isValid;
-  };
-
-  isMarksValid = () => {
-    let isValid = true;
-    if (!this.state.preMarks) {
-      this.setState({ preMarksError: "Please enter marks." });
-      document.getElementById("preMarks").focus();
-      isValid = false;
-    } else {
-      this.setState({ preMarksError: "" });
-    }
-    return isValid;
-  };
-
-  onHandleChange = (e) => {
-    const { name, value } = e.target;
-    const errName = `${name}Error`;
-    this.setState({
-      [name]: value,
-      [errName]: "",
-    });
-  };
-
-  isCourseSelected = (option) => {
-    return this.state.preCourses.some(
-      (selectedOption) => selectedOption.ID == option.ID
-    );
-  };
-
-  handleSetPreCourses = (value) => {
-    this.setState({
-      preCourses: value,
-      preCoursesError: "",
-    });
-  };
-
-  // componentDidMount() {
-  //   //console.log("F30PopUp: ", this.props);
-  //   this.setState({
-  //     preCourseMenuItems: this.props.preCourseMenuItems,
-  //     preModuleMenuItems: this.props.preModuleMenuItems,
-  //   });
-  //   if (this.state.recordId != 0) {
-  //     this.loadData(this.state.recordId);
-  //   }
-  // }
+  }
 
   render() {
 
+    const {popupBoxOpen, handlePopupClose, popupTitle, downloadFile, fileName, assignmentGradedData} = this.props;
+    
     return (
       <Fragment>
         <CheckPopupFullScreen 
           isPopupFullScreen={this.state.isPopupFullScreen}
           setIsPopupFullScreen={this.setIsPopupFullScreen}
         />
-        <Button 
-          variant="outlined" 
-          color="primary"
-          onClick={this.handleClickOpen}
-        >
-          Primary
-        </Button>
-        {/* <IconButton
-          color="primary"
-          aria-label="Add"
-          component="span"
-          
-          variant="outlined"
-        >
-          <Tooltip title="Add Achievements">
-            <Fab color="primary" aria-label="add" size="small">
-              <AddIcon />
-            </Fab>
-          </Tooltip>
-        </IconButton> */}
         <Dialog
           fullScreen={this.state.isPopupFullScreen}
           maxWidth="md"
-          open={this.state.popupBoxOpen}
-          onClose={this.handleClose}
+          open={popupBoxOpen}
+          onClose={this.handlePopupClose}
           aria-labelledby="responsive-dialog-title"
         >
+          {/* 
           <span style={{ color: "#ffffff" }}>
             ________________________________________________________________________________________________________________________________________________________
-          </span>
+          </span> 
+          */}
           <DialogTitle id="responsive-dialog-title">
             <IconButton
               aria-label="close"
-              onClick={this.handleClose}
+              onClick={this.handlePopupClose}
               style={{
                 position: "relative",
-                top: "-35px",
+                top: "-18px",
                 right: "-24px",
                 float: "right",
               }}
@@ -277,10 +273,32 @@ class F36FormPopupComponent extends Component {
                 fontSize: 20,
               }}
             >
-              {this.props.dialogTitle}
+              {popupTitle}
+              &nbsp;
+              <Tooltip title="Download Assignment">
+                <IconButton 
+                  onClick={(e)=>downloadFile(e, fileName)} 
+                  aria-label="download"
+                  color="primary"
+                >
+                  <CloudDownloadOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+              {assignmentGradedData.gradedAssignmentUrl && 
+              <Tooltip title="Download Graded Assignment">
+                <IconButton 
+                  onClick={(e)=>downloadFile(e, assignmentGradedData.gradedAssignmentUrl)} 
+                  aria-label="download"
+                  style={{color:"rgb(76, 175, 80)"}}
+                >
+                  <CloudDownloadOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+              }
             </Typography>
           </DialogTitle>
           <DialogContent>
+            <form id="myForm" name="myForm">
               <Grid
                 container
                 direction="row"
@@ -290,28 +308,53 @@ class F36FormPopupComponent extends Component {
               >
                 <TextField
                   type="hidden"
-                  id="studentId"
-                  name="studentId"
-                  value={this.props.studentId}
+                  id="id"
+                  name="id"
+                  defaultValue={this.props.recordId}
                 />
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={6}>
+                  <MyDropzone files={this.state.files} onChange={event => this.handleFileChange(event)} disabled={this.state.uploadLoading} />
+                  <div style={{textAlign:'left', marginTop:5, fontSize:"0.8rem"}}>
+                      <span style={{color: '#f44336'}}>&emsp;{this.state.filesError}</span>
+                  </div>
+                </Grid>
+                <Grid item xs={12} md={6}>
                   <TextField
-                    id="preMarks"
-                    name="preMarks"
-                    label="Marks"
+                    id="obtainedMarks"
+                    name="obtainedMarks"
+                    label="Obtained Marks"
                     type="number"
                     required
                     fullWidth
                     variant="outlined"
                     onChange={this.onHandleChange}
-                    value={this.state.preMarks}
-                    error={!!this.state.preMarksError}
+                    value={this.state.obtainedMarks}
+                    error={!!this.state.obtainedMarksError}
                     helperText={
-                      this.state.preMarksError ? this.state.preMarksError : " "
+                      this.state.obtainedMarksError ? this.state.obtainedMarksError : " "
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    id="remarks"
+                    name="remarks"
+                    label="Remarks"
+                    required
+                    fullWidth
+                    multiline
+                    rows={5}
+                    variant="outlined"
+                    onChange={this.onHandleChange}
+                    value={this.state.remarks}
+                    error={!!this.state.remarksError}
+                    helperText={
+                      this.state.remarksError ? this.state.remarksError : " "
                     }
                   />
                 </Grid>
               </Grid>
+            </form>
           </DialogContent>
           <Divider
             style={{
@@ -320,11 +363,11 @@ class F36FormPopupComponent extends Component {
             }}
           />
           <DialogActions>
-            <Button autoFocus onClick={this.handleClose} color="secondary">
+            <Button autoFocus onClick={this.handlePopupClose} color="secondary">
               Close
             </Button>
             <Button
-              onClick={this.props.clickOnFormSubmit()}
+              onClick={() => this.onFormSubmit()}
               color="primary"
               autoFocus
             >
@@ -336,4 +379,4 @@ class F36FormPopupComponent extends Component {
     );
   }
 }
-export default withStyles(styles)(F36FormPopupComponent);
+export default F36FormPopupComponent;

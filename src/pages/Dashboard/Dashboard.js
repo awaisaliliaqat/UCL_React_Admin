@@ -62,6 +62,7 @@ import F33Form from "./Contents/Forms/F33Form";
 import F34Form from "./Contents/Forms/F34Form";
 import F34Reports from "./Contents/Forms/F34Reports";
 import F36Form from "./Contents/Forms/F36Form";
+import F36Reports from "./Contents/Forms/F36Reports";
 import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
 import TeacherAttendanceReports from './Contents/Reports/TeacherAttendanceReports/TeacherAttendanceReports';
 import StudentReports from './Contents/Reports/StudentReports/StudentReports';
@@ -693,6 +694,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F40Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F36Reports"
+                exact
+                path="/dashboard/F36Reports"
+                render={(props) => {
+                  return (
+                    <F36Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

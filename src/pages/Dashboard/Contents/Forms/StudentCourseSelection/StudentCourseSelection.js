@@ -6,6 +6,8 @@ import TablePanel from "../../../../../components/ControlledTable/RerenderTable/
 import Button from "@material-ui/core/Button";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import StudentCourseSelectionAction from "./Chunks/StudentCourseSelectionAction";
+import ExcelIcon from "../../../../../assets/Images/excel.png";
+import { color } from "highcharts";
 
 class StudentCourseSelection extends Component {
   constructor(props) {
@@ -14,6 +16,7 @@ class StudentCourseSelection extends Component {
       isLoading: false,
       admissionData: [],
       coursesData: [],
+      selectedCoursesData: [],
       achivementsData: [],
       moduleData: [],
       isOpenActionMenu: false,
@@ -21,7 +24,6 @@ class StudentCourseSelection extends Component {
       isLoginMenu: false,
       isReload: false,
       viewLoading: false,
-
       sessionId: "",
       sessionData: [],
       programmeId: "",
@@ -205,10 +207,18 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            let coursesData = json.DATA || [];
+            let selectedCoursesData = [];
+            for(let i=0; i<coursesData.length; i++){
+                if(coursesData[i].isRegistered){
+                    selectedCoursesData.push(coursesData[i]);
+                }
+            }
             this.setState({
               coursesData: json.DATA || [],
               isOpenActionMenu: true,
               selectedData: rowData,
+              selectedCoursesData:selectedCoursesData
             });
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
@@ -232,10 +242,8 @@ class StudentCourseSelection extends Component {
   };
 
   getModulesData = async (rowData) => {
-    this.setState({
-      viewLoading: true,
-    });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonProgrammeModulesView?academicsSessionId=${this.state.sessionId}&programmeId=${rowData.programmeId}`;
+    this.setState({viewLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonProgrammeModulesView?academicsSessionId=${this.state.sessionId}&programmeId=${rowData.programmeId}&studentId=${rowData.id}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -251,12 +259,22 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            console.log("MODULES ==>> " + json.DATA);
             for (var i = 0; i < json.DATA.length; i++) {
+              let achivedCoursesArray = json.DATA[i].isAchievedCoursesArray.split(",");
               let coursesArray = json.DATA[i].courses.split(",");
               let courses = coursesArray.map((data, index) => (
                 <Fragment key={"pmc" + data + index}>
-                  {data}
+                  {achivedCoursesArray.indexOf(data)!==-1 ?
+                    <span 
+                      style={{
+                        color:"#4caf50"
+                      }}
+                    >
+                      {data}
+                    </span>
+                    :
+                    data
+                  }
                   <br />
                 </Fragment>
               ));
@@ -422,6 +440,55 @@ class StudentCourseSelection extends Component {
     });
   };
 
+  downloadExcelData = async () => {
+    alert("Coming Soon");
+  //     if (this.state.isDownloadExcel === false) {
+  //         this.setState({
+  //             isDownloadExcel: true
+  //         })
+  //         const type = this.state.applicationStatusId === 2 ? 'Submitted' : 'Pending';
+  //         const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
+  //         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
+  //         await fetch(url, {
+  //             method: "GET",
+  //             headers: new Headers({
+  //                 Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+  //             })
+  //         })
+  //             .then(res => {
+  //                 if (res.status === 200) {
+  //                     return res.blob();
+  //                 }
+  //                 return false;
+  //             })
+  //             .then(
+  //                 json => {
+  //                     if (json) {
+  //                         var csvURL = window.URL.createObjectURL(json);
+  //                         var tempLink = document.createElement("a");
+  //                         tempLink.setAttribute("download", `Applications${type}.xlsx`);
+  //                         tempLink.href = csvURL;
+  //                         tempLink.click();
+  //                         console.log(json);
+  //                     }
+  //                 },
+  //                 error => {
+  //                     if (error.status === 401) {
+  //                         this.setState({
+  //                             isLoginMenu: true,
+  //                             isReload: false
+  //                         })
+  //                     } else {
+  //                         alert('Failed to fetch, Please try again later.');
+  //                         console.log(error);
+  //                     }
+  //                 });
+  //         this.setState({
+  //             isDownloadExcel: false
+  //         })
+  //     }
+  }
+
   onSaveClick = () => {
     document.getElementById("courseSubmit").click();
   };
@@ -524,6 +591,10 @@ class StudentCourseSelection extends Component {
     });
   };
 
+  handleSetCourses = (value = []) => {
+    this.setState({selectedCoursesData: value});
+  }
+
   render() {
     const columns = [
       {
@@ -613,6 +684,8 @@ class StudentCourseSelection extends Component {
           handleCheckboxChange={(e, value, type) =>
             this.handleCheckboxChange(e, value, type)
           }
+          selectedCoursesData={this.state.selectedCoursesData}
+          handleSetCourses={(value) => this.handleSetCourses(value)}
         />
 
         <div
@@ -636,6 +709,11 @@ class StudentCourseSelection extends Component {
             >
               Student Course Selection
             </Typography>
+            <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
+              height: 30, width: 32,
+                cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
+              }}
+            />
           </div>
           <Divider
             style={{
@@ -668,24 +746,21 @@ class StudentCourseSelection extends Component {
           <input name="sessionId" value={this.state.sessionId} type="hidden" />
           <input
             name="programmeGroupId"
-            value={this.state.programmeId}
+            defaultValue={this.state.programmeId}
             type="hidden"
           />
           <input
             name="studentId"
-            value={this.state.selectedData.id}
+            defaultValue={this.state.selectedData.id}
             type="hidden"
           />
-          {this.state.coursesData.map((item, i) => {
+          {//this.state.coursesData.map((item, i) => {
+            this.state.selectedCoursesData.map((item, i) => {
             if (item.isRegistered === 1) {
               return (
                 <Fragment key={"coursesData"+i+item}>
                   <input name="courseId" value={item.id} type="hidden" />
-                  <input
-                    name="isRepeat"
-                    value={item.isRepeat || 0}
-                    type="hidden"
-                  />
+                  <input name="isRepeat" value={item.isRepeat || 0} type="hidden"/>
                 </Fragment>
               );
             }
