@@ -69,8 +69,10 @@ import StudentReports from './Contents/Reports/StudentReports/StudentReports';
 import AttendanceReports from './Contents/Reports/AttendanceReports/AttendanceReports';
 import F39Form from "./Contents/Forms/F39Form";
 import F39Reports from "./Contents/Forms/F39Reports";
-import F40Form from './Contents/Forms/F40GradedDiscussion/F40Form';
-import F40Reports from './Contents/Forms/F40GradedDiscussion/F40Reports';
+import F40Form from './Contents/LMS/F40GradedDiscussion/F40Form';
+import F40Reports from './Contents/LMS/F40GradedDiscussion/F40Reports';
+import GradedDiscussionBoardList from './Contents/LMS/GradedDiscussionBoardList/GradedDiscussionBoardList';
+import GradedDiscussionBoardStudentList from './Contents/LMS/GradedDiscussionBoardStudentList/GradedDiscussionBoardStudentList';
 
 const drawerWidth = 283;
 
@@ -856,6 +858,20 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/attendance-reports-admin"
                 component={AttendanceReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="graded-discussion-board-list"
+                exact
+                path="/dashboard/graded-discussion-board-list"
+                component={GradedDiscussionBoardList}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="graded-discussion-board-list"
+                exact
+                path="/dashboard/graded-discussion-board-list/:id"
+                component={GradedDiscussionBoardStudentList}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
