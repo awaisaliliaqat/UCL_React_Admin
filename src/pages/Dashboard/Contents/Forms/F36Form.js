@@ -122,12 +122,14 @@ class F36Form extends Component {
               let gradedAssignmentUrl = json.DATA[i].gradedAssignmentUrl;
               let obtainedMarks = json.DATA[i].obtainedMarks;
               let remarks = json.DATA[i].remarks;
+              let totalMarks = json.DATA[i].totalMarks;
               let assignmentGradedData = {};
               if(isAssignmentGraded){
                 assignmentGradedData = {
                   gradedAssignmentUrl:gradedAssignmentUrl,
                   obtainedMarks: obtainedMarks,
-                  remarks:remarks
+                  remarks:remarks,
+                  totalMarks:totalMarks
                 }
               }
               json.DATA[i].action = (
