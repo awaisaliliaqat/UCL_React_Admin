@@ -122,12 +122,14 @@ class F36Form extends Component {
               let gradedAssignmentUrl = json.DATA[i].gradedAssignmentUrl;
               let obtainedMarks = json.DATA[i].obtainedMarks;
               let remarks = json.DATA[i].remarks;
+              let totalMarks = json.DATA[i].totalMarks;
               let assignmentGradedData = {};
               if(isAssignmentGraded){
                 assignmentGradedData = {
                   gradedAssignmentUrl:gradedAssignmentUrl,
                   obtainedMarks: obtainedMarks,
-                  remarks:remarks
+                  remarks:remarks,
+                  totalMarks:totalMarks
                 }
               }
               json.DATA[i].action = (
@@ -442,6 +444,9 @@ class F36Form extends Component {
             severity={this.state.snackbarSeverity}
             handleCloseSnackbar={() => this.handleCloseSnackbar()}
           />
+          {/*
+          <br/>
+          <br/>
           <BottomBar
             left_button_text="View"
             left_button_hide={false}
@@ -451,7 +456,8 @@ class F36Form extends Component {
             bottomRightButtonAction={this.clickOnFormSubmit}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-          />
+          /> 
+          */}
         </div>
       </Fragment>
     );

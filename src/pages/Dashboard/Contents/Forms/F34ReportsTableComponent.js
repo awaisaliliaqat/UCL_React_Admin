@@ -74,13 +74,15 @@ class F34ReportsTableComponent extends Component {
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
         { columnName: "fileDownload", sortingEnabled: false },
+        { columnName: "solutionFileDownload", sortingEnabled: false },
       ],
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
         { columnName: "startDateReport", width: 100 },
         { columnName: "dueDateReport", width: 100 },
-        { columnName: "totalMarks", width: 100 },
-        { columnName: "fileDownload", width: 100 },
+        { columnName: "totalMarks", width: 100, align:"center" },
+        { columnName: "solutionFileDownload", width: 100, align:"center" },
+        { columnName: "fileDownload", width: 100, align:"center" },
         { columnName: "label", wordWrapEnabled: true },
         { columnName: "instruction", wordWrapEnabled: true },
         { columnName: "action", width: 120 },
@@ -91,6 +93,7 @@ class F34ReportsTableComponent extends Component {
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
         { columnName: "fileDownload", filteringEnabled: false },
+        { columnName: "solutionFileDownload", filteringEnabled: false },
       ],
     };
   }
@@ -129,7 +132,7 @@ class F34ReportsTableComponent extends Component {
           />
           {/* <SelectionState />  */}
           {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
-          <PagingState defaultCurrentPage={1} defaultPageSize={10} />
+          <PagingState defaultCurrentPage={0} defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
@@ -141,7 +144,7 @@ class F34ReportsTableComponent extends Component {
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children != "Action" ? (
+              props.children!="Action" && props.children!="Solution" ? (
                 <b>{props.children}</b>
               ) : (
                 <b>&emsp;{props.children}</b>

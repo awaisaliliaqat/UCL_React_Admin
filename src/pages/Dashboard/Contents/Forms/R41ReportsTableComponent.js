@@ -52,7 +52,7 @@ const getColor = (amount) => {
   return "#009688";
 };
 
-class F36ReportsTableComponent extends Component {
+class R41ReportsTableComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -127,7 +127,7 @@ class F36ReportsTableComponent extends Component {
           />
           {/* <SelectionState />  */}
           {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
-          <PagingState defaultCurrentPage={1} defaultPageSize={10} />
+          <PagingState defaultCurrentPage={0} defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
@@ -155,4 +155,4 @@ class F36ReportsTableComponent extends Component {
   }
 }
 
-export default F36ReportsTableComponent;
+export default R41ReportsTableComponent;
