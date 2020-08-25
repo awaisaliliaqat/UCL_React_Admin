@@ -31,7 +31,7 @@ class R41Reports extends Component {
       isLoading: false,
       showTableFilter: false,
       showSearchBar: false,
-      isDownloadExcel: false,
+      isDownloadPdf: false,
       applicationStatusId: 1,
       isLoginMenu: false,
       isReload: false,
@@ -240,52 +240,52 @@ class R41Reports extends Component {
   };
 
   downloadPDFData = async () => {
-    alert("Coming Soon");
-  //     if (this.state.isDownloadExcel === false) {
-  //         this.setState({
-  //             isDownloadExcel: true
-  //         })
-  //         const type = this.state.applicationStatusId === 2 ? 'Submitted' : 'Pending';
-  //         const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-  //         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
-  //         await fetch(url, {
-  //             method: "GET",
-  //             headers: new Headers({
-  //                 Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-  //             })
-  //         })
-  //             .then(res => {
-  //                 if (res.status === 200) {
-  //                     return res.blob();
-  //                 }
-  //                 return false;
-  //             })
-  //             .then(
-  //                 json => {
-  //                     if (json) {
-  //                         var csvURL = window.URL.createObjectURL(json);
-  //                         var tempLink = document.createElement("a");
-  //                         tempLink.setAttribute("download", `Applications${type}.xlsx`);
-  //                         tempLink.href = csvURL;
-  //                         tempLink.click();
-  //                         console.log(json);
-  //                     }
-  //                 },
-  //                 error => {
-  //                     if (error.status === 401) {
-  //                         this.setState({
-  //                             isLoginMenu: true,
-  //                             isReload: false
-  //                         })
-  //                     } else {
-  //                         alert('Failed to fetch, Please try again later.');
-  //                         console.log(error);
-  //                     }
-  //                 });
-  //         this.setState({
-  //             isDownloadExcel: false
-  //         })
-  //     }
+   // alert("Coming Soon");
+      if (this.state.isDownloadPdf === false) {
+          this.setState({
+            isDownloadPdf: true
+          })
+          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsSummaryPdfDownload?sectionId=${this.state.sectionId}&assignmentId=${this.state.assignmentId}`;
+         
+      //    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
+          await fetch(url, {
+              method: "GET",
+              headers: new Headers({
+                  Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+              })
+          })
+              .then(res => {
+                  if (res.status === 200) {
+                      return res.blob();
+                  }
+                  return false;
+              })
+              .then(
+                  json => {
+                      if (json) {
+                          var csvURL = window.URL.createObjectURL(json);
+                          var tempLink = document.createElement("a");
+                          tempLink.setAttribute("download", `Teacher_Assignment_Summary.pdf`);
+                          tempLink.href = csvURL;
+                          tempLink.click();
+                          console.log(json);
+                      }
+                  },
+                  error => {
+                      if (error.status === 401) {
+                          this.setState({
+                              isLoginMenu: true,
+                              isReload: false
+                          })
+                      } else {
+                          alert('Failed to fetch, Please try again later.');
+                          console.log(error);
+                      }
+                  });
+          this.setState({
+            isDownloadPdf: false
+          })
+      }
   }
 
   getSectionIdFromCourseId = (courseId) => {
