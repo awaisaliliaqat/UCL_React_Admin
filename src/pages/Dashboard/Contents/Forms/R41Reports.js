@@ -42,6 +42,9 @@ class R41Reports extends Component {
       courseId: "",
       courseIdError: "",
       assignmentsMenuItems: [],
+      sectionId: "",
+      sectionIdError: "",
+      sectionsMenuItems: [],
       assignmentId:"",
       assignmentIdError:"",
       sectionId:""
@@ -63,7 +66,7 @@ class R41Reports extends Component {
 
   getCourses = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsAssignmentsCoursesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsCoursesView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -102,11 +105,55 @@ class R41Reports extends Component {
     this.setState({isLoading: false});
   };
 
+  getSections = async (courseId) => {
+    this.setState({isLoading: true});
+    let data = new FormData();
+    data.append("courseId", courseId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsSectionsTeachersView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({sectionsMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getSections", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
   getAssignments = async (sectionId) => {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("sectionId", sectionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsAssignmentsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -151,7 +198,7 @@ class R41Reports extends Component {
     let data = new FormData();
     data.append("sectionId", sectionId);
     data.append("assignmentId", assignmentId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsAssignmentsSummaryView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsSummaryView`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -207,8 +254,26 @@ class R41Reports extends Component {
     let regex = "";
     switch (name) {
         case "courseId":
-            this.getAssignments(this.getSectionIdFromCourseId(value));
-            break;
+            this.setState({
+              sectionId: "",
+              assignmentId: "",
+              assignmentsData: []
+            });
+            this.getSections(value);
+            //this.getAssignments(this.getSectionIdFromCourseId(value));
+          break;
+        case "sectionId":
+            this.setState({
+              assignmentId: "",
+              assignmentsData: []
+            });
+            this.getAssignments(value);
+          break;
+          case "assignmentId":
+            this.setState({
+              assignmentsData: []
+            });
+          break;
     default:
         break;
     }
@@ -230,6 +295,18 @@ class R41Reports extends Component {
     return isValid;
   }
 
+  isSectionValid = () => {
+    let isValid = true;        
+    if (!this.state.sectionId) {
+        this.setState({sectionIdError:"Please select section."});
+        document.getElementById("sectionId").focus();
+        isValid = false;
+    } else {
+        this.setState({sectionIdError:""});
+    }
+    return isValid;
+  }
+
   isAssignmentValid = () => {
     let isValid = true;        
     if (!this.state.assignmentId) {
@@ -245,6 +322,7 @@ class R41Reports extends Component {
   handleGetData = () => {
     if(
       !this.isCourseValid() ||
+      !this.isSectionValid() ||
       !this.isAssignmentValid()
     )
     {return;}
@@ -302,11 +380,13 @@ class R41Reports extends Component {
               }}
               variant="h5"
             >
+              {/* 
               <Tooltip title="Back">
                 <IconButton onClick={() => window.history.back()}>
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> 
+              */}
               Teacher Assigmnent Summary Report
             </Typography>
             {/* 
@@ -349,7 +429,7 @@ class R41Reports extends Component {
             alignItems="center"
             spacing={2}
           >
-            <Grid item xs={12} md={5}>
+            <Grid item xs={12} md={4}>
               <TextField
                 id="courseId"
                 name="courseId"
@@ -381,20 +461,53 @@ class R41Reports extends Component {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={5}>
+            <Grid item xs={12} md={3}>
+              <TextField
+                id="sectionId"
+                name="sectionId"
+                variant="outlined"
+                label="Section"
+                required
+                fullWidth
+                select
+                onChange={this.onHandleChange}
+                value={this.state.sectionId}
+                error={!!this.state.sectionIdError}
+                helperText={this.state.sectionIdError ? this.state.sectionIdError : " "}
+                disabled={!this.state.courseId}
+              >
+                {this.state.sectionsMenuItems && !this.state.isLoading ? 
+                  this.state.sectionsMenuItems.map((dt, i) => (
+                    <MenuItem
+                      key={"sectionsMenuItems"+dt.id}
+                      value={dt.id}
+                    >
+                      {dt.label}
+                    </MenuItem>
+                  ))
+                :
+                  <Grid 
+                    container 
+                    justify="center">
+                      <CircularProgress />
+                    </Grid>
+                }
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={4}>
               <TextField
                 id="assignmentId"
                 name="assignmentId"
                 variant="outlined"
                 label="Assignment"
+                required
+                fullWidth
+                select
                 onChange={this.onHandleChange}
                 value={this.state.assignmentId}
                 error={!!this.state.assignmentIdError}
                 helperText={this.state.assignmentIdError ? this.state.assignmentIdError : " "}
-                disabled={!this.state.courseId}
-                required
-                fullWidth
-                select
+                disabled={!this.state.sectionId}
               >
                 {this.state.assignmentsMenuItems && !this.state.isLoading ? 
                   this.state.assignmentsMenuItems.map((dt, i) => (
@@ -410,7 +523,7 @@ class R41Reports extends Component {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid item xs={12} md={1}>
               <Button
                 variant="contained"
                 color="primary"
