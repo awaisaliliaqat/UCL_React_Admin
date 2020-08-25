@@ -18,7 +18,9 @@ class TeacherAttendanceReports extends Component {
 
             selectedData: {},
 
-            eventDate: new Date(),
+            fromDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            toDate: new Date(),
+
 
             isLoginMenu: false,
             isReload: false,
@@ -38,7 +40,7 @@ class TeacherAttendanceReports extends Component {
         this.setState({
             isLoading: true
         })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C35CommonAcademicsAttendanceTeachersLogView?eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C35CommonAcademicsAttendanceTeachersLogView?fromDate=${format(this.state.fromDate, "dd-MM-yyyy")}&toDate=${format(this.state.toDate, "dd-MM-yyyy")}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -84,7 +86,8 @@ class TeacherAttendanceReports extends Component {
     onClearFilters = () => {
 
         this.setState({
-            eventDate: new Date()
+            fromDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            toDate: new Date(),
         })
     }
 
@@ -96,9 +99,9 @@ class TeacherAttendanceReports extends Component {
     }
 
 
-    handleDateChange = (date) => {
+    handleDateChange = (date, name) => {
         this.setState({
-            eventDate: date
+            [name]: date
         });
     }
 

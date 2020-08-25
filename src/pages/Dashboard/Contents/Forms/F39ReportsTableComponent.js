@@ -109,7 +109,7 @@ class F39ReportsTableComponent extends Component {
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
                 <GroupingState defaultGrouping={defaultGrouping} columnExtensions={groupingStateColumnExtensions}/>
                 <DragDropProvider />
-                <PagingState defaultCurrentPage={1} defaultPageSize={10}/>
+                <PagingState defaultCurrentPage={0} defaultPageSize={10}/>
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />

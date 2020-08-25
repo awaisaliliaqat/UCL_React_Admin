@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import { Button } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { DatePicker } from "@material-ui/pickers";
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -48,37 +48,28 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const TeacherAttendanceFilter = props => {
+const GradedDiscussionBoardStudentListFilters = props => {
     const classes = useStyles();
-    const { values, handleDateChange, getDataByStatus, onClearFilters, isLoading } = props;
+    const { values, getDataByStatus, onClearFilters, isLoading, onHandleChange } = props;
 
 
     return (
         <Fragment>
             <div className={classes.container}>
-
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>
-                    <span className={classes.label}>Class Date</span>
-                    <DatePicker
-                        autoOk
-                        invalidDateMessage=""
-                        placeholder="Date"
-                        disableFuture
-                        variant="inline"
-                        inputVariant="outlined"
-                        format="dd-MMM-yyyy"
-                        fullWidth
-                        value={values.eventDate}
-                        InputProps={{
-
-                            classes: { input: classes.resize }
+                    <span className={classes.label}>Nucleus Id</span>
+                    <TextField
+                        placeholder="Nucleus Id"
+                        variant="outlined"
+                        name="studentId"
+                        id="studentId"
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.studentId}
+                        onChange={e => {
+                            onHandleChange(e);
                         }}
-                        onChange={(event) => {
-                            handleDateChange(event);
-                        }}
-
                     />
                 </div>
                 <div className={classes.actions}>
@@ -109,13 +100,12 @@ const TeacherAttendanceFilter = props => {
     );
 }
 
-TeacherAttendanceFilter.defaultProps = {
+GradedDiscussionBoardStudentListFilters.defaultProps = {
     onHandleChange: fn => fn,
     getDataByStatus: fn => fn,
     values: {},
     onClearFilters: fn => fn,
     handleDateChange: fn => fn,
-    getDataFilters: fn => fn,
     isLoading: false
 
 
@@ -123,14 +113,13 @@ TeacherAttendanceFilter.defaultProps = {
 
 };
 
-TeacherAttendanceFilter.propTypes = {
+GradedDiscussionBoardStudentListFilters.propTypes = {
     onHandleChange: PropTypes.func,
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
     onClearFilters: PropTypes.func,
     handleDateChange: PropTypes.func,
-    getDataFilters: PropTypes.func,
     isLoading: PropTypes.bool,
 };
 
-export default TeacherAttendanceFilter;
+export default GradedDiscussionBoardStudentListFilters;

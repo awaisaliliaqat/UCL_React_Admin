@@ -18,8 +18,8 @@ class AttendanceReports extends Component {
 
             selectedData: {},
 
-            eventDate: new Date(),
-            reportTypeId: 0,
+            fromDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            toDate: new Date(),
 
             sectionTypeId: 0,
             sectionTypeData: [],
@@ -136,8 +136,7 @@ class AttendanceReports extends Component {
         this.setState({
             isLoading: true
         })
-        let endPoint = this.state.reportTypeId === 1 ? 'C38CommonAcademicsAttendanceTeachersLogView' : 'C38CommonAcademicsAttendanceStudentsLogView';
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/${endPoint}?eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}&sectionId=${sectionId}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C38CommonAcademicsAttendanceStudentsLogView?fromDate=${format(this.state.fromDate, "dd-MM-yyyy")}&toDate=${format(this.state.toDate, "dd-MM-yyyy")}&sectionId=${sectionId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -183,7 +182,8 @@ class AttendanceReports extends Component {
     onClearFilters = () => {
 
         this.setState({
-            eventDate: new Date(),
+            fromDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            toDate: new Date(),
             reportTypeId: 0,
             sectionTypeId: 0,
             sectionData: [],
@@ -219,9 +219,9 @@ class AttendanceReports extends Component {
     }
 
 
-    handleDateChange = (date) => {
+    handleDateChange = (date, name) => {
         this.setState({
-            eventDate: date
+            [name]: date
         });
     }
 
@@ -243,28 +243,6 @@ class AttendanceReports extends Component {
     };
 
     render() {
-        const teacherColumns = [
-            { name: "Teacher Name", dataIndex: "teacherName", sortIndex: "teacherName", sortable: true, customStyleHeader: { width: '12%' } },
-            { name: "Teacher Email", dataIndex: "teacherEmail", sortIndex: "teacherEmail", sortable: true, customStyleHeader: { width: '17%' } },
-            { name: "Section", dataIndex: "sectionLabel", sortIndex: "sectionLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Section Type", dataIndex: "sectionTypeLabel", sortIndex: "sectionTypeLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '12%' } },
-            { name: "Course Label", dataIndex: "courseLabel", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Class on", dataIndex: "startTimestamp", sortIndex: "startTimestampSimple", sortable: true, customStyleHeader: { width: '15%' } },
-            {
-                name: "Status", renderer: rowData => {
-                    return (
-                        <Fragment>
-                            <span style={{
-                                fontWeight: 600,
-                                color: `${rowData.isPresent === 0 ? '#d26161' : 'rgb(28 126 96)'}`
-                            }}> {rowData.isPresent === 0 ? 'Absent' : 'Present'} </span>
-
-                        </Fragment>
-                    )
-                }, sortIndex: "isPresent", sortable: true, customStyleHeader: { width: '10%' }
-            },
-        ]
 
         const studentsColumns = [
             { name: "Nucleus Id", dataIndex: "studentId", sortIndex: "studentId", sortable: true, customStyleHeader: { width: '13%' } },
@@ -273,7 +251,8 @@ class AttendanceReports extends Component {
             { name: "Section Type", dataIndex: "sectionTypeLabel", sortIndex: "sectionTypeLabel", sortable: true, customStyleHeader: { width: '15%' } },
             { name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '12%' } },
             { name: "Course Label", dataIndex: "courseLabel", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Class on", dataIndex: "startTimestamp", sortIndex: "startTimestampSimple", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Class Schedule", dataIndex: "startTimestamp", sortIndex: "startTimestampSimple", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Joined On", dataIndex: "joinedOn", sortable: false, customStyleHeader: { width: '15%' } },
             {
                 name: "Status", renderer: rowData => {
                     return (
@@ -317,7 +296,7 @@ class AttendanceReports extends Component {
                     }}>
                     </div>
                     {this.state.reportTypeId !== 0 &&
-                        <TablePanel isShowIndexColumn data={this.state.attendanceData} isLoading={this.state.isLoading} sortingEnabled columns={this.state.reportTypeId === 1 ? teacherColumns : studentsColumns} />
+                        <TablePanel isShowIndexColumn data={this.state.attendanceData} isLoading={this.state.isLoading} sortingEnabled columns={studentsColumns} />
                     }
                 </div>
                 <CustomizedSnackbar

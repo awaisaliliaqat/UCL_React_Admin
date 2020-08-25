@@ -262,13 +262,31 @@ class F34Reports extends Component {
               let fileName = json.DATA[i].fileName;
               json.DATA[i].fileDownload = (
                 <Fragment>
-                  <IconButton 
-                    onClick={(e)=>this.DownloadFile(e, fileName)} 
-                    aria-label="download"
-                  >
-                    <CloudDownloadIcon />
-                  </IconButton>
+                  <Tooltip title="Download">
+                    <IconButton 
+                      onClick={(e)=>this.DownloadFile(e, fileName)} 
+                      aria-label="download"
+                    >
+                      <CloudDownloadIcon color="primary" />
+                    </IconButton>
+                  </Tooltip>
                 </Fragment>
+              );
+              let solutionfileName = json.DATA[i].solutionfileName;
+              json.DATA[i].solutionFileDownload = (
+                solutionfileName ? 
+                <Fragment>
+                  <Tooltip title="Download">
+                    <IconButton 
+                      onClick={(e)=>this.DownloadFile(e, solutionfileName)} 
+                      aria-label="download"
+                    >
+                      <CloudDownloadIcon style={{color:"#4caf50"}} />
+                    </IconButton>
+                  </Tooltip>
+                </Fragment>
+                :
+                ""
               );
             }
           } else {
@@ -422,7 +440,8 @@ class F34Reports extends Component {
       { name: "dueDateReport", title: "Due\xa0Date" },
       { name: "instruction", title: "Instruction" },
       { name: "totalMarks", title: "Total\xa0Marks" },
-      { name: "fileDownload", title: "Download" },
+      { name: "fileDownload", title: "Assignment" },
+      { name: "solutionFileDownload", title: "Solution" },
       { name: "action", title: "Action" },
     ];
 
