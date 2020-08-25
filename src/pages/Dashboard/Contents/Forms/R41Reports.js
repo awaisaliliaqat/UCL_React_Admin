@@ -4,7 +4,7 @@ import {Typography, TextField, MenuItem} from "@material-ui/core";
 import ExcelIcon from "../../../../assets/Images/excel.png";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
-import F36ReportsTableComponent from "./F36ReportsTableComponent";
+import R41ReportsTableComponent from "./R41ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
@@ -23,7 +23,7 @@ function isEmpty(obj) {
   return true;
 }
 
-class F36Reports extends Component {
+class R41Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -433,7 +433,7 @@ class F36Reports extends Component {
             }}
           />
           {this.state.assignmentsData && !this.state.isLoading ? (
-            <F36ReportsTableComponent
+            <R41ReportsTableComponent
               data={this.state.assignmentsData}
               columns={columns}
               showFilter={this.state.showTableFilter}
@@ -458,4 +458,4 @@ class F36Reports extends Component {
     );
   }
 }
-export default F36Reports;
+export default R41Reports;
