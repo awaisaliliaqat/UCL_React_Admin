@@ -1,0 +1,216 @@
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
+import Divider from '@material-ui/core/Divider';
+import { Button, TextField, MenuItem } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { DatePicker } from "@material-ui/pickers";
+
+const useStyles = makeStyles(() => ({
+    root: {
+        flexGrow: 1,
+    },
+    container: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        marginBottom: 10,
+        marginTop: 10
+    },
+    item: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginRight: 10,
+    },
+    resize: {
+        padding: 10
+    },
+    actions: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: '15%',
+        marginTop: 29,
+    },
+    label: {
+        textAlign: 'left',
+        font: 'bold 14px Lato',
+        letterSpacing: 0,
+        color: '#174A84',
+        opacity: 1,
+        marginTop: 5,
+        marginBottom: 5,
+        inlineSize: 'max-content'
+    },
+    button: {
+        textTransform: 'capitalize',
+        backgroundColor: '#174A84',
+        fontSize: 14
+    }
+}));
+
+const AttendanceFilter = props => {
+    const classes = useStyles();
+    const { values, handleDateChange, getDataByStatus, onClearFilters, onHandleChange, isLoading } = props;
+
+
+    return (
+        <Fragment>
+            <div className={classes.container}>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Section Type *</span>
+
+                    <TextField
+                        placeholder="Section Type"
+                        variant="outlined"
+                        name="sectionTypeId"
+                        id="sectionTypeId"
+                        disabled={!values.reportTypeId}
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.sectionTypeId}
+                        onChange={e => {
+                            onHandleChange(e);
+                        }}
+                        select
+                    >
+                        {values.sectionTypeData.map(item => {
+                            return (
+                                <MenuItem key={item.id} value={item.id}>
+                                    {item.label}
+                                </MenuItem>
+                            );
+                        })}
+                    </TextField>
+                </div>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Section *</span>
+
+                    <TextField
+                        placeholder="Section"
+                        variant="outlined"
+                        name="sectionId"
+                        id="sectionId"
+                        disabled={!values.sectionTypeId}
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.sectionId}
+                        onChange={e => {
+                            onHandleChange(e);
+                            getDataByStatus(e.target.value)
+                        }}
+                        select
+                    >
+                        {values.sectionData.map(item => {
+                            return (
+                                <MenuItem key={item.id} value={item.id}>
+                                    {item.label}
+                                </MenuItem>
+                            );
+                        })}
+                    </TextField>
+                </div>
+
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>From Date</span>
+                    <DatePicker
+                        autoOk
+                        invalidDateMessage=""
+                        placeholder="Date"
+                        disableFuture
+                        variant="inline"
+                        inputVariant="outlined"
+                        format="dd-MMM-yyyy"
+                        fullWidth
+                        value={values.fromDate}
+                        InputProps={{
+
+                            classes: { input: classes.resize }
+                        }}
+                        onChange={(date) => {
+                            handleDateChange(date, "fromDate");
+                        }}
+
+                    />
+                </div>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>To Date</span>
+                    <DatePicker
+                        autoOk
+                        invalidDateMessage=""
+                        placeholder="Date"
+                        disableFuture
+                        variant="inline"
+                        inputVariant="outlined"
+                        format="dd-MMM-yyyy"
+                        fullWidth
+                        value={values.toDate}
+                        InputProps={{
+
+                            classes: { input: classes.resize }
+                        }}
+                        onChange={(date) => {
+                            handleDateChange(date, "toDate");
+                        }}
+
+                    />
+                </div>
+
+                <div className={classes.actions}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.button}
+                        disabled={isLoading || !values.sectionId}
+                        onClick={() => getDataByStatus(values.sectionId)}
+                    > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.button}
+                        style={{
+                            marginLeft: 8,
+                        }}
+                        onClick={() => onClearFilters()}
+                    >Clear</Button>
+                </div>
+            </div>
+            <Divider style={{
+                backgroundColor: 'rgb(58, 127, 187)',
+                opacity: '0.3',
+            }} />
+
+        </Fragment>
+    );
+}
+
+AttendanceFilter.defaultProps = {
+    onHandleChange: fn => fn,
+    getDataByStatus: fn => fn,
+    values: {},
+    onClearFilters: fn => fn,
+    handleDateChange: fn => fn,
+    getDataFilters: fn => fn,
+    isLoading: false
+
+
+
+
+};
+
+AttendanceFilter.propTypes = {
+    onHandleChange: PropTypes.func,
+    values: PropTypes.object,
+    getDataByStatus: PropTypes.func,
+    onClearFilters: PropTypes.func,
+    handleDateChange: PropTypes.func,
+    getDataFilters: PropTypes.func,
+    isLoading: PropTypes.bool,
+};
+
+export default AttendanceFilter;

@@ -63,13 +63,17 @@ import F34Form from "./Contents/Forms/F34Form";
 import F34Reports from "./Contents/Forms/F34Reports";
 import F36Form from "./Contents/Forms/F36Form";
 import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
-import TeacherAttendanceReports from './Contents/Reports/TeacherAttendanceReports/TeacherAttendanceReports';
+import TeacherAttendance from './Contents/LMS/TeacherAttendance/TeacherAttendance';
 import StudentReports from './Contents/Reports/StudentReports/StudentReports';
-import AttendanceReports from './Contents/Reports/AttendanceReports/AttendanceReports';
+import TeacherAttendanceReports from './Contents/Reports/TeacherAttendanceReports/AttendanceReports';
+import StudentAttendanceReports from './Contents/Reports/StudentAttendanceReports/AttendanceReports';
 import F39Form from "./Contents/Forms/F39Form";
 import F39Reports from "./Contents/Forms/F39Reports";
-import F40Form from './Contents/Forms/F40GradedDiscussion/F40Form';
-import F40Reports from './Contents/Forms/F40GradedDiscussion/F40Reports';
+import F40Form from './Contents/LMS/F40GradedDiscussion/F40Form';
+import F40Reports from './Contents/LMS/F40GradedDiscussion/F40Reports';
+import GradedDiscussionBoardList from './Contents/LMS/GradedDiscussionBoardList/GradedDiscussionBoardList';
+import GradedDiscussionBoardStudentList from './Contents/LMS/GradedDiscussionBoardStudentList/GradedDiscussionBoardStudentList';
+import GradedDiscussionSummary from './Contents/Reports/GradedDiscussionSummary/GradedDiscussionSummary';
 import R41Reports from "./Contents/Forms/R41Reports";
 
 const drawerWidth = 283;
@@ -102,10 +106,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "left",
     paddingTop: 3,
     paddingBottom: 3,
-    paddingLeft: 15,
+    paddingLeft: 25,
     color: 'white',
-    width: drawerWidth - 60,
-    marginLeft: 25,
+    width: drawerWidth - 70,
     textOverflow: 'clip',
     whiteSpace: 'break-spaces'
   },
@@ -841,7 +844,7 @@ const Dashboard = (props) => {
                 name="teacher-attendance-report"
                 exact
                 path="/dashboard/teacher-attendance-report"
-                component={TeacherAttendanceReports}
+                component={TeacherAttendance}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
@@ -852,10 +855,38 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="attendance-reports-admin"
+                name="teacher-attendance-reports-admin"
                 exact
-                path="/dashboard/attendance-reports-admin"
-                component={AttendanceReports}
+                path="/dashboard/teacher-attendance-reports-admin"
+                component={TeacherAttendanceReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="student-attendance-reports-admin"
+                exact
+                path="/dashboard/student-attendance-reports-admin"
+                component={StudentAttendanceReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="graded-discussion-board-list"
+                exact
+                path="/dashboard/graded-discussion-board-list"
+                component={GradedDiscussionBoardList}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="graded-discussion-board-list"
+                exact
+                path="/dashboard/graded-discussion-board-list/:id"
+                component={GradedDiscussionBoardStudentList}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="teacher-gdb-summary-report"
+                exact
+                path="/dashboard/teacher-gdb-summary-report"
+                component={GradedDiscussionSummary}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

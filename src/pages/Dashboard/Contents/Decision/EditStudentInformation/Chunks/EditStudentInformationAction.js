@@ -12,10 +12,15 @@ import { withStyles } from '@material-ui/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { alphabetExp, numberExp } from '../../../../../../utils/regularExpression';
+import CustomizedSnackbar from '../../../../../../components/CustomizedSnackbar/CustomizedSnackbar';
 
 const styles = () => ({
     root: {
@@ -42,12 +47,36 @@ const styles = () => ({
     },
 });
 
+function isEmpty(obj) {
+
+    if (obj == null) return true;
+
+    if (typeof obj !== "object") return true;
+
+    for (var key in obj) {
+        if (hasOwnProperty.call(obj, key)) return false;
+    }
+
+    return true;
+}
+
 class DocumentRequestAction extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             applicationId: props.match.params.id,
+
+            /////////////////Applying for State///////////////////
+
+            appliedFor: "",
+            appliedForError: "",
+            category: 0,
+            categoryError: "",
+            yearAlevel: "",
+            yearAlevelError: "",
+            chessSubDegree: "",
+            chessSubDegreeError: "",
 
             /////////////////Personal Information State///////////////////
 
@@ -85,6 +114,10 @@ class DocumentRequestAction extends Component {
             isLoginMenu: false,
             isReload: false,
 
+            isOpenSnackbar: false,
+            snackbarMessage: "",
+            snackbarSeverity: ""
+
         }
     }
 
@@ -97,16 +130,125 @@ class DocumentRequestAction extends Component {
         this.setState({
             isLoading: true
         })
+        this.getDegreesData();
+        this.getChessSubDegreeData();
         await this.getData();
         this.setState({
             isLoading: false
         })
     }
 
+    getDegreesData = async () => {
+        let data = [];
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonAcademicsDegreeProgramsView`;
+        await fetch(url, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                        const resData = json.DATA || [];
+                        if (resData.length > 0) {
+                            for (let i = 0; i < resData.length; i++) {
+                                if (!isEmpty(resData[i])) {
+                                    data.push({ id: "", label: resData[i].department })
+                                }
+                                for (let j = 0; j < resData[i].degrees.length; j++) {
+                                    if (!isEmpty(resData[i].degrees[j])) {
+                                        data.push({ id: resData[i].degrees[j].id, label: resData[i].degrees[j].label })
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE, "error");
+                    }
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        this.handleOpenSnackbar('Faild to load Degree Data', "error");
+                        console.log(error);
+                    }
+                });
+        this.setState({
+            degreeData: data
+        });
+    }
+
+    getChessSubDegreeData = async () => {
+
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonAcademicsDegreeProgramsCHESSView`;
+        await fetch(url, {
+            method: "GET",
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                        this.setState({
+                            chessSubDegreeData: json.DATA || []
+                        });
+                    } else {
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE, "error");
+                    }
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        this.handleOpenSnackbar('Faild to load Chess Degree Data', "error");
+                        console.log(error);
+                    }
+                });
+
+    }
+
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar: true,
+            snackbarMessage: msg,
+            snackbarSeverity: severity
+        });
+    };
+
+    handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            isOpenSnackbar: false
+        });
+    };
+
     isFormValid = () => {
         let isValid = true;
         let { guardianMobileNoError, motherMobileNoError, fatherMobileNoError, dateOfBirthError,
-            firstNameError, lastNameError, mobileNoError } = this.state;
+            firstNameError, lastNameError, mobileNoError, chessSubDegreeError, yearAlevelError, appliedForError } = this.state;
         if (!this.state.guardianMobileNo) {
             // guardianMobileNoError = "Please enter a valid mobile number e.g 03001234567"
             // document.getElementById("guardianMobileNo").focus();
@@ -201,6 +343,36 @@ class DocumentRequestAction extends Component {
             firstNameError = "";
         }
 
+        if (this.state.appliedFor === 11 && !this.state.chessSubDegree) {
+            chessSubDegreeError = "Please select degree"
+            document.getElementById("chessSubDegree").focus();
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            isValid = false;
+        } else {
+            chessSubDegreeError = "";
+        }
+
+        if (this.state.appliedFor === 17 && !this.state.yearAlevel) {
+            yearAlevelError = "Please select A level year"
+            document.getElementById("yearAlevel").focus();
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            isValid = false;
+        } else {
+            yearAlevelError = "";
+        }
+
+        if (!this.state.appliedFor) {
+            appliedForError = "Please select programme"
+            document.getElementById("appliedFor").focus();
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            isValid = false;
+        } else {
+            appliedForError = "";
+        }
+
         this.setState({
             guardianMobileNoError,
             motherMobileNoError,
@@ -209,6 +381,9 @@ class DocumentRequestAction extends Component {
             dateOfBirthError,
             firstNameError,
             lastNameError,
+            chessSubDegreeError,
+            yearAlevelError,
+            appliedForError
         })
 
         return isValid;
@@ -241,10 +416,10 @@ class DocumentRequestAction extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                        alert("Saved");
+                        this.handleOpenSnackbar("Saved", "success");
                         document.documentElement.scrollTop = 0;
                     } else {
-                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE, "error");
                     }
                     console.log(json);
                 },
@@ -256,7 +431,7 @@ class DocumentRequestAction extends Component {
                         })
                     } else {
                         console.log(error);
-                        alert("Failed to Save ! Please try Again later.")
+                        this.handleOpenSnackbar('Faild to save data', "error");
                     }
                 });
         this.setState({
@@ -275,6 +450,11 @@ class DocumentRequestAction extends Component {
         const dob = data.dateOfBirthWithoutConversion ? new Date(data.dateOfBirthWithoutConversion) : new Date();
 
         this.setState({
+            appliedFor: data.degreeId || "",
+            category: data.isTransferCandidate || 0,
+            yearAlevel: data.alevelAdmissionYear || "",
+            chessSubDegree: data.chessDegreeTransferId || "",
+
             firstName: data.firstName || "",
             middleName: data.middleName || "",
             lastName: data.lastName || "",
@@ -315,7 +495,7 @@ class DocumentRequestAction extends Component {
                             }
                         }
                     } else {
-                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE, "error");
                     }
                     console.log(json);
                 },
@@ -326,7 +506,7 @@ class DocumentRequestAction extends Component {
                             isReload: true
                         })
                     } else {
-                        alert('Failed to fetch, Please try again later.');
+                        this.handleOpenSnackbar('Faild to load Aplication Data', "error");
                         console.log(error);
                     }
                 });
@@ -354,6 +534,14 @@ class DocumentRequestAction extends Component {
                 if (value && !regex.test(value)) {
                     return;
                 }
+                break;
+            case "appliedFor":
+                this.setState({
+                    yearAlevel: "",
+                    yearAlevelError: "",
+                    chessSubDegree: "",
+                    chessSubDegreeError: "",
+                })
                 break;
             default:
                 break;
@@ -399,6 +587,7 @@ class DocumentRequestAction extends Component {
                     </DialogContent>
                 </Dialog>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
+
                 <div style={{
                     paddingTop: 10,
                     paddingLeft: 30,
@@ -422,6 +611,56 @@ class DocumentRequestAction extends Component {
                     }} />
                     <Grid container component="main" className={classes.root}>
                         <Grid container spacing={2}>
+
+                            <Grid xs={12}>
+                                <span className={classes.sectionTitle}>
+                                    Course Applied For
+                            </span>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <FormControl error={!!this.state.appliedForError} className={classes.formControl}>
+                                    <InputLabel htmlFor="appliedFor">Programme</InputLabel>
+                                    <Select name="appliedFor" id="appliedFor" value={this.state.appliedFor} onChange={this.handleChange}>
+                                        {this.state.degreeData.map((item, index) => {
+                                            return (<MenuItem key={index} disabled={!item.id} value={item.id}>{item.label}</MenuItem>);
+                                        })
+                                        }
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            {this.state.appliedFor === 17 && <Grid item xs={12} sm={6}>
+                                <FormControl error={!!this.state.yearAlevelError} className={classes.formControl}>
+                                    <InputLabel htmlFor="yearAlevel">Select Year for ‘A’ Level Admission</InputLabel>
+                                    <Select value={this.state.yearAlevel} onChange={this.handleChange} name="yearAlevel" id="yearAlevel">
+                                        <MenuItem value={1}>Year 1</MenuItem>
+                                        <MenuItem value={2}>Year 2</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            }
+
+                            {this.state.appliedFor === 11 && <Grid item xs={12} sm={6}>
+                                <FormControl error={!!this.state.chessSubDegreeError} className={classes.formControl}>
+                                    <InputLabel htmlFor="chessSubDegree">Specify the degree to	transfer after completing  the CHESS</InputLabel>
+                                    <Select onChange={this.handleChange} value={this.state.chessSubDegree} name="chessSubDegree" id="chessSubDegree">
+                                        {this.state.chessSubDegreeData.map((item, index) => {
+                                            return (<MenuItem key={index} value={item.id}>{item.label}</MenuItem>);
+                                        })
+                                        }
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            }
+
+                            <Grid style={{ marginBottom: 10 }} item xs={12} sm={6}>
+                                <FormControl error={!!this.state.categoryError} className={classes.formControl}>
+                                    <InputLabel htmlFor="category">Category</InputLabel>
+                                    <Select value={this.state.category} onChange={this.handleChange} name="category" id="category">
+                                        <MenuItem value={0}>New Admission</MenuItem>
+                                        <MenuItem value={1}>Transfer</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
 
                             <Grid style={{ paddingTop: 10 }} xs={12}>
                                 <span className={classes.sectionTitle}>
@@ -594,9 +833,19 @@ class DocumentRequestAction extends Component {
                     </Grid>
 
                 </div>
-
+                <CustomizedSnackbar
+                    isOpen={this.state.isOpenSnackbar}
+                    message={this.state.snackbarMessage}
+                    severity={this.state.snackbarSeverity}
+                    handleCloseSnackbar={() => this.handleCloseSnackbar()}
+                />
                 <form onSubmit={this.onFormSubmit}>
                     <input type="hidden" value={this.state.applicationId} name="id" />
+
+                    <input type="hidden" value={this.state.appliedFor} name="degreeProgrammeId" />
+                    <input type="hidden" value={this.state.chessSubDegree} name="chessDegreeTransferId" />
+                    <input type="hidden" value={this.state.yearAlevel} name="alevelAdmissionYear" />
+                    <input type="hidden" value={this.state.category} name="isTransferCandidate" />
 
                     <input type="hidden" value={this.state.firstName} name="firstName" />
                     <input type="hidden" value={this.state.middleName} name="middleName" />

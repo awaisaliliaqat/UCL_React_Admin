@@ -219,11 +219,12 @@ class F40Reports extends Component {
   render() {
 
     const columns = [
-      { name: "label", title: "Topic" },
+      { name: "label", title: "Title" },
+      { name: "topic", title: "Topic" },
       { name: "sectionLabel", title: "Section" },
       { name: "startDate", title: "Start\xa0Date" },
       { name: "dueDate", title: "Due\xa0Date" },
-      { name: "instruction", title: "Instruction" },
+      { name: "instructions", title: "Instructions" },
       { name: "totalMarks", title: "Total\xa0Marks" },
       { name: "action", title: "Action" },
     ];

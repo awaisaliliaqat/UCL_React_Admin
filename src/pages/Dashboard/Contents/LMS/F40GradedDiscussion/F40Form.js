@@ -47,8 +47,8 @@ class F40Form extends Component {
       labelError: "",
       totalMarks: "",
       totalMarksError: "",
-      instruction: "",
-      instructionError: "",
+      instructions: "",
+      instructionsError: "",
       startDate: null,
       startDateError: "",
       dueDate: null,
@@ -56,6 +56,13 @@ class F40Form extends Component {
       sectionId: "",
       sectionIdError: "",
       sectionIdMenuItems: [],
+
+      courseId: "",
+      courseIdError: "",
+      courseIdMenuItems: [],
+
+      topic: "",
+      topicError: "",
 
       prevStartDate: new Date()
     };
@@ -78,11 +85,11 @@ class F40Form extends Component {
     });
   };
 
-  getSectionsData = async () => {
+  getCoursesData = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C40CommonAcademicsSectionsTeachersView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C40CommonAcademicsProgrammeCouresView`;
     await fetch(url, {
-      method: "POST",
+      method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -96,9 +103,49 @@ class F40Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let sectionIdMenuItems = json.DATA;
-            this.setState({ sectionIdMenuItems: json.DATA });
-            console.log("getSectionsData", sectionIdMenuItems)
+            this.setState({ courseIdMenuItems: json.DATA || [] });
+          } else {
+            this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error");
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  getSectionsData = async (courseId) => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C40CommonAcademicsSectionsTeachersView?courseId=${courseId}`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ sectionIdMenuItems: json.DATA || [] });
           } else {
             this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error");
           }
@@ -148,14 +195,17 @@ class F40Form extends Component {
               const dDate = json.DATA[0].dueDateWithoutConversion || new Date();
               const startDate = new Date(sDate);
               const dueDate = new Date(dDate);
+              this.getSectionsData(json.DATA[0].courseId);
               this.setState({
                 sectionId: json.DATA[0].sectionId,
+                courseId: json.DATA[0].courseId,
                 label: json.DATA[0].label,
                 startDate,
                 prevStartDate: startDate,
                 dueDate,
                 totalMarks: json.DATA[0].totalMarks,
-                instruction: json.DATA[0].instruction,
+                topic: json.DATA[0].topic,
+                instructions: json.DATA[0].instructions,
               });
             } else {
               window.location = "#/dashboard/F40Form/0";
@@ -185,7 +235,7 @@ class F40Form extends Component {
 
   isFormValid = () => {
     let isValid = true;
-    let { labelError, sectionIdError, startDateError, dueDateError, instructionError, totalMarksError } = this.state;
+    let { labelError, sectionIdError, courseIdError, topicError, startDateError, dueDateError, instructionsError, totalMarksError } = this.state;
 
     if (!this.state.totalMarks) {
       totalMarksError = "Please enter Total Marks";
@@ -194,11 +244,18 @@ class F40Form extends Component {
       totalMarksError = "";
     }
 
-    if (!this.state.instruction) {
-      instructionError = "Please add some instruction";
+    if (!this.state.instructions) {
+      instructionsError = "Please add some instructions";
       isValid = false;
     } else {
-      instructionError = "";
+      instructionsError = "";
+    }
+
+    if (!this.state.topic) {
+      topicError = "Please enter the topic";
+      isValid = false;
+    } else {
+      topicError = "";
     }
 
     if (!this.state.dueDate) {
@@ -225,7 +282,7 @@ class F40Form extends Component {
     }
 
     if (!this.state.label) {
-      labelError = "Please enter Assignment Label";
+      labelError = "Please enter title";
       isValid = false;
     } else {
       labelError = ""
@@ -238,8 +295,15 @@ class F40Form extends Component {
       sectionIdError = "";
     }
 
+    if (!this.state.courseId) {
+      courseIdError = "Please select the course";
+      isValid = false;
+    } else {
+      courseIdError = "";
+    }
+
     this.setState({
-      labelError, sectionIdError, startDateError, dueDateError, instructionError, totalMarksError
+      labelError, sectionIdError, startDateError, dueDateError, instructionsError, totalMarksError, courseIdError, topicError
     })
 
     return isValid;
@@ -252,14 +316,20 @@ class F40Form extends Component {
       labelError: "",
       totalMarks: "",
       totalMarksError: "",
-      instruction: "",
-      instructionError: "",
+      instructions: "",
+      instructionsError: "",
       startDate: null,
       startDateError: "",
       dueDate: null,
       dueDateError: "",
       sectionId: "",
-      sectionIdError: ""
+      sectionIdError: "",
+      sectionIdMenuItems: [],
+      courseId: "",
+      courseIdError: "",
+      topic: "",
+      topicError: ""
+
     })
   }
 
@@ -330,7 +400,7 @@ class F40Form extends Component {
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
     }
-    this.getSectionsData();
+    this.getCoursesData();
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -365,6 +435,9 @@ class F40Form extends Component {
         if (value && !regex.test(value)) {
           return;
         }
+        break;
+      case "courseId":
+        this.getSectionsData(value);
         break;
       default:
         break;
@@ -412,7 +485,31 @@ class F40Form extends Component {
                 marginRight: 10,
               }}
             >
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  id="courseId"
+                  name="courseId"
+                  variant="outlined"
+                  label="Courses"
+                  onChange={this.onHandleChange}
+                  value={this.state.courseId}
+                  error={this.state.courseIdError}
+                  required
+                  fullWidth
+                  select
+                >
+                  {this.state.courseIdMenuItems.map((dt) => (
+                    <MenuItem
+                      key={dt.id}
+                      value={dt.id}
+                    >
+                      {dt.label}
+                    </MenuItem>
+                  ))
+                  }
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   id="sectionId"
                   name="sectionId"
@@ -436,11 +533,11 @@ class F40Form extends Component {
                   }
                 </TextField>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   id="label"
                   name="label"
-                  label="Topic"
+                  label="Title"
                   required
                   fullWidth
                   variant="outlined"
@@ -493,7 +590,7 @@ class F40Form extends Component {
 
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   id="totalMarks"
                   name="totalMarks"
@@ -510,17 +607,33 @@ class F40Form extends Component {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  id="instruction"
-                  name="instruction"
-                  label="Instruction"
+                  id="topic"
+                  name="topic"
+                  label="Topic"
+                  required
+                  fullWidth
+                  variant="outlined"
+                  multiline
+                  rows={3}
+                  onChange={this.onHandleChange}
+                  value={this.state.topic}
+                  error={this.state.topicError}
+
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="instructions"
+                  name="instructions"
+                  label="instructions"
                   required
                   fullWidth
                   variant="outlined"
                   multiline
                   rows={5}
                   onChange={this.onHandleChange}
-                  value={this.state.instruction}
-                  error={this.state.instructionError}
+                  value={this.state.instructions}
+                  error={this.state.instructionsError}
 
                 />
               </Grid>
