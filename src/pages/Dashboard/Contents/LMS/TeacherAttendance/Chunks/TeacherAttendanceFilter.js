@@ -60,7 +60,7 @@ const TeacherAttendanceFilter = props => {
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>
-                    <span className={classes.label}>Class Date</span>
+                    <span className={classes.label}>From Date</span>
                     <DatePicker
                         autoOk
                         invalidDateMessage=""
@@ -70,13 +70,37 @@ const TeacherAttendanceFilter = props => {
                         inputVariant="outlined"
                         format="dd-MMM-yyyy"
                         fullWidth
-                        value={values.eventDate}
+                        value={values.fromDate}
                         InputProps={{
 
                             classes: { input: classes.resize }
                         }}
-                        onChange={(event) => {
-                            handleDateChange(event);
+                        onChange={(date) => {
+                            handleDateChange(date, "fromDate");
+                        }}
+
+                    />
+                </div>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>To Date</span>
+                    <DatePicker
+                        autoOk
+                        invalidDateMessage=""
+                        placeholder="Date"
+                        disableFuture
+                        variant="inline"
+                        inputVariant="outlined"
+                        format="dd-MMM-yyyy"
+                        fullWidth
+                        value={values.toDate}
+                        InputProps={{
+
+                            classes: { input: classes.resize }
+                        }}
+                        onChange={(date) => {
+                            handleDateChange(date, "toDate");
                         }}
 
                     />

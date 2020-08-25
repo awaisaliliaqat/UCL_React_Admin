@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import { TextField, Button, MenuItem } from '@material-ui/core';
+import { Button, TextField, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { DatePicker } from "@material-ui/pickers";
 
@@ -30,7 +30,6 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'row',
         width: '15%',
         marginTop: 29,
-        textAlign: "center"
     },
     label: {
         textAlign: 'left',
@@ -49,120 +48,133 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const F40ReportsFilter = props => {
+const AttendanceFilter = props => {
     const classes = useStyles();
-    const { values, onHandleChange, getDataByStatus, onClearFilters, handleDateChange, isLoading } = props;
+    const { values, handleDateChange, getDataByStatus, onClearFilters, onHandleChange, isLoading } = props;
 
 
     return (
         <Fragment>
             <div className={classes.container}>
                 <div className={classes.item} style={{
-                    width: '13%'
+                    width: '20%'
                 }}>
-                    <span className={classes.label}>ID</span>
-                    <TextField
-                        placeholder="ID"
-                        variant="outlined"
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.applicationId}
-                        name="applicationId"
-                        onChange={e => {
-                            onHandleChange(e)
-                        }}
-                    />
-                </div>
-                <div className={classes.item} style={{
-                    width: '24%'
-                }}>
-                    <span className={classes.label}>Short Label</span>
-                    <TextField
-                        placeholder="Name"
-                        variant="outlined"
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.studentName}
-                        name="studentName"
-                        onChange={e => {
-                            onHandleChange(e)
+                    <span className={classes.label}>Section Type *</span>
 
-                        }}
-                    />
-                </div>
-                <div className={classes.item} style={{
-                    width: '24%'
-                }}>
-                    <span className={classes.label}>Label</span>
                     <TextField
-                        placeholder="Gender"
+                        placeholder="Section Type"
                         variant="outlined"
-                        select
+                        name="sectionTypeId"
+                        id="sectionTypeId"
+                        disabled={!values.reportTypeId}
                         InputProps={{ classes: { input: classes.resize } }}
-                        value={values.genderId}
-                        name="genderId"
+                        value={values.sectionTypeId}
                         onChange={e => {
-                            onHandleChange(e)
+                            onHandleChange(e);
                         }}
+                        select
                     >
-                        <MenuItem value={0}>
-                            All
-                          </MenuItem>
-                        {values.genderData.map((item) => (
-                            <MenuItem key={item.id} value={item.id}>
-                                {item.label}
-                            </MenuItem>
-                        ))}
+                        {values.sectionTypeData.map(item => {
+                            return (
+                                <MenuItem key={item.id} value={item.id}>
+                                    {item.label}
+                                </MenuItem>
+                            );
+                        })}
                     </TextField>
                 </div>
                 <div className={classes.item} style={{
-                    width: '24%'
+                    width: '20%'
                 }}>
-                    <span className={classes.label}>Date</span>
+                    <span className={classes.label}>Section *</span>
+
+                    <TextField
+                        placeholder="Section"
+                        variant="outlined"
+                        name="sectionId"
+                        id="sectionId"
+                        disabled={!values.sectionTypeId}
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.sectionId}
+                        onChange={e => {
+                            onHandleChange(e);
+                            getDataByStatus(e.target.value)
+                        }}
+                        select
+                    >
+                        {values.sectionData.map(item => {
+                            return (
+                                <MenuItem key={item.id} value={item.id}>
+                                    {item.label}
+                                </MenuItem>
+                            );
+                        })}
+                    </TextField>
+                </div>
+
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>From Date</span>
                     <DatePicker
                         autoOk
                         invalidDateMessage=""
-                        disableFuture
                         placeholder="Date"
+                        disableFuture
                         variant="inline"
                         inputVariant="outlined"
                         format="dd-MMM-yyyy"
                         fullWidth
-                        value={values.eventDate}
+                        value={values.fromDate}
                         InputProps={{
+
                             classes: { input: classes.resize }
                         }}
-                        onChange={(event) => {
-                            handleDateChange(event);
+                        onChange={(date) => {
+                            handleDateChange(date, "fromDate");
                         }}
 
                     />
                 </div>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>To Date</span>
+                    <DatePicker
+                        autoOk
+                        invalidDateMessage=""
+                        placeholder="Date"
+                        disableFuture
+                        variant="inline"
+                        inputVariant="outlined"
+                        format="dd-MMM-yyyy"
+                        fullWidth
+                        value={values.toDate}
+                        InputProps={{
+
+                            classes: { input: classes.resize }
+                        }}
+                        onChange={(date) => {
+                            handleDateChange(date, "toDate");
+                        }}
+
+                    />
+                </div>
+
                 <div className={classes.actions}>
                     <Button
                         variant="contained"
                         color="primary"
                         className={classes.button}
-                        disabled={isLoading}
-                        onClick={() => getDataByStatus(props.values.applicationStatusId)}
-                        style={{ width: "48%" }}
-                    >
-                        {isLoading ?
-                            <CircularProgress
-                                style={{
-                                    color: 'white'
-                                }}
-                                size={24}
-                            />
-                            :
-                            "Search"
-                        }
-                    </Button>
+                        disabled={isLoading || !values.sectionId}
+                        onClick={() => getDataByStatus(values.sectionId)}
+                    > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
                     <Button
                         variant="contained"
                         color="primary"
                         className={classes.button}
                         style={{
-                            marginLeft: "4%",
-                            width: "48%"
+                            marginLeft: 8,
                         }}
                         onClick={() => onClearFilters()}
                     >Clear</Button>
@@ -177,7 +189,7 @@ const F40ReportsFilter = props => {
     );
 }
 
-F40ReportsFilter.defaultProps = {
+AttendanceFilter.defaultProps = {
     onHandleChange: fn => fn,
     getDataByStatus: fn => fn,
     values: {},
@@ -185,9 +197,13 @@ F40ReportsFilter.defaultProps = {
     handleDateChange: fn => fn,
     getDataFilters: fn => fn,
     isLoading: false
+
+
+
+
 };
 
-F40ReportsFilter.propTypes = {
+AttendanceFilter.propTypes = {
     onHandleChange: PropTypes.func,
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
@@ -197,4 +213,4 @@ F40ReportsFilter.propTypes = {
     isLoading: PropTypes.bool,
 };
 
-export default F40ReportsFilter;
+export default AttendanceFilter;

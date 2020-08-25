@@ -65,7 +65,7 @@ class GradedDiscussionBoardList extends Component {
 
     getSectionsData = async () => {
         this.setState({ isLoading: true });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsSectionsTeachersView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C42CommonAcademicsSectionsTeachersView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({

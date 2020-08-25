@@ -170,12 +170,35 @@ const GradedDiscussionBoardStudentListAction = (props) => {
 
                                         }}
                                     >
+                                        Topic:
+                                   </Typography>
+                                    <Typography
+                                        variant="subtitle1"
+                                        style={{
+                                            marginLeft: 60,
+                                            fontSize: 16,
+                                            textTransform: 'capitalize'
+                                        }}
+                                    >
+                                        {data.topic}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <Typography
+                                        variant="subtitle1"
+                                        color="primary"
+                                        style={{
+                                            marginRight: '1%',
+                                            fontSize: 16
+
+                                        }}
+                                    >
                                         Created On:
                                     </Typography>
                                     <Typography
                                         variant="subtitle1"
                                         style={{
-                                            marginLeft: 17,
+                                            marginLeft: 30,
                                             fontSize: 16
 
                                         }}
@@ -192,40 +215,17 @@ const GradedDiscussionBoardStudentListAction = (props) => {
 
                                         }}
                                     >
-                                        Updated On:
+                                        Status:
             </Typography>
                                     <Typography
                                         variant="subtitle1"
                                         style={{
-                                            marginLeft: '5%',
+                                            marginLeft: '9%',
                                             fontSize: 16
 
                                         }}
                                     >
-                                        {data.updatedOn}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6} style={{ display: 'flex', flexDirection: 'row' }}>
-                                    <Typography
-                                        variant="subtitle1"
-                                        color="primary"
-                                        style={{
-                                            marginRight: '1%',
-                                            fontSize: 16
-
-                                        }}
-                                    >
-                                        Topic:
-            </Typography>
-                                    <Typography
-                                        variant="subtitle1"
-                                        style={{
-                                            marginLeft: 60,
-                                            fontSize: 16,
-                                            textTransform: 'capitalize'
-                                        }}
-                                    >
-                                        {data.topic}
+                                        {data.isUploaded === 1 ? 'Submitted' : 'Pending'}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12} sm={6} style={{ display: 'flex', flexDirection: 'row' }}>

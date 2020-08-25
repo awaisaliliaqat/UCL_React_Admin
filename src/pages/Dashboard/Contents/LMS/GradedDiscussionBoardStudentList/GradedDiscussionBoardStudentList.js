@@ -237,8 +237,7 @@ class GradedDiscussionBoardStudentList extends Component {
                     wordBreak: 'break-all'
                 }
             },
-            { name: "Created On", dataIndex: "createdOn", sortable: false, customStyleHeader: { width: '13%' } },
-            { name: "Updated On", dataIndex: "updatedOn", sortable: false, customStyleHeader: { width: '13%' } },
+            { name: "Submitted On", dataIndex: "createdOn", sortable: false, customStyleHeader: { width: '13%' } },
             {
                 name: "Obtained Marks", renderer: rowData => {
                     return (
@@ -250,12 +249,21 @@ class GradedDiscussionBoardStudentList extends Component {
             },
             { name: "Total Marks", dataIndex: "totalMarks", sortable: false, customStyleHeader: { width: '13%' } },
             {
+                name: "Status", renderer: rowData => {
+                    return (
+                        <Fragment>
+                            {rowData.isUploaded === 1 ? 'Submitted' : 'Pending'}
+                        </Fragment>
+                    )
+                }, sortable: false, customStyleHeader: { width: '13%' }
+            },
+            {
                 name: "Action", renderer: rowData => {
                     return (
                         <Button style={{
                             fontSize: 12,
                             textTransform: 'capitalize'
-                        }} variant="outlined" onClick={() => this.onRecordClick(rowData)}>
+                        }} variant="outlined" onClick={() => this.onRecordClick(rowData)} disabled={rowData.isUploaded === 0}>
                             View
                         </Button>
                     )
