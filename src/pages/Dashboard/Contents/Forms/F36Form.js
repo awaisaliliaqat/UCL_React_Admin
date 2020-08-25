@@ -442,6 +442,7 @@ class F36Form extends Component {
             severity={this.state.snackbarSeverity}
             handleCloseSnackbar={() => this.handleCloseSnackbar()}
           />
+          {/*
           <br/>
           <br/>
           <BottomBar
@@ -453,7 +454,8 @@ class F36Form extends Component {
             bottomRightButtonAction={this.clickOnFormSubmit}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-          />
+          /> 
+          */}
         </div>
       </Fragment>
     );

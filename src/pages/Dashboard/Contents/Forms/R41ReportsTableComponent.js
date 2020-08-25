@@ -52,7 +52,7 @@ const getColor = (amount) => {
   return "#009688";
 };
 
-class F36ReportsTableComponent extends Component {
+class R41ReportsTableComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -155,4 +155,4 @@ class F36ReportsTableComponent extends Component {
   }
 }
 
-export default F36ReportsTableComponent;
+export default R41ReportsTableComponent;
