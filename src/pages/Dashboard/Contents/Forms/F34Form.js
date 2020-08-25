@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { withStyles } from "@material-ui/styles";
+import { createStyles, makeStyles, withStyles } from "@material-ui/styles";
 //import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
@@ -44,7 +44,7 @@ const styles = () => ({
 });
 
 function MyDropzone(props) {
-  
+
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document', multiple:false });
   
   const files = acceptedFiles.map((file, index) => {
