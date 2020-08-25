@@ -80,7 +80,7 @@ class F34ReportsTableComponent extends Component {
         { columnName: "SRNo", width: 100 },
         { columnName: "startDateReport", width: 100 },
         { columnName: "dueDateReport", width: 100 },
-        { columnName: "totalMarks", width: 100 },
+        { columnName: "totalMarks", width: 100, align:"center" },
         { columnName: "solutionFileDownload", width: 100, align:"center" },
         { columnName: "fileDownload", width: 100, align:"center" },
         { columnName: "label", wordWrapEnabled: true },
