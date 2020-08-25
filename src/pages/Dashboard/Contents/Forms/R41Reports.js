@@ -240,13 +240,17 @@ class R41Reports extends Component {
   };
 
   downloadPDFData = async () => {
-   // alert("Coming Soon");
+
+    if(
+      !this.isCourseValid() ||
+      !this.isSectionValid() ||
+      !this.isAssignmentValid()
+    )
+    {return;}
+    
       if (this.state.isDownloadPdf === false) {
-          this.setState({
-            isDownloadPdf: true
-          })
+          this.setState({isDownloadPdf: true})
           const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsSummaryPdfDownload?sectionId=${this.state.sectionId}&assignmentId=${this.state.assignmentId}`;
-         
       //    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
           await fetch(url, {
               method: "GET",
@@ -458,17 +462,24 @@ class R41Reports extends Component {
                 </IconButton>
               </Tooltip>
               <Tooltip title="Export PDF">
-                <img 
-                  alt="" 
-                  src={PDFIcon} 
-                  onClick={() => this.downloadPDFData()} 
-                  style = {{
-                    height: 22, 
-                    width: 22,
-                    marginBottom: -7,
-                    cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
-                  }}
-                />
+                {this.state.isDownloadPdf ?
+                  <CircularProgress 
+                    size={14}
+                    style={{cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`}}
+                  />
+                  :
+                  <img 
+                    alt="" 
+                    src={PDFIcon} 
+                    onClick={() => this.downloadPDFData()} 
+                    style = {{
+                      height: 22, 
+                      width: 22,
+                      marginBottom: -7,
+                      cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`,
+                    }}
+                  />
+                }
               </Tooltip> 
             </div>
           </div>
