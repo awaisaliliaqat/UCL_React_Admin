@@ -62,7 +62,6 @@ import F33Form from "./Contents/Forms/F33Form";
 import F34Form from "./Contents/Forms/F34Form";
 import F34Reports from "./Contents/Forms/F34Reports";
 import F36Form from "./Contents/Forms/F36Form";
-import F36Reports from "./Contents/Forms/F36Reports";
 import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
 import TeacherAttendanceReports from './Contents/Reports/TeacherAttendanceReports/TeacherAttendanceReports';
 import StudentReports from './Contents/Reports/StudentReports/StudentReports';
@@ -71,6 +70,7 @@ import F39Form from "./Contents/Forms/F39Form";
 import F39Reports from "./Contents/Forms/F39Reports";
 import F40Form from './Contents/Forms/F40GradedDiscussion/F40Form';
 import F40Reports from './Contents/Forms/F40GradedDiscussion/F40Reports';
+import R41Reports from "./Contents/Forms/R41Reports";
 
 const drawerWidth = 283;
 
@@ -703,12 +703,12 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="F36Reports"
+                name="R41Reports"
                 exact
-                path="/dashboard/F36Reports"
+                path="/dashboard/R41Reports"
                 render={(props) => {
                   return (
-                    <F36Reports
+                    <R41Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
