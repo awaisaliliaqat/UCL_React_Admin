@@ -442,6 +442,8 @@ class F36Form extends Component {
             severity={this.state.snackbarSeverity}
             handleCloseSnackbar={() => this.handleCloseSnackbar()}
           />
+          <br/>
+          <br/>
           <BottomBar
             left_button_text="View"
             left_button_hide={false}
