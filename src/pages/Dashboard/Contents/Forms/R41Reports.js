@@ -380,11 +380,13 @@ class R41Reports extends Component {
               }}
               variant="h5"
             >
+              {/* 
               <Tooltip title="Back">
                 <IconButton onClick={() => window.history.back()}>
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> 
+              */}
               Teacher Assigmnent Summary Report
             </Typography>
             {/* 
