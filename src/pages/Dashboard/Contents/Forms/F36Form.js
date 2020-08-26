@@ -63,12 +63,13 @@ class F36Form extends Component {
     });
   };
 
-  handlePopupOpen = (popupTitle, recordId, fileName, assignmentGradedData) => {
+  handlePopupOpen = (popupTitle, recordId, fileName, totalMarks, assignmentGradedData) => {
     this.setState({ 
       popupTitle: popupTitle,
       recordId: recordId,
       fileName: fileName,
       popupBoxOpen: true,
+      totalMarks: totalMarks,
       assignmentGradedData: assignmentGradedData
     });
   };
@@ -78,7 +79,9 @@ class F36Form extends Component {
       popupBoxOpen: false,
       popupTitle:"",
       recordId:"",
-      fileName:""
+      fileName:"",
+      totalMarks:"",
+      assignmentGradedData:{}
     });
   }
 
@@ -94,9 +97,6 @@ class F36Form extends Component {
 
   getData = async (status) => {
     this.setState({isLoading: true});
-    const reload = status === 1 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
-    const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
-    const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : "";
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsAssignmentsResultsView`;
     await fetch(url, {
       method: "GET",
@@ -128,8 +128,7 @@ class F36Form extends Component {
                 assignmentGradedData = {
                   gradedAssignmentUrl:gradedAssignmentUrl,
                   obtainedMarks: obtainedMarks,
-                  remarks:remarks,
-                  totalMarks:totalMarks
+                  remarks:remarks
                 }
               }
               json.DATA[i].action = (
@@ -145,7 +144,7 @@ class F36Form extends Component {
                           :
                           {height:36, width:36, backgroundColor:"rgb(29, 95, 152)"}
                       }
-                      onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName, assignmentGradedData)}
+                      onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName, totalMarks, assignmentGradedData)}
                     >
                       <EditIcon fontSize="small"/>
                     </Fab>
@@ -187,7 +186,7 @@ class F36Form extends Component {
           if (error.status === 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: reload,
+              isReload: false,
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
@@ -348,6 +347,7 @@ class F36Form extends Component {
           handlePopupClose={this.handlePopupClose}
           popupBoxOpen={this.state.popupBoxOpen}
           popupTitle={this.state.popupTitle}
+          totalMarks={this.state.totalMarks}
           handleOpenSnackbar={this.handleOpenSnackbar}
           getData={this.getData}
           assignmentGradedData={this.state.assignmentGradedData}
