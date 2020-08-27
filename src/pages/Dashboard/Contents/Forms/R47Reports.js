@@ -46,9 +46,9 @@ class R46Reports extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-      teachersMenuItems: [],
-      teacherId: "",
-      teacherIdError: "",
+      programGroupsMenuItems: [],
+      programGroupId: "",
+      programGroupIdError: "",
       timetableData: [],
     };
   }
@@ -66,9 +66,9 @@ class R46Reports extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getTeachers = async () => {
+  getprogramGroups = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C46CommonTeacherView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C47CommonSessionOfferedProgrammeGroupsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -84,12 +84,12 @@ class R46Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({teachersMenuItems: json.DATA || []});
+            this.setState({programGroupsMenuItems: json.DATA || []});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getTeachers", json);
+          console.log("getprogramGroups", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -107,11 +107,11 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getData = async (teacherId) => {
+  getData = async (programGroupId) => {
     this.setState({isLoading: true});
     let data = new FormData();
-    data.append("teacherId", teacherId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C46CommonTeacherTimeTableView`;
+    data.append("programmeGroupId", programGroupId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C47CommonProgrammesGroupTimeTableView`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -157,7 +157,7 @@ class R46Reports extends Component {
     const errName = `${name}Error`;
     let regex = "";
     switch (name) {
-        case "teacherId":
+        case "programGroupId":
             this.getData(value);
         break;
     default:
@@ -171,19 +171,19 @@ class R46Reports extends Component {
 
   isCourseValid = () => {
     let isValid = true;        
-    if (!this.state.teacherId) {
-        this.setState({teacherIdError:"Please select course."});
-        document.getElementById("teacherId").focus();
+    if (!this.state.programGroupId) {
+        this.setState({programGroupIdError:"Please select course."});
+        document.getElementById("programGroupId").focus();
         isValid = false;
     } else {
-        this.setState({teacherIdError:""});
+        this.setState({programGroupIdError:""});
     }
     return isValid;
   }
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.getTeachers();
+    this.getprogramGroups();
   }
 
   render() {
@@ -216,7 +216,7 @@ class R46Reports extends Component {
               }}
               variant="h5"
             >
-              Teacher Timetable
+              Program Group Timetable
             </Typography>
           </div>
           <Divider
@@ -234,25 +234,25 @@ class R46Reports extends Component {
           >
             <Grid item xs={12} md={4}>
               <TextField
-                id="teacherId"
-                name="teacherId"
+                id="programGroupId"
+                name="programGroupId"
                 variant="outlined"
-                label="Teacher"
+                label="Program Group"
                 onChange={this.onHandleChange}
-                value={this.state.teacherId}
-                error={!!this.state.teacherIdError}
-                helperText={this.state.teacherIdError ? this.state.teacherIdError : " "}
+                value={this.state.programGroupId}
+                error={!!this.state.programGroupIdError}
+                helperText={this.state.programGroupIdError ? this.state.programGroupIdError : " "}
                 required
                 fullWidth
                 select
               >
-                {this.state.teachersMenuItems && !this.state.isLoading ? 
-                  this.state.teachersMenuItems.map((dt, i) => (
+                {this.state.programGroupsMenuItems && !this.state.isLoading ? 
+                  this.state.programGroupsMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"teachersMenuItems"+dt.id}
-                      value={dt.id}
+                      key={"programGroupsMenuItems"+dt.ID}
+                      value={dt.ID}
                     >
-                      {dt.displayName}
+                      {dt.Label}
                     </MenuItem>
                   ))
                 :
