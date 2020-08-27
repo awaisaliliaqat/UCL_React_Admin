@@ -57,23 +57,21 @@ class R49ReportsTableComponent extends Component {
       pageSizes: [5, 10, 15, 20],
       defaultSorting: [],
       sortingStateColumnExtensions: [
-        { columnName: "action", sortingEnabled: false },
-        { columnName: "fileDownload", sortingEnabled: false },
+        // { columnName: "action", sortingEnabled: false }
       ],
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
-        { columnName: "nucleusId", width: 100 },
-        { columnName: "studentName", wordWrapEnabled: true },
-        { columnName: "assignmentSubmitted", width: 100 },
-        { columnName: "obtainedMarks", width: 150 },
-        { columnName: "remarks", wordWrapEnabled: true},
+        // { columnName: "nucleusId", width: 100 },
+        // { columnName: "studentName", wordWrapEnabled: true },
+        // { columnName: "assignmentSubmitted", width: 100 },
+        // { columnName: "obtainedMarks", width: 150 },
+        // { columnName: "remarks", wordWrapEnabled: true},
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
-        { columnName: "action", filteringEnabled: false },
-        { columnName: "fileDownload", filteringEnabled: false },
+        // { columnName: "action", filteringEnabled: false }
       ],
     };
   }

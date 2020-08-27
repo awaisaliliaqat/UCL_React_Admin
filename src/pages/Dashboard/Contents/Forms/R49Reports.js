@@ -106,12 +106,11 @@ class R49Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getData = async (sectionId, assignmentId) => {
+  getData = async (teacherId) => {
     this.setState({isLoading: true});
     let data = new FormData();
-    data.append("sectionId", sectionId);
-    data.append("assignmentId", assignmentId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsSummaryView`;
+    data.append("teacherId", teacherId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C49CommonTeacherSectionsVew`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -157,7 +156,7 @@ class R49Reports extends Component {
     let regex = "";
     switch (name) {
         case "teacherId":
-            this.getSections(value);
+            this.getData(value);
           break;
     default:
         break;
@@ -197,12 +196,8 @@ class R49Reports extends Component {
 
     const columns = [
       { name: "SRNo", title: "SR#" },
-      { name: "nucleusId", title: "NucleusID" },
-      { name: "studentName", title: "Student\xa0Name" },
-      { name: "assignmentSubmitted", title: "Submitted On" },
-      { name: "obtainedMarks", title: "Obtained Marks" },
-      { name: "totalMarks", title: "Total\xa0Marks" },
-      { name: "remarks", title: "Remarks" }
+      { name: "courseLabel", title: "Course" },
+      { name: "sectionLabel", title: "Section" },
     ];
 
     return (
