@@ -1,32 +1,37 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
 import { withStyles, useTheme } from "@material-ui/styles";
 import { numberFreeExp, numberExp } from "../../../../utils/regularExpression";
-import {
-  TextField,
-  Grid,
-  MenuItem,
-  CircularProgress,
-  Divider,
-  Typography,
-  Button,
-  IconButton,
-  Tooltip,
-  Fab,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  useMediaQuery,
-  Chip,
-  Checkbox,
-} from "@material-ui/core";
+import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography, Button,
+  IconButton, Tooltip, Fab, Dialog, DialogActions, DialogContent, DialogContentText,
+  DialogTitle, useMediaQuery, Chip, Checkbox,Table, TableBody, TableCell, TableContainer, 
+  TableHead, TableRow, Paper} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: "rgb(29, 95, 152)", //theme.palette.common.black,
+    color: theme.palette.common.white,
+    fontWeight: 500,
+    border: '1px solid white'
+  },
+  body: {
+    fontSize: 14,
+    border: '1px solid rgb(29, 95, 152)'
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
 
 const styles = (theme) => ({
   root: {
@@ -54,6 +59,12 @@ const styles = (theme) => ({
     width: "100%",
     textAlign: "center",
   },
+  table: {
+    minWidth: 750,
+  },
+  tableBody: {
+    padding: 0
+  }
 });
 
 function CourseRow(props) {
@@ -69,17 +80,19 @@ function CourseRow(props) {
   const [coursesInputValue, setCoursesInputValue] = useState("");
 
   const handleCourse = (value) => {
-    let ObjArray = value;
+    let Obj = value || {};
     let selectedPCIdsString = "";
-    for (let i = 0; i < ObjArray.length; i++) {
-      if (i == 0) {
-        selectedPCIdsString = ObjArray[i].ID;
-      } else {
-        selectedPCIdsString += "~" + ObjArray[i].ID;
-      }
+    if(!(Object.keys(Obj).length===0)){
+      selectedPCIdsString = Obj.ID;
     }
+    // for (let i = 0; i < Obj.length; i++) {
+    //   if (i == 0) {
+    //     selectedPCIdsString = Obj[i].ID;
+    //   } else {
+    //     selectedPCIdsString += "~" + Obj[i].ID;
+    //   }
+    //}
     setCoursesInputValue(selectedPCIdsString);
-    //console.log("handleCourse", selectedPCIdsString);
   };
 
   const getPreModuleById = (id) => {
@@ -103,127 +116,41 @@ function CourseRow(props) {
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   return (
-    <Grid
-      container
-      direction="row"
-      justify="space-evenly"
-      alignItems="center"
-      alignContent="space-around"
-    >
-      {/* 
-        <Typography 
-            color="primary" 
-            variant="subtitle1"
-            component="div"
-            style={{float:"left"}}
-        >
-            <b>{(rowIndex+1)}:</b>
-        </Typography> 
-      */}
-      <Grid item xs={3} md={3}>
-        {/* <TextField
-          id="module"
-          name="module"
-          label="Module"
-          required
-          fullWidth
-          inputProps={{
-            "aria-readonly": true,
-          }}
-          variant="outlined"
-          value={getPreModuleById(rowData.preModuleId)}
-        /> */}
-        {/* <Typography color="primary" variant="caption"> */}
-        {/* {getPreModuleById(rowData.preModuleId)} */}
-        {rowData.preModuleId}
-        {/* </Typography> */}
-        <TextField
-          type="hidden"
-          name="moduleNumber"
-          value={rowData.preModuleId}
-        />
-      </Grid>
-      <Grid item xs={4} md={4}>
-        {rowData.preCourses.map((option, index) => (
-          <span key={option.Label.toString()}>
-            {index != 0 ? <br /> : ""} {option.Label}
-          </span>
-        ))}
-
-        {/* <Autocomplete
-          multiple
-          fullWidth
-          style={{ paddingTop: "1.4em" }}
-          options={rowData.preCourses}
-          value={rowData.preCourses}
-          disableCloseOnSelect
-          getOptionLabel={(option) => " "}
-          renderTags={(tagValue, getTagProps) =>
-            tagValue.map((option, index) => (
-              <Chip
-                key={"chipTag" + option.ID}
-                label={option.Label}
-                color="primary"
-                variant="outlined"
-                {...getTagProps({ index })}
-              />
-            ))
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              label="Courses"
-              placeholder=""
-              type="hidden"
-            />
-          )}
-        /> */}
-        <TextField
-          type="hidden"
-          name="programmeCourseId"
-          value={coursesInputValue}
-        />
-      </Grid>
-      <Grid item xs={3} md={3}>
-        {/* <Typography color="primary" variant="caption"> */}
-        {rowData.preMarks}
-        {/* </Typography> */}
-        <TextField type="hidden" name="marks" value={rowData.preMarks} />
-        {/* <TextField
-          id="Marks"
-          name="marks"
-          label="Marks"
-          fullWidth
-          inputProps={{
-            "aria-readonly": true,
-          }}
-          variant="outlined"
-          value={rowData.preMarks}
-        /> */}
-      </Grid>
-      <Grid item xs={2} md={1} style={{ textAlign: "center" }}>
-        <IconButton
-          aria-label="Delete"
-          component="span"
-          onClick={() => onDelete(rowIndex)}
-        >
-          <Tooltip title="Delete">
-            <Fab
-              color="secondary"
-              aria-label="Delete"
-              size="small"
-              style={{
-                height: 36,
-                width: 36,
-              }}
-            >
-              <DeleteIcon fontSize="small" />
-            </Fab>
-          </Tooltip>
-        </IconButton>
-      </Grid>
-    </Grid>
+      <StyledTableRow key={rowData}>
+        <StyledTableCell component="th" scope="row">
+          {rowData.preModuleId}
+          <TextField type="hidden" name="moduleNumber" value={rowData.preModuleId}/>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+          {rowData.preCourses.Label}
+          <TextField type="hidden" name="programmeCourseId" value={coursesInputValue}/>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+          {rowData.preMarks}
+          <TextField type="hidden" name="marks" value={rowData.preMarks} />
+        </StyledTableCell>
+        <StyledTableCell align="center">
+          <IconButton
+            aria-label="Delete"
+            component="span"
+            onClick={() => onDelete(rowIndex)}
+          >
+            <Tooltip title="Delete">
+              <Fab
+                color="secondary"
+                aria-label="Delete"
+                size="small"
+                style={{
+                  height: 36,
+                  width: 36,
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </Fab>
+            </Tooltip>
+          </IconButton>
+        </StyledTableCell>
+    </StyledTableRow>
   );
 }
 
@@ -244,7 +171,7 @@ class F30FormPopupComponent extends Component {
       preModuleId: "",
       preModuleIdError: "",
       preCourseMenuItems: [],
-      preCourses: [],
+      preCourses: {},
       courseRowDataArray: [],
     };
   }
@@ -274,17 +201,14 @@ class F30FormPopupComponent extends Component {
             for (let i = 0; i < json.DATA.length; i++) {
               let courseRowDataObject = {
                 preModuleId: json.DATA[i].moduleNumber,
-                preCourses: json.DATA[i].coursesArray,
+                preCourses: json.DATA[i].coursesObject,
                 preMarks: json.DATA[i].marks,
               };
               courseRowDataArray.push(courseRowDataObject);
             }
             this.setState({ courseRowDataArray: courseRowDataArray });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
           }
           console.log("loadData", json);
         },
@@ -296,7 +220,7 @@ class F30FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
+            this.props.handleOpenSnackbar(
               "Failed to Save ! Please try Again later.",
               "error"
             );
@@ -315,7 +239,7 @@ class F30FormPopupComponent extends Component {
     this.setState({
       popupBoxOpen: false,
       preModuleId: "",
-      preCourses: [],
+      preCourses: {},
       preMarks: "",
       courseRowDataArray: [],
     });
@@ -333,20 +257,63 @@ class F30FormPopupComponent extends Component {
     return isValid;
   };
 
+  // isPreCoursesValid = () => {
+  //   let isValid = true;
+  //   if (this.state.preCourses.length < 1) {
+  //     this.setState({ preCoursesError: "Please select course." });
+  //     document.getElementById("preCourses").focus();
+  //     isValid = false;
+  //   } else if (this.state.preCourses.length > 2) {
+  //     this.setState({
+  //       preCoursesError: "One full or two half couses can be selected",
+  //     });
+  //     document.getElementById("preCourses").focus();
+  //     isValid = false;
+  //   } else {
+  //     this.setState({ preCoursesError: "" });
+  //   }
+  //   return isValid;
+  // };
+
   isPreCoursesValid = () => {
     let isValid = true;
-    if (this.state.preCourses.length < 1) {
+    if (Object.keys(this.state.preCourses).length < 1) {
       this.setState({ preCoursesError: "Please select course." });
       document.getElementById("preCourses").focus();
       isValid = false;
-    } else if (this.state.preCourses.length > 2) {
-      this.setState({
-        preCoursesError: "One full or two half couses can be selected",
-      });
-      document.getElementById("preCourses").focus();
-      isValid = false;
     } else {
-      this.setState({ preCoursesError: "" });
+      let moduleNumber = document.getElementsByName("moduleNumber");
+      let programmeCourseId = document.getElementsByName("programmeCourseId");
+      
+      let nextLevelCheck = true; 
+      for(let i=0; i<moduleNumber.length; i++) {
+        if(moduleNumber[i].value==this.state.preModuleId && programmeCourseId[i].value==this.state.preCourses.ID) {
+          document.getElementById("preCourses").focus();
+          this.props.handleOpenSnackbar("Same entry already exist.","error");
+          nextLevelCheck = false;
+          isValid = false;
+        }
+      }
+
+      if(moduleNumber.length > 1 && nextLevelCheck) {
+        let totalCourseCredit = 0;
+        for(let i=0; i<moduleNumber.length; i++) {
+          if(moduleNumber[i].value==this.state.preModuleId) {
+            let res = this.state.preCourseMenuItems.find( (dt) => dt.ID == programmeCourseId[i].value );
+            if(res){
+              totalCourseCredit+=res.courseCreditId;
+            }
+          }
+        }
+        if((totalCourseCredit+this.state.preCourses.courseCreditId) > 2){
+          this.setState({preCoursesError: "One full or two half couses can be selected"});
+          isValid = false;
+          document.getElementById("preCourses").focus();
+        }else{
+          this.setState({ preCoursesError: "" });
+        }
+      }
+
     }
     return isValid;
   };
@@ -377,14 +344,14 @@ class F30FormPopupComponent extends Component {
     let preCourses = this.state.preCourses;
     let preMarks = this.state.preMarks;
 
-    let moduleNumber = document.getElementsByName("moduleNumber");
-    for (let i = 0; i < moduleNumber.length; i++) {
-      if (moduleNumber[i].value == preModuleId) {
-        this.setState({ preModuleIdError: "Module should be unique." });
-        document.getElementById("preModuleId").focus();
-        return;
-      }
-    }
+    // let moduleNumber = document.getElementsByName("moduleNumber");
+    // for (let i = 0; i < moduleNumber.length; i++) {
+    //   if (moduleNumber[i].value == preModuleId) {
+    //     this.setState({ preModuleIdError: "Module should be unique." });
+    //     document.getElementById("preModuleId").focus();
+    //     return;
+    //   }
+    // }
 
     let courseRowDataObject = {
       preModuleId: preModuleId,
@@ -397,10 +364,10 @@ class F30FormPopupComponent extends Component {
     this.setState({
       courseRowDataArray: courseRowDataArray,
       preModuleId: "",
-      preCourses: [],
+      preCourses: {},
       preMarks: "",
     });
-    //console.log("courseRowDataObject", courseRowDataObject);
+    console.log("courseRowDataObject", courseRowDataObject);
   };
 
   handeDeleteCourseRow = (index) => {
@@ -418,13 +385,14 @@ class F30FormPopupComponent extends Component {
     });
   };
 
-  isCourseSelected = (option) => {
-    return this.state.preCourses.some(
-      (selectedOption) => selectedOption.ID == option.ID
-    );
-  };
+  // isCourseSelected = (option) => {
+  //   return this.state.preCourses.some(
+  //     (selectedOption) => selectedOption.ID == option.ID
+  //   );
+  // };
 
   handleSetPreCourses = (value) => {
+    console.log("value", value);
     this.setState({
       preCourses: value,
       preCoursesError: "",
@@ -443,8 +411,10 @@ class F30FormPopupComponent extends Component {
   }
 
   render() {
+
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
+    const { classes } = this.props; 
 
     return (
       <Fragment>
@@ -543,36 +513,38 @@ class F30FormPopupComponent extends Component {
                 </Grid>
                 <Grid item xs={12} md={5}>
                   <Autocomplete
-                    multiple
+                    //multiple
                     fullWidth
                     id="preCourses"
                     options={this.state.preCourseMenuItems}
                     value={this.state.preCourses}
                     onChange={(event, value) => this.handleSetPreCourses(value)}
-                    disableCloseOnSelect
+                    //disableCloseOnSelect
                     getOptionLabel={(option) => option.Label}
-                    renderTags={(tagValue, getTagProps) =>
-                      tagValue.map((option, index) => (
-                        <Chip
-                          label={option.Label}
-                          color="primary"
-                          variant="outlined"
-                          {...getTagProps({ index })}
-                        />
-                      ))
-                    }
-                    renderOption={(option) => (
-                      <Fragment>
-                        <Checkbox
-                          icon={icon}
-                          checkedIcon={checkedIcon}
-                          style={{ marginRight: 8 }}
-                          checked={this.isCourseSelected(option)}
-                          color="primary"
-                        />
-                        {option.Label}
-                      </Fragment>
-                    )}
+                    // renderTags={(tagValue, getTagProps) =>
+                    //   tagValue.map((option, index) => (
+                    //     <Chip
+                    //       label={option.Label}
+                    //       color="primary"
+                    //       variant="outlined"
+                    //       {...getTagProps({ index })}
+                    //     />
+                    //   ))
+                    // }
+                    // renderOption={(option,{selected}) => (
+                    //   <Fragment>
+                    //     <Checkbox
+                    //       icon={icon}
+                    //       checkedIcon={checkedIcon}
+                    //       style={{ marginRight: 8 }}
+                    //       checked={selected
+                    //         //this.isCourseSelected(option)
+                    //       }
+                    //       color="primary"
+                    //     />
+                    //     {option.Label}
+                    //   </Fragment>
+                    // )}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -633,7 +605,7 @@ class F30FormPopupComponent extends Component {
                     }}
                   />
                 </Grid>
-                <Grid
+                {/* <Grid
                   container
                   direction="row"
                   justify="space-evenly"
@@ -652,15 +624,40 @@ class F30FormPopupComponent extends Component {
                   <Grid item xs={3} md={3}>
                     <Typography color="primary">
                       Marks
-                    </Typography>
+                    </Typography> 
                   </Grid>
                   <Grid item xs={2} md={1} style={{ textAlign: "center" }}>
                     <Typography color="primary">
                       Delete
                     </Typography>
                   </Grid>
-                </Grid>
-                {this.state.courseRowDataArray.length > 0 &&
+                </Grid> */}
+                <TableContainer component={Paper}>
+                  <Table className={classes.table} size="small" aria-label="customized table">
+                    <TableHead>
+                      <TableRow>
+                        <StyledTableCell style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
+                        <StyledTableCell align="center">Courses</StyledTableCell>
+                        <StyledTableCell align="center">Marks</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Action</StyledTableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody className={classes.tableBody}>
+                        {this.state.courseRowDataArray.length > 0 &&
+                          this.state.courseRowDataArray.map((dt, i) => (
+                            <CourseRow
+                              key={"SMC"+i}
+                              rowIndex={i}
+                              rowData={dt}
+                              onDelete={(i) => this.handeDeleteCourseRow(i)}
+                              moduleMenuItems={this.state.preModuleMenuItems}
+                              courseMenuItems={this.preCourses}
+                            />
+                          ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                {/* {this.state.courseRowDataArray.length > 0 &&
                   this.state.courseRowDataArray.map((dt, i) => (
                     <CourseRow
                       key={"SMC"+i}
@@ -670,7 +667,7 @@ class F30FormPopupComponent extends Component {
                       moduleMenuItems={this.state.preModuleMenuItems}
                       courseMenuItems={this.preCourses}
                     />
-                  ))}
+                  ))} */}
                 <br />
                 <br />
               </Grid>
