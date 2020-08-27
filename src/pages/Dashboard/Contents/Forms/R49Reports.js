@@ -1,0 +1,344 @@
+import React, { Component, Fragment } from "react";
+import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button} from "@material-ui/core";
+import {Typography, TextField, MenuItem} from "@material-ui/core";
+import ExcelIcon from "../../../../assets/Images/excel.png";
+import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
+import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
+
+import R49ReportsTableComponent from "./R49ReportsTableComponent";
+import FilterIcon from "mdi-material-ui/FilterOutline";
+import SearchIcon from "mdi-material-ui/FileSearchOutline";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+
+function isEmpty(obj) {
+  if (obj == null) return true;
+  if (obj.length > 0) return false;
+  if (obj.length === 0) return true;
+  if (typeof obj !== "object") return true;
+  for (var key in obj) {
+    if (hasOwnProperty.call(obj, key)) return false;
+  }
+  return true;
+}
+
+class R49Reports extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: false,
+      showTableFilter: false,
+      showSearchBar: false,
+      isDownloadPdf: false,
+      applicationStatusId: 1,
+      isLoginMenu: false,
+      isReload: false,
+      isOpenSnackbar: false,
+      snackbarMessage: "",
+      snackbarSeverity: "",
+      assignmentsData: [],
+      teachersMenuItems: [],
+      teacherId: "",
+      teacherIdError: "",
+      assignmentsMenuItems: [],
+      sectionId: "",
+      sectionIdError: "",
+      sectionsMenuItems: [],
+      assignmentId:"",
+      assignmentIdError:"",
+      sectionId:""
+    };
+  }
+
+  handleOpenSnackbar = (msg, severity) => {
+    this.setState({
+      isOpenSnackbar: true,
+      snackbarMessage: msg,
+      snackbarSeverity: severity,
+    });
+  };
+
+  handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {  return; }
+    this.setState({ isOpenSnackbar: false });
+  };
+
+  getTeachers = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C49CommonTeachersView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({teachersMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getTeachers", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  getData = async (sectionId, assignmentId) => {
+    this.setState({isLoading: true});
+    let data = new FormData();
+    data.append("sectionId", sectionId);
+    data.append("assignmentId", assignmentId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsSummaryView`;
+    await fetch(url, {
+      method: "POST",
+      body:data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({assignmentsData: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getData", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  onHandleChange = (e) => {
+    const { name, value } = e.target;
+    const errName = `${name}Error`;
+    let regex = "";
+    switch (name) {
+        case "teacherId":
+            this.getSections(value);
+          break;
+    default:
+        break;
+    }
+    this.setState({
+      [name]: value,
+      [errName]: "",
+    });
+  };
+
+  isCourseValid = () => {
+    let isValid = true;        
+    if (!this.state.teacherId) {
+        this.setState({teacherIdError:"Please select course."});
+        document.getElementById("teacherId").focus();
+        isValid = false;
+    } else {
+        this.setState({teacherIdError:""});
+    }
+    return isValid;
+  }
+  
+  handleToggleTableFilter = () => {
+    this.setState({ showTableFilter: !this.state.showTableFilter });
+  };
+
+  handleToggleSearchBar = () => {
+    this.setState({ showSearchBar: !this.state.showSearchBar });
+  };
+
+  componentDidMount() {
+    this.props.setDrawerOpen(false);
+    this.getTeachers();
+  }
+
+  render() {
+
+    const columns = [
+      { name: "SRNo", title: "SR#" },
+      { name: "nucleusId", title: "NucleusID" },
+      { name: "studentName", title: "Student\xa0Name" },
+      { name: "assignmentSubmitted", title: "Submitted On" },
+      { name: "obtainedMarks", title: "Obtained Marks" },
+      { name: "totalMarks", title: "Total\xa0Marks" },
+      { name: "remarks", title: "Remarks" }
+    ];
+
+    return (
+      <Fragment>
+        <LoginMenu
+          reload={this.state.isReload}
+          open={this.state.isLoginMenu}
+          handleClose={() => this.setState({ isLoginMenu: false })}
+        />
+        <div
+          style={{
+            padding: 20,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                textTransform: "capitalize",
+              }}
+              variant="h5"
+            >
+              {/* 
+              <Tooltip title="Back">
+                <IconButton onClick={() => window.history.back()}>
+                  <ArrowBackIcon fontSize="small" color="primary" />
+                </IconButton>
+              </Tooltip> 
+              */}
+              Teacher Sections Report
+            </Typography>
+            <div style={{ float: "right" }}>
+              {/* 
+              <Tooltip title="Search Bar">
+                  <IconButton
+                      onClick={this.handleToggleSearchBar}
+                  >
+                      <FilterIcon fontSize="default" color="primary"/>
+                  </IconButton>
+              </Tooltip> 
+              */}
+              <Tooltip title="Table Filter">
+                <IconButton
+                  style={{ marginLeft: "-10px" }}
+                  onClick={this.handleToggleTableFilter}
+                >
+                  <FilterIcon fontSize="default" color="primary" />
+                </IconButton>
+              </Tooltip> 
+            </div>
+          </div>
+          <Divider
+            style={{
+              backgroundColor: "rgb(58, 127, 187)",
+              opacity: "0.3",
+            }}
+          />
+          <br/>
+          <Grid 
+            container 
+            justify="center"
+            alignItems="center"
+            spacing={2}
+          >
+            <Grid item xs={12} md={4}>
+              <TextField
+                id="teacherId"
+                name="teacherId"
+                variant="outlined"
+                label="Teacher"
+                onChange={this.onHandleChange}
+                value={this.state.teacherId}
+                error={!!this.state.teacherIdError}
+                helperText={this.state.teacherIdError ? this.state.teacherIdError : " "}
+                required
+                fullWidth
+                select
+              >
+                {this.state.teachersMenuItems && !this.state.isLoading ? 
+                  this.state.teachersMenuItems.map((dt, i) => (
+                    <MenuItem
+                      key={"teachersMenuItems"+dt.id}
+                      value={dt.id}
+                    >
+                      {dt.label}
+                    </MenuItem>
+                  ))
+                :
+                  <Grid 
+                    container 
+                    justify="center">
+                      <CircularProgress />
+                    </Grid>
+                }
+              </TextField>
+            </Grid>
+          </Grid>
+          <Divider
+            style={{
+              backgroundColor: "rgb(58, 127, 187)",
+              opacity: "0.3",
+            }}
+          />
+          {this.state.assignmentsData && !this.state.isLoading ? (
+            <R49ReportsTableComponent
+              data={this.state.assignmentsData}
+              columns={columns}
+              showFilter={this.state.showTableFilter}
+            />
+          ) : (
+            <Grid 
+              container 
+              justify="center" 
+              alignItems="center"
+            >
+              <Grid item xs={1}>
+                <br/>
+                <CircularProgress />
+              </Grid>
+            </Grid>
+          )}
+          <CustomizedSnackbar
+            isOpen={this.state.isOpenSnackbar}
+            message={this.state.snackbarMessage}
+            severity={this.state.snackbarSeverity}
+            handleCloseSnackbar={() => this.handleCloseSnackbar()}
+          />
+        </div>
+      </Fragment>
+    );
+  }
+}
+export default R49Reports;

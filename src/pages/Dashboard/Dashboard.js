@@ -73,6 +73,7 @@ import F40Reports from './Contents/Forms/F40GradedDiscussion/F40Reports';
 import R41Reports from "./Contents/Forms/R41Reports";
 import R46Reports from "./Contents/Forms/R46Reports";
 import R47Reports from "./Contents/Forms/R47Reports";
+import R49Reports from "./Contents/Forms/R49Reports";
 
 const drawerWidth = 283;
 
@@ -741,6 +742,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R47Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R49Reports"
+                exact
+                path="/dashboard/R49Reports"
+                render={(props) => {
+                  return (
+                    <R49Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
