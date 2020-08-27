@@ -1,19 +1,9 @@
 import React, { Component, Fragment } from "react";
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Paper, Divider, IconButton, Tooltip, CircularProgress, Grid, 
-  Button, Card, CardContent} from "@material-ui/core";
-import ExcelIcon from "../../../../assets/Images/excel.png";
-import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
+  TableHead, TableRow, Paper, Divider, CircularProgress, Grid} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import { format } from "date-fns";
-import R46ReportsTableComponent from "./R46ReportsTableComponent";
-import FilterIcon from "mdi-material-ui/FilterOutline";
-import SearchIcon from "mdi-material-ui/FileSearchOutline";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -38,7 +28,7 @@ const StyledTableRow = withStyles((theme) => ({
 
 const styles = ({
   table: {
-    minWidth: 700,
+    minWidth: 750,
   },
 });
 
