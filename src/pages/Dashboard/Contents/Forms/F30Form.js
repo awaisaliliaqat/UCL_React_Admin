@@ -337,6 +337,7 @@ class F30Form extends Component {
                   preModuleMenuItems={this.state.preModuleMenuItems}
                   preCourseMenuItems={this.state.preCourseMenuItems}
                   clickOnFormSubmit={() => this.clickOnFormSubmit}
+                  handleOpenSnackbar={this.handleOpenSnackbar}
                 />
               );
             }
@@ -432,6 +433,7 @@ class F30Form extends Component {
   };
 
   onFormSubmit = async (e) => {
+
     if (!this.isAcademicSessionValid() || !this.isProgrammeValid()) {
       return;
     }
@@ -451,7 +453,6 @@ class F30Form extends Component {
         data.append("marks", marks[i].value);
       }
     }
-
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C30CommonAcademicsCoursesStudentsAchievementsSave`;
     await fetch(url, {
@@ -634,18 +635,20 @@ class F30Form extends Component {
                   }}
                 />
               </Grid>
-              {/* {this.state.showSearchBar ? (
-                                <F30FormFilter
-                                    isLoading={this.state.isLoading}
-                                    handleDateChange={this.handleDateChange}
-                                    onClearFilters={this.onClearFilters}
-                                    values={this.state}
-                                    getDataByStatus={(status) => this.getData(status)}
-                                    onHandleChange={(e) => this.onHandleChange(e)}
-                                />
-                            ) : (
-                                <br />
-                            )} */}
+              {/* 
+              {this.state.showSearchBar ? (
+                <F30FormFilter
+                    isLoading={this.state.isLoading}
+                    handleDateChange={this.handleDateChange}
+                    onClearFilters={this.onClearFilters}
+                    values={this.state}
+                    getDataByStatus={(status) => this.getData(status)}
+                    onHandleChange={(e) => this.onHandleChange(e)}
+                />
+              ) : (
+                <br />
+              )} 
+              */}
               {this.state.studentListArray.length > 0 ? (
                 <F30FormTableComponent
                   rows={this.state.studentListArray}
@@ -666,15 +669,17 @@ class F30Form extends Component {
             </Grid>
           </Grid>
         </form>
-        {/* <BottomBar
-                    left_button_text="View"
-                    left_button_hide={true}
-                    bottomLeftButtonAction={this.viewReport}
-                    right_button_text="Save"
-                    bottomRightButtonAction={this.clickOnFormSubmit}
-                    loading={this.state.isLoading}
-                    isDrawerOpen={ this.props.isDrawerOpen }
-                /> */}
+        {/* 
+        <BottomBar
+          left_button_text="View"
+          left_button_hide={true}
+          bottomLeftButtonAction={this.viewReport}
+          right_button_text="Save"
+          bottomRightButtonAction={this.clickOnFormSubmit}
+          loading={this.state.isLoading}
+          isDrawerOpen={ this.props.isDrawerOpen }
+        /> 
+        */}
         <CustomizedSnackbar
           isOpen={this.state.isOpenSnackbar}
           message={this.state.snackbarMessage}

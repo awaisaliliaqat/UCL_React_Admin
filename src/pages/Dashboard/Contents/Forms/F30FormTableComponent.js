@@ -82,7 +82,7 @@ class F30FormTableComponent extends Component {
             columnExtensions={sortingStateColumnExtensions}
           />
           <PagingState 
-            defaultCurrentPage={1} 
+            defaultCurrentPage={0} 
             defaultPageSize={10}
           />
           <IntegratedFiltering />
