@@ -130,11 +130,6 @@ function CourseRow(props) {
           <TextField type="hidden" name="marks" value={rowData.preMarks} />
         </StyledTableCell>
         <StyledTableCell align="center">
-          <IconButton
-            aria-label="Delete"
-            component="span"
-            onClick={() => onDelete(rowIndex)}
-          >
             <Tooltip title="Delete">
               <Fab
                 color="secondary"
@@ -143,12 +138,14 @@ function CourseRow(props) {
                 style={{
                   height: 36,
                   width: 36,
+                  margin:4
                 }}
+                onClick={() => onDelete(rowIndex)}
               >
                 <DeleteIcon fontSize="small" />
               </Fab>
             </Tooltip>
-          </IconButton>
+          
         </StyledTableCell>
     </StyledTableRow>
   );
