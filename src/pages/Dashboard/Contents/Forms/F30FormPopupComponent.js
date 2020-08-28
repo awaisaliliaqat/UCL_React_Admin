@@ -117,7 +117,7 @@ function CourseRow(props) {
 
   return (
       <StyledTableRow key={rowData}>
-        <StyledTableCell component="th" scope="row">
+        <StyledTableCell component="th" scope="row" align="center">
           {rowData.preModuleId}
           <TextField type="hidden" name="moduleNumber" value={rowData.preModuleId}/>
         </StyledTableCell>
@@ -636,7 +636,7 @@ class F30FormPopupComponent extends Component {
                   <Table className={classes.table} size="small" aria-label="customized table">
                     <TableHead>
                       <TableRow>
-                        <StyledTableCell style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
                         <StyledTableCell align="center">Courses</StyledTableCell>
                         <StyledTableCell align="center">Marks</StyledTableCell>
                         <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Action</StyledTableCell>
