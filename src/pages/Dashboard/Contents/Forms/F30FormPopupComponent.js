@@ -14,14 +14,14 @@ import CheckBoxIcon from "@material-ui/icons/CheckBox";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: "rgb(29, 95, 152)", //theme.palette.common.black,
+    backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
     fontWeight: 500,
-    border: '1px solid white'
+    border: '1px solid '+theme.palette.common.white
   },
   body: {
     fontSize: 14,
-    border: '1px solid rgb(29, 95, 152)'
+    border: '1px solid '+theme.palette.primary.main,
   },
 }))(TableCell);
 
@@ -61,9 +61,6 @@ const styles = (theme) => ({
   },
   table: {
     minWidth: 750,
-  },
-  tableBody: {
-    padding: 0
   }
 });
 
@@ -411,7 +408,7 @@ class F30FormPopupComponent extends Component {
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
-    const { classes } = this.props; 
+    const { classes } = this.props;
 
     return (
       <Fragment>
@@ -639,7 +636,7 @@ class F30FormPopupComponent extends Component {
                         <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Action</StyledTableCell>
                       </TableRow>
                     </TableHead>
-                    <TableBody className={classes.tableBody}>
+                    <TableBody>
                         {this.state.courseRowDataArray.length > 0 ?
                           this.state.courseRowDataArray.map((dt, i) => (
                             <CourseRow
