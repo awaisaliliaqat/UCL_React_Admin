@@ -517,7 +517,7 @@ class F30FormPopupComponent extends Component {
                     value={this.state.preCourses}
                     onChange={(event, value) => this.handleSetPreCourses(value)}
                     //disableCloseOnSelect
-                    getOptionLabel={(option) => option.Label}
+                    getOptionLabel={(option) => typeof option.Label === 'string' ? option.Label : ""}
                     // renderTags={(tagValue, getTagProps) =>
                     //   tagValue.map((option, index) => (
                     //     <Chip
