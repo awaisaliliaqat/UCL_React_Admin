@@ -4,10 +4,13 @@ import Typography from "@material-ui/core/Typography";
 import StudentCourseSelectionFilter from "./Chunks/StudentCourseSelectionFilter";
 import TablePanel from "../../../../../components/ControlledTable/RerenderTable/TablePanel";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import StudentCourseSelectionAction from "./Chunks/StudentCourseSelectionAction";
 import ExcelIcon from "../../../../../assets/Images/excel.png";
 import { color } from "highcharts";
+import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 
 class StudentCourseSelection extends Component {
   constructor(props) {
@@ -20,6 +23,7 @@ class StudentCourseSelection extends Component {
       achivementsData: [],
       moduleData: [],
       isOpenActionMenu: false,
+      readOnly: false,
       selectedData: {},
       isLoginMenu: false,
       isReload: false,
@@ -518,7 +522,10 @@ class StudentCourseSelection extends Component {
           if (json.CODE === 1) {
             alert("Saved");
             this.getData();
-            this.setState({ isOpenActionMenu: false });
+            this.setState({ 
+              readOnly: false, 
+              isOpenActionMenu: false
+            });
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
           }
@@ -561,6 +568,10 @@ class StudentCourseSelection extends Component {
       [name]: value,
     });
   };
+
+  onReadOnly = () => {
+    this.setState({readOnly:true});
+  }
 
   handleCheckboxChange = (e, value = {}, type = 0) => {
     const { checked } = e.target;
@@ -641,22 +652,69 @@ class StudentCourseSelection extends Component {
         name: "Action",
         renderer: (rowData) => {
           return (
-            <Button
-              disabled={this.state.viewLoading}
-              style={{
-                fontSize: 12,
-                cursor: `${this.state.viewLoading ? "wait" : "pointer"}`,
-                textTransform: "capitalize",
-              }}
-              variant="outlined"
-              onClick={() => {
-                this.getCouresData(rowData);
-                this.getModulesData(rowData);
-                this.getStudentAchivementsData(rowData);
-              }}
-            >
-              View
-            </Button>
+            <Fragment>
+              <IconButton 
+                aria-label="View"
+                disabled={this.state.viewLoading}
+                onClick={() => {
+                  this.onReadOnly();
+                  this.getCouresData(rowData);
+                  this.getModulesData(rowData);
+                  this.getStudentAchivementsData(rowData);
+                }}
+              >
+                <VisibilityOutlinedIcon />
+              </IconButton>
+              {/* 
+              <Button
+                disabled={this.state.viewLoading}
+                style={{
+                  fontSize: 12,
+                  cursor: `${this.state.viewLoading ? "wait" : "pointer"}`,
+                  display:"inline-block",
+                  textTransform: "capitalize",
+                }}
+                variant="outlined"
+                onClick={() => {
+                  this.onReadOnly();
+                  this.getCouresData(rowData);
+                  this.getModulesData(rowData);
+                  this.getStudentAchivementsData(rowData);
+                }}
+              >
+                View
+              </Button> 
+              */}
+              <IconButton 
+                aria-label="View"
+                disabled={this.state.viewLoading}
+                onClick={() => {
+                  this.getCouresData(rowData);
+                  this.getModulesData(rowData);
+                  this.getStudentAchivementsData(rowData);
+                }}
+              >
+                <EditOutlinedIcon />
+              </IconButton>
+              {/* 
+              <Button
+                disabled={this.state.viewLoading}
+                style={{
+                  fontSize: 12,
+                  cursor: `${this.state.viewLoading ? "wait" : "pointer"}`,
+                  textTransform: "capitalize",
+                }}
+                variant="outlined"
+                onClick={() => {
+                  this.getCouresData(rowData);
+                  this.getModulesData(rowData);
+                  this.getStudentAchivementsData(rowData);
+                }}
+              >
+                Edit
+              </Button> 
+              */}
+            </Fragment>
           );
         },
         sortable: false,
@@ -675,7 +733,7 @@ class StudentCourseSelection extends Component {
         <StudentCourseSelectionAction
           onSave={() => this.onSaveClick()}
           open={this.state.isOpenActionMenu}
-          handleClose={() => this.setState({ isOpenActionMenu: false })}
+          handleClose={() => this.setState({ isOpenActionMenu: false, readOnly:false })}
           selectedData={this.state.selectedData}
           coursesData={this.state.coursesData}
           moduleData={this.state.moduleData}
@@ -686,6 +744,7 @@ class StudentCourseSelection extends Component {
           }
           selectedCoursesData={this.state.selectedCoursesData}
           handleSetCourses={(value) => this.handleSetCourses(value)}
+          readOnly={this.state.readOnly}
         />
 
         <div

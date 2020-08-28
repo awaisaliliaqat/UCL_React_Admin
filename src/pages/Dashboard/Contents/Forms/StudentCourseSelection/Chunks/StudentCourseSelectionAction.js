@@ -98,7 +98,7 @@ class StudentCourseSelectionAction extends Component {
 
     render() {
         
-        const { achivementsData,moduleData, coursesData, handleSetCourses, selectedCoursesData, handleCheckboxChange, selectedData, open, handleClose, onClear, onSave } = this.props;
+        const { achivementsData,moduleData, coursesData, handleSetCourses, selectedCoursesData, handleCheckboxChange, selectedData, open, handleClose, onClear, onSave, readOnly} = this.props;
         const columns = [
             //{ name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '14%' } },
             //{ name: "Course Code", dataIndex: "courseCode", sortable: false, customStyleHeader: { width: '14%' } },
@@ -210,6 +210,7 @@ class StudentCourseSelectionAction extends Component {
                                         multiple
                                         fullWidth
                                         id="preCourses"
+                                        disabled={readOnly}
                                         options={coursesData}
                                         value={selectedCoursesData}
                                         onChange={(event, value) =>
@@ -272,6 +273,7 @@ class StudentCourseSelectionAction extends Component {
                                                             checked={rowData.isRegistered === 1}
                                                             onChange={(e) => handleCheckboxChange(e, rowData, 0)}
                                                             inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                            disabled={readOnly}
                                                         />
                                                     </Fragment>
                                                 </StyledTableCell>
@@ -286,6 +288,7 @@ class StudentCourseSelectionAction extends Component {
                                                             checked={rowData.isRepeat === 1}
                                                             onChange={(e) => handleCheckboxChange(e, rowData, 1)}
                                                             inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                            disabled={readOnly}
                                                         />
                                                     </Fragment>
                                                 </StyledTableCell>
@@ -305,7 +308,9 @@ class StudentCourseSelectionAction extends Component {
                         <div style={{
                             marginRight: 30,
                         }}>
-                        <Button onClick={() => onSave()}
+                        <Button 
+                            disabled={readOnly}
+                            onClick={() => onSave()}
                             color="primary" variant="contained" style={{
                                 textTransform: 'capitalize',
                                 width: 100,
