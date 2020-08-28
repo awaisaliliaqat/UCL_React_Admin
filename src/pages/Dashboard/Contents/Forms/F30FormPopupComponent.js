@@ -643,7 +643,7 @@ class F30FormPopupComponent extends Component {
                       </TableRow>
                     </TableHead>
                     <TableBody className={classes.tableBody}>
-                        {this.state.courseRowDataArray.length > 0 &&
+                        {this.state.courseRowDataArray.length > 0 ?
                           this.state.courseRowDataArray.map((dt, i) => (
                             <CourseRow
                               key={"SMC"+i}
@@ -653,7 +653,17 @@ class F30FormPopupComponent extends Component {
                               moduleMenuItems={this.state.preModuleMenuItems}
                               courseMenuItems={this.preCourses}
                             />
-                          ))}
+                          ))
+                        :
+                        this.state.isLoading ?
+                          <StyledTableRow key={1}>
+                            <StyledTableCell component="th" scope="row" colSpan={4}><center><CircularProgress/></center></StyledTableCell>
+                          </StyledTableRow>
+                          :
+                          <StyledTableRow key={1}>
+                            <StyledTableCell component="th" scope="row" colSpan={4}><center><b>No Data</b></center></StyledTableCell>
+                          </StyledTableRow>
+                        }
                     </TableBody>
                   </Table>
                 </TableContainer>
