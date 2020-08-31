@@ -78,6 +78,8 @@ import R41Reports from "./Contents/Forms/R41Reports";
 import R46Reports from "./Contents/Forms/R46Reports";
 import R47Reports from "./Contents/Forms/R47Reports";
 import R49Reports from "./Contents/Forms/R49Reports";
+import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
+import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
 
 const drawerWidth = 283;
 
@@ -935,6 +937,27 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/teacher-gdb-summary-report"
                 component={GradedDiscussionSummary}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="student-profile"
+                exact
+                path="/dashboard/student-profile"
+                component={StudentProfile}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="change-student-status"
+                exact
+                path="/dashboard/change-student-status"
+                render={(props) => {
+                  return (
+                    <ChangeStudentStatus
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

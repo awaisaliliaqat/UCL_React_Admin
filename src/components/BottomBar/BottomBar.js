@@ -47,14 +47,13 @@ function BottomBar(props) {
             {props.left_button_text}
           </Button>
           <div className={classes.grow} />
-
+          {props.otherActions}
           <Button
             variant="contained"
             color="primary"
             disabled={props.disableRightButton || props.loading}
             onClick={() => bottomRightButtonAction(props)}
             style={{
-              backgroundColor: '#174A84',
               display: props.hideRightButton ? "none" : "block"
             }}
 
@@ -70,6 +69,7 @@ function BottomBar(props) {
               props.right_button_text
             }
           </Button>
+
         </Toolbar>
       </AppBar>
     </div>
@@ -80,13 +80,14 @@ BottomBar.propTypes = {
   isDrawerOpen: PropTypes.bool,
   disableLeftButton: PropTypes.bool,
   left_button_hide: PropTypes.bool,
-  left_button_text: PropTypes.string,
+  left_button_text: PropTypes.any,
   bottomLeftButtonAction: PropTypes.func,
   disableRightButton: PropTypes.bool,
   hideRightButton: PropTypes.bool,
-  right_button_text: PropTypes.string,
+  right_button_text: PropTypes.any,
   bottomRightButtonAction: PropTypes.func,
-  loading: PropTypes.bool
+  loading: PropTypes.bool,
+  otherActions: PropTypes.any
 }
 
 BottomBar.defaultProps = {
@@ -99,7 +100,8 @@ BottomBar.defaultProps = {
   hideRightButton: false,
   right_button_text: 'Save',
   bottomRightButtonAction: fn => fn,
-  loading: false
+  loading: false,
+  otherActions: ""
 }
 
 export default BottomBar;
