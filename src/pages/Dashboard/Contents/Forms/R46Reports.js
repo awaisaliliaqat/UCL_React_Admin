@@ -252,7 +252,7 @@ class R46Reports extends Component {
                       key={"teachersMenuItems"+dt.id}
                       value={dt.id}
                     >
-                      {dt.displayName}
+                      {dt.label}
                     </MenuItem>
                   ))
                 :
