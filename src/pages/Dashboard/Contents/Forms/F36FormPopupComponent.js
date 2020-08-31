@@ -33,7 +33,7 @@ function MyDropzone(props) {
 
   let msg = files || [];
   if (msg.length <= 0 || props.files.length <= 0) {
-      msg = <Typography variant="subtitle1">Please click here to  select and upload an file</Typography>;
+      msg = <Typography variant="subtitle1">Upload graded file</Typography>;
   }
   
   return (
@@ -77,7 +77,8 @@ class F36FormPopupComponent extends Component {
       obtainedMarks: "",
       obtainedMarksError: "",
       remarks:"",
-      remarksError:""
+      remarksError:"",
+      totalMarks:""
     };
   }
 
@@ -225,7 +226,8 @@ class F36FormPopupComponent extends Component {
     if (this.props.recordId !== prevProps.recordId) {
       this.setState({
         obtainedMarks:this.props.assignmentGradedData.obtainedMarks,
-        remarks:this.props.assignmentGradedData.remarks
+        remarks:this.props.assignmentGradedData.remarks,
+        totalMarks:this.props.assignmentGradedData.totalMarks
       });
     }
   }
@@ -247,18 +249,16 @@ class F36FormPopupComponent extends Component {
           onClose={this.handlePopupClose}
           aria-labelledby="responsive-dialog-title"
         >
-          {/* 
-          <span style={{ color: "#ffffff" }}>
-            ________________________________________________________________________________________________________________________________________________________
+          <span style={{color:"#ffffff"}}>
+           __________________________________________________________________________________________________________________________
           </span> 
-          */}
           <DialogTitle id="responsive-dialog-title">
             <IconButton
               aria-label="close"
               onClick={this.handlePopupClose}
               style={{
                 position: "relative",
-                top: "-18px",
+                top: "-32px",
                 right: "-24px",
                 float: "right",
               }}
@@ -295,6 +295,10 @@ class F36FormPopupComponent extends Component {
                 </IconButton>
               </Tooltip>
               }
+              <br/>
+              <Typography component="span">
+                Total Marks:&nbsp;{this.state.totalMarks}
+              </Typography>
             </Typography>
           </DialogTitle>
           <DialogContent>

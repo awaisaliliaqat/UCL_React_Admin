@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { withStyles } from "@material-ui/styles";
+import { createStyles, makeStyles, withStyles } from "@material-ui/styles";
 //import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
@@ -34,39 +34,38 @@ const styles = () => ({
     textAlign: "center",
   },
   inputFileFocused: {
-    width: '40%',
-    borderColor: '#80bdff',
-    boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
-    backgroundColor: "#00FF00",
+    //width: '40%',
+    textAlign:"center",
+    //color:'rgb(29, 95, 152)',
+    //borderColor: 'rgb(29, 95, 152)',
+    //boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+    //backgroundColor: "#00FF00",
   },
 });
 
 function MyDropzone(props) {
 
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document', multiple:false });
+  
   const files = acceptedFiles.map((file, index) => {
       const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
       return (
           <Typography key={index} variant="subtitle1" color="primary">
               {file.path} - {size} Kb
-              <input type="hidden" name="file_name" value={file.path}></input>
+              <input type="hidden" name={props.name+"-file-name"} value={file.path}></input>
           </Typography>
-      )
+      );
   });
 
   let msg = files || [];
   if (msg.length <= 0 || props.files.length <= 0) {
-      msg = <Typography variant="subtitle1">Please click here to  select and upload an file</Typography>;
+    msg = <Typography variant="subtitle1">{props.label}</Typography>;
   }
-  
+
   return (
       <div 
-        id="contained-button-file-div" 
-        style={{ 
-          textAlign: "center"
-        }}
-          {...getRootProps({ className: "dropzone", onChange: event => props.onChange(event) })}
+        id="contained-button-file-div"
+        {...getRootProps({ className: "dropzone "+`${props.className}` , onChange: event => props.onChange(event) })}
       >
           <Card style={{ backgroundColor: "#c7c7c7" }}>
               <CardContent style={{
@@ -74,7 +73,7 @@ function MyDropzone(props) {
                   paddingTop: 14,
                   cursor:"pointer"
               }}>
-                  <input name="contained-button-file" {...getInputProps()} disabled={props.disabled} />
+                  <input name={props.name+"-file"} {...getInputProps()} disabled={props.disabled} />
                   {msg}
               </CardContent>
           </Card>
@@ -94,6 +93,8 @@ class F34Form extends Component {
       snackbarSeverity: "",
       files: [],
       filesError: "",
+      files2: [],
+      files2Error: "",
       uploadLoading:false,
       label:"",
       labelError:"",
@@ -105,6 +106,9 @@ class F34Form extends Component {
       startDateError: "",
       dueDate: this.getTomorrowDate(),
       dueDateError:"",
+      courseId:"",
+      courseIdError:"",
+      courseIdMenuItems:[],
       sectionId:"",
       sectionIdError:"",
       sectionIdMenuItems:[]
@@ -149,11 +153,55 @@ class F34Form extends Component {
     return today;
   };
 
-  getSectionsData = async() => {
+  getCoursesData = async() => {
     this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C34CommonAcademicsAssignmentsCoursesView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let courseIdMenuItems = json.DATA;
+            this.setState({courseIdMenuItems: json.DATA});
+            console.log("getCoursesData", courseIdMenuItems)
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  getSectionsData = async(courseId) => {
+    this.setState({ isLoading: true });
+    let data = new FormData();
+    data.append("courseId", courseId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C34CommonAcademicsSectionsTeachersView`;
     await fetch(url, {
       method: "POST",
+      body:data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -171,7 +219,7 @@ class F34Form extends Component {
             this.setState({sectionIdMenuItems: json.DATA});
             console.log("getSectionsData", sectionIdMenuItems)
           } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log(json);
         },
@@ -183,10 +231,7 @@ class F34Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch, Please try again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
           }
         }
       );
@@ -215,7 +260,9 @@ class F34Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             if(json.DATA.length){
+              this.getSectionsData(json.DATA[0].courseId);
               this.setState({
+                courseId:json.DATA[0].courseId,
                 sectionId:json.DATA[0].sectionId,
                 label: json.DATA[0].label,
                 startDate: json.DATA[0].startDate,
@@ -227,9 +274,9 @@ class F34Form extends Component {
               window.location = "#/dashboard/F34Form/0";
             }
           } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log(json);
+          console.log("loadData", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -239,10 +286,7 @@ class F34Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -309,6 +353,18 @@ class F34Form extends Component {
     return isValid;
   };
 
+  isCourseValid = () => {
+    let isValid = true;
+    if (!this.state.courseId) {
+      this.setState({ courseIdError: "Please select course." });
+      document.getElementById("courseId").focus();
+      isValid = false;
+    } else {
+      this.setState({ courseIdError: "" });
+    }
+    return isValid;
+  };
+
   isSectionValid = () => {
     let isValid = true;
     if (!this.state.sectionId) {
@@ -335,16 +391,21 @@ class F34Form extends Component {
 
   handleFileChange = event => {
     const { files = [] } = event.target;
+    const fileElement = event.target;
+    let fileStateName = "files";
     if (files.length > 0) {
         if ( (files[0].type === "application/pdf" || files[0].type === "application/msword" || files[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && files[0].size/1000<10000) {
-            this.setState({
-                files,
-                filesError: ""
-            })
+          if(fileElement.getAttribute("name")=="contained-button-solution-file"){
+            this.setState({files2:files, files2Error: ""});
+          }else{
+            this.setState({files, filesError: ""});
+          }
         } else {
-            this.setState({
-                filesError: "Please select only pdf, doc or docx file with size less than 10 MBs."
-            })
+          if(fileElement.getAttribute("name")=="contained-button-solution-file"){
+            this.setState({files2Error: "Please select only pdf, doc or docx file with size less than 10 MBs."});
+          } else {
+            this.setState({filesError: "Please select only pdf, doc or docx file with size less than 10 MBs."});
+          }
         }
     }
   }
@@ -368,6 +429,10 @@ class F34Form extends Component {
           return;
         }
         break;
+      case "courseId":
+        this.setState({sectionId:""});
+        this.getSectionsData(value);
+        break;
       default:
         break;
     }
@@ -384,6 +449,7 @@ class F34Form extends Component {
   onFormSubmit = async (e) => {
     //e.preventDefault();
     if (
+      !this.isCourseValid() ||
       !this.isSectionValid() ||
       !this.isLabelValid() ||
       !this.isStartDateValid() ||
@@ -423,10 +489,7 @@ class F34Form extends Component {
               }
             }, 2000);
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log(json);
         },
@@ -438,10 +501,7 @@ class F34Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -457,7 +517,7 @@ class F34Form extends Component {
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
     }
-    this.getSectionsData();
+    this.getCoursesData();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -516,17 +576,46 @@ class F34Form extends Component {
             >
               <Grid item xs={12} md={6}>
                 <TextField
+                  id="courseId"
+                  name="courseId"
+                  variant="outlined"
+                  label="Course"
+                  onChange={this.onHandleChange}
+                  value={this.state.courseId}
+                  error={!!this.state.courseIdError}
+                  helperText={this.state.courseIdError}
+                  required
+                  fullWidth
+                  select
+                >
+                  {this.state.courseIdMenuItems ? 
+                    this.state.courseIdMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"courseIdMenuItems"+dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))
+                  :
+                    this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
+                  }
+                </TextField>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
                   id="sectionId"
                   name="sectionId"
                   variant="outlined"
                   label="Section"
+                  required
+                  fullWidth
+                  select
                   onChange={this.onHandleChange}
                   value={this.state.sectionId}
                   error={!!this.state.sectionIdError}
                   helperText={this.state.sectionIdError}
-                  required
-                  fullWidth
-                  select
+                  disabled={!this.state.courseId}
                 >
                   {this.state.sectionIdMenuItems ? 
                     this.state.sectionIdMenuItems.map((dt, i) => (
@@ -579,26 +668,45 @@ class F34Form extends Component {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <DatePicker
-                  autoOk
-                  name="dueDate"
-                  id="dueDate"
-                  label="Due Date"
-                  invalidDateMessage=""
-                  disablePast
-                  minDate={this.getTomorrowDate()}
-                  placeholder=""
-                  variant="inline"
-                  inputVariant="outlined"
-                  format="dd-MM-yyyy"
-                  fullWidth
-                  required
-                  //style={{ float: "right", width: 115 }}
-                  value={this.state.dueDate}
-                  onChange={this.handleChangeDueDate}
-                  error={!!this.state.dueDateError}
-                  helperText={this.state.dueDateError}
-                />
+              <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <DatePicker
+                      autoOk
+                      name="dueDate"
+                      id="dueDate"
+                      label="Due Date"
+                      invalidDateMessage=""
+                      disablePast
+                      minDate={this.getTomorrowDate()}
+                      placeholder=""
+                      variant="inline"
+                      inputVariant="outlined"
+                      format="dd-MM-yyyy"
+                      fullWidth
+                      required
+                      //style={{ float: "right", width: 115 }}
+                      value={this.state.dueDate}
+                      onChange={this.handleChangeDueDate}
+                      error={!!this.state.dueDateError}
+                      helperText={this.state.dueDateError}
+                    />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                      id="totalMarks"
+                      name="totalMarks"
+                      label="Total Marks"
+                      type="number"
+                      required
+                      fullWidth
+                      variant="outlined"
+                      onChange={this.onHandleChange}
+                      value={this.state.totalMarks}
+                      error={!!this.state.totalMarksError}
+                      helperText={this.state.totalMarksError}
+                    />
+                  </Grid>
+              </Grid>
               </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
@@ -617,33 +725,57 @@ class F34Form extends Component {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                      id="totalMarks"
-                      name="totalMarks"
-                      label="Total Marks"
-                      type="number"
-                      required
-                      fullWidth
-                      variant="outlined"
-                      onChange={this.onHandleChange}
-                      value={this.state.totalMarks}
-                      error={!!this.state.totalMarksError}
-                      helperText={this.state.totalMarksError}
+                  <MyDropzone
+                    name="contained-button"
+                    label="Upload assignment file *"
+                    files={this.state.files} 
+                    onChange={event => this.handleFileChange(event)} 
+                    disabled={this.state.uploadLoading} 
+                    className={classes.inputFileFocused}
+                  />
+                  <div 
+                    style={{
+                      textAlign:'left', 
+                      marginTop:5, 
+                      fontSize:"0.8rem"
+                    }}
+                  >
+                      <span 
+                        style={{
+                          color: '#f44336'
+                        }}
+                      >
+                          &emsp;{this.state.filesError}
+                      </span>
+                  </div>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <MyDropzone
+                      name="contained-button-solution"
+                      label="Upload solution file"
+                      files={this.state.files2}
+                      onChange={event => this.handleFileChange(event)} 
+                      disabled={this.state.uploadLoading} 
+                      className={classes.inputFileFocused}
                     />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <MyDropzone files={this.state.files} onChange={event => this.handleFileChange(event)} disabled={this.state.uploadLoading} />
-                    <div style={{textAlign:'left', marginTop:5, fontSize:"0.8rem"}}>
-                        <span style={{color: '#f44336'}}>&emsp;{this.state.filesError}</span>
+                    <div 
+                      style={{
+                        textAlign:'left', 
+                        marginTop:5, 
+                        fontSize:"0.8rem"
+                      }}>
+                        <span 
+                          style={{
+                            color: '#f44336'
+                          }}
+                        >
+                          &emsp;{this.state.files2Error}
+                        </span>
                     </div>
                   </Grid>
-                </Grid>
               </Grid>
             </Grid>
             <br/>
-          </Grid>
         </form>
         <BottomBar
           left_button_text="View"
