@@ -128,7 +128,17 @@ class TeacherAttendanceReports extends Component {
             { name: "Section Type", dataIndex: "sectionTypeLabel", sortIndex: "sectionTypeLabel", sortable: true, customStyleHeader: { width: '17%' } },
             { name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '12%' } },
             { name: "Course Label", dataIndex: "courseLabel", sortable: false, customStyleHeader: { width: '17%' } },
-            { name: "Class on", dataIndex: "startTimestamp", sortIndex: "startTimestampSimple", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Class Schedule", dataIndex: "startTimestamp", sortIndex: "startTimestampSimple", sortable: true, customStyleHeader: { width: '15%' } },
+            { name: "Joined On", dataIndex: "joinedOn", sortable: false, customStyleHeader: { width: '15%' } },
+            {
+                name: "Late Minutes", renderer: rowData => {
+                    return (
+                        <Fragment>
+                            {rowData.lateMinutes > 0 ? rowData.lateMinutes : ""}
+                        </Fragment>
+                    );
+                }, sortIndex: "lateMinutes", sortable: true, customStyleHeader: { width: '13%' }
+            },
             {
                 name: "Status", renderer: rowData => {
                     return (

@@ -19,7 +19,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { alphabetExp, numberExp } from '../../../../../../utils/regularExpression';
+import { alphabetExp, numberExp, emailExp } from '../../../../../../utils/regularExpression';
 import CustomizedSnackbar from '../../../../../../components/CustomizedSnackbar/CustomizedSnackbar';
 
 const styles = () => ({
@@ -90,6 +90,8 @@ class DocumentRequestAction extends Component {
             dateOfBirthError: "",
             mobileNo: "",
             mobileNoError: "",
+            email: "",
+            emailError: "",
 
             /////////////////Father Information State///////////////////
 
@@ -247,7 +249,8 @@ class DocumentRequestAction extends Component {
 
     isFormValid = () => {
         let isValid = true;
-        let { guardianMobileNoError, motherMobileNoError, fatherMobileNoError, dateOfBirthError,
+        let regex = "";
+        let { guardianMobileNoError, motherMobileNoError, fatherMobileNoError, dateOfBirthError, emailError,
             firstNameError, lastNameError, mobileNoError, chessSubDegreeError, yearAlevelError, appliedForError } = this.state;
         if (!this.state.guardianMobileNo) {
             // guardianMobileNoError = "Please enter a valid mobile number e.g 03001234567"
@@ -292,6 +295,17 @@ class DocumentRequestAction extends Component {
             } else {
                 fatherMobileNoError = ""
             }
+        }
+
+        regex = new RegExp(emailExp);
+        if (!this.state.email || !regex.test(this.state.email)) {
+            emailError = "Please enter a valid email e.g name@domain.com"
+            document.getElementById("email").focus();
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            isValid = false;
+        } else {
+            emailError = ""
         }
 
         if (!this.state.mobileNo) {
@@ -383,7 +397,8 @@ class DocumentRequestAction extends Component {
             lastNameError,
             chessSubDegreeError,
             yearAlevelError,
-            appliedForError
+            appliedForError,
+            emailError
         })
 
         return isValid;
@@ -460,6 +475,7 @@ class DocumentRequestAction extends Component {
             lastName: data.lastName || "",
             dateOfBirth: dob,
             mobileNo: data.mobileNo || "",
+            email: data.email || "",
 
             fatherMobileNo: data.fatherMobileNo || "",
 
@@ -747,6 +763,23 @@ class DocumentRequestAction extends Component {
                                 />
                             </Grid>
 
+                            <Grid item xs={12}>
+                                <TextField
+                                    onKeyDown={this.StopEnter}
+                                    id="email"
+                                    name="email"
+                                    label="Email"
+                                    type="email"
+                                    onChange={this.handleChange}
+                                    placeholder="e.g name@domain.com"
+                                    helperText={this.state.email ? this.state.emailError : ""}
+                                    value={this.state.email}
+                                    error={!!this.state.emailError}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+
                             <Grid xs={12} style={{ paddingTop: 20 }}>
                                 <span className={classes.sectionTitle}>
                                     Father&apos;s Information
@@ -852,6 +885,7 @@ class DocumentRequestAction extends Component {
                     <input type="hidden" value={this.state.lastName} name="lastName" />
                     <input type="hidden" value={userDob} name="dateOfBirth" />
                     <input type="hidden" value={this.state.mobileNo} name="mobileNo" />
+                    <input type="hidden" value={this.state.email} name="email" />
 
                     <input type="hidden" value={this.state.fatherMobileNo} name="fatherMobileNo" />
 

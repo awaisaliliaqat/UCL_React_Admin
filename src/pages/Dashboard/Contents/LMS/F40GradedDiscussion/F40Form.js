@@ -12,7 +12,7 @@ import { DatePicker } from "@material-ui/pickers";
 
 const styles = () => ({
   root: {
-    paddingBottom: 20,
+    paddingBottom: 40,
     paddingLeft: 20,
     paddingRight: 20,
     paddingTop: 0

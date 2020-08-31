@@ -2,11 +2,28 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
-import { Button, TextField, MenuItem } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { withStyles } from "@material-ui/styles";
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+function isEmpty(obj) {
+    if (obj == null) return true;
+
+    if (obj.length > 0) return false;
+    if (obj.length === 0) return true;
+
+    if (typeof obj !== "object") return true;
+
+    for (var key in obj) {
+        if (hasOwnProperty.call(obj, key)) return false;
+    }
+
+
+    return true;
+}
 
 const styles = () => ({
     item: {
@@ -38,6 +55,7 @@ class GradedDiscussionSummary extends Component {
             isLoading: false,
 
             topicId: "",
+            topicObject: {},
             topicIdError: "",
             topicData: [],
 
@@ -180,6 +198,15 @@ class GradedDiscussionSummary extends Component {
         });
     };
 
+    onAutoCompleteChange = (e, value) => {
+        let object = isEmpty(value) ? {} : value;
+        this.setState({
+            topicObject: object,
+            topicId: object.id || "",
+            topicIdError: ""
+        })
+    }
+
     render() {
         const { isLoading } = this.state;
         const { classes } = this.props;
@@ -209,27 +236,17 @@ class GradedDiscussionSummary extends Component {
                             width: '25%'
                         }}>
                             <span className={classes.label}>Title *</span>
-
-                            <TextField
-                                placeholder="Title"
-                                variant="outlined"
-                                name="topicId"
-                                id="topicId"
-                                InputProps={{ classes: { input: classes.resize } }}
-                                onChange={this.onHandleChange}
-                                error={this.state.topicIdError}
-                                value={this.state.topicId}
+                            <Autocomplete
+                                id="teacherId"
+                                getOptionLabel={(option) => option.label}
                                 fullWidth
-                                select
-                            >
-                                {this.state.topicData.map((item, index) => {
-                                    return (
-                                        <MenuItem key={index} value={item.id}>
-                                            {item.label}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </TextField>
+                                value={this.state.topicObject}
+                                onChange={this.onAutoCompleteChange}
+                                size="small"
+                                options={this.state.topicData}
+                                renderInput={(params) => <TextField error={this.state.topicIdError} variant="outlined" placeholder="Titles" {...params}
+                                />}
+                            />
                         </div>
 
                         <div style={{
@@ -251,7 +268,7 @@ class GradedDiscussionSummary extends Component {
                                 height: 40,
                                 marginTop: 25
                             }}
-                        > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Generate and Download in PDF format"}</Button>
+                        > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Download GDB Summary Report"}</Button>
                     </div>
                 </div>
                 <CustomizedSnackbar

@@ -603,6 +603,9 @@ class StudentCourseSelection extends Component {
   };
 
   handleSetCourses = (value = []) => {
+    for(let i=0; i<value.length; i++){
+      value[i].isRegistered = 1;
+    }
     this.setState({selectedCoursesData: value});
   }
 

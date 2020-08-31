@@ -2,7 +2,8 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import { Button, TextField, MenuItem } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { DatePicker } from "@material-ui/pickers";
 
@@ -50,66 +51,28 @@ const useStyles = makeStyles(() => ({
 
 const AttendanceFilter = props => {
     const classes = useStyles();
-    const { values, handleDateChange, getDataByStatus, onClearFilters, onHandleChange, isLoading } = props;
+    const { values, handleDateChange, getDataByStatus, onClearFilters, onAutoCompleteChange, isLoading } = props;
 
 
     return (
         <Fragment>
             <div className={classes.container}>
                 <div className={classes.item} style={{
-                    width: '20%'
+                    width: '30%'
                 }}>
-                    <span className={classes.label}>Section Type *</span>
+                    <span className={classes.label}>Teachers *</span>
 
-                    <TextField
-                        placeholder="Section Type"
-                        variant="outlined"
-                        name="sectionTypeId"
-                        id="sectionTypeId"
-                        disabled={!values.reportTypeId}
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.sectionTypeId}
-                        onChange={e => {
-                            onHandleChange(e);
-                        }}
-                        select
-                    >
-                        {values.sectionTypeData.map(item => {
-                            return (
-                                <MenuItem key={item.id} value={item.id}>
-                                    {item.label}
-                                </MenuItem>
-                            );
-                        })}
-                    </TextField>
-                </div>
-                <div className={classes.item} style={{
-                    width: '20%'
-                }}>
-                    <span className={classes.label}>Section *</span>
-
-                    <TextField
-                        placeholder="Section"
-                        variant="outlined"
-                        name="sectionId"
-                        id="sectionId"
-                        disabled={!values.sectionTypeId}
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.sectionId}
-                        onChange={e => {
-                            onHandleChange(e);
-                            getDataByStatus(e.target.value)
-                        }}
-                        select
-                    >
-                        {values.sectionData.map(item => {
-                            return (
-                                <MenuItem key={item.id} value={item.id}>
-                                    {item.label}
-                                </MenuItem>
-                            );
-                        })}
-                    </TextField>
+                    <Autocomplete
+                        id="teacherId"
+                        getOptionLabel={(option) => option.displayName}
+                        fullWidth
+                        value={values.teacherObject}
+                        onChange={onAutoCompleteChange}
+                        size="small"
+                        options={values.teacherData}
+                        renderInput={(params) => <TextField error={values.teacherObjectError} variant="outlined" placeholder="Teachers" {...params}
+                        />}
+                    />
                 </div>
 
                 <div className={classes.item} style={{
@@ -166,8 +129,8 @@ const AttendanceFilter = props => {
                         variant="contained"
                         color="primary"
                         className={classes.button}
-                        disabled={isLoading || !values.sectionId}
-                        onClick={() => getDataByStatus(values.sectionId)}
+                        disabled={isLoading || !values.teacherId}
+                        onClick={() => getDataByStatus(values.teacherId)}
                     > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
                     <Button
                         variant="contained"
@@ -192,6 +155,7 @@ const AttendanceFilter = props => {
 AttendanceFilter.defaultProps = {
     onHandleChange: fn => fn,
     getDataByStatus: fn => fn,
+    onAutoCompleteChange: fn => fn,
     values: {},
     onClearFilters: fn => fn,
     handleDateChange: fn => fn,
@@ -205,6 +169,7 @@ AttendanceFilter.defaultProps = {
 
 AttendanceFilter.propTypes = {
     onHandleChange: PropTypes.func,
+    onAutoCompleteChange: PropTypes.func,
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
     onClearFilters: PropTypes.func,
