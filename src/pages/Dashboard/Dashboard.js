@@ -75,6 +75,9 @@ import GradedDiscussionBoardList from './Contents/LMS/GradedDiscussionBoardList/
 import GradedDiscussionBoardStudentList from './Contents/LMS/GradedDiscussionBoardStudentList/GradedDiscussionBoardStudentList';
 import GradedDiscussionSummary from './Contents/Reports/GradedDiscussionSummary/GradedDiscussionSummary';
 import R41Reports from "./Contents/Forms/R41Reports";
+import R46Reports from "./Contents/Forms/R46Reports";
+import R47Reports from "./Contents/Forms/R47Reports";
+import R49Reports from "./Contents/Forms/R49Reports";
 import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
 import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
 
@@ -714,6 +717,51 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R41Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R46Reports"
+                exact
+                path="/dashboard/R46Reports"
+                render={(props) => {
+                  return (
+                    <R46Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R47Reports"
+                exact
+                path="/dashboard/R47Reports"
+                render={(props) => {
+                  return (
+                    <R47Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R49Reports"
+                exact
+                path="/dashboard/R49Reports"
+                render={(props) => {
+                  return (
+                    <R49Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
