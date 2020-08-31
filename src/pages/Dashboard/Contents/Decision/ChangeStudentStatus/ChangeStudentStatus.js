@@ -89,6 +89,9 @@ class ChangeStudentStatus extends Component {
                     } else {
                         this.handleOpenSnackbar(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE, "error");
                     }
+                    this.setState({
+                        isLoading: false
+                    })
                     console.log(json);
                 },
                 error => {
@@ -101,18 +104,16 @@ class ChangeStudentStatus extends Component {
                         this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.", "error");
                         console.log(error);
                     }
+                    this.setState({
+                        isLoading: false
+                    })
                 });
-        this.setState({
-            isLoading: false
-        })
+
 
 
     }
 
     getSessionData = async () => {
-        this.setState({
-            isLoading: true
-        })
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C50CommonAcademicsSessionsView`;
         await fetch(url, {
             method: "GET",
@@ -148,11 +149,6 @@ class ChangeStudentStatus extends Component {
                         console.log(error);
                     }
                 });
-        this.setState({
-            isLoading: false
-        })
-
-
     }
 
     onFormSubmit = async (e) => {
@@ -241,6 +237,7 @@ class ChangeStudentStatus extends Component {
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '20%' } },
             { name: "Session", dataIndex: "sessionLabel", sortable: false, customStyleHeader: { width: '15%' } },
+            { name: "Status", dataIndex: "statusLabel", sortable: false, customStyleHeader: { width: '15%' } },
             {
                 name: "Selection", renderer: rowData => {
                     return (
@@ -267,7 +264,7 @@ class ChangeStudentStatus extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Student Activation Decission
+                            Change Student Status
             </Typography>
                     </div>
                     <Divider style={{
