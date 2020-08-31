@@ -2,10 +2,29 @@ import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import AttendanceFilter from './Chunks/AttendanceFilter';
-import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
+import AttendanceTableComponent from './Chunks/AttendanceTableComponent';
 import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import FilterIcon from "mdi-material-ui/FilterOutline";
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
 import { format } from 'date-fns';
+
+function isEmpty(obj) {
+    if (obj == null) return true;
+
+    if (obj.length > 0) return false;
+    if (obj.length === 0) return true;
+
+    if (typeof obj !== "object") return true;
+
+    for (var key in obj) {
+        if (hasOwnProperty.call(obj, key)) return false;
+    }
+
+
+    return true;
+}
 
 class AttendanceReports extends Component {
 
@@ -22,10 +41,12 @@ class AttendanceReports extends Component {
             toDate: new Date(),
 
 
-            sectionTypeId: 0,
-            sectionTypeData: [],
-            sectionId: 0,
-            sectionData: [],
+            teacherId: "",
+            teacherObject: {},
+            teacherObjectError: "",
+            teacherData: [],
+
+            showTableFilter: false,
 
             isLoginMenu: false,
             isReload: false,
@@ -38,14 +59,12 @@ class AttendanceReports extends Component {
     }
 
     componentDidMount() {
-        this.getSectionTypeData();
+        this.getTeachersData();
     }
 
-    getSectionTypeData = async () => {
-        this.setState({
-            isLoading: true
-        })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C38CommonAcademicsSectionTypesView`;
+    getTeachersData = async () => {
+        this.setState({ isLoading: true })
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C44CommonUsersView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -62,82 +81,32 @@ class AttendanceReports extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.setState({
-                            sectionTypeData: json.DATA || []
-                        })
+                            teacherData: json.DATA || []
+                        });
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
                     }
                     console.log(json);
                 },
                 error => {
-                    if (error.status === 401) {
+                    if (error.status == 401) {
                         this.setState({
                             isLoginMenu: true,
                             isReload: true
                         })
                     } else {
-                        this.handleOpenSnackbar("Failed to Load Data, Please try again later", "error");
                         console.log(error);
+                        this.handleOpenSnackbar("Failed to Load Data ! Please try Again later.", "error");
                     }
                 });
-        this.setState({
-            isLoading: false
-        })
-
-
+        this.setState({ isLoading: false })
     }
 
-    getSectionData = async (sectionTypeId) => {
+    getData = async (teacherId) => {
         this.setState({
             isLoading: true
         })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C38CommonAcademicsSectionsView?sectionTypeId=${sectionTypeId}`;
-        await fetch(url, {
-            method: "GET",
-            headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-            })
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw res;
-                }
-                return res.json();
-            })
-            .then(
-                json => {
-                    if (json.CODE === 1) {
-                        this.setState({
-                            sectionData: json.DATA || []
-                        })
-                    } else {
-                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
-                    }
-                    console.log(json);
-                },
-                error => {
-                    if (error.status === 401) {
-                        this.setState({
-                            isLoginMenu: true,
-                            isReload: true
-                        })
-                    } else {
-                        this.handleOpenSnackbar("Failed to Load Data, Please try again later", "error");
-                        console.log(error);
-                    }
-                });
-        this.setState({
-            isLoading: false
-        })
-
-
-    }
-
-    getData = async (sectionId) => {
-        this.setState({
-            isLoading: true
-        })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C38CommonAcademicsAttendanceTeachersLogView?fromDate=${format(this.state.fromDate, "dd-MM-yyyy")}&toDate=${format(this.state.toDate, "dd-MM-yyyy")}&sectionId=${sectionId}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C44CommonAcademicsAttendanceTeachersLogView?fromDate=${format(this.state.fromDate, "dd-MM-yyyy")}&toDate=${format(this.state.toDate, "dd-MM-yyyy")}&teacherId=${teacherId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -179,17 +148,28 @@ class AttendanceReports extends Component {
 
     }
 
+    onAutoCompleteChange = (e, value) => {
+        let object = isEmpty(value) ? {} : value;
+        this.setState({
+            teacherObject: object,
+            teacherId: object.id || "",
+            teacherObjectError: ""
+        })
+        if (object.id) {
+            this.getData(object.id);
+        }
+    }
+
 
     onClearFilters = () => {
 
         this.setState({
             fromDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             toDate: new Date(),
-
-            reportTypeId: 0,
-            sectionTypeId: 0,
-            sectionData: [],
-            sectionId: 0
+            attendanceData: [],
+            teacherId: "",
+            teacherObject: {},
+            teacherObjectError: ""
         })
     }
 
@@ -236,17 +216,30 @@ class AttendanceReports extends Component {
         });
     };
 
+    handleToggleTableFilter = () => {
+        this.setState({ showTableFilter: !this.state.showTableFilter });
+    }
+
     render() {
-        const teacherColumns = [
-            { name: "Teacher Name", dataIndex: "teacherName", sortIndex: "teacherName", sortable: true, customStyleHeader: { width: '12%' } },
-            { name: "Teacher Email", dataIndex: "teacherEmail", sortIndex: "teacherEmail", sortable: true, customStyleHeader: { width: '17%' } },
-            { name: "Section", dataIndex: "sectionLabel", sortIndex: "sectionLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Section Type", dataIndex: "sectionTypeLabel", sortIndex: "sectionTypeLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '12%' } },
-            { name: "Course Label", dataIndex: "courseLabel", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Class on", dataIndex: "startTimestamp", sortIndex: "startTimestampSimple", sortable: true, customStyleHeader: { width: '15%' } },
+        const columns = [
+            { name: "teacherEmail", title: "Teacher Email" },
+            { name: "sectionLabel", title: "Section" },
+            { name: "sectionTypeLabel", title: "Section Type" },
+            { name: "courseId", title: "Course Id" },
+            { name: "courseLabel", title: "Course Label" },
+            { name: "startTimestamp", title: "Class Schedule" },
+            { name: "joinedOn", title: "Joined On" },
             {
-                name: "Status", renderer: rowData => {
+                name: "lateMinutes", title: "Late Minutes", getCellValue: rowData => {
+                    return (
+                        <Fragment>
+                            {rowData.lateMinutes > 0 ? rowData.lateMinutes : ""}
+                        </Fragment>
+                    );
+                }
+            },
+            {
+                name: "isPresent", title: "Status", getCellValue: rowData => {
                     return (
                         <Fragment>
                             <span style={{
@@ -256,8 +249,8 @@ class AttendanceReports extends Component {
 
                         </Fragment>
                     )
-                }, sortIndex: "isPresent", sortable: true, customStyleHeader: { width: '10%' }
-            },
+                }
+            }
         ]
 
         return (
@@ -273,12 +266,22 @@ class AttendanceReports extends Component {
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
                             Attendance Reports
             </Typography>
+                        <div style={{ float: "right" }}>
+                            <Tooltip title="Table Filter">
+                                <IconButton
+                                    style={{ marginLeft: "-10px" }}
+                                    onClick={() => this.handleToggleTableFilter()}
+                                >
+                                    <FilterIcon fontSize="default" color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <AttendanceFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={(sectionId) => this.getData(sectionId)} onHandleChange={e => this.onHandleChange(e)} />
+                    <AttendanceFilter onAutoCompleteChange={(e, value) => this.onAutoCompleteChange(e, value)} isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={(sectionId) => this.getData(sectionId)} onHandleChange={e => this.onHandleChange(e)} />
                     <div style={{
                         marginTop: 15,
                         marginBottom: 15,
@@ -288,7 +291,11 @@ class AttendanceReports extends Component {
                     }}>
                     </div>
                     {this.state.reportTypeId !== 0 &&
-                        <TablePanel isShowIndexColumn data={this.state.attendanceData} isLoading={this.state.isLoading} sortingEnabled columns={teacherColumns} />
+                        <AttendanceTableComponent
+                            rows={this.state.attendanceData}
+                            columns={columns}
+                            showFilter={this.state.showTableFilter}
+                        />
                     }
                 </div>
                 <CustomizedSnackbar

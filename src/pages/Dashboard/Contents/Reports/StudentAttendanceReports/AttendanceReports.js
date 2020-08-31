@@ -1,10 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from "@material-ui/core/Typography";
 import AttendanceFilter from './Chunks/AttendanceFilter';
-import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
 import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import FilterIcon from "mdi-material-ui/FilterOutline";
+import AttendanceTableComponent from './Chunks/AttendanceTableComponent';
 import { format } from 'date-fns';
 
 class AttendanceReports extends Component {
@@ -20,6 +23,8 @@ class AttendanceReports extends Component {
 
             fromDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             toDate: new Date(),
+
+            showTableFilter: false,
 
             sectionTypeId: 0,
             sectionTypeData: [],
@@ -44,7 +49,7 @@ class AttendanceReports extends Component {
         this.setState({
             isLoading: true
         })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C38CommonAcademicsSectionTypesView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C43CommonAcademicsSectionTypesView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -90,7 +95,7 @@ class AttendanceReports extends Component {
         this.setState({
             isLoading: true
         })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C38CommonAcademicsSectionsView?sectionTypeId=${sectionTypeId}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C43CommonAcademicsSectionsView?sectionTypeId=${sectionTypeId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -136,7 +141,7 @@ class AttendanceReports extends Component {
         this.setState({
             isLoading: true
         })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C38CommonAcademicsAttendanceStudentsLogView?fromDate=${format(this.state.fromDate, "dd-MM-yyyy")}&toDate=${format(this.state.toDate, "dd-MM-yyyy")}&sectionId=${sectionId}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C43CommonAcademicsAttendanceStudentsLogView?fromDate=${format(this.state.fromDate, "dd-MM-yyyy")}&toDate=${format(this.state.toDate, "dd-MM-yyyy")}&sectionId=${sectionId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -184,8 +189,8 @@ class AttendanceReports extends Component {
         this.setState({
             fromDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             toDate: new Date(),
-            reportTypeId: 0,
             sectionTypeId: 0,
+            attendanceData: [],
             sectionData: [],
             sectionId: 0
         })
@@ -194,14 +199,6 @@ class AttendanceReports extends Component {
     onHandleChange = e => {
         const { name, value } = e.target;
         switch (name) {
-            case "reportTypeId":
-                this.setState({
-                    sectionTypeId: 0,
-                    sectionId: 0,
-                    sectionData: [],
-                    attendanceData: []
-                })
-                break;
             case "sectionTypeId":
                 this.setState({
                     sectionId: 0,
@@ -242,19 +239,32 @@ class AttendanceReports extends Component {
         });
     };
 
+    handleToggleTableFilter = () => {
+        this.setState({ showTableFilter: !this.state.showTableFilter });
+    }
+
     render() {
 
-        const studentsColumns = [
-            { name: "Nucleus Id", dataIndex: "studentId", sortIndex: "studentId", sortable: true, customStyleHeader: { width: '13%' } },
-            { name: "Student Name", dataIndex: "studentName", sortIndex: "studentName", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Section", dataIndex: "sectionLabel", sortIndex: "sectionLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Section Type", dataIndex: "sectionTypeLabel", sortIndex: "sectionTypeLabel", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '12%' } },
-            { name: "Course Label", dataIndex: "courseLabel", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Class Schedule", dataIndex: "startTimestamp", sortIndex: "startTimestampSimple", sortable: true, customStyleHeader: { width: '15%' } },
-            { name: "Joined On", dataIndex: "joinedOn", sortable: false, customStyleHeader: { width: '15%' } },
+        const columns = [
+            { name: "studentId", title: "Nucleus Id" },
+            { name: "studentName", title: "Student Name" },
+            { name: "sectionLabel", title: "Section" },
+            { name: "sectionTypeLabel", title: "Section Type" },
+            { name: "courseId", title: "Course Id" },
+            { name: "courseLabel", title: "Course Label" },
+            { name: "startTimestamp", title: "Class Schedule" },
+            { name: "joinedOn", title: "Joined On" },
             {
-                name: "Status", renderer: rowData => {
+                name: "lateMinutes", title: "Late Minutes", getCellValue: rowData => {
+                    return (
+                        <Fragment>
+                            {rowData.lateMinutes > 0 ? rowData.lateMinutes : ""}
+                        </Fragment>
+                    );
+                }
+            },
+            {
+                name: "isPresent", title: "Status", getCellValue: rowData => {
                     return (
                         <Fragment>
                             <span style={{
@@ -264,8 +274,8 @@ class AttendanceReports extends Component {
 
                         </Fragment>
                     )
-                }, sortIndex: "isPresent", sortable: true, customStyleHeader: { width: '10%' }
-            },
+                }
+            }
         ]
 
         return (
@@ -281,6 +291,16 @@ class AttendanceReports extends Component {
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
                             Attendance Reports
             </Typography>
+                        <div style={{ float: "right" }}>
+                            <Tooltip title="Table Filter">
+                                <IconButton
+                                    style={{ marginLeft: "-10px" }}
+                                    onClick={() => this.handleToggleTableFilter()}
+                                >
+                                    <FilterIcon fontSize="default" color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',
@@ -295,9 +315,11 @@ class AttendanceReports extends Component {
                         letterSpacing: '1.8px'
                     }}>
                     </div>
-                    {this.state.reportTypeId !== 0 &&
-                        <TablePanel isShowIndexColumn data={this.state.attendanceData} isLoading={this.state.isLoading} sortingEnabled columns={studentsColumns} />
-                    }
+                    <AttendanceTableComponent
+                        rows={this.state.attendanceData}
+                        columns={columns}
+                        showFilter={this.state.showTableFilter}
+                    />
                 </div>
                 <CustomizedSnackbar
                     isOpen={this.state.isOpenSnackbar}

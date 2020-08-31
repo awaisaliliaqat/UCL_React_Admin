@@ -11,7 +11,7 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 import ForgotPassword from "../pages/ForgotPassword/ForgotPassword";
 import PrivateRoutes from "./PrivateRoutes";
 import DisplayAdmissionApplication from "../components/DisplayAdmissionApplications";
-
+import DisplayStudentProfile from '../pages/Dashboard/Contents/Reports/StudentProfile/DisplayStudentProfile';
 
 const CheckLogin = () => {
   const uclAdminToken = localStorage.getItem("uclAdminToken");
@@ -33,13 +33,9 @@ const AppRoute = () => {
             <Route exact path="/registration" component={Registration} />
             <Route exact path="/forgot-password" component={ForgotPassword} />
             <PrivateRoutes exact path="/view-application/:id" component={DisplayAdmissionApplication} />
-            <PrivateRoutes
-              exact
-              path="/view-application/:id"
-              component={DisplayAdmissionApplication}
-            />
+            <PrivateRoutes exact path="/view-student-profile/:id" component={DisplayStudentProfile} />
             <PrivateRoutes exact path="*" component={Dashboard} />
-           </Switch>
+          </Switch>
         </Suspense>
       </Router>
     </>

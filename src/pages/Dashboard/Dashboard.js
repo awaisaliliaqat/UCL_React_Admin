@@ -75,6 +75,8 @@ import F40Reports from './Contents/LMS/F40GradedDiscussion/F40Reports';
 import GradedDiscussionBoardList from './Contents/LMS/GradedDiscussionBoardList/GradedDiscussionBoardList';
 import GradedDiscussionBoardStudentList from './Contents/LMS/GradedDiscussionBoardStudentList/GradedDiscussionBoardStudentList';
 import GradedDiscussionSummary from './Contents/Reports/GradedDiscussionSummary/GradedDiscussionSummary';
+import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
+import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
 
 const drawerWidth = 283;
 
@@ -887,6 +889,27 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/teacher-gdb-summary-report"
                 component={GradedDiscussionSummary}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="student-profile"
+                exact
+                path="/dashboard/student-profile"
+                component={StudentProfile}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="change-student-status"
+                exact
+                path="/dashboard/change-student-status"
+                render={(props) => {
+                  return (
+                    <ChangeStudentStatus
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
