@@ -234,7 +234,7 @@ class F36FormPopupComponent extends Component {
 
   render() {
 
-    const {popupBoxOpen, handlePopupClose, popupTitle, downloadFile, fileName, assignmentGradedData} = this.props;
+    const {popupBoxOpen, handlePopupClose, popupTitle, downloadFile, fileName, totalMarks, assignmentGradedData} = this.props;
     
     return (
       <Fragment>
@@ -297,7 +297,7 @@ class F36FormPopupComponent extends Component {
               }
               <br/>
               <Typography component="span">
-                Total Marks:&nbsp;{this.state.totalMarks}
+                Total Marks:&nbsp;{totalMarks}
               </Typography>
             </Typography>
           </DialogTitle>
