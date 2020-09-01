@@ -82,27 +82,7 @@ function CourseRow(props) {
     if(!(Object.keys(Obj).length===0)){
       selectedPCIdsString = Obj.ID;
     }
-    // for (let i = 0; i < Obj.length; i++) {
-    //   if (i == 0) {
-    //     selectedPCIdsString = Obj[i].ID;
-    //   } else {
-    //     selectedPCIdsString += "~" + Obj[i].ID;
-    //   }
-    //}
     setCoursesInputValue(selectedPCIdsString);
-  };
-
-  const getPreModuleById = (id) => {
-    if (
-      moduleMenuItems.length > 0 &&
-      id != "" &&
-      id != 0 &&
-      moduleMenuItems.find((x) => x.ID == id) != undefined
-    ) {
-      return moduleMenuItems.find((x) => x.ID == id).Label;
-    } else {
-      return "";
-    }
   };
 
   useEffect(() => {
@@ -633,7 +613,7 @@ class F30FormPopupComponent extends Component {
                         <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
                         <StyledTableCell align="center">Courses</StyledTableCell>
                         <StyledTableCell align="center">Marks</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Action</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)', minWidth:100}}>Action</StyledTableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>

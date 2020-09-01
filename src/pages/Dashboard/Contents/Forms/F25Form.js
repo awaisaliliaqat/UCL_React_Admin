@@ -2,28 +2,38 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { numberFreeExp, numberExp } from "../../../../utils/regularExpression";
-import {
-  TextField,
-  Grid,
-  MenuItem,
-  CircularProgress,
-  Divider,
-  Typography,
-  Chip,
-  Select,
-  IconButton,
-  Tooltip,
-  Checkbox,
-  Fab,
-} from "@material-ui/core";
+import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography, Chip,
+  Select, IconButton, Tooltip, Checkbox, Fab, Table, TableBody, TableCell, 
+  TableContainer, TableHead, TableRow, Paper} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    fontWeight: 500,
+    border: '1px solid '+theme.palette.common.white
+  },
+  body: {
+    fontSize: 14,
+    border: '1px solid '+theme.palette.primary.main,
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
 
 const styles = () => ({
   root: {
@@ -49,6 +59,9 @@ const styles = () => ({
     width: "100%",
     textAlign: "center",
   },
+  table: {
+    minWidth: 750,
+  }
 });
 
 function CourseRow(props) {
@@ -86,17 +99,6 @@ function CourseRow(props) {
     //console.log("handleCourse", selectedPCIdsString);
   };
 
-  // const getPreCourseSelectionGroupById = (id) => {
-  //   if (courseSelectionGroupMenuItems.length > 0 && id != "" && id != 0) {
-  //     let selected = courseSelectionGroupMenuItems.find((x) => x.ID == id);
-  //     if(selected){
-  //       return selected.Label;
-  //     }else{
-  //       return "";
-  //     }
-  //   }
-  // };
-
   useEffect(() => {
     handleCourse(rowData.preCourses);
     handleCourseSelectionGroup(rowData.preCourseSelectionGroups)
@@ -106,155 +108,30 @@ function CourseRow(props) {
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   return (
-    <Fragment>
-      <Grid container></Grid>
-      <Grid
-        container
-        direction="row"
-        justify="space-evenly"
-        alignItems="center"
-        spacing={2}
-      >
-        <Grid item xs={1} md={1}>
-          {/* 
-          <TextField
-            id="module"
-            name="moduleNumber"
-            label="Module"
-            required
-            fullWidth
-            inputProps={{
-              "aria-readonly": true,
-            }}
-            variant="outlined"
-            value={rowData.preModule}
-          /> 
-          */}
-          <TextField
-            type="hidden"
-            name="moduleNumber"
-            value={rowData.preModule}
-          />
+      <StyledTableRow key={rowData}>
+        <StyledTableCell component="th" scope="row" align="center">
+          <TextField type="hidden" name="moduleNumber" value={rowData.preModule}/>
           {rowData.preModule}
-        </Grid>
-        <Grid item xs={2} md={2}>
-          {/* 
-          <TextField
-            id="moduleType"
-            name="moduleType"
-            label="Module Type"
-            required
-            fullWidth
-            inputProps={{
-              "aria-readonly": true,
-            }}
-            variant="outlined"
-            value={
-              rowData.preModuleTypeId
-                ? moduleTypeMenuItems.find(
-                    (x) => x.ID == rowData.preModuleTypeId
-                  ).Label
-                : ""
-            }
-          /> 
-          */}
-          {rowData.preModuleTypeId
-              ? moduleTypeMenuItems.find(
-                  (x) => x.ID == rowData.preModuleTypeId
-                ).Label
-              : 
-              ""
-          }
-          <TextField
-            type="hidden"
-            name="moduleTypeId"
-            value={rowData.preModuleTypeId}
-          />
-        </Grid>
-        <Grid item xs={3} md={3}>
-          {/* 
-          <TextField
-            id="remarks"
-            name="moduleRemarks"
-            label="Remarks"
-            fullWidth
-            inputProps={{
-              "aria-readonly": true,
-            }}
-            variant="outlined"
-            value={rowData.preRemarks}
-          /> 
-          */}
-           <TextField
-            type="hidden"
-            name="moduleRemarks"
-            value={rowData.preRemarks}
-          />
+          </StyledTableCell>
+        <StyledTableCell align="center">
+          {rowData.preModuleTypeId ? moduleTypeMenuItems.find((x) => x.ID == rowData.preModuleTypeId).Label : ""}
+          <TextField type="hidden" name="moduleTypeId" value={rowData.preModuleTypeId}/>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+           <TextField type="hidden" name="moduleRemarks" value={rowData.preRemarks}/>
           {rowData.preRemarks}
-        </Grid>
-        <Grid item xs={4} md={4}>
+        </StyledTableCell>
+        <StyledTableCell align="center">
           {rowData.preModuleTypeId == 1 || rowData.preModuleTypeId == 3 ? (
             <Fragment>
-              {/* 
-              <Autocomplete
-                multiple
-                fullWidth
-                style={{ marginTop: "1.09em" }}
-                options={rowData.preCourses}
-                value={rowData.preCourses}
-                disableCloseOnSelect
-                getOptionLabel={(option) => " "}
-                renderTags={(tagValue, getTagProps) =>
-                  tagValue.map((option, index) => (
-                    <Chip
-                      key={"chipTag" + option.ID}
-                      label={option.Label}
-                      color="primary"
-                      variant="outlined"
-                      {...getTagProps({ index })}
-                    />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    label="Courses"
-                    placeholder=""
-                    type="hidden"
-                  />
-                )}
-              /> 
-              */}
-              {rowData.preCourses.map((option, index) => (
-                <span key={"pci"+index}>
-                  {index != 0 ? <br /> : ""} {option.Label}
-                </span>
-              ))}
+              {rowData.preCourses.map((option, index) => ( <span key={"pci"+index}> {index != 0 ? <br /> : ""} {option.Label} </span> ))}
               <TextField type="hidden" name="programmeCourseId" value={coursesInputValue}/>
               <TextField type="hidden" name="selectionGroupId" value="0" />
             </Fragment>
           ) : rowData.preModuleTypeId == 2 ? (
             <Fragment>
-              {/* 
-              <TextField
-                id="choiceGroup"
-                variant="outlined"
-                label="Choice Group"
-                value={getPreCourseSelectionGroupById(
-                  rowData.preCourseSelectionGroupId
-                )}
-                required
-                fullWidth
-              /> 
-              */}
-              
-              {
-              //getPreCourseSelectionGroupById(rowData.preCourseSelectionGroupId)
-              rowData.preCourseSelectionGroups.map((option, index) => (
-                <span key={"csgi"+index}>
-                  {index != 0 ? <br /> : ""} {option.Label}
-                </span>
+              {rowData.preCourseSelectionGroups.map((option, index) => (
+                <span key={"csgi"+index}>{index != 0 ? <br /> : ""} {option.Label}</span>
               ))}
               <TextField type="hidden" name="programmeCourseId" value="0" />
               <TextField type="hidden" name="selectionGroupId"  value={courseSelectionGroupInputValue}
@@ -263,50 +140,41 @@ function CourseRow(props) {
           ) : (
             ""
           )}
-        </Grid>
-        <Grid item xs={2} md={2} style={{ textAlign: "center" }}>
-        <IconButton
-            aria-label="Edit"
-            component="span"
-            onClick={() => onEdit(rowIndex)}
-          >
-            <Tooltip title="Edit">
-              <Fab 
-                color="primary" 
-                aria-label="Edit" 
-                size="small"
-                style={{
-                  height:36,
-                  width:36,
-                  backgroundColor:"rgb(255, 152, 0)"
-                }}
-              >
-                <EditIcon fontSize="small" />
-              </Fab>
-            </Tooltip>
-          </IconButton>
-          <IconButton
-            aria-label="Add"
-            component="span"
-            onClick={() => onDelete(rowIndex)}
-          >
-            <Tooltip title="Delete">
-              <Fab 
-                color="secondary" 
-                aria-label="Delete" 
-                size="small"
-                style={{
-                  height:36,
-                  width:36
-                }}
-              >
-                <DeleteIcon fontSize="small" />
-              </Fab>
-            </Tooltip>
-          </IconButton>
-        </Grid>
-      </Grid>
-    </Fragment>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+          <Tooltip title="Edit">
+            <Fab 
+              color="primary" 
+              aria-label="Edit" 
+              size="small"
+              style={{
+                height:36,
+                width:36,
+                backgroundColor:"rgb(255, 152, 0)"
+              }}
+              onClick={() => onEdit(rowIndex)}
+            >
+              <EditIcon fontSize="small" />
+            </Fab>
+          </Tooltip>
+          &emsp;
+          <Tooltip title="Delete">
+            <Fab
+              color="secondary"
+              aria-label="Delete"
+              size="small"
+              style={{
+                height: 36,
+                width: 36,
+                margin:4
+              }}
+              onClick={() => onDelete(rowIndex)}
+            >
+              <DeleteIcon fontSize="small" />
+            </Fab>
+          </Tooltip>
+        </StyledTableCell>
+      </StyledTableRow>
   );
 }
 
@@ -1337,8 +1205,8 @@ class F25Form extends Component {
                     opacity: "0.3",
                   }}
                 />
-              </Grid>
-              <Grid
+              </Grid> 
+              {/* <Grid
                   container
                   direction="row"
                   justify="space-evenly"
@@ -1370,33 +1238,46 @@ class F25Form extends Component {
                     </Typography>
                   </Grid>
                   <Grid item xs={12}><br/></Grid>
-              </Grid>
-              {this.state.programmeCoursesArray &&
-              this.state.preModuleTypeMenuItems &&
-              this.state.preCourseSelectionGroupMenuItems ? (
-                this.state.courseRowDataArray.map((dt, i) => (
-                  <CourseRow
-                    key={"CRDA"+i}
-                    rowIndex={i}
-                    rowData={dt}
-                    onDelete={(i) => this.handeDeleteCourseRow(i)}
-                    onEdit={(i) => this.onEditClick(i)}
-                    courseSelectionGroups={this.state.preCourseSelectionGroups}
-                    moduleTypeMenuItems={this.state.preModuleTypeMenuItems}
-                  />
-                ))
-              ) : this.state.isLoading ? (
-                <Grid
-                  container
-                  justify="center"
-                  alignContent="center"
-                  style={{ padding: "1em" }}
-                >
-                  <CircularProgress />
-                </Grid>
-              ) : (
-                ""
-              )}
+              </Grid> */}
+              <TableContainer component={Paper}>
+                  <Table className={classes.table} size="small" aria-label="customized table">
+                    <TableHead>
+                      <TableRow>
+                        <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
+                        <StyledTableCell align="center">Course Type</StyledTableCell>
+                        <StyledTableCell align="center">Remarks</StyledTableCell>
+                        <StyledTableCell align="center">Courses</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:'1px solid rgb(29, 95, 152)', minWidth:100}}>Action</StyledTableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                    {this.state.programmeCoursesArray &&
+                    this.state.preModuleTypeMenuItems &&
+                    this.state.preCourseSelectionGroupMenuItems ? (
+                      this.state.courseRowDataArray.map((dt, i) => (
+                        <CourseRow
+                          key={"CRDA"+i}
+                          rowIndex={i}
+                          rowData={dt}
+                          onDelete={(i) => this.handeDeleteCourseRow(i)}
+                          onEdit={(i) => this.onEditClick(i)}
+                          courseSelectionGroups={this.state.preCourseSelectionGroups}
+                          moduleTypeMenuItems={this.state.preModuleTypeMenuItems}
+                        />
+                      ))
+                    ) : 
+                    this.state.isLoading ? 
+                      <StyledTableRow key={1}>
+                        <StyledTableCell component="th" scope="row" colSpan={5}><center><CircularProgress/></center></StyledTableCell>
+                      </StyledTableRow>
+                      :
+                      <StyledTableRow key={1}>
+                        <StyledTableCell component="th" scope="row" colSpan={5}><center><b>No Data</b></center></StyledTableCell>
+                      </StyledTableRow>
+                    }
+                    </TableBody>
+                  </Table>
+                </TableContainer>
             </Grid>
             <br />
             <br />
