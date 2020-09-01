@@ -909,7 +909,7 @@ class F25Form extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                borderBottom: "1px solid #d2d2d2",
+                borderBottom: "1px solid rgb(58, 127, 187, 0.3)",
                 width: "98%",
                 marginBottom: 25,
                 fontSize: 20,
@@ -1205,40 +1205,7 @@ class F25Form extends Component {
                     opacity: "0.3",
                   }}
                 />
-              </Grid> 
-              {/* <Grid
-                  container
-                  direction="row"
-                  justify="space-evenly"
-                  alignItems="center"
-                >
-                  <Grid item xs={1} md={1}>
-                    <Typography color="primary">
-                      Module
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2} md={2}>
-                    <Typography color="primary">
-                      Course Type
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3} md={3}>
-                    <Typography color="primary">
-                      Remarks
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4} md={4}>
-                    <Typography color="primary">
-                      Courses
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2} md={2} style={{ textAlign: "center" }}>
-                    <Typography color="primary">
-                      Action
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}><br/></Grid>
-              </Grid> */}
+              </Grid>
               <TableContainer component={Paper}>
                   <Table className={classes.table} size="small" aria-label="customized table">
                     <TableHead>
