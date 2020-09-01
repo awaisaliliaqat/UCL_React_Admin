@@ -4,6 +4,7 @@ import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableConta
   TableHead, TableRow, Paper, Divider, CircularProgress, Grid} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -151,6 +152,18 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
+  handleSetProgrammeGroup = (value) => {
+    if(value) { 
+        this.getData(value.ID); 
+    }
+    else { 
+      this.setState({timetableData:[]}); 
+    }
+    this.setState({
+      programGroupId: value, 
+      programGroupIdError: ""
+    });
+  };
   
   onHandleChange = (e) => {
     const { name, value } = e.target;
@@ -233,6 +246,25 @@ class R46Reports extends Component {
             spacing={2}
           >
             <Grid item xs={12} md={4}>
+            <Autocomplete
+                fullWidth
+                id="programGroupId"
+                options={this.state.programGroupsMenuItems}
+                value={this.state.programGroupId}
+                onChange={(event, value) => this.handleSetProgrammeGroup(value)}
+                getOptionLabel={(option) => typeof option.Label === 'string' ? option.Label : ""}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="Program Group"
+                    placeholder="Search and Select"
+                    error={!!this.state.programGroupIdError}
+                    helperText={this.state.programGroupIdError ? this.state.programGroupIdError : "" }
+                  />
+                )}
+              />
+              {/* 
               <TextField
                 id="programGroupId"
                 name="programGroupId"
@@ -262,7 +294,8 @@ class R46Reports extends Component {
                       <CircularProgress />
                     </Grid>
                 }
-              </TextField>
+              </TextField> 
+              */}
             </Grid>
             <TableContainer component={Paper}>
               <Table className={classes.table} aria-label="customized table">
