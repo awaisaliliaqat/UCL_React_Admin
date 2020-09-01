@@ -4,6 +4,7 @@ import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableConta
   TableHead, TableRow, Paper, Divider, CircularProgress, Grid} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -47,7 +48,7 @@ class R46Reports extends Component {
       snackbarMessage: "",
       snackbarSeverity: "",
       teachersMenuItems: [],
-      teacherId: "",
+      teacherId: {},
       teacherIdError: "",
       timetableData: [],
     };
@@ -152,6 +153,19 @@ class R46Reports extends Component {
   };
 
   
+  handleSetTeacher = (value) => {
+    if(value) { 
+        this.getData(value.id); 
+    }
+    else { 
+      this.setState({timetableData:[]}); 
+    }
+    this.setState({
+      teacherId: value, 
+      teacherIdError: ""
+    });
+  };
+
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -233,6 +247,25 @@ class R46Reports extends Component {
             spacing={2}
           >
             <Grid item xs={12} md={4}>
+              <Autocomplete
+                fullWidth
+                id="teacherId"
+                options={this.state.teachersMenuItems}
+                value={this.state.teacherId}
+                onChange={(event, value) => this.handleSetTeacher(value)}
+                getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="Teachers"
+                    placeholder="Search and Select"
+                    error={!!this.state.teacherIdError}
+                    helperText={this.state.teacherIdError ? this.state.teacherIdError : "" }
+                  />
+                )}
+              />
+              {/* 
               <TextField
                 id="teacherId"
                 name="teacherId"
@@ -262,7 +295,8 @@ class R46Reports extends Component {
                       <CircularProgress />
                     </Grid>
                 }
-              </TextField>
+              </TextField> 
+              */}
             </Grid>
             <TableContainer component={Paper}>
               <Table className={classes.table} aria-label="customized table">

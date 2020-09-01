@@ -14,14 +14,14 @@ import CheckBoxIcon from "@material-ui/icons/CheckBox";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: "rgb(29, 95, 152)", //theme.palette.common.black,
     color: theme.palette.common.white,
     fontWeight: 500,
-    border: '1px solid '+theme.palette.common.white
+    border: '1px solid white'
   },
   body: {
     fontSize: 14,
-    border: '1px solid '+theme.palette.primary.main,
+    border: '1px solid rgb(29, 95, 152)'
   },
 }))(TableCell);
 
@@ -82,7 +82,27 @@ function CourseRow(props) {
     if(!(Object.keys(Obj).length===0)){
       selectedPCIdsString = Obj.ID;
     }
+    // for (let i = 0; i < Obj.length; i++) {
+    //   if (i == 0) {
+    //     selectedPCIdsString = Obj[i].ID;
+    //   } else {
+    //     selectedPCIdsString += "~" + Obj[i].ID;
+    //   }
+    //}
     setCoursesInputValue(selectedPCIdsString);
+  };
+
+  const getPreModuleById = (id) => {
+    if (
+      moduleMenuItems.length > 0 &&
+      id != "" &&
+      id != 0 &&
+      moduleMenuItems.find((x) => x.ID == id) != undefined
+    ) {
+      return moduleMenuItems.find((x) => x.ID == id).Label;
+    } else {
+      return "";
+    }
   };
 
   useEffect(() => {
@@ -93,38 +113,122 @@ function CourseRow(props) {
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   return (
-      <StyledTableRow key={rowData}>
-        <StyledTableCell component="th" scope="row" align="center">
-          {rowData.preModuleId}
-          <TextField type="hidden" name="moduleNumber" value={rowData.preModuleId}/>
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          {rowData.preCourses.Label}
-          <TextField type="hidden" name="programmeCourseId" value={coursesInputValue}/>
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          {rowData.preMarks}
-          <TextField type="hidden" name="marks" value={rowData.preMarks} />
-        </StyledTableCell>
-        <StyledTableCell align="center">
-            <Tooltip title="Delete">
-              <Fab
-                color="secondary"
-                aria-label="Delete"
-                size="small"
-                style={{
-                  height: 36,
-                  width: 36,
-                  margin:4
-                }}
-                onClick={() => onDelete(rowIndex)}
-              >
-                <DeleteIcon fontSize="small" />
-              </Fab>
-            </Tooltip>
-          
-        </StyledTableCell>
-    </StyledTableRow>
+    <Grid
+      container
+      direction="row"
+      justify="space-evenly"
+      alignItems="center"
+      alignContent="space-around"
+    >
+      {/* 
+        <Typography 
+            color="primary" 
+            variant="subtitle1"
+            component="div"
+            style={{float:"left"}}
+        >
+            <b>{(rowIndex+1)}:</b>
+        </Typography> 
+      */}
+      <Grid item xs={3} md={3}>
+        {/* <TextField
+          id="module"
+          name="module"
+          label="Module"
+          required
+          fullWidth
+          inputProps={{
+            "aria-readonly": true,
+          }}
+          variant="outlined"
+          value={getPreModuleById(rowData.preModuleId)}
+        /> */}
+        {/* <Typography color="primary" variant="caption"> */}
+        {/* {getPreModuleById(rowData.preModuleId)} */}
+        {rowData.preModuleId}
+        {/* </Typography> */}
+        <TextField
+          type="hidden"
+          name="moduleNumber"
+          value={rowData.preModuleId}
+        />
+      </Grid>
+      <Grid item xs={4} md={4}>
+        {rowData.preCourses.Label}
+        <TextField
+          type="hidden"
+          name="programmeCourseId"
+          value={coursesInputValue}
+        />
+        {/* <Autocomplete
+          multiple
+          fullWidth
+          style={{ paddingTop: "1.4em" }}
+          options={rowData.preCourses}
+          value={rowData.preCourses}
+          disableCloseOnSelect
+          getOptionLabel={(option) => " "}
+          renderTags={(tagValue, getTagProps) =>
+            tagValue.map((option, index) => (
+              <Chip
+                key={"chipTag" + option.ID}
+                label={option.Label}
+                color="primary"
+                variant="outlined"
+                {...getTagProps({ index })}
+              />
+            ))
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="Courses"
+              placeholder=""
+              type="hidden"
+            />
+          )}
+        /> */}
+      </Grid>
+      <Grid item xs={3} md={3}>
+        {/* <Typography color="primary" variant="caption"> */}
+        {rowData.preMarks}
+        {/* </Typography> */}
+        <TextField type="hidden" name="marks" value={rowData.preMarks} />
+        {/* <TextField
+          id="Marks"
+          name="marks"
+          label="Marks"
+          fullWidth
+          inputProps={{
+            "aria-readonly": true,
+          }}
+          variant="outlined"
+          value={rowData.preMarks}
+        /> */}
+      </Grid>
+      <Grid item xs={2} md={1} style={{ textAlign: "center" }}>
+        <IconButton
+          aria-label="Delete"
+          component="span"
+          onClick={() => onDelete(rowIndex)}
+        >
+          <Tooltip title="Delete">
+            <Fab
+              color="secondary"
+              aria-label="Delete"
+              size="small"
+              style={{
+                height: 36,
+                width: 36,
+              }}
+            >
+              <DeleteIcon fontSize="small" />
+            </Fab>
+          </Tooltip>
+        </IconButton>
+      </Grid>
+    </Grid>
   );
 }
 
@@ -175,14 +279,17 @@ class F30FormPopupComponent extends Component {
             for (let i = 0; i < json.DATA.length; i++) {
               let courseRowDataObject = {
                 preModuleId: json.DATA[i].moduleNumber,
-                preCourses: json.DATA[i].coursesObject,
+                preCourses: json.DATA[i].coursesArray,
                 preMarks: json.DATA[i].marks,
               };
               courseRowDataArray.push(courseRowDataObject);
             }
             this.setState({ courseRowDataArray: courseRowDataArray });
           } else {
-            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
+            this.props.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              "error"
+            );
           }
           console.log("loadData", json);
         },
@@ -388,7 +495,7 @@ class F30FormPopupComponent extends Component {
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
-    const { classes } = this.props;
+    const { classes } = this.props; 
 
     return (
       <Fragment>
@@ -494,7 +601,7 @@ class F30FormPopupComponent extends Component {
                     value={this.state.preCourses}
                     onChange={(event, value) => this.handleSetPreCourses(value)}
                     //disableCloseOnSelect
-                    getOptionLabel={(option) => typeof option.Label === 'string' ? option.Label : ""}
+                    getOptionLabel={(option) => option.Label}
                     // renderTags={(tagValue, getTagProps) =>
                     //   tagValue.map((option, index) => (
                     //     <Chip
@@ -607,41 +714,23 @@ class F30FormPopupComponent extends Component {
                   </Grid>
                 </Grid> */}
                 <TableContainer component={Paper}>
-                  <Table className={classes.table} size="small" aria-label="customized table">
+                  <Table className={classes.table} aria-label="customized table">
                     <TableHead>
                       <TableRow>
-                        <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
+                        <StyledTableCell style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
                         <StyledTableCell align="center">Courses</StyledTableCell>
                         <StyledTableCell align="center">Marks</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)', minWidth:100}}>Action</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Action</StyledTableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                        {this.state.courseRowDataArray.length > 0 ?
-                          this.state.courseRowDataArray.map((dt, i) => (
-                            <CourseRow
-                              key={"SMC"+i}
-                              rowIndex={i}
-                              rowData={dt}
-                              onDelete={(i) => this.handeDeleteCourseRow(i)}
-                              moduleMenuItems={this.state.preModuleMenuItems}
-                              courseMenuItems={this.preCourses}
-                            />
-                          ))
-                        :
-                        this.state.isLoading ?
-                          <StyledTableRow key={1}>
-                            <StyledTableCell component="th" scope="row" colSpan={4}><center><CircularProgress/></center></StyledTableCell>
-                          </StyledTableRow>
-                          :
-                          <StyledTableRow key={1}>
-                            <StyledTableCell component="th" scope="row" colSpan={4}><center><b>No Data</b></center></StyledTableCell>
-                          </StyledTableRow>
-                        }
+                        <StyledTableRow >
+
+                        </StyledTableRow>
                     </TableBody>
                   </Table>
                 </TableContainer>
-                {/* {this.state.courseRowDataArray.length > 0 &&
+                {this.state.courseRowDataArray.length > 0 &&
                   this.state.courseRowDataArray.map((dt, i) => (
                     <CourseRow
                       key={"SMC"+i}
@@ -651,7 +740,7 @@ class F30FormPopupComponent extends Component {
                       moduleMenuItems={this.state.preModuleMenuItems}
                       courseMenuItems={this.preCourses}
                     />
-                  ))} */}
+                  ))}
                 <br />
                 <br />
               </Grid>
