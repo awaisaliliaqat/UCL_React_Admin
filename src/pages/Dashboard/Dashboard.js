@@ -82,6 +82,8 @@ import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
 import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
 import SyncTimeTable from './Contents/LMS/SyncTimeTable/SyncTimeTable';
 import SyncZoomMeetings from "./Contents/LMS/SyncZoomMeetings/SyncZoomMeetings";
+import CreateRoomForm from './Contents/Forms/CreateRoom/CreateRoomFrom';
+import CreateRoomReports from './Contents/Forms/CreateRoom/CreateRoomReports';
 
 const drawerWidth = 283;
 
@@ -969,6 +971,27 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <ChangeStudentStatus
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="maintain-class-rooms"
+                exact
+                path="/dashboard/create-room-reports"
+                component={CreateRoomReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="maintain-class-rooms"
+                exact
+                path="/dashboard/maintain-class-rooms/:recordId"
+                render={(props) => {
+                  return (
+                    <CreateRoomForm
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                     />
