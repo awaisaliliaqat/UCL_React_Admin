@@ -211,9 +211,7 @@ class F25Form extends Component {
       preChoiceGroupId: "",
       preChoiceGroupIdError: "",
       preChoiceGroupIdMenuItems: [],
-      programmeCoursesArray: [],
       programmeCoursesListArray: [],
-      programmeCoursesArraySelected: null,
       programmeCoursesError: "",
       courseRowDataArray: [],
       prerequisiteCourseArray: [],
@@ -349,7 +347,7 @@ class F25Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ preModuleTypeMenuItems: json.DATA });
+            this.setState({ preModuleTypeMenuItems: json.DATA || [] });
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
@@ -1218,9 +1216,8 @@ class F25Form extends Component {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                    {this.state.programmeCoursesArray &&
-                    this.state.preModuleTypeMenuItems &&
-                    this.state.preCourseSelectionGroupMenuItems ? (
+                    {this.state.preModuleTypeMenuItems.length>0 &&
+                    this.state.courseRowDataArray.length>0 ? (
                       this.state.courseRowDataArray.map((dt, i) => (
                         <CourseRow
                           key={"CRDA"+i}
