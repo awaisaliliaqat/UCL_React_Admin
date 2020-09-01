@@ -748,7 +748,7 @@ class F09Form extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                borderBottom: "1px solid #d2d2d2",
+                borderBottom: "1px solid rgb(58, 127, 187, 0.3)",
                 width: "98%",
                 marginBottom: 25,
                 fontSize: 20,
