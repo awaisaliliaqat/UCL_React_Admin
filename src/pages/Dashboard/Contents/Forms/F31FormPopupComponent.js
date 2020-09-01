@@ -1,5 +1,7 @@
-import React, { Component, Fragment, useEffect } from "react";
-import { withStyles, useTheme } from "@material-ui/styles";
+import React, { Component, Fragment } from "react";
+import PropTypes from 'prop-types';
+import { withStyles } from "@material-ui/styles";
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   TextField,
   Grid,
@@ -14,9 +16,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
-  useMediaQuery,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -24,63 +24,11 @@ import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import { DatePicker } from "@material-ui/pickers";
 
 const styles = () => ({
-  root: {
-    padding: 20,
-    minWidth: 350,
-    overFlowX: "auto",
-  },
-  formControl: {
-    minWidth: "100%",
-  },
-  sectionTitle: {
-    fontSize: 19,
-    color: "#174a84",
-  },
-  checkboxDividerLabel: {
-    marginTop: 10,
-    marginLeft: 5,
-    marginRight: 20,
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  rootProgress: {
-    width: "100%",
-    textAlign: "center",
-  },
 });
 
-function CourseRow(props) {
-  console.log("RowProps: ", props);
+const CourseRow = (props) => {
 
-  const { rowIndex, rowData, onDelete, ...rest } = props;
-
-  // const [coursesInputValue, setCoursesInputValue] = useState("");
-
-  // const handleCourse = (value) => {
-  //     let ObjArray = value;
-  //     let selectedPCIdsString = "";
-  //     for(let i=0; i<ObjArray.length; i++){
-  //         if(i==0){
-  //             selectedPCIdsString = ObjArray[i].ID;
-  //         }else{
-  //             selectedPCIdsString += "~"+ObjArray[i].ID;
-  //         }
-  //     }
-  //     setCoursesInputValue(selectedPCIdsString);
-  //     //console.log("handleCourse", selectedPCIdsString);
-  // }
-
-  // const getPreCourseSelectionGroupById = (id) => {
-  //     if(courseMenuItems.length>0 && id!="" && id!=0){
-  //         return courseMenuItems.find(x => x.ID == id).Label;
-  //     }else{
-  //         return "";
-  //     }
-  // }
-
-  useEffect(() => {
-    //handleCourse(rowData.preCourses);
-  });
+  const { rowIndex, rowData, onDelete } = props;
 
   return (
     <Fragment>
@@ -92,30 +40,16 @@ function CourseRow(props) {
         alignItems="center"
       >
         <Grid item xs={1} md={1}>
-        <Typography
-          color="primary"
-          variant="subtitle1"
-          component="div"
-          style={{ float: "left" }}
-        >
-          {rowIndex + 1}:
+          <Typography
+            color="primary"
+            variant="subtitle1"
+            component="div"
+            style={{ float: "left" }}
+          >
+            {rowIndex + 1}:
         </Typography>
         </Grid>
-        <Grid item xs={3} md={3}>
-          {/* 
-          <TextField
-            id="dayIdLabel"
-            name="dayIdLabel"
-            label="Day"
-            required
-            fullWidth
-            inputProps={{
-              "aria-readonly": true,
-            }}
-            variant="outlined"
-            value={rowData.preDay}
-          /> 
-          */}
+        <Grid item xs={2} md={2}>
           {rowData.preDay}
           <TextField
             type="hidden"
@@ -124,21 +58,7 @@ function CourseRow(props) {
             value={rowData.preDayId}
           />
         </Grid>
-        <Grid item xs={4} md={4}>
-          {/* 
-          <TextField
-            id="startTime"
-            name="startTime"
-            label="Time Start"
-            required
-            fullWidth
-            inputProps={{
-              "aria-readonly": true,
-            }}
-            variant="outlined"
-            value={rowData.preTimeStart}
-          /> 
-          */}
+        <Grid item xs={2} md={2}>
           {rowData.preTimeStart}
           <TextField
             type="hidden"
@@ -147,27 +67,22 @@ function CourseRow(props) {
             value={rowData.preTimeStart}
           />
         </Grid>
-        <Grid item xs={3} md={3}>
-          {/* 
-          <TextField
-            id="module"
-            name="duration"
-            label="Duration"
-            required
-            fullWidth
-            inputProps={{
-              "aria-readonly": true,
-            }}
-            variant="outlined"
-            value={rowData.preTimeDuration}
-          /> 
-          */}
+        <Grid item xs={2} md={2}>
           {rowData.preTimeDuration}
           <TextField
             type="hidden"
             id="duration"
             name="duration"
             value={rowData.preTimeDuration}
+          />
+        </Grid>
+        <Grid item xs={2} md={2}>
+          {rowData.roomsObject.Label || ""}
+          <TextField
+            type="hidden"
+            id="roomDBId"
+            name="roomDBId"
+            value={rowData.roomsObject.ID || ""}
           />
         </Grid>
         <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
@@ -177,16 +92,16 @@ function CourseRow(props) {
             onClick={() => onDelete(rowIndex)}
           >
             <Tooltip title="Delete">
-              <Fab 
-                color="secondary" 
-                aria-label="Delete" 
+              <Fab
+                color="secondary"
+                aria-label="Delete"
                 size="small"
                 style={{
-                  height:36,
-                  width:36
+                  height: 36,
+                  width: 36
                 }}
               >
-                <DeleteIcon fontSize="small"/>
+                <DeleteIcon fontSize="small" />
               </Fab>
             </Tooltip>
           </IconButton>
@@ -194,6 +109,30 @@ function CourseRow(props) {
       </Grid>
     </Fragment>
   );
+}
+
+CourseRow.propTypes = {
+  rowData: PropTypes.object,
+  rowIndex: PropTypes.number,
+  onDelete: PropTypes.func
+}
+
+CourseRow.defaultTypes = {
+  rowData: {},
+  rowIndex: -1,
+  onDelete: fn => fn
+}
+
+
+function isEmpty(obj) {
+  if (obj == null) return true;
+  if (obj.length > 0) return false;
+  if (obj.length === 0) return true;
+  if (typeof obj !== "object") return true;
+  for (var key in obj) {
+    if (hasOwnProperty.call(obj, key)) return false;
+  }
+  return true;
 }
 
 class F31FormPopupComponent extends Component {
@@ -219,6 +158,10 @@ class F31FormPopupComponent extends Component {
       preDate: this.getTomorrowDate(),
       preDateError: "",
       rowDataArray: [],
+
+      roomsObject: {},
+      roomsObjectError: "",
+      roomsId: ""
     };
   }
 
@@ -272,13 +215,14 @@ class F31FormPopupComponent extends Component {
                 preDay: json.DATA[i].daylabel,
                 preTimeStart: json.DATA[i].startTime,
                 preTimeDuration: json.DATA[i].duration,
+                roomsObject: { ID: json.DATA[i].classRoomId || "", Label: json.DATA[i].classRoomLabel || "", studentCapacity: json.DATA[i].classRoomCapacity || "" }
               };
               rowDataArray.push(courseRowDataObject);
             }
             this.setState({ rowDataArray: rowDataArray });
           } else {
             this.props.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -369,12 +313,24 @@ class F31FormPopupComponent extends Component {
     return isValid;
   };
 
+  isRoomsValid = () => {
+    let isValid = true;
+    if (isEmpty(this.state.roomsObject)) {
+      this.setState({ roomsObjectError: "Please select rooms." });
+      isValid = false;
+    } else {
+      this.setState({ roomsObjectError: "" });
+    }
+    return isValid;
+  };
+
   handeAddCourseRow = () => {
     if (
       !this.isPreDateValid() ||
       !this.isPreDayValid() ||
       !this.isPreTimeSlotValid() ||
-      !this.isPreTimeDurationValid()
+      !this.isPreTimeDurationValid() ||
+      !this.isRoomsValid()
     ) {
       return;
     }
@@ -382,8 +338,8 @@ class F31FormPopupComponent extends Component {
     let rowDataArray = this.state.rowDataArray;
     let preDayId = this.state.preDayId;
     let preDay = this.state.preDay;
-    console.log();
     let preDaysMenuItemsTemp = this.state.preDaysMenuItems;
+
     for (let i = 0; i < preDaysMenuItemsTemp.length; i++) {
       if (preDaysMenuItemsTemp[i].id == preDayId) {
         preDay = preDaysMenuItemsTemp[i].label;
@@ -407,6 +363,7 @@ class F31FormPopupComponent extends Component {
       preDay: preDay,
       preTimeStart: preTimeStart,
       preTimeDuration: preTimeDuration,
+      roomsObject: this.state.roomsObject
     };
 
     rowDataArray.push(rowDataObject);
@@ -417,9 +374,9 @@ class F31FormPopupComponent extends Component {
       preDay: "",
       preTimeStart: "",
       preTimeDuration: "",
+      roomsObject: {},
+      roomsId: ""
     });
-
-    //console.log("courseRowDataObject", courseRowDataObject);
   };
 
   handeDeleteCourseRow = (index) => {
@@ -471,7 +428,6 @@ class F31FormPopupComponent extends Component {
   };
 
   componentDidMount() {
-    //console.log("F30PopUp: ", this.props);
     this.setState({
       preTimeStartMenuItems: this.props.preTimeStartMenuItems,
       preDaysMenuItems: this.props.preDaysMenuItems,
@@ -479,6 +435,15 @@ class F31FormPopupComponent extends Component {
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
     }
+  }
+
+  onAutoCompleteChange = (e, value) => {
+    let object = isEmpty(value) ? {} : value;
+    this.setState({
+      roomsObject: object,
+      roomsId: object.id || "",
+      roomsObjectError: ""
+    })
   }
 
   render() {
@@ -498,7 +463,6 @@ class F31FormPopupComponent extends Component {
           </Tooltip>
         </IconButton>
         <Dialog
-          //fullScreen={}
           maxWidth="md"
           open={this.state.popupBoxOpen}
           onClose={this.handleClose}
@@ -507,7 +471,7 @@ class F31FormPopupComponent extends Component {
           <span style={{ color: "#ffffff" }}>
             ________________________________________________________________________________________________________________________________________________________
           </span>
-          <DialogTitle id="responsive-dialog-title">
+          <DialogTitle style={{ paddingBottom: 0 }} id="responsive-dialog-title">
             <IconButton
               aria-label="close"
               onClick={this.handleClose}
@@ -563,186 +527,203 @@ class F31FormPopupComponent extends Component {
             />
           </DialogTitle>
           <DialogContent>
-            {/* <DialogContentText> */}
+            <Grid
+              container
+              direction="row"
+              alignItems="center"
+              spacing={2}
+              style={{
+                marginTop: -10,
+              }}
+            >
+              <Grid item xs={12} md={4}>
+                <TextField
+                  type="hidden"
+                  id="sectionId"
+                  name="sectionId"
+                  value={this.props.sectionId}
+                />
+                <TextField
+                  id="preDayId"
+                  name="preDayId"
+                  variant="outlined"
+                  label="Day"
+                  onChange={this.onHandleChangePreDay}
+                  value={this.state.preDayId}
+                  error={!!this.state.preDayError}
+                  helperText={
+                    this.state.preDayError
+                  }
+                  required
+                  fullWidth
+                  select
+                >
+                  {this.state.preDaysMenuItems ? (
+                    this.state.preDaysMenuItems.map((dt) => (
+                      <MenuItem
+                        key={"preDaysMenuItems" + dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))
+                  ) : (
+                      <MenuItem>
+                        <CircularProgress />
+                      </MenuItem>
+                    )}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  id="preTimeStart"
+                  name="preTimeStart"
+                  variant="outlined"
+                  label="Time Slot"
+                  onChange={this.onHandleChange}
+                  value={this.state.preTimeStart}
+                  error={!!this.state.preTimeStartError}
+                  helperText={
+                    this.state.preTimeStartError
+                  }
+                  required
+                  fullWidth
+                  select
+                >
+                  {this.state.preTimeStartMenuItems ? (
+                    this.state.preTimeStartMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"preTimeStartMenuItems" + dt + i}
+                        value={dt}
+                      >
+                        {dt}
+                      </MenuItem>
+                    ))
+                  ) : (
+                      <MenuItem>
+                        <CircularProgress />
+                      </MenuItem>
+                    )}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  id="preTimeDuration"
+                  name="preTimeDuration"
+                  label={"Duration (Minutes)"}
+                  type="number"
+                  required
+                  fullWidth
+                  variant="outlined"
+                  onChange={this.onHandleChange}
+                  value={this.state.preTimeDuration}
+                  error={this.state.preTimeDurationError}
+                  helperText={this.state.preTimeDurationError}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Autocomplete
+                  id="rooms"
+                  getOptionLabel={(option) => option.Label}
+                  fullWidth
+                  value={this.state.roomsObject}
+                  onChange={this.onAutoCompleteChange}
+                  options={this.props.values.roomsData}
+                  renderInput={(params) => <TextField error={this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params}
+                  />}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  id="capacity"
+                  value={isEmpty(this.state.roomsObject) ? "" : this.state.roomsObject.studentCapacity}
+                  variant="outlined"
+                  fullWidth
+                  placeholder="Student Capacity"
+                  readOnly
+                />
+              </Grid>
+              <Grid item xs={1} style={{ textAlign: "center" }}>
+                <IconButton
+                  color="primary"
+                  aria-label="Add"
+                  component="span"
+                  onClick={this.handeAddCourseRow}
+                >
+                  <Tooltip title="Add New">
+                    <Fab color="primary" aria-label="add" size="small">
+                      <AddIcon />
+                    </Fab>
+                  </Tooltip>
+                </IconButton>
+              </Grid>
+              <Grid item xs={12}>
+                <Divider
+                  style={{
+                    backgroundColor: "rgb(58, 127, 187)",
+                    opacity: "0.3",
+                  }}
+                />
+              </Grid>
               <Grid
                 container
                 direction="row"
                 justify="space-evenly"
                 alignItems="center"
-                spacing={2}
-                style={{
-                  marginTop: -10,
-                }}
               >
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    type="hidden"
-                    id="sectionId"
-                    name="sectionId"
-                    value={this.props.sectionId}
-                  />
-                  <TextField
-                    id="preDayId"
-                    name="preDayId"
-                    variant="outlined"
-                    label="Day"
-                    onChange={this.onHandleChangePreDay}
-                    value={this.state.preDayId}
-                    error={!!this.state.preDayError}
-                    helperText={
-                      this.state.preDayError ? this.state.preDayError : " "
-                    }
-                    required
-                    fullWidth
-                    select
-                  >
-                    {this.state.preDaysMenuItems ? (
-                      this.state.preDaysMenuItems.map((dt, i) => (
-                        <MenuItem
-                          key={"preDaysMenuItems" + dt.id}
-                          value={dt.id}
-                        >
-                          {dt.label}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem>
-                        <CircularProgress />
-                      </MenuItem>
-                    )}
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    id="preTimeStart"
-                    name="preTimeStart"
-                    variant="outlined"
-                    label="Time Slot"
-                    onChange={this.onHandleChange}
-                    value={this.state.preTimeStart}
-                    error={!!this.state.preTimeStartError}
-                    helperText={
-                      this.state.preTimeStartError
-                        ? this.state.preTimeStartError
-                        : " "
-                    }
-                    required
-                    fullWidth
-                    select
-                  >
-                    {this.state.preTimeStartMenuItems ? (
-                      this.state.preTimeStartMenuItems.map((dt, i) => (
-                        <MenuItem
-                          key={"preTimeStartMenuItems" + dt + i}
-                          value={dt}
-                        >
-                          {dt}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem>
-                        <CircularProgress />
-                      </MenuItem>
-                    )}
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <TextField
-                    id="preTimeDuration"
-                    name="preTimeDuration"
-                    label={"Duration (Minutes)"}
-                    type="number"
-                    required
-                    fullWidth
-                    variant="outlined"
-                    onChange={this.onHandleChange}
-                    value={this.state.preTimeDuration}
-                    error={!!this.state.preTimeDurationError}
-                    helperText={
-                      this.state.preTimeDurationError
-                        ? this.state.preTimeDurationError
-                        : " "
-                    }
-                  />
-                </Grid>
-                <Grid item xs={1} style={{ textAlign: "center" }}>
-                  <IconButton
-                    color="primary"
-                    aria-label="Add"
-                    component="span"
-                    onClick={this.handeAddCourseRow}
-                    style={{ marginTop: "-1em" }}
-                  >
-                    <Tooltip title="Add New">
-                      <Fab color="primary" aria-label="add" size="small">
-                        <AddIcon />
-                      </Fab>
-                    </Tooltip>
-                  </IconButton>
-                </Grid>
-                <Grid item xs={12}>
-                  <Divider
-                    style={{
-                      backgroundColor: "rgb(58, 127, 187)",
-                      opacity: "0.3",
-                    }}
-                  />
-                </Grid>
-                <Grid
-                  container
-                  direction="row"
-                  justify="space-evenly"
-                  alignItems="center"
-                >
-                  <Grid item xs={1} md={1}>
-                    <Typography color="primary">
-                      SR#
+                <Grid item xs={1} md={1}>
+                  <Typography color="primary">
+                    SR#
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3} md={3}>
-                    <Typography color="primary">
-                      Day
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3} md={4}>
-                    <Typography color="primary">
-                      Start Time
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3} md={3}>
-                    <Typography color="primary">
-                      Duration <small>(Minutes)</small>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
-                    <Typography color="primary">
-                      Action
-                    </Typography>
-                  </Grid>
                 </Grid>
-                {this.state.rowDataArray.length > 0
-                  ? this.state.rowDataArray.map((dt, i) => (
-                      <CourseRow
-                        key={"RDO" + i}
-                        rowIndex={i}
-                        rowData={dt}
-                        onDelete={(i) => this.handeDeleteCourseRow(i)}
-                      />
-                    ))
-                  : this.state.isLoading && (
-                      <Grid
-                        container
-                        justify="center"
-                        alignItems="center"
-                        style={{ paddingTop: "2em" }}
-                      >
-                        <CircularProgress />
-                      </Grid>
-                    )}
-                <br />
-                <br />
+                <Grid item xs={2}>
+                  <Typography color="primary">
+                    Day
+                    </Typography>
+                </Grid>
+                <Grid item xs={2} md={2}>
+                  <Typography color="primary">
+                    Start Time
+                    </Typography>
+                </Grid>
+                <Grid item xs={2} md={2}>
+                  <Typography color="primary">
+                    Duration <small>(Minutes)</small>
+                  </Typography>
+                </Grid>
+                <Grid item xs={2} md={2}>
+                  <Typography color="primary">
+                    Room
+                  </Typography>
+                </Grid>
+                <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+                  <Typography color="primary">
+                    Action
+                    </Typography>
+                </Grid>
               </Grid>
-            {/* </DialogContentText> */}
+              {this.state.rowDataArray.length > 0
+                ? this.state.rowDataArray.map((dt, i) => (
+                  <CourseRow
+                    key={"RDO" + i}
+                    rowIndex={i}
+                    rowData={dt}
+                    onDelete={(i) => this.handeDeleteCourseRow(i)}
+                  />
+                ))
+                : this.state.isLoading && (
+                  <Grid
+                    container
+                    justify="center"
+                    alignItems="center"
+                    style={{ paddingTop: "2em" }}
+                  >
+                    <CircularProgress />
+                  </Grid>
+                )}
+              <br />
+              <br />
+            </Grid>
           </DialogContent>
           <Divider
             style={{
@@ -766,5 +747,36 @@ class F31FormPopupComponent extends Component {
       </Fragment>
     );
   }
+
 }
+
+F31FormPopupComponent.propTypes = {
+  classes: PropTypes.object.isRequired,
+  handleOpenSnackbar: PropTypes.func,
+  clickOnFormSubmit: PropTypes.func,
+  onAutoCompleteChange: PropTypes.func,
+  sectionId: PropTypes.any,
+  courseLabel: PropTypes.any,
+  sectionTypeLabel: PropTypes.any,
+  sectionLabel: PropTypes.any,
+  teacherName: PropTypes.any,
+  preTimeStartMenuItems: PropTypes.any,
+  preDaysMenuItems: PropTypes.any,
+  values: PropTypes.object
+}
+
+F31FormPopupComponent.defaultTypes = {
+  handleOpenSnackbar: fn => fn,
+  clickOnFormSubmit: fn => fn,
+  onAutoCompleteChange: fn => fn,
+  values: {},
+  sectionId: "",
+  courseLabel: "",
+  sectionTypeLabel: "",
+  sectionLabel: "",
+  teacherName: "",
+  preTimeStartMenuItems: "",
+  preDaysMenuItems: ""
+}
+
 export default withStyles(styles)(F31FormPopupComponent);
