@@ -310,7 +310,7 @@ class ChangeStudentStatus extends Component {
                                 {this.state.isLoading ? <CircularProgress style={{
                                     color: 'white', paddingLeft: 40,
                                     paddingRight: 40
-                                }} size={24} /> : 'De-Activate'}
+                                }} size={24} /> : 'Deactivate'}
 
                             </Button>
                         </Fragment>
