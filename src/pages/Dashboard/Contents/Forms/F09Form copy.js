@@ -2,9 +2,20 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { numberFreeExp } from "../../../../utils/regularExpression";
-import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
-  Chip, Select, IconButton, Tooltip, Checkbox, Fab, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Paper} from "@material-ui/core";
+import {
+  TextField,
+  Grid,
+  MenuItem,
+  CircularProgress,
+  Divider,
+  Typography,
+  Chip,
+  Select,
+  IconButton,
+  Tooltip,
+  Checkbox,
+  Fab,
+} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -12,27 +23,6 @@ import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.common.white,
-    fontWeight: 500,
-    border: '1px solid '+theme.palette.common.white
-  },
-  body: {
-    fontSize: 14,
-    border: '1px solid '+theme.palette.primary.main,
-  },
-}))(TableCell);
-
-const StyledTableRow = withStyles((theme) => ({
-  root: {
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
-    },
-  },
-}))(TableRow);
 
 const styles = () => ({
   root: {
@@ -58,9 +48,6 @@ const styles = () => ({
     width: "100%",
     textAlign: "center",
   },
-  table: {
-    minWidth: 750,
-  }
 });
 
 function CourseRow(props) {
@@ -88,56 +75,163 @@ function CourseRow(props) {
     }
   }
 
-  const getChoiceGroupLabel = (id) => {
-    let res = choiceGroupIdMenuItems.find( (x) => x.ID == id);
-    if(res){
-      return res.Label;
-    }
-    return "";
-  }
-
   useEffect(() => {});
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   return (
-      <StyledTableRow key={rowData}>
-        <StyledTableCell component="th" scope="row" align="center">
-          {rowIndex + 1}
-        </StyledTableCell>
-        <StyledTableCell align="center">
+    <Fragment>
+      <Grid item xs={12}></Grid>
+      <Grid
+        container
+        direction="row"
+        justify="space-evenly"
+        alignItems="center"
+        spacing={2}
+      >
+        <Grid item xs={1} md={1}>
+          <Typography
+            color="primary"
+            variant="subtitle1"
+            component="div"
+            style={{ float: "left" }}
+          >
+            {rowIndex + 1}:
+          </Typography>
+        </Grid>
+        <Grid item xs={3} md={3}>
+          {/* 
+          <TextField
+            id="course"
+            name="course"
+            label="Course"
+            required
+            fullWidth
+            inputProps={{
+              "aria-readonly": true,
+            }}
+            variant="outlined"
+            value={cLabel}
+          /> 
+          */}
           {cLabel}
-          <TextField type="hidden" name="programmeCourseId" value={rowData.courseId}/>
-        </StyledTableCell>
-        <StyledTableCell align="center">
+          <TextField
+            type="hidden"
+            name="programmeCourseId"
+            value={rowData.courseId}
+          />
+        </Grid>
+        <Grid item xs={2} md={2}>
+          {/* 
+          <TextField
+            id="courseCredit"
+            name="courseCredit"
+            label="Credit"
+            required
+            fullWidth
+            inputProps={{
+              "aria-readonly": true,
+            }}
+            variant="outlined"
+            value={cCredit}
+          /> 
+          */}
           {cCredit}
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          {cProgrammeCoursesArray.map((option, index) => (<span key={option+index}>{index != 0 ? <br /> : ""} {option.Label}</span>))}
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          {getChoiceGroupLabel(rowData.choiceGroupId)}
-          <TextField type="hidden" name="choiceGroupId" value={rowData.choiceGroupId ? rowData.choiceGroupId : 0}/>
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          <Tooltip title="Delete">
-            <Fab 
-              color="secondary"
-              aria-label="Delete"
-              size="small"
-              style={{
-                height:36,
-                width:36,
-                margin:4
-              }}
-              onClick={() => onDelete(rowIndex)}
-            >
-              <DeleteIcon fontSize="small" />
-            </Fab>
-          </Tooltip>
-        </StyledTableCell>
-      </StyledTableRow>
+        </Grid>
+        <Grid item xs={3} md={3}>
+          {/* 
+          <Autocomplete
+            multiple
+            fullWidth
+            id="checkboxes-tags-demo"
+            options={cProgrammeCoursesArray}
+            value={cProgrammeCoursesArray}
+            disableCloseOnSelect
+            getOptionLabel={(option) => " "}
+            readOnly={true}
+            renderTags={(tagValue, getTagProps) =>
+              tagValue.map((option, index) => (
+                <Chip
+                  key={"chipTag" + option.ID}
+                  label={option.Label}
+                  color="primary"
+                  variant="outlined"
+                  {...getTagProps({ index })}
+                />
+              ))
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Prerequisite Courses"
+                placeholder=""
+                readOnly={true}
+              />
+            )}
+          /> 
+          */}
+          {cProgrammeCoursesArray.map((option, index) => (
+            <span>
+              {index != 0 ? <br /> : ""} {option.Label}
+            </span>
+          ))}
+        </Grid>
+        <Grid item xs={2}>
+          {/* 
+          <TextField
+            id="choiceGroup"
+            variant="outlined"
+            label="Choice Group"
+            value={
+              rowData.choiceGroupId
+                ? choiceGroupIdMenuItems.find(
+                    (x) => x.ID == rowData.choiceGroupId
+                  ).Label
+                : ""
+            }
+            required
+            fullWidth
+          /> 
+          */}
+            {
+              rowData.choiceGroupId
+                ? choiceGroupIdMenuItems.find(
+                    (x) => x.ID == rowData.choiceGroupId
+                  ).Label
+                : ""
+            }
+          <TextField
+            type="hidden"
+            name="choiceGroupId"
+            value={rowData.choiceGroupId ? rowData.choiceGroupId : 0}
+          />
+        </Grid>
+        <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+          <IconButton
+            color="primary"
+            aria-label="Add"
+            component="span"
+            onClick={() => onDelete(rowIndex)}
+          >
+            <Tooltip title="Delete">
+              <Fab 
+                color="secondary" 
+                aria-label="add" 
+                size="small"
+                style={{
+                  height:36,
+                  width:36
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </Fab>
+            </Tooltip>
+          </IconButton>
+        </Grid>
+      </Grid>
+    </Fragment>
   );
 }
 
@@ -320,7 +414,7 @@ class F09Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ programmeCoursesArray: json.DATA || []});
+            this.setState({ programmeCoursesArray: json.DATA });
             let prerequisiteCourseArray = [];
             for (let i = 0; i < json.DATA.length; i++) {
               let obj = {
@@ -871,7 +965,7 @@ class F09Form extends Component {
                   disableClearable
                   disabled={!this.state.programmeGroupId}
                   options={this.state.programmeCoursesListArray}
-                  getOptionLabel={(option) => typeof option.Label === 'string' ? option.Label : ""}
+                  getOptionLabel={(option) => option.Label}
                   value={this.state.preCourseId}
                   onChange={(event, newValue) => {
                     this.onPreCourseIdChange(newValue);
@@ -954,7 +1048,7 @@ class F09Form extends Component {
                   }}
                 />
               </Grid>
-              {/* <Grid
+              <Grid
                   container
                   direction="row"
                   justify="space-evenly"
@@ -990,44 +1084,32 @@ class F09Form extends Component {
                       Action
                     </Typography>
                   </Grid>
-              </Grid> */}
-              <TableContainer component={Paper}>
-                <Table className={classes.table} size="small" aria-label="customized table">
-                  <TableHead>
-                    <TableRow>
-                      <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>SR#</StyledTableCell>
-                      <StyledTableCell align="center">Course</StyledTableCell>
-                      <StyledTableCell align="center">Credit</StyledTableCell>
-                      <StyledTableCell align="center">Prerequisite Courses</StyledTableCell>
-                      <StyledTableCell align="center"> Choice Group</StyledTableCell>
-                      <StyledTableCell align="center" style={{borderRight:'1px solid rgb(29, 95, 152)', minWidth:100}}>Action</StyledTableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                  {this.state.courseRowDataArray.length > 0 ? (
-                    this.state.courseRowDataArray.map((dt, i) => (
-                      <CourseRow
-                        key={"CRDA"+dt+i}
-                        rowIndex={i}
-                        rowData={dt}
-                        onDelete={(i) => this.handeDeleteCourseRow(i)}
-                        programmeCoursesArray={this.state.programmeCoursesArray}
-                        choiceGroupIdMenuItems={this.state.preChoiceGroupIdMenuItems}
-                      />
-                    ))
-                  ) : 
-                  this.state.isLoading ? 
-                    <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={6}><center><CircularProgress/></center></StyledTableCell>
-                    </StyledTableRow>
-                    :
-                    <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={6}><center><b>No Data</b></center></StyledTableCell>
-                    </StyledTableRow>
-                  }
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              </Grid>
+              {this.state.programmeCoursesArray ? (
+                this.state.courseRowDataArray.map((dt, i) => (
+                  <CourseRow
+                    key={"CRDA" + i}
+                    rowIndex={i}
+                    rowData={dt}
+                    onDelete={(i) => this.handeDeleteCourseRow(i)}
+                    programmeCoursesArray={this.state.programmeCoursesArray}
+                    choiceGroupIdMenuItems={
+                      this.state.preChoiceGroupIdMenuItems
+                    }
+                  />
+                ))
+              ) : this.state.isLoading ? (
+                <Grid
+                  container
+                  justify="center"
+                  alignContent="center"
+                  style={{ padding: "1em" }}
+                >
+                  <CircularProgress />
+                </Grid>
+              ) : (
+                ""
+              )}
             </Grid>
             <br />
             <br />
