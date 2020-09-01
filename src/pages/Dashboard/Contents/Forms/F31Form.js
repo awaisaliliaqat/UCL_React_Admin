@@ -63,6 +63,7 @@ class F31Form extends Component {
       preTimeStartMenuItems: [],
       showTableFilter: false,
       CourseListArray: [],
+      roomsData: [],
     };
   }
 
@@ -149,7 +150,7 @@ class F31Form extends Component {
             }
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -160,6 +161,50 @@ class F31Form extends Component {
             this.setState({
               isLoginMenu: true,
               isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  getRoomsData = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C51CommonAcademicsScheduleClassRoomsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ roomsData: json.DATA || [] });
+          } else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
             });
           } else {
             console.log(error);
@@ -197,7 +242,7 @@ class F31Form extends Component {
             this.setState({ programmeGroupIdMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -240,7 +285,7 @@ class F31Form extends Component {
             this.setState({ preDaysMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -296,13 +341,15 @@ class F31Form extends Component {
                   sectionLabel={json.DATA[i].label}
                   teacherName={json.DATA[i].teacherName}
                   handleOpenSnackbar={this.handleOpenSnackbar}
+                  values={this.state}
+                  onAutoCompleteChange={this.onAutoCompleteChange}
                 />
               );
             }
-            this.setState({ CourseListArray: json.DATA || [] });
+            this.setState({ CourseListArray: json.DATA || [], });
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -393,6 +440,7 @@ class F31Form extends Component {
     let dayId = document.getElementsByName("dayId");
     let startTime = document.getElementsByName("startTime");
     let duration = document.getElementsByName("duration");
+    let roomDBIds = document.getElementsByName("roomDBId");
 
     let myForm = document.getElementById("myForm");
     let data = new FormData(myForm);
@@ -404,6 +452,7 @@ class F31Form extends Component {
         data.append("dayId", dayId[i].value);
         data.append("startTime", startTime[i].value);
         data.append("duration", duration[i].value);
+        data.append("classRoomId", roomDBIds[i].value);
       }
     }
 
@@ -435,7 +484,7 @@ class F31Form extends Component {
             }, 2000);
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -464,6 +513,7 @@ class F31Form extends Component {
     this.loadAcademicSession();
     this.getPreTimeSlotsMenuItems();
     this.loadDaysOfWeek();
+    this.getRoomsData();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -570,17 +620,17 @@ class F31Form extends Component {
                   {this.state.programmeGroupIdMenuItems ? (
                     this.state.programmeGroupIdMenuItems.map((dt, i) => (
                       <MenuItem
-                        key={"programmeGroupIdMenuItems"+dt.Id}
+                        key={"programmeGroupIdMenuItems" + dt.Id}
                         value={dt.Id}
                       >
                         {dt.Label}
                       </MenuItem>
                     ))
                   ) : (
-                    <MenuItem>
-                      <CircularProgress size={24} />
-                    </MenuItem>
-                  )}
+                      <MenuItem>
+                        <CircularProgress size={24} />
+                      </MenuItem>
+                    )}
                 </TextField>
               </Grid>
               <Grid item xs={12}>
@@ -601,8 +651,8 @@ class F31Form extends Component {
                   onHandleChange={(e) => this.onHandleChange(e)}
                 />
               ) : (
-                <br />
-              )}
+                  <br />
+                )}
               {this.state.CourseListArray.length > 0 ? (
                 <F31FormTableComponent
                   rows={this.state.CourseListArray}
@@ -618,8 +668,8 @@ class F31Form extends Component {
                   <CircularProgress />
                 </Grid>
               ) : (
-                ""
-              )}
+                    ""
+                  )}
             </Grid>
           </Grid>
         </form>
