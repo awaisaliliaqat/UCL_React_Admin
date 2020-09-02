@@ -73,7 +73,10 @@ const CourseRow = (props) => {
             value={rowData.roomsObject.ID || ""}
           />
         </Grid>
-        <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+        {isReadOnly ? 
+        ""
+        :
+        <Grid item xs={1} style={{ textAlign: "center" }}>
             <Tooltip title="Delete">
             <span>
               <Fab
@@ -92,6 +95,7 @@ const CourseRow = (props) => {
               </span>
             </Tooltip>
         </Grid>
+        }
       </Grid>
     </Fragment>
   );
@@ -708,11 +712,15 @@ class F31FormPopupComponent extends Component {
                     Room
                   </Typography>
                 </Grid>
-                <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+                {isReadOnly ?
+                ""
+                :
+                <Grid item xs={1} style={{ textAlign: "center" }}>
                   <Typography color="primary">
                     Action
                     </Typography>
                 </Grid>
+                }
               </Grid>
               {this.state.rowDataArray.length > 0
                 ? this.state.rowDataArray.map((dt, i) => (
@@ -749,14 +757,18 @@ class F31FormPopupComponent extends Component {
             <Button autoFocus onClick={this.handleClose} color="secondary">
               Close
             </Button>
-            <Button
-              onClick={this.props.clickOnFormSubmit()}
-              color="primary"
-              autoFocus
-              disabled={isReadOnly}
-            >
-              Save
-            </Button>
+            {isReadOnly ? 
+              ""
+            :
+              <Button
+                onClick={this.props.clickOnFormSubmit()}
+                color="primary"
+                autoFocus
+                disabled={isReadOnly}
+              >
+                Save
+              </Button>
+            }
           </DialogActions>
         </Dialog>
       </Fragment>
