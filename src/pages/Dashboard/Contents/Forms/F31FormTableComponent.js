@@ -43,11 +43,21 @@ class F31FormTableComponent extends Component {
       defaultFilters: [],
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
-      ]
+      ],
+      showFilter:true
     };
   }
 
+  componentDidMount(){
+    setTimeout(()=>this.setState({showFilter:this.props.showFilter}), 0);
+  }
   
+  componentDidUpdate(prevProps){
+    if (this.props.showFilter !== prevProps.showFilter) {
+      this.setState(()=>({showFilter:this.props.showFilter}));
+    }
+  }
+
   render() {
          
     const {
@@ -100,7 +110,7 @@ class F31FormTableComponent extends Component {
               <b>&emsp;{props.children}</b>
             }
           />
-          {this.props.showFilter && <TableFilterRow showFilterSelector={true} />}
+          {this.state.showFilter && <TableFilterRow showFilterSelector={true} />}
           <PagingPanel pageSizes={pageSizes} />
         </Grid>
       </Paper>
