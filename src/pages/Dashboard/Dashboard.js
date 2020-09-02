@@ -84,6 +84,7 @@ import SyncTimeTable from './Contents/LMS/SyncTimeTable/SyncTimeTable';
 import SyncZoomMeetings from "./Contents/LMS/SyncZoomMeetings/SyncZoomMeetings";
 import CreateRoomForm from './Contents/Forms/CreateRoom/CreateRoomFrom';
 import CreateRoomReports from './Contents/Forms/CreateRoom/CreateRoomReports';
+import ClassSchedule from './Contents/LMS/ClassSchedule/ClassSchedule';
 
 const drawerWidth = 283;
 
@@ -997,6 +998,13 @@ const Dashboard = (props) => {
                     />
                   );
                 }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="class-schedule"
+                exact
+                path="/dashboard/class-schedule"
+                component={ClassSchedule}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
