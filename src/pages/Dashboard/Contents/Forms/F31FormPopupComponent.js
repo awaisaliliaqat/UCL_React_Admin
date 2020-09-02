@@ -166,12 +166,8 @@ class F31FormPopupComponent extends Component {
     let dd = today.getDate();
     let mm = today.getMonth() + 1;
     let yyyy = today.getFullYear();
-    if (dd < 10) {
-      dd = "0" + dd;
-    }
-    if (mm < 10) {
-      mm = "0" + mm;
-    }
+    if (dd < 10) { dd = "0" + dd; }
+    if (mm < 10) { mm = "0" + mm; }
     today = dd + "-" + mm + "-" + yyyy;
     return today;
   };
@@ -237,10 +233,13 @@ class F31FormPopupComponent extends Component {
   };
 
   handleClickOpen = () => {
-    this.loadData(
-      this.props.sectionId,
-      this.getDateInString(this.state.preDate)
-    );
+    if(this.props.isReadOnly && this.props.activeDate){
+      this.loadData(this.props.sectionId, this.props.activeDate);
+     //this.loadData(this.props.sectionId, this.getDateInString(new Date(this.props.activeDateInNumber)) );
+      this.setState({preDate:this.props.activeDateInNumber});
+    }else{
+      this.loadData(this.props.sectionId, this.getDateInString(this.state.preDate));
+    }
     this.setState({ popupBoxOpen: true });
   };
 
@@ -422,9 +421,9 @@ class F31FormPopupComponent extends Component {
       preTimeStartMenuItems: this.props.preTimeStartMenuItems,
       preDaysMenuItems: this.props.preDaysMenuItems,
     });
-    if (this.state.recordId != 0) {
-      this.loadData(this.state.recordId);
-    }
+    // if (this.state.recordId != 0) {
+    //   this.loadData(this.state.recordId);
+    // }
   }
 
   onAutoCompleteChange = (e, value) => {
@@ -437,7 +436,7 @@ class F31FormPopupComponent extends Component {
   }
 
   render() {
-    const { isReadOnly } = this.props;
+    const { isReadOnly, sectionId, teacherId } = this.props;
     return (
       <Fragment>
         { isReadOnly ?
@@ -448,7 +447,7 @@ class F31FormPopupComponent extends Component {
             onClick={this.handleClickOpen}
             variant="outlined"
           >
-            <Tooltip title="View">
+            <Tooltip title="View Active Timetable">
               <Fab color="primary" aria-label="View" size="small">
                 <VisibilityOutlinedIcon />
               </Fab>
@@ -462,7 +461,7 @@ class F31FormPopupComponent extends Component {
             onClick={this.handleClickOpen}
             variant="outlined"
           >
-            <Tooltip title="Add Module Courses">
+            <Tooltip title="Add or Edit Timetable">
               <Fab color="primary" aria-label="add" size="small">
                 <AddIcon />
               </Fab>
@@ -512,6 +511,12 @@ class F31FormPopupComponent extends Component {
                 " - " +
                 this.props.teacherName}
             </Typography>
+            <TextField 
+              type="hidden" 
+              id="teacherId"
+              name="teacherId" 
+              defaultValue={teacherId}
+            />
             <DatePicker
               autoOk
               name="effectiveDate"
@@ -555,7 +560,7 @@ class F31FormPopupComponent extends Component {
                   type="hidden"
                   id="sectionId"
                   name="sectionId"
-                  value={this.props.sectionId}
+                  value={sectionId}
                 />
                 <TextField
                   id="preDayId"

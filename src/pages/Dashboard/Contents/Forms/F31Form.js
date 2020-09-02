@@ -308,6 +308,9 @@ class F31Form extends Component {
                     sectionLabel={json.DATA[i].sectionLabel}
                     sectionLabel={json.DATA[i].label}
                     teacherName={json.DATA[i].teacherName}
+                    teacherId={json.DATA[i].teacherId}
+                    activeDate={json.DATA[i].activeDate}
+                    activeDateInNumber={json.DATA[i].activeDateInNumber}
                     handleOpenSnackbar={this.handleOpenSnackbar}
                     values={this.state}
                     onAutoCompleteChange={this.onAutoCompleteChange}
@@ -323,6 +326,9 @@ class F31Form extends Component {
                     sectionLabel={json.DATA[i].sectionLabel}
                     sectionLabel={json.DATA[i].label}
                     teacherName={json.DATA[i].teacherName}
+                    teacherId={json.DATA[i].teacherId}
+                    activeDate={json.DATA[i].activeDate}
+                    activeDateInNumber={json.DATA[i].activeDateInNumber}
                     handleOpenSnackbar={this.handleOpenSnackbar}
                     values={this.state}
                     onAutoCompleteChange={this.onAutoCompleteChange}
@@ -337,7 +343,7 @@ class F31Form extends Component {
                   >
                     <VisibilityOutlinedIcon />
                   </Fab>
-                  <span>&emsp;&nbsp;&nbsp;</span>
+                  <span>&emsp;&nbsp;&nbsp;&nbsp;</span>
                   <Fab 
                     size="small"
                     disabled={true}
@@ -430,6 +436,7 @@ class F31Form extends Component {
       return;
     }
 
+    let teacherId = document.getElementById("teacherId").value
     let effectiveDate = document.getElementById("effectiveDate").value;
     let sectionId = document.getElementById("sectionId").value;
     let dayId = document.getElementsByName("dayId");
@@ -440,6 +447,7 @@ class F31Form extends Component {
     let myForm = document.getElementById("myForm");
     let data = new FormData(myForm);
 
+    data.append("teacherId", teacherId)
     data.append("effectiveDate", effectiveDate);
     data.append("sectionId", sectionId);
     if (dayId != null) {
