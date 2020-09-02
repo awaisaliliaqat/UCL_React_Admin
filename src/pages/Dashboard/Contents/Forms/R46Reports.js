@@ -152,7 +152,6 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  
   handleSetTeacher = (value) => {
     if(value) { 
         this.getData(value.id); 

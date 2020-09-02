@@ -1,21 +1,15 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import {
-  TextField,
-  Grid,
-  MenuItem,
-  CircularProgress,
-  Divider,
-  Typography,
-  IconButton,
-  Tooltip,
-} from "@material-ui/core";
+import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
+  IconButton, Tooltip, Fab} from "@material-ui/core";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import F31FormFilter from "./F31FormFilter";
 import F31FormTableComponent from "./F31FormTableComponent";
 import F31FormPopupComponent from "./F31FormPopupComponent";
+import AddIcon from "@material-ui/icons/Add";
+import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 
 const styles = () => ({
   root: {
@@ -136,23 +130,16 @@ class F31Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ academicSessionIdMenuItems: json.DATA });
-            for (
-              var i = 0;
-              i < this.state.academicSessionIdMenuItems.length;
-              i++
-            ) {
+            for (let i=0; i<this.state.academicSessionIdMenuItems.length; i++) {
               if (this.state.academicSessionIdMenuItems[i].isActive == "1") {
-                this.state.academicSessionId = this.state.academicSessionIdMenuItems[
-                  i
-                ].ID;
+                this.state.academicSessionId = this.state.academicSessionIdMenuItems[i].ID;
                 this.loadProgrammeGroups(this.state.academicSessionId);
               }
             }
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+
           }
           console.log("loadAcademicSession", json);
         },
@@ -164,10 +151,45 @@ class F31Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  getRoomsData = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C51CommonAcademicsScheduleClassRoomsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ roomsData: json.DATA || [] });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.", "error");
           }
         }
       );
@@ -241,10 +263,9 @@ class F31Form extends Component {
           if (json.CODE === 1) {
             this.setState({ programmeGroupIdMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+
           }
           console.log("loadProgrammeGroups", json);
         },
@@ -256,10 +277,7 @@ class F31Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -284,10 +302,9 @@ class F31Form extends Component {
           if (json.CODE === 1) {
             this.setState({ preDaysMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+
           }
           console.log("loadDaysOfWeek", json);
         },
@@ -299,10 +316,7 @@ class F31Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -330,28 +344,72 @@ class F31Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             for (var i = 0; i < json.DATA.length; i++) {
+              let teacherName = json.DATA[i].teacherName;
               json.DATA[i].action = (
-                <F31FormPopupComponent
-                  sectionId={json.DATA[i].ID}
-                  preTimeStartMenuItems={this.state.preTimeStartMenuItems}
-                  preDaysMenuItems={this.state.preDaysMenuItems}
-                  clickOnFormSubmit={() => this.clickOnFormSubmit}
-                  courseLabel={json.DATA[i].courseLabel}
-                  sectionTypeLabel={json.DATA[i].sectionTypeLabel}
-                  sectionLabel={json.DATA[i].label}
-                  teacherName={json.DATA[i].teacherName}
-                  handleOpenSnackbar={this.handleOpenSnackbar}
-                  values={this.state}
-                  onAutoCompleteChange={this.onAutoCompleteChange}
-                />
+
+                teacherName ?
+                <Fragment>
+                  <F31FormPopupComponent
+                    sectionId={json.DATA[i].ID}
+                    preTimeStartMenuItems={this.state.preTimeStartMenuItems}
+                    preDaysMenuItems={this.state.preDaysMenuItems}
+                    clickOnFormSubmit={() => this.clickOnFormSubmit}
+                    courseLabel={json.DATA[i].courseLabel}
+                    sectionTypeLabel={json.DATA[i].sectionTypeLabel}
+                    sectionLabel={json.DATA[i].sectionLabel}
+                    sectionLabel={json.DATA[i].label}
+                    teacherName={json.DATA[i].teacherName}
+                    teacherId={json.DATA[i].teacherId}
+                    activeDate={json.DATA[i].activeDate}
+                    activeDateInNumber={json.DATA[i].activeDateInNumber}
+                    handleOpenSnackbar={this.handleOpenSnackbar}
+                    values={this.state}
+                    onAutoCompleteChange={this.onAutoCompleteChange}
+                    isReadOnly={true}
+                  />
+                  <F31FormPopupComponent
+                    sectionId={json.DATA[i].ID}
+                    preTimeStartMenuItems={this.state.preTimeStartMenuItems}
+                    preDaysMenuItems={this.state.preDaysMenuItems}
+                    clickOnFormSubmit={() => this.clickOnFormSubmit}
+                    courseLabel={json.DATA[i].courseLabel}
+                    sectionTypeLabel={json.DATA[i].sectionTypeLabel}
+                    sectionLabel={json.DATA[i].sectionLabel}
+                    sectionLabel={json.DATA[i].label}
+                    teacherName={json.DATA[i].teacherName}
+                    teacherId={json.DATA[i].teacherId}
+                    activeDate={json.DATA[i].activeDate}
+                    activeDateInNumber={json.DATA[i].activeDateInNumber}
+                    handleOpenSnackbar={this.handleOpenSnackbar}
+                    values={this.state}
+                    onAutoCompleteChange={this.onAutoCompleteChange}
+                    isReadOnly={false}
+                  />
+                </Fragment>
+                :
+                <Fragment>
+                  <Fab 
+                    size="small"
+                    disabled={true}
+                  >
+                    <VisibilityOutlinedIcon />
+                  </Fab>
+                  <span>&emsp;&nbsp;&nbsp;&nbsp;</span>
+                  <Fab 
+                    size="small"
+                    disabled={true}
+                  >
+                    <AddIcon />
+                  </Fab>
+                </Fragment>
+
               );
             }
             this.setState({ CourseListArray: json.DATA || [], });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+
           }
           console.log("loadCourses", json);
         },
@@ -363,10 +421,7 @@ class F31Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -435,6 +490,7 @@ class F31Form extends Component {
       return;
     }
 
+    let teacherId = document.getElementById("teacherId").value
     let effectiveDate = document.getElementById("effectiveDate").value;
     let sectionId = document.getElementById("sectionId").value;
     let dayId = document.getElementsByName("dayId");
@@ -445,6 +501,7 @@ class F31Form extends Component {
     let myForm = document.getElementById("myForm");
     let data = new FormData(myForm);
 
+    data.append("teacherId", teacherId)
     data.append("effectiveDate", effectiveDate);
     data.append("sectionId", sectionId);
     if (dayId != null) {
@@ -476,11 +533,11 @@ class F31Form extends Component {
           if (json.CODE === 1) {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             setTimeout(() => {
-              if (this.state.recordId != 0) {
-                window.location = "#/dashboard/F09Reports";
-              } else {
+              // if (this.state.recordId != 0) {
+              //   window.location = "#/dashboard/F09Reports";
+              // } else {
                 window.location.reload();
-              }
+              // }
             }, 2000);
           } else {
             this.handleOpenSnackbar(
@@ -538,38 +595,37 @@ class F31Form extends Component {
         />
         <form id="myForm" onSubmit={this.isFormValid}>
           <TextField type="hidden" name="id" value={this.state.recordId} />
-          <Grid container component="main" className={classes.root}>
+          <Grid 
+            container 
+            component="main" 
+            className={classes.root}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+            >
             <Typography
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                borderBottom: "1px solid #d2d2d2",
+                borderBottom: "1px solid rgb(58, 127, 187, 0.3)",
                 width: "98%",
-                marginBottom: 25,
+                marginBottom: 18,
                 fontSize: 20,
               }}
               variant="h5"
             >
-              Define Timetable
-              {/* 
-              <div style={{ float: "right" }}>
+              <span style={{ float: "right", marginBottom: -8 }}>
                 <Tooltip title="Table Filter">
                   <IconButton
-                    style={{ marginLeft: "-10px" }}
                     onClick={this.handleToggleTableFilter}
                   >
                     <FilterIcon fontSize="default" color="primary" />
                   </IconButton>
                 </Tooltip>
-              </div> 
-              */}
+              </span>
+              Define Timetable
             </Typography>
-            <Divider
-              style={{
-                backgroundColor: "rgb(58, 127, 187)",
-                opacity: "0.3",
-              }}
-            />
             <Grid
               container
               spacing={2}
@@ -641,7 +697,7 @@ class F31Form extends Component {
                   }}
                 />
               </Grid>
-              {this.state.showSearchBar ? (
+              {this.state.showSearchBar ? 
                 <F31FormFilter
                   isLoading={this.state.isLoading}
                   handleDateChange={this.handleDateChange}
@@ -650,15 +706,17 @@ class F31Form extends Component {
                   getDataByStatus={(status) => this.getData(status)}
                   onHandleChange={(e) => this.onHandleChange(e)}
                 />
-              ) : (
-                  <br />
-                )}
-              {this.state.CourseListArray.length > 0 ? (
+
+              : 
+                <br />
+              }
+              {this.state.CourseListArray.length > 0 ? 
+
                 <F31FormTableComponent
                   rows={this.state.CourseListArray}
                   showFilter={this.state.showTableFilter}
                 />
-              ) : this.state.isLoading ? (
+               : this.state.isLoading ?
                 <Grid
                   container
                   justify="center"
@@ -667,9 +725,11 @@ class F31Form extends Component {
                 >
                   <CircularProgress />
                 </Grid>
-              ) : (
-                    ""
-                  )}
+
+                : 
+                ""
+              }
+
             </Grid>
           </Grid>
         </form>

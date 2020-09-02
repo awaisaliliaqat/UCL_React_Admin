@@ -2,23 +2,13 @@ import React, { Component, Fragment } from "react";
 import PropTypes from 'prop-types';
 import { withStyles } from "@material-ui/styles";
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import {
-  TextField,
-  Grid,
-  MenuItem,
-  CircularProgress,
-  Divider,
-  Typography,
-  Button,
-  IconButton,
-  Tooltip,
-  Fab,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@material-ui/core";
+
+import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
+  Button, IconButton, Tooltip, Fab, Dialog, DialogActions, DialogContent,
+  DialogTitle} from "@material-ui/core";
+
 import AddIcon from "@material-ui/icons/Add";
+import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import { DatePicker } from "@material-ui/pickers";
@@ -28,7 +18,9 @@ const styles = () => ({
 
 const CourseRow = (props) => {
 
-  const { rowIndex, rowData, onDelete } = props;
+
+  const { rowIndex, rowData, onDelete, isReadOnly } = props;
+
 
   return (
     <Fragment>
@@ -85,13 +77,14 @@ const CourseRow = (props) => {
             value={rowData.roomsObject.ID || ""}
           />
         </Grid>
-        <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
-          <IconButton
-            aria-label="Add"
-            component="span"
-            onClick={() => onDelete(rowIndex)}
-          >
+
+        {isReadOnly ? 
+        ""
+        :
+        <Grid item xs={1} style={{ textAlign: "center" }}>
             <Tooltip title="Delete">
+            <span>
+
               <Fab
                 color="secondary"
                 aria-label="Delete"
@@ -100,12 +93,15 @@ const CourseRow = (props) => {
                   height: 36,
                   width: 36
                 }}
+                disabled={isReadOnly}
+                onClick={() => onDelete(rowIndex)}
               >
                 <DeleteIcon fontSize="small" />
               </Fab>
+              </span>
             </Tooltip>
-          </IconButton>
         </Grid>
+        }
       </Grid>
     </Fragment>
   );
@@ -176,12 +172,8 @@ class F31FormPopupComponent extends Component {
     let dd = today.getDate();
     let mm = today.getMonth() + 1;
     let yyyy = today.getFullYear();
-    if (dd < 10) {
-      dd = "0" + dd;
-    }
-    if (mm < 10) {
-      mm = "0" + mm;
-    }
+    if (dd < 10) { dd = "0" + dd; }
+    if (mm < 10) { mm = "0" + mm; }
     today = dd + "-" + mm + "-" + yyyy;
     return today;
   };
@@ -247,10 +239,13 @@ class F31FormPopupComponent extends Component {
   };
 
   handleClickOpen = () => {
-    this.loadData(
-      this.props.sectionId,
-      this.getDateInString(this.state.preDate)
-    );
+    if(this.props.isReadOnly && this.props.activeDate){
+      this.loadData(this.props.sectionId, this.props.activeDate);
+     //this.loadData(this.props.sectionId, this.getDateInString(new Date(this.props.activeDateInNumber)) );
+      this.setState({preDate:this.props.activeDateInNumber});
+    }else{
+      this.loadData(this.props.sectionId, this.getDateInString(this.state.preDate));
+    }
     this.setState({ popupBoxOpen: true });
   };
 
@@ -432,9 +427,18 @@ class F31FormPopupComponent extends Component {
       preTimeStartMenuItems: this.props.preTimeStartMenuItems,
       preDaysMenuItems: this.props.preDaysMenuItems,
     });
-    if (this.state.recordId != 0) {
-      this.loadData(this.state.recordId);
-    }
+    // if (this.state.recordId != 0) {
+    //   this.loadData(this.state.recordId);
+    // }
+  }
+
+  onAutoCompleteChange = (e, value) => {
+    let object = isEmpty(value) ? {} : value;
+    this.setState({
+      roomsObject: object,
+      roomsId: object.id || "",
+      roomsObjectError: ""
+    })
   }
 
   onAutoCompleteChange = (e, value) => {
@@ -447,21 +451,38 @@ class F31FormPopupComponent extends Component {
   }
 
   render() {
+    const { isReadOnly, sectionId, teacherId } = this.props;
     return (
       <Fragment>
-        <IconButton
-          color="primary"
-          aria-label="Add"
-          component="span"
-          onClick={this.handleClickOpen}
-          variant="outlined"
-        >
-          <Tooltip title="Add Module Courses">
-            <Fab color="primary" aria-label="add" size="small">
-              <AddIcon />
-            </Fab>
-          </Tooltip>
-        </IconButton>
+        { isReadOnly ?
+          <IconButton
+            color="primary"
+            aria-label="View"
+            component="span"
+            onClick={this.handleClickOpen}
+            variant="outlined"
+          >
+            <Tooltip title="View Active Timetable">
+              <Fab color="primary" aria-label="View" size="small">
+                <VisibilityOutlinedIcon />
+              </Fab>
+            </Tooltip>
+          </IconButton>
+        :
+          <IconButton
+            color="primary"
+            aria-label="Add"
+            component="span"
+            onClick={this.handleClickOpen}
+            variant="outlined"
+          >
+            <Tooltip title="Add or Edit Timetable">
+              <Fab color="primary" aria-label="add" size="small">
+                <AddIcon />
+              </Fab>
+            </Tooltip>
+          </IconButton>
+        }
         <Dialog
           maxWidth="md"
           open={this.state.popupBoxOpen}
@@ -501,8 +522,16 @@ class F31FormPopupComponent extends Component {
                 " - " +
                 this.props.sectionLabel +
                 " - " +
+                this.props.sectionLabel +
+                " - " +
                 this.props.teacherName}
             </Typography>
+            <TextField 
+              type="hidden" 
+              id="teacherId"
+              name="teacherId" 
+              defaultValue={teacherId}
+            />
             <DatePicker
               autoOk
               name="effectiveDate"
@@ -524,6 +553,7 @@ class F31FormPopupComponent extends Component {
               helperText={
                 this.state.preDateError ? this.state.preDateError : " "
               }
+              disabled={isReadOnly}
             />
           </DialogTitle>
           <DialogContent>
@@ -536,12 +566,20 @@ class F31FormPopupComponent extends Component {
                 marginTop: -10,
               }}
             >
+
+              {isReadOnly ?
+              ""
+              :
+              <Fragment>
+
               <Grid item xs={12} md={4}>
                 <TextField
                   type="hidden"
                   id="sectionId"
                   name="sectionId"
-                  value={this.props.sectionId}
+
+                  value={sectionId}
+
                 />
                 <TextField
                   id="preDayId"
@@ -617,19 +655,25 @@ class F31FormPopupComponent extends Component {
                   variant="outlined"
                   onChange={this.onHandleChange}
                   value={this.state.preTimeDuration}
-                  error={this.state.preTimeDurationError}
+
+                  error={!!this.state.preTimeDurationError}
+
                   helperText={this.state.preTimeDurationError}
                 />
               </Grid>
               <Grid item xs={12} md={4}>
                 <Autocomplete
                   id="rooms"
-                  getOptionLabel={(option) => option.Label}
+
+                  getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
+
                   fullWidth
                   value={this.state.roomsObject}
                   onChange={this.onAutoCompleteChange}
                   options={this.props.values.roomsData}
-                  renderInput={(params) => <TextField error={this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params}
+
+                  renderInput={(params) => <TextField error={!!this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params}
+
                   />}
                 />
               </Grid>
@@ -657,6 +701,10 @@ class F31FormPopupComponent extends Component {
                   </Tooltip>
                 </IconButton>
               </Grid>
+
+              </Fragment>
+              }
+
               <Grid item xs={12}>
                 <Divider
                   style={{
@@ -696,11 +744,19 @@ class F31FormPopupComponent extends Component {
                     Room
                   </Typography>
                 </Grid>
-                <Grid item xs={1} md={1} style={{ textAlign: "center" }}>
+
+                {isReadOnly ?
+                ""
+                :
+                <Grid item xs={1} style={{ textAlign: "center" }}>
+
                   <Typography color="primary">
                     Action
                     </Typography>
                 </Grid>
+
+                }
+
               </Grid>
               {this.state.rowDataArray.length > 0
                 ? this.state.rowDataArray.map((dt, i) => (
@@ -709,6 +765,9 @@ class F31FormPopupComponent extends Component {
                     rowIndex={i}
                     rowData={dt}
                     onDelete={(i) => this.handeDeleteCourseRow(i)}
+
+                    isReadOnly={isReadOnly}
+
                   />
                 ))
                 : this.state.isLoading && (
@@ -723,6 +782,9 @@ class F31FormPopupComponent extends Component {
                 )}
               <br />
               <br />
+
+              <br />
+
             </Grid>
           </DialogContent>
           <Divider
@@ -735,13 +797,18 @@ class F31FormPopupComponent extends Component {
             <Button autoFocus onClick={this.handleClose} color="secondary">
               Close
             </Button>
-            <Button
-              onClick={this.props.clickOnFormSubmit()}
-              color="primary"
-              autoFocus
-            >
-              Save
-            </Button>
+            {isReadOnly ? 
+              ""
+            :
+              <Button
+                onClick={this.props.clickOnFormSubmit()}
+                color="primary"
+                autoFocus
+                disabled={isReadOnly}
+              >
+                Save
+              </Button>
+            }
           </DialogActions>
         </Dialog>
       </Fragment>
@@ -762,8 +829,10 @@ F31FormPopupComponent.propTypes = {
   teacherName: PropTypes.any,
   preTimeStartMenuItems: PropTypes.any,
   preDaysMenuItems: PropTypes.any,
-  values: PropTypes.object
+  values: PropTypes.object,
+  isReadOnly: PropTypes.bool
 }
+
 
 F31FormPopupComponent.defaultTypes = {
   handleOpenSnackbar: fn => fn,
@@ -776,7 +845,10 @@ F31FormPopupComponent.defaultTypes = {
   sectionLabel: "",
   teacherName: "",
   preTimeStartMenuItems: "",
-  preDaysMenuItems: ""
+
+  preDaysMenuItems: "",
+  isReadOnly:true
+
 }
 
 export default withStyles(styles)(F31FormPopupComponent);
