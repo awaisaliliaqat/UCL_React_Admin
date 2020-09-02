@@ -49,13 +49,17 @@ class F31FormTableComponent extends Component {
   }
 
   componentDidMount(){
-    setTimeout(()=>this.setState({showFilter:this.props.showFilter}), 0);
+    this.timerID = setTimeout(()=>this.setState({showFilter:this.props.showFilter}), 0);
   }
   
   componentDidUpdate(prevProps){
     if (this.props.showFilter !== prevProps.showFilter) {
       this.setState(()=>({showFilter:this.props.showFilter}));
     }
+  }
+
+  componentWillUnmount(){
+    clearTimeout(this.timerID);
   }
 
   render() {

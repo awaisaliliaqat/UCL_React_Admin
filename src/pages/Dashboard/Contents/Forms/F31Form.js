@@ -643,12 +643,12 @@ class F31Form extends Component {
               ) : (
                   <br />
                 )}
-              {!this.state.isLoading ? 
+              {this.state.CourseListArray.length > 0 ? (
                 <F31FormTableComponent
                   rows={this.state.CourseListArray}
                   showFilter={this.state.showTableFilter}
                 />
-               :
+              ) : this.state.isLoading ? (
                 <Grid
                   container
                   justify="center"
@@ -657,7 +657,9 @@ class F31Form extends Component {
                 >
                   <CircularProgress />
                 </Grid>
-              }
+              ) : (
+                    ""
+                  )}
             </Grid>
           </Grid>
         </form>
