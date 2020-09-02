@@ -12,6 +12,7 @@ class F31FormTableComponent extends Component {
         { name: "SRNo", title: "SR#" },
         { name: "courseLabel", title: "Course" },
         { name: "sectionTypeLabel", title: "Section\xa0Type" },
+        { name: "sectionLabel", title: "Section\xa0Title" },
         { name: "teacherName", title: "Teacher" },
         { name: "action", title: "Action"}
       ],
@@ -35,6 +36,7 @@ class F31FormTableComponent extends Component {
         { columnName: "SRNo", width: 100 },
         { columnName: "courseLabel", wordWrapEnabled: true },
         { columnName: "sectionTypeLabel", wordWrapEnabled: true },
+        { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "teacherName", wordWrapEnabled: true },
         { columnName: "action", width: 120, align:"center"},
       ],

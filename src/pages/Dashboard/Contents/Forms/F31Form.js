@@ -2,12 +2,13 @@ import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
-  IconButton, Tooltip} from "@material-ui/core";
+  IconButton, Tooltip, Fab} from "@material-ui/core";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import F31FormFilter from "./F31FormFilter";
 import F31FormTableComponent from "./F31FormTableComponent";
 import F31FormPopupComponent from "./F31FormPopupComponent";
+import AddIcon from "@material-ui/icons/Add";
 
 const styles = () => ({
   root: {
@@ -322,7 +323,9 @@ class F31Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             for (var i = 0; i < json.DATA.length; i++) {
+              let teacherName = json.DATA[i].teacherName;
               json.DATA[i].action = (
+                teacherName ?
                 <F31FormPopupComponent
                   sectionId={json.DATA[i].ID}
                   preTimeStartMenuItems={this.state.preTimeStartMenuItems}
@@ -330,12 +333,20 @@ class F31Form extends Component {
                   clickOnFormSubmit={() => this.clickOnFormSubmit}
                   courseLabel={json.DATA[i].courseLabel}
                   sectionTypeLabel={json.DATA[i].sectionTypeLabel}
+                  sectionLabel={json.DATA[i].sectionLabel}
                   sectionLabel={json.DATA[i].label}
                   teacherName={json.DATA[i].teacherName}
                   handleOpenSnackbar={this.handleOpenSnackbar}
                   values={this.state}
                   onAutoCompleteChange={this.onAutoCompleteChange}
                 />
+                :
+                <Fab 
+                  size="small"
+                  disabled={true}
+                >
+                  <AddIcon />
+                </Fab> 
               );
             }
             this.setState({ CourseListArray: json.DATA || [], });

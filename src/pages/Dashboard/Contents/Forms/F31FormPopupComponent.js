@@ -501,6 +501,8 @@ class F31FormPopupComponent extends Component {
                 " - " +
                 this.props.sectionLabel +
                 " - " +
+                this.props.sectionLabel +
+                " - " +
                 this.props.teacherName}
             </Typography>
             <DatePicker
