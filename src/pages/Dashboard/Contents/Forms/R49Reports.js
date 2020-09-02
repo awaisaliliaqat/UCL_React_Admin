@@ -12,6 +12,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 function isEmpty(obj) {
   if (obj == null) return true;
@@ -150,6 +151,19 @@ class R49Reports extends Component {
     this.setState({isLoading: false});
   };
 
+  handleSetTeacher = (value) => {
+    if(value) { 
+        this.getData(value.id); 
+    }
+    else { 
+      this.setState({assignmentsData:[]}); 
+    }
+    this.setState({
+      teacherId: value, 
+      teacherIdError: ""
+    });
+  };
+
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -269,6 +283,26 @@ class R49Reports extends Component {
             spacing={2}
           >
             <Grid item xs={12} md={4}>
+              <Autocomplete
+                  fullWidth
+                  id="teacherId"
+                  options={this.state.teachersMenuItems}
+                  value={this.state.teacherId}
+                  onChange={(event, value) => this.handleSetTeacher(value)}
+                  getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Teachers"
+                      placeholder="Search and Select"
+                      error={!!this.state.teacherIdError}
+                      helperText={this.state.teacherIdError ? this.state.teacherIdError : "" }
+                    />
+                  )}
+                />
+                <br/>
+              {/* 
               <TextField
                 id="teacherId"
                 name="teacherId"
@@ -298,7 +332,8 @@ class R49Reports extends Component {
                       <CircularProgress />
                     </Grid>
                 }
-              </TextField>
+              </TextField> 
+              */}
             </Grid>
           </Grid>
           <Divider
