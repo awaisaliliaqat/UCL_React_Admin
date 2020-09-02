@@ -47,9 +47,9 @@ class R46Reports extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-      programGroupsMenuItems: [],
-      programGroupId: "",
-      programGroupIdError: "",
+      coursesMenuItems: [],
+      courseId: "",
+      courseIdError: "",
       timetableData: [],
     };
   }
@@ -67,9 +67,9 @@ class R46Reports extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getprogramGroups = async () => {
+  getcourses = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C47CommonSessionOfferedProgrammeGroupsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C54CommonSessionOfferedProgrammeCoursesView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -85,12 +85,12 @@ class R46Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({programGroupsMenuItems: json.DATA || []});
+            this.setState({coursesMenuItems: json.DATA || []});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getprogramGroups", json);
+          console.log("getcourses", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -108,11 +108,11 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getData = async (programGroupId) => {
+  getData = async (courseId) => {
     this.setState({isLoading: true});
     let data = new FormData();
-    data.append("programmeGroupId", programGroupId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C47CommonProgrammesGroupTimeTableView`;
+    data.append("courseId", courseId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C54CommonCoursesSectionsTimeTableView`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -152,16 +152,16 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  handleSetProgrammeGroup = (value) => {
+  handleSetCourse = (value) => {
     if(value) { 
-        this.getData(value.ID); 
+        this.getData(value.id); 
     }
     else { 
       this.setState({timetableData:[]}); 
     }
     this.setState({
-      programGroupId: value, 
-      programGroupIdError: ""
+      courseId: value, 
+      courseIdError: ""
     });
   };
   
@@ -170,7 +170,7 @@ class R46Reports extends Component {
     const errName = `${name}Error`;
     let regex = "";
     switch (name) {
-        case "programGroupId":
+        case "courseId":
             this.getData(value);
         break;
     default:
@@ -184,19 +184,19 @@ class R46Reports extends Component {
 
   isCourseValid = () => {
     let isValid = true;        
-    if (!this.state.programGroupId) {
-        this.setState({programGroupIdError:"Please select course."});
-        document.getElementById("programGroupId").focus();
+    if (!this.state.courseId) {
+        this.setState({courseIdError:"Please select course."});
+        document.getElementById("courseId").focus();
         isValid = false;
     } else {
-        this.setState({programGroupIdError:""});
+        this.setState({courseIdError:""});
     }
     return isValid;
   }
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.getprogramGroups();
+    this.getcourses();
   }
 
   render() {
@@ -229,7 +229,7 @@ class R46Reports extends Component {
               }}
               variant="h5"
             >
-              Program Group Timetable
+              Course Timetable
             </Typography>
           </div>
           <Divider
@@ -248,40 +248,40 @@ class R46Reports extends Component {
             <Grid item xs={12} md={4}>
             <Autocomplete
                 fullWidth
-                id="programGroupId"
-                options={this.state.programGroupsMenuItems}
-                value={this.state.programGroupId}
-                onChange={(event, value) => this.handleSetProgrammeGroup(value)}
-                getOptionLabel={(option) => typeof option.Label === 'string' ? option.Label : ""}
+                id="courseId"
+                options={this.state.coursesMenuItems}
+                value={this.state.courseId}
+                onChange={(event, value) => this.handleSetCourse(value)}
+                getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     variant="outlined"
-                    label="Program Group"
+                    label="Courses"
                     placeholder="Search and Select"
-                    error={!!this.state.programGroupIdError}
-                    helperText={this.state.programGroupIdError ? this.state.programGroupIdError : "" }
+                    error={!!this.state.courseIdError}
+                    helperText={this.state.courseIdError ? this.state.courseIdError : "" }
                   />
                 )}
               />
               {/* 
               <TextField
-                id="programGroupId"
-                name="programGroupId"
+                id="courseId"
+                name="courseId"
                 variant="outlined"
                 label="Program Group"
                 onChange={this.onHandleChange}
-                value={this.state.programGroupId}
-                error={!!this.state.programGroupIdError}
-                helperText={this.state.programGroupIdError ? this.state.programGroupIdError : " "}
+                value={this.state.courseId}
+                error={!!this.state.courseIdError}
+                helperText={this.state.courseIdError ? this.state.courseIdError : " "}
                 required
                 fullWidth
                 select
               >
-                {this.state.programGroupsMenuItems && !this.state.isLoading ? 
-                  this.state.programGroupsMenuItems.map((dt, i) => (
+                {this.state.coursesMenuItems && !this.state.isLoading ? 
+                  this.state.coursesMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"programGroupsMenuItems"+dt.ID}
+                      key={"coursesMenuItems"+dt.ID}
                       value={dt.ID}
                     >
                       {dt.Label}

@@ -12,6 +12,7 @@ class F31FormTableComponent extends Component {
         { name: "SRNo", title: "SR#" },
         { name: "courseLabel", title: "Course" },
         { name: "sectionTypeLabel", title: "Section\xa0Type" },
+        { name: "sectionLabel", title: "Section\xa0Title" },
         { name: "teacherName", title: "Teacher" },
         { name: "action", title: "Action"}
       ],
@@ -35,19 +36,34 @@ class F31FormTableComponent extends Component {
         { columnName: "SRNo", width: 100 },
         { columnName: "courseLabel", wordWrapEnabled: true },
         { columnName: "sectionTypeLabel", wordWrapEnabled: true },
+        { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "teacherName", wordWrapEnabled: true },
-        { columnName: "action", width: 120, align:"center"},
+        { columnName: "action", width: 150, align:"center"},
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
-      ]
+      ],
+      showFilter:true
     };
   }
 
+  componentDidMount(){
+    this.timerID = setTimeout(()=>this.setState({showFilter:this.props.showFilter}), 0);
+  }
   
+  componentDidUpdate(prevProps){
+    if (this.props.showFilter !== prevProps.showFilter) {
+      this.setState(()=>({showFilter:this.props.showFilter}));
+    }
+  }
+
+  componentWillUnmount(){
+    clearTimeout(this.timerID);
+  }
+
   render() {
          
     const {
@@ -82,7 +98,7 @@ class F31FormTableComponent extends Component {
             columnExtensions={sortingStateColumnExtensions}
           />
           <PagingState 
-            defaultCurrentPage={1} 
+            defaultCurrentPage={0} 
             defaultPageSize={10}
           />
           <IntegratedFiltering />
@@ -100,7 +116,7 @@ class F31FormTableComponent extends Component {
               <b>&emsp;{props.children}</b>
             }
           />
-          {this.props.showFilter && <TableFilterRow showFilterSelector={true} />}
+          {this.state.showFilter && <TableFilterRow showFilterSelector={true} />}
           <PagingPanel pageSizes={pageSizes} />
         </Grid>
       </Paper>
@@ -115,7 +131,7 @@ F31FormTableComponent.propTypes = {
 }
 
 F31FormTableComponent.defaultProps = {
-  showFilter: false,
+  showFilter: true,
 }
 
 

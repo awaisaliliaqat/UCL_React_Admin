@@ -1,28 +1,11 @@
 import React, { Component, Fragment } from "react";
 import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button} from "@material-ui/core";
 import {Typography, TextField, MenuItem} from "@material-ui/core";
-import ExcelIcon from "../../../../assets/Images/excel.png";
-import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-
 import R49ReportsTableComponent from "./R49ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
-import SearchIcon from "mdi-material-ui/FileSearchOutline";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
-
-function isEmpty(obj) {
-  if (obj == null) return true;
-  if (obj.length > 0) return false;
-  if (obj.length === 0) return true;
-  if (typeof obj !== "object") return true;
-  for (var key in obj) {
-    if (hasOwnProperty.call(obj, key)) return false;
-  }
-  return true;
-}
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 class R49Reports extends Component {
   constructor(props) {
@@ -150,6 +133,19 @@ class R49Reports extends Component {
     this.setState({isLoading: false});
   };
 
+  handleSetTeacher = (value) => {
+    if(value) { 
+        this.getData(value.id); 
+    }
+    else { 
+      this.setState({assignmentsData:[]}); 
+    }
+    this.setState({
+      teacherId: value, 
+      teacherIdError: ""
+    });
+  };
+
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -269,6 +265,26 @@ class R49Reports extends Component {
             spacing={2}
           >
             <Grid item xs={12} md={4}>
+              <Autocomplete
+                  fullWidth
+                  id="teacherId"
+                  options={this.state.teachersMenuItems}
+                  value={this.state.teacherId}
+                  onChange={(event, value) => this.handleSetTeacher(value)}
+                  getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Teachers"
+                      placeholder="Search and Select"
+                      error={!!this.state.teacherIdError}
+                      helperText={this.state.teacherIdError ? this.state.teacherIdError : "" }
+                    />
+                  )}
+                />
+                <br/>
+              {/* 
               <TextField
                 id="teacherId"
                 name="teacherId"
@@ -298,7 +314,8 @@ class R49Reports extends Component {
                       <CircularProgress />
                     </Grid>
                 }
-              </TextField>
+              </TextField> 
+              */}
             </Grid>
           </Grid>
           <Divider

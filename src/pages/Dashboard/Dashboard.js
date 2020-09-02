@@ -78,6 +78,7 @@ import R41Reports from "./Contents/Forms/R41Reports";
 import R46Reports from "./Contents/Forms/R46Reports";
 import R47Reports from "./Contents/Forms/R47Reports";
 import R49Reports from "./Contents/Forms/R49Reports";
+import R54Reports from "./Contents/Forms/R54Reports";
 import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
 import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
 import SyncTimeTable from './Contents/LMS/SyncTimeTable/SyncTimeTable';
@@ -767,6 +768,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R49Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R54Reports"
+                exact
+                path="/dashboard/R54Reports"
+                render={(props) => {
+                  return (
+                    <R54Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
