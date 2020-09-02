@@ -38,7 +38,7 @@ class F31FormTableComponent extends Component {
         { columnName: "sectionTypeLabel", wordWrapEnabled: true },
         { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "teacherName", wordWrapEnabled: true },
-        { columnName: "action", width: 120, align:"center"},
+        { columnName: "action", width: 150, align:"center"},
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
@@ -131,7 +131,7 @@ F31FormTableComponent.propTypes = {
 }
 
 F31FormTableComponent.defaultProps = {
-  showFilter: false,
+  showFilter: true,
 }
 
 
