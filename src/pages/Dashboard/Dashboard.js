@@ -81,6 +81,11 @@ import R49Reports from "./Contents/Forms/R49Reports";
 import R54Reports from "./Contents/Forms/R54Reports";
 import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
 import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
+import SyncTimeTable from './Contents/LMS/SyncTimeTable/SyncTimeTable';
+import SyncZoomMeetings from "./Contents/LMS/SyncZoomMeetings/SyncZoomMeetings";
+import CreateRoomForm from './Contents/Forms/CreateRoom/CreateRoomFrom';
+import CreateRoomReports from './Contents/Forms/CreateRoom/CreateRoomReports';
+import ClassSchedule from './Contents/LMS/ClassSchedule/ClassSchedule';
 
 const drawerWidth = 283;
 
@@ -963,6 +968,20 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="sync-time-table"
+                exact
+                path="/dashboard/sync-time-table"
+                component={SyncTimeTable}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="sync-zoom-meetings"
+                exact
+                path="/dashboard/sync-zoom-meetings"
+                component={SyncZoomMeetings}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="change-student-status"
                 exact
                 path="/dashboard/change-student-status"
@@ -974,6 +993,34 @@ const Dashboard = (props) => {
                     />
                   );
                 }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="maintain-class-rooms"
+                exact
+                path="/dashboard/create-room-reports"
+                component={CreateRoomReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="maintain-class-rooms"
+                exact
+                path="/dashboard/maintain-class-rooms/:recordId"
+                render={(props) => {
+                  return (
+                    <CreateRoomForm
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="class-schedule"
+                exact
+                path="/dashboard/class-schedule"
+                component={ClassSchedule}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

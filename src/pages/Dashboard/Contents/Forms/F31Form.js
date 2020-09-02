@@ -137,7 +137,9 @@ class F31Form extends Component {
               }
             }
           } else {
+
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+
           }
           console.log("loadAcademicSession", json);
         },
@@ -194,6 +196,50 @@ class F31Form extends Component {
     this.setState({ isLoading: false });
   };
 
+  getRoomsData = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C51CommonAcademicsScheduleClassRoomsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ roomsData: json.DATA || [] });
+          } else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
   loadProgrammeGroups = async (academicsSessionId) => {
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
@@ -217,7 +263,9 @@ class F31Form extends Component {
           if (json.CODE === 1) {
             this.setState({ programmeGroupIdMenuItems: json.DATA });
           } else {
+
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+
           }
           console.log("loadProgrammeGroups", json);
         },
@@ -254,7 +302,9 @@ class F31Form extends Component {
           if (json.CODE === 1) {
             this.setState({ preDaysMenuItems: json.DATA });
           } else {
+
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+
           }
           console.log("loadDaysOfWeek", json);
         },
@@ -296,6 +346,7 @@ class F31Form extends Component {
             for (var i = 0; i < json.DATA.length; i++) {
               let teacherName = json.DATA[i].teacherName;
               json.DATA[i].action = (
+
                 teacherName ?
                 <Fragment>
                   <F31FormPopupComponent
@@ -351,11 +402,14 @@ class F31Form extends Component {
                     <AddIcon />
                   </Fab>
                 </Fragment>
+
               );
             }
             this.setState({ CourseListArray: json.DATA || [], });
           } else {
+
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+
           }
           console.log("loadCourses", json);
         },
@@ -652,10 +706,12 @@ class F31Form extends Component {
                   getDataByStatus={(status) => this.getData(status)}
                   onHandleChange={(e) => this.onHandleChange(e)}
                 />
+
               : 
                 <br />
               }
               {this.state.CourseListArray.length > 0 ? 
+
                 <F31FormTableComponent
                   rows={this.state.CourseListArray}
                   showFilter={this.state.showTableFilter}
@@ -669,9 +725,11 @@ class F31Form extends Component {
                 >
                   <CircularProgress />
                 </Grid>
+
                 : 
                 ""
               }
+
             </Grid>
           </Grid>
         </form>

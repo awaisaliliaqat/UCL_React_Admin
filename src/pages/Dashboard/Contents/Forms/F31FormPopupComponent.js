@@ -2,9 +2,11 @@ import React, { Component, Fragment } from "react";
 import PropTypes from 'prop-types';
 import { withStyles } from "@material-ui/styles";
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
   Button, IconButton, Tooltip, Fab, Dialog, DialogActions, DialogContent,
   DialogTitle} from "@material-ui/core";
+
 import AddIcon from "@material-ui/icons/Add";
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -16,7 +18,9 @@ const styles = () => ({
 
 const CourseRow = (props) => {
 
+
   const { rowIndex, rowData, onDelete, isReadOnly } = props;
+
 
   return (
     <Fragment>
@@ -73,12 +77,14 @@ const CourseRow = (props) => {
             value={rowData.roomsObject.ID || ""}
           />
         </Grid>
+
         {isReadOnly ? 
         ""
         :
         <Grid item xs={1} style={{ textAlign: "center" }}>
             <Tooltip title="Delete">
             <span>
+
               <Fab
                 color="secondary"
                 aria-label="Delete"
@@ -435,6 +441,15 @@ class F31FormPopupComponent extends Component {
     })
   }
 
+  onAutoCompleteChange = (e, value) => {
+    let object = isEmpty(value) ? {} : value;
+    this.setState({
+      roomsObject: object,
+      roomsId: object.id || "",
+      roomsObjectError: ""
+    })
+  }
+
   render() {
     const { isReadOnly, sectionId, teacherId } = this.props;
     return (
@@ -551,16 +566,20 @@ class F31FormPopupComponent extends Component {
                 marginTop: -10,
               }}
             >
+
               {isReadOnly ?
               ""
               :
               <Fragment>
+
               <Grid item xs={12} md={4}>
                 <TextField
                   type="hidden"
                   id="sectionId"
                   name="sectionId"
+
                   value={sectionId}
+
                 />
                 <TextField
                   id="preDayId"
@@ -636,19 +655,25 @@ class F31FormPopupComponent extends Component {
                   variant="outlined"
                   onChange={this.onHandleChange}
                   value={this.state.preTimeDuration}
+
                   error={!!this.state.preTimeDurationError}
+
                   helperText={this.state.preTimeDurationError}
                 />
               </Grid>
               <Grid item xs={12} md={4}>
                 <Autocomplete
                   id="rooms"
+
                   getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
+
                   fullWidth
                   value={this.state.roomsObject}
                   onChange={this.onAutoCompleteChange}
                   options={this.props.values.roomsData}
+
                   renderInput={(params) => <TextField error={!!this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params}
+
                   />}
                 />
               </Grid>
@@ -676,8 +701,10 @@ class F31FormPopupComponent extends Component {
                   </Tooltip>
                 </IconButton>
               </Grid>
+
               </Fragment>
               }
+
               <Grid item xs={12}>
                 <Divider
                   style={{
@@ -717,15 +744,19 @@ class F31FormPopupComponent extends Component {
                     Room
                   </Typography>
                 </Grid>
+
                 {isReadOnly ?
                 ""
                 :
                 <Grid item xs={1} style={{ textAlign: "center" }}>
+
                   <Typography color="primary">
                     Action
                     </Typography>
                 </Grid>
+
                 }
+
               </Grid>
               {this.state.rowDataArray.length > 0
                 ? this.state.rowDataArray.map((dt, i) => (
@@ -734,7 +765,9 @@ class F31FormPopupComponent extends Component {
                     rowIndex={i}
                     rowData={dt}
                     onDelete={(i) => this.handeDeleteCourseRow(i)}
+
                     isReadOnly={isReadOnly}
+
                   />
                 ))
                 : this.state.isLoading && (
@@ -749,7 +782,9 @@ class F31FormPopupComponent extends Component {
                 )}
               <br />
               <br />
+
               <br />
+
             </Grid>
           </DialogContent>
           <Divider
@@ -798,6 +833,7 @@ F31FormPopupComponent.propTypes = {
   isReadOnly: PropTypes.bool
 }
 
+
 F31FormPopupComponent.defaultTypes = {
   handleOpenSnackbar: fn => fn,
   clickOnFormSubmit: fn => fn,
@@ -809,8 +845,10 @@ F31FormPopupComponent.defaultTypes = {
   sectionLabel: "",
   teacherName: "",
   preTimeStartMenuItems: "",
+
   preDaysMenuItems: "",
   isReadOnly:true
+
 }
 
 export default withStyles(styles)(F31FormPopupComponent);
