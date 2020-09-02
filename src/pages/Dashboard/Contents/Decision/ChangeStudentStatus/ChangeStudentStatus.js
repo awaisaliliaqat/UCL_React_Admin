@@ -2,7 +2,9 @@ import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import ChangeStudentStatusFilter from './Chunks/ChangeStudentStatusFilter';
-import TablePanel from '../../../../../components/ControlledTable/RerenderTable/TablePanel';
+import FilterIcon from "mdi-material-ui/FilterOutline";
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
 import Checkbox from '@material-ui/core/Checkbox';
 import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -10,6 +12,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import BottomBar from '../../../../../components/BottomBar/BottomBar';
 import CustomizedSnackbar from '../../../../../components/CustomizedSnackbar/CustomizedSnackbar';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import ChangeStatusTableComponent from './Chunks/ChangeStatusTableComponent';
 import { Button } from '@material-ui/core';
 
 class ChangeStudentStatus extends Component {
@@ -25,6 +28,7 @@ class ChangeStudentStatus extends Component {
             sessionData: [],
             isLoginMenu: false,
             isReload: false,
+            showTableFilter: false,
 
 
             isOpenSnackbar: false,
@@ -222,24 +226,28 @@ class ChangeStudentStatus extends Component {
 
     }
 
+    handleToggleTableFilter = () => {
+        this.setState({ showTableFilter: !this.state.showTableFilter });
+    }
+
     render() {
-        const columnsSubmitted = [
-            { name: "Nucleus Id", dataIndex: "studentId", sortable: false, customStyleHeader: { width: '13%', textAlign: 'center' } },
+        const columns = [
+            { name: "studentId", title: "Nucleus Id" },
             {
-                name: "Name", renderer: rowData => {
+                name: "firstName", title: "Name", getCellValue: rowData => {
                     return (
                         <Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>
                     )
-                }, sortable: false, customStyleHeader: { width: '15%' }
+                }
             },
-            { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '13%' } },
-            { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '20%', textAlign: 'center' }, align: 'center' },
-            { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '20%' } },
-            { name: "Session", dataIndex: "sessionLabel", sortable: false, customStyleHeader: { width: '15%' } },
-            { name: "Status", dataIndex: "statusLabel", sortable: false, customStyleHeader: { width: '15%' } },
+            { name: "genderLabel", title: "Gender" },
+            { name: "degreeLabel", title: "Degree Programme" },
+            { name: "mobileNo", title: "Mobile No" },
+            { name: "email", title: "Email" },
+            { name: "sessionLabel", title: "Session" },
+            { name: "statusLabel", title: "Status" },
             {
-                name: "Selection", renderer: rowData => {
+                name: "action", title: "Selection", getCellValue: rowData => {
                     return (
                         <Checkbox
                             icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 30 }} />}
@@ -249,8 +257,8 @@ class ChangeStudentStatus extends Component {
                             inputProps={{ 'aria-label': 'secondary checkbox' }}
                         />
                     )
-                }, sortable: false, customStyleHeader: { width: '15%' }
-            },
+                }
+            }
         ]
 
         return (
@@ -266,6 +274,16 @@ class ChangeStudentStatus extends Component {
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
                             Change Student Status
             </Typography>
+                        <div style={{ float: "right" }}>
+                            <Tooltip title="Table Filter">
+                                <IconButton
+                                    style={{ marginLeft: "-10px" }}
+                                    onClick={() => this.handleToggleTableFilter()}
+                                >
+                                    <FilterIcon fontSize="default" color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',
@@ -280,7 +298,7 @@ class ChangeStudentStatus extends Component {
                         font: 'Bold 16px Lato',
                         letterSpacing: '1.8px'
                     }}>
-                    </div><TablePanel isShowIndexColumn data={this.state.studentData} isLoading={this.state.isLoading} sortingEnabled columns={columnsSubmitted} />
+                    </div><ChangeStatusTableComponent columns={columns} rows={this.state.studentData} showFilter={this.state.showTableFilter} />
 
                 </div>
                 <form noValidate onSubmit={this.onFormSubmit}>
