@@ -45,17 +45,18 @@ const styles = () => ({
 function CourseRow(props) {
   const { rowIndex, rowData, prerequisiteCoursesArray, ...rest } = props;
 
-  const [prerequisiteCourse, setPrerequisiteCourse] = useState(
-    rowData.coursePrerequisitesSelected
-  );
+  const [prerequisiteCourse, setPrerequisiteCourse] = useState(rowData.coursePrerequisitesSelected);
+  const [optionalPrerequisiteCourse, setOptionalPrerequisiteCourse] = useState(rowData.courseOptionalPrerequisitesSelected);
 
-  const [
-    prerequisiteCoursesInputValue,
-    setPrerequisiteCoursesInputValue,
-  ] = useState("");
+  const [prerequisiteCoursesInputValue, setPrerequisiteCoursesInputValue] = useState("");
+  const [optionalPrerequisiteCoursesInputValue, setOptionalPrerequisiteCoursesInputValue] = useState("");
 
-  const handleSetPrerequisiteCourse = (event, value, rason) => {
+  const handleSetPrerequisiteCourse = (event, value, rason) => {   
     setPrerequisiteCourse(value);
+  };
+
+  const handleSetOptionalPrerequisiteCourse = (event, value, rason) => {
+    setOptionalPrerequisiteCourse(value);
   };
 
   const handlePrerequisiteCourse = (value) => {
@@ -69,30 +70,50 @@ function CourseRow(props) {
       }
     }
     setPrerequisiteCoursesInputValue(selectedPCIdsString);
-    console.log("selectedPCIdsString", selectedPCIdsString);
+    //console.log("setPrerequisiteCoursesInputValue", selectedPCIdsString);
+  };
+
+  const handleOptionalPrerequisiteCourse = (value) => {
+    let ObjArray = value;
+    let selectedPCIdsString = "";
+    for (let i = 0; i < ObjArray.length; i++) {
+      if (i == 0) {
+        selectedPCIdsString = ObjArray[i].ID;
+      } else {
+        selectedPCIdsString += "," + ObjArray[i].ID;
+      }
+    }
+    setOptionalPrerequisiteCoursesInputValue(selectedPCIdsString);
+    //console.log("setOptionalPrerequisiteCoursesInputValue", selectedPCIdsString);
   };
 
   const isPrerequisiteCourseSelected = (option) => {
-    return prerequisiteCourse.some(
-      (selectedOption) => selectedOption.ID == option.ID
-    );
+    return prerequisiteCourse.some((selectedOption) => JSON.stringify(selectedOption) == JSON.stringify(option));
+  };
+
+  const isOptionalPrerequisiteCourseSelected = (option) => {
+    return optionalPrerequisiteCourse.some((selectedOption) => selectedOption.ID == option.ID);
   };
 
   useEffect(() => {
     handlePrerequisiteCourse(prerequisiteCourse);
+    handleOptionalPrerequisiteCourse(optionalPrerequisiteCourse);
   });
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   let prerequisiteCoursesNewArray = [];
+  let optionalPrerequisiteCoursesNewArray = [];
   for (let i = 0; i < prerequisiteCoursesArray.length; i++) {
     if (prerequisiteCoursesArray[i].ID != rowData.ID) {
       prerequisiteCoursesNewArray[i] = prerequisiteCoursesArray[i];
+      optionalPrerequisiteCoursesNewArray[i] = prerequisiteCoursesArray[i];
     } else {
       //prerequisiteCoursesNewArray[i] = "";
     }
   }
+
   return (
     <Fragment>
       <Grid item xs={12}></Grid>
@@ -130,7 +151,7 @@ function CourseRow(props) {
             value={rowData.ID}
           />
         </Grid>
-        <Grid item xs={12} md={2}>
+        <Grid item xs={12} md={1}>
           <TextField
             id="courseCredit"
             name="courseCredit"
@@ -144,17 +165,16 @@ function CourseRow(props) {
             value={rowData.courseCreditLabel}
           />
         </Grid>
-        <Grid item xs={12} md={7}>
+        <Grid item xs={12} md={4}>
           <Autocomplete
             multiple
             fullWidth
-            id="checkboxes-tags-demo"
-            name="checkboxes-tags-demo"
             options={prerequisiteCoursesNewArray}
             value={prerequisiteCourse}
             onChange={handleSetPrerequisiteCourse}
             disableCloseOnSelect
             getOptionLabel={(option) => option.Label}
+            getOptionSelected={(option) => isPrerequisiteCourseSelected(option)}
             renderTags={(tagValue, getTagProps) =>
               tagValue.map((option, index) =>
                 option.ID != rowData.ID ? (
@@ -169,23 +189,24 @@ function CourseRow(props) {
                 )
               )
             }
-            renderOption={(option) => (
+            renderOption={(option, {selected}) => (
               <Fragment>
                 <Checkbox
                   icon={icon}
                   checkedIcon={checkedIcon}
                   style={{ marginRight: 8 }}
-                  checked={isPrerequisiteCourseSelected(option)}
+                  checked={selected}
                   color="primary"
                 />
                 {option.Label}
+                {console.log("checkedIcon", selected, option)}
               </Fragment>
             )}
             renderInput={(params) => (
               <TextField
                 {...params}
                 variant="outlined"
-                label="Prerequisite Courses"
+                label="Mandatory Prerequisite Courses"
                 placeholder="Search and Select"
               />
             )}
@@ -195,6 +216,57 @@ function CourseRow(props) {
           type="hidden"
           name="programmeCourseIdPrereq"
           value={prerequisiteCoursesInputValue}
+        />
+        <Grid item xs={12} md={4}>
+          <Autocomplete
+            multiple
+            fullWidth
+            options={optionalPrerequisiteCoursesNewArray}
+            value={optionalPrerequisiteCourse}
+            onChange={handleSetOptionalPrerequisiteCourse}
+            disableCloseOnSelect
+            getOptionLabel={(option) => option.Label}
+            getOptionSelected={(option) => isOptionalPrerequisiteCourseSelected(option)}
+            renderTags={(tagValue, getTagProps) =>
+              tagValue.map((option, index) =>
+                option.ID != rowData.ID ? (
+                  <Chip
+                    label={option.Label}
+                    color="primary"
+                    variant="outlined"
+                    {...getTagProps({ index })}
+                  />
+                ) : (
+                  ""
+                )
+              )
+            }
+            renderOption={(option, {selected}) => (
+              <Fragment>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                  color="primary"
+                />
+                {option.Label}
+              </Fragment>
+            )}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Optional Prerequisite Courses"
+                placeholder="Search and Select"
+              />
+            )}
+          />
+        </Grid>
+        <TextField
+          type="hidden"
+          name="programmeCourseIdOptionalPrereq"
+          value={optionalPrerequisiteCoursesInputValue}
         />
       </Grid>
     </Fragment>
@@ -214,7 +286,7 @@ class F24Form extends Component {
       programmeGroupMenuItems: null,
       programmeGroupId: "",
       programmeGroupIdError: "",
-      programmeGroupCoursesArray: null,
+      programmeGroupCoursesArray: [],
       prerequisiteCourseArray: [],
     };
   }
@@ -302,28 +374,15 @@ class F24Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({
-              programmeGroupCoursesArray: json.DATA,
-            });
+            this.setState({programmeGroupCoursesArray: json.DATA || []});
             let prerequisiteCourseArray = [];
             for (let i = 0; i < json.DATA.length; i++) {
-              let obj = {
-                ID: json.DATA[i].ID,
-                Label:
-                  json.DATA[i].courseId +
-                  " - " +
-                  json.DATA[i].courseCode +
-                  " - " +
-                  json.DATA[i].courseTitle,
-              };
+              let obj = {Label:json.DATA[i].courseLabel, ID: json.DATA[i].ID};
               prerequisiteCourseArray.push(obj);
             }
             this.setState({ prerequisiteCourseArray: prerequisiteCourseArray });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadProgrammeGroupCourses", json);
         },
@@ -335,10 +394,7 @@ class F24Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try again later.","error");
           }
         }
       );
@@ -372,10 +428,7 @@ class F24Form extends Component {
             });
           } else {
             //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log(json);
         },
@@ -468,10 +521,7 @@ class F24Form extends Component {
               }
             }, 2000);
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log(json);
         },
@@ -483,10 +533,7 @@ class F24Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -506,12 +553,13 @@ class F24Form extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.match.params.recordId != nextProps.match.params.recordId) {
-      if (nextProps.match.params.recordId != 0) {
+  componentDidUpdate(prevProps) {
+    if (this.props.match.params.recordId != prevProps.match.params.recordId) {
+      if (this.props.match.params.recordId != 0) {
+        alert(this.props.match.params.recordId);
         this.props.setDrawerOpen(false);
-        this.setState({ programmeGroupId: nextProps.match.params.recordId });
-        this.loadProgrammeGroupCourses(nextProps.match.params.recordId);
+        this.setState({ programmeGroupId: this.props.match.params.recordId });
+        this.loadProgrammeGroupCourses(this.props.match.params.recordId);
       } else {
         window.location.reload();
       }
@@ -594,7 +642,7 @@ class F24Form extends Component {
                   }}
                 />
               </Grid>
-              {this.state.programmeGroupCoursesArray ? (
+              {this.state.programmeGroupCoursesArray.length > 0 ? (
                 this.state.programmeGroupCoursesArray.map((dt, i) => (
                   <CourseRow
                     key={"programmeGroupCoursesArray" + i}

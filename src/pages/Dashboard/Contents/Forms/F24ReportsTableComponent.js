@@ -48,13 +48,15 @@ class F06ReportsTableComponent extends Component {
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
               { columnName: 'programmeCourseIdPrereq', sortingEnabled: false },
-              { columnName: 'programmeCourseIdExclusions', sortingEnabled: false }
+              { columnName: 'programmeCourseIdExclusions', sortingEnabled: false },
+              { columnName: 'programmeCourseIdOptionalPrereq', sortingEnabled: false }
             ],
             tableColumnExtensions:[
               { columnName: 'SRNo', width:100},
               { columnName: 'programmeGroupLabel', wordWrapEnabled:true},
               { columnName: 'programmeCourseLabel', wordWrapEnabled:true},
               { columnName: 'programmeCourseIdPrereq', wordWrapEnabled:true},
+              { columnName: 'programmeCourseIdOptionalPrereq', wordWrapEnabled:true},
               { columnName: 'programmeCourseIdExclusions', wordWrapEnabled:true},
               { columnName: 'action', width:120, align:"center"}
             ],
@@ -65,7 +67,8 @@ class F06ReportsTableComponent extends Component {
               { columnName: 'SRNo', groupingEnabled: false},
               { columnName: 'programmeCourseLabel', groupingEnabled: false },
               { columnName: 'programmeCourseIdPrereq', groupingEnabled: false },
-              { columnName: 'programmeCourseIdExclusions', groupingEnabled:true},
+              { columnName: 'programmeCourseIdExclusions', groupingEnabled:false},
+              { columnName: 'programmeCourseIdOptionalPrereq', groupingEnabled:false},
               { columnName: 'action', groupingEnabled: false }
             ],
             tableGroupColumnExtension:[
@@ -113,7 +116,7 @@ class F06ReportsTableComponent extends Component {
                 <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
                 <GroupingState defaultGrouping={defaultGrouping} columnExtensions={groupingStateColumnExtensions}/>
                 <DragDropProvider />
-                <PagingState defaultCurrentPage={1} defaultPageSize={10}/>
+                <PagingState defaultCurrentPage={0} defaultPageSize={10}/>
                 <IntegratedFiltering />
                 <IntegratedSorting />
                 <IntegratedPaging />
