@@ -55,6 +55,7 @@ class F06ReportsTableComponent extends Component {
               { columnName: 'programmeGroupLabel', wordWrapEnabled:true},
               { columnName: 'programmeCourseLabel', wordWrapEnabled:true},
               { columnName: 'programmeCourseIdPrereq', wordWrapEnabled:true},
+              { columnName: 'programmeCourseIdOptionalPrereq', wordWrapEnabled:true},
               { columnName: 'programmeCourseIdExclusions', wordWrapEnabled:true},
               { columnName: 'action', width:120, align:"center"}
             ],
@@ -65,7 +66,8 @@ class F06ReportsTableComponent extends Component {
               { columnName: 'SRNo', groupingEnabled: false},
               { columnName: 'programmeCourseLabel', groupingEnabled: false },
               { columnName: 'programmeCourseIdPrereq', groupingEnabled: false },
-              { columnName: 'programmeCourseIdExclusions', groupingEnabled:true},
+              { columnName: 'programmeCourseIdExclusions', groupingEnabled:false},
+              { columnName: 'programmeCourseIdOptionalPrereq', groupingEnabled:false},
               { columnName: 'action', groupingEnabled: false }
             ],
             tableGroupColumnExtension:[
