@@ -48,7 +48,8 @@ class F06ReportsTableComponent extends Component {
             sortingStateColumnExtensions:[
               { columnName: 'action', sortingEnabled: false },
               { columnName: 'programmeCourseIdPrereq', sortingEnabled: false },
-              { columnName: 'programmeCourseIdExclusions', sortingEnabled: false }
+              { columnName: 'programmeCourseIdExclusions', sortingEnabled: false },
+              { columnName: 'programmeCourseIdOptionalPrereq', sortingEnabled: false }
             ],
             tableColumnExtensions:[
               { columnName: 'SRNo', width:100},

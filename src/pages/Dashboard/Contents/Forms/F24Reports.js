@@ -216,10 +216,10 @@ class F24Reports extends Component {
         const columns = [
             { name: "SRNo", title: "SR#"},
             { name: "programmeGroupLabel", title: "Programme\xa0Group"},
-            { name: "programmeCourseLabel", title: "Programme\xa0Course"},
-            { name: "programmeCourseIdPrereq", title: "Prerequisite\xa0Courses"},
-            { name: "programmeCourseIdOptionalPrereq", title: "Optional Prerequisite\xa0Courses"},
-            { name: "programmeCourseIdExclusions", title: "Excluded\xa0Courses"},
+            { name: "programmeCourseLabel", title: "Programme Course"},
+            { name: "programmeCourseIdPrereq", title: "Prerequisite Courses"},
+            { name: "programmeCourseIdOptionalPrereq", title: "Optional Prerequisite Courses"},
+            { name: "programmeCourseIdExclusions", title: "Excluded Courses"},
             { name: "action", title:"Action"}
         ]
 
