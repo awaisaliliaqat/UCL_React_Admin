@@ -261,8 +261,8 @@ class F31FormPopupComponent extends Component {
       preTimeStart: "",
       preTimeDuration: "",
       rowDataArray: [],
-      isCopyMode:false,
-      isReadOnly:true
+      isCopyMode: false,
+      isReadOnly: this.props.isReadOnly
     });
   };
 
@@ -587,7 +587,7 @@ class F31FormPopupComponent extends Component {
                 onClick={()=>this.handleChangeIsCopyMode()}
                 disabled={this.state.isCopyMode}
               >
-                Copy
+                Edit
               </Button>
             </Fragment>
             :
