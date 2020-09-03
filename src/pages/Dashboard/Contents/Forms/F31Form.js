@@ -103,11 +103,11 @@ class F31Form extends Component {
         " " +
         ap[Math.floor(hh / 12)]; // pushing data in array in [00:00 - 12:00 AM/PM format]
       tt = tt + x;
-      if (times[i] == "08:00 PM") {
-        break;
-      }
+      // if (times[i] == "08:00 PM") {
+      //   break;
+      // }
     }
-    //console.log(times);
+    console.log(times);
     this.setState({ preTimeStartMenuItems: times });
   };
 

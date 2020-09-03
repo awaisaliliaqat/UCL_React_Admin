@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, useState } from "react";
 import PropTypes from 'prop-types';
 import { withStyles } from "@material-ui/styles";
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -12,15 +12,13 @@ import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import { DatePicker } from "@material-ui/pickers";
+import { lastDayOfQuarterWithOptions } from "date-fns/fp";
 
-const styles = () => ({
-});
+const styles = () => ({ });
 
 const CourseRow = (props) => {
 
-
   const { rowIndex, rowData, onDelete, isReadOnly } = props;
-
 
   return (
     <Fragment>
@@ -154,10 +152,11 @@ class F31FormPopupComponent extends Component {
       preDate: this.getTomorrowDate(),
       preDateError: "",
       rowDataArray: [],
-
       roomsObject: {},
       roomsObjectError: "",
-      roomsId: ""
+      roomsId: "",
+      isReadOnly: false,
+      isCopyMode: false
     };
   }
 
@@ -244,7 +243,12 @@ class F31FormPopupComponent extends Component {
      //this.loadData(this.props.sectionId, this.getDateInString(new Date(this.props.activeDateInNumber)) );
       this.setState({preDate:this.props.activeDateInNumber});
     }else{
-      this.loadData(this.props.sectionId, this.getDateInString(this.state.preDate));
+      let sessionSelectedDate = sessionStorage.getItem('sessionSelectedDate');
+      if(sessionSelectedDate){
+        this.handleChangePreDate(new Date(sessionSelectedDate));
+      } else {
+        this.loadData(this.props.sectionId, this.getDateInString(this.state.preDate));
+      }
     }
     this.setState({ popupBoxOpen: true });
   };
@@ -257,6 +261,8 @@ class F31FormPopupComponent extends Component {
       preTimeStart: "",
       preTimeDuration: "",
       rowDataArray: [],
+      isCopyMode:false,
+      isReadOnly:true
     });
   };
 
@@ -388,6 +394,7 @@ class F31FormPopupComponent extends Component {
       [errName]: "",
     });
   };
+  
   onHandleChangePreDay = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -406,6 +413,7 @@ class F31FormPopupComponent extends Component {
       rowDataArray: [],
       preDate: date,
     });
+    sessionStorage.setItem('sessionSelectedDate', date);
     this.loadData(this.props.sectionId, this.getDateInString(date));
   };
 
@@ -422,39 +430,53 @@ class F31FormPopupComponent extends Component {
     });
   };
 
+  onAutoCompleteChange = (e, value) => {
+    let object = isEmpty(value) ? {} : value;
+    this.setState({
+      roomsObject: object,
+      roomsId: object.id || "",
+      roomsObjectError: ""
+    })
+  }
+
+  onAutoCompleteChange = (e, value) => {
+    let object = isEmpty(value) ? {} : value;
+    this.setState({
+      roomsObject: object,
+      roomsId: object.id || "",
+      roomsObjectError: ""
+    })
+  }
+
+  handleChangeIsCopyMode = () => {
+    let sessionSelectedDate = sessionStorage.getItem('sessionSelectedDate');
+    let tomorrowDate = this.getTomorrowDate();
+    if(sessionSelectedDate){
+      tomorrowDate = new Date(sessionSelectedDate);
+    }
+    this.setState({
+      isCopyMode:true,
+      isReadOnly:false,
+      preDate: tomorrowDate
+    });
+  }
+
   componentDidMount() {
     this.setState({
       preTimeStartMenuItems: this.props.preTimeStartMenuItems,
       preDaysMenuItems: this.props.preDaysMenuItems,
+      isReadOnly: this.props.isReadOnly
     });
     // if (this.state.recordId != 0) {
     //   this.loadData(this.state.recordId);
     // }
   }
 
-  onAutoCompleteChange = (e, value) => {
-    let object = isEmpty(value) ? {} : value;
-    this.setState({
-      roomsObject: object,
-      roomsId: object.id || "",
-      roomsObjectError: ""
-    })
-  }
-
-  onAutoCompleteChange = (e, value) => {
-    let object = isEmpty(value) ? {} : value;
-    this.setState({
-      roomsObject: object,
-      roomsId: object.id || "",
-      roomsObjectError: ""
-    })
-  }
-
   render() {
-    const { isReadOnly, sectionId, teacherId } = this.props;
+    const { sectionId, teacherId } = this.props;
     return (
       <Fragment>
-        { isReadOnly ?
+        { this.props.isReadOnly ?
           <IconButton
             color="primary"
             aria-label="View"
@@ -530,6 +552,7 @@ class F31FormPopupComponent extends Component {
               name="teacherId" 
               defaultValue={teacherId}
             />
+            <span style={{ float: "right"}}>
             <DatePicker
               autoOk
               name="effectiveDate"
@@ -537,22 +560,40 @@ class F31FormPopupComponent extends Component {
               label="Effective Date"
               invalidDateMessage=""
               disablePast
-              minDate={this.getTomorrowDate()}
+              minDate={Date.parse(this.getTomorrowDate())}
               placeholder=""
               variant="inline"
               inputVariant="outlined"
               format="dd-MM-yyyy"
               fullWidth
               required
-              style={{ float: "right", width: 115 }}
+              style={{width:115}}
               value={this.state.preDate}
               onChange={this.handleChangePreDate}
               error={!!this.state.preDateError}
               helperText={
                 this.state.preDateError ? this.state.preDateError : " "
               }
-              disabled={isReadOnly}
+              disabled={this.state.isReadOnly}
             />
+            {this.props.isReadOnly ? 
+            <Fragment>
+              <br/>
+              <Button 
+                variant="contained" 
+                color="primary" 
+                size="small"
+                style={{width: 115, marginTop:-40}}
+                onClick={()=>this.handleChangeIsCopyMode()}
+                disabled={this.state.isCopyMode}
+              >
+                Copy
+              </Button>
+            </Fragment>
+            :
+            ""
+            }
+            </span>
           </DialogTitle>
           <DialogContent>
             <Grid
@@ -565,7 +606,7 @@ class F31FormPopupComponent extends Component {
               }}
             >
 
-              {isReadOnly ?
+              {this.state.isReadOnly ?
               ""
               :
               <Fragment>
@@ -743,7 +784,7 @@ class F31FormPopupComponent extends Component {
                   </Typography>
                 </Grid>
 
-                {isReadOnly ?
+                {this.state.isReadOnly ?
                 ""
                 :
                 <Grid item xs={1} style={{ textAlign: "center" }}>
@@ -763,9 +804,7 @@ class F31FormPopupComponent extends Component {
                     rowIndex={i}
                     rowData={dt}
                     onDelete={(i) => this.handeDeleteCourseRow(i)}
-
-                    isReadOnly={isReadOnly}
-
+                    isReadOnly={this.state.isReadOnly}
                   />
                 ))
                 : this.state.isLoading && (
@@ -795,14 +834,14 @@ class F31FormPopupComponent extends Component {
             <Button autoFocus onClick={this.handleClose} color="secondary">
               Close
             </Button>
-            {isReadOnly ? 
+            {this.state.isReadOnly ? 
               ""
             :
               <Button
                 onClick={this.props.clickOnFormSubmit()}
                 color="primary"
                 autoFocus
-                disabled={isReadOnly}
+                disabled={this.state.isReadOnly}
               >
                 Save
               </Button>
