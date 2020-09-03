@@ -85,6 +85,7 @@ import SyncZoomMeetings from "./Contents/LMS/SyncZoomMeetings/SyncZoomMeetings";
 import CreateRoomForm from './Contents/Forms/CreateRoom/CreateRoomFrom';
 import CreateRoomReports from './Contents/Forms/CreateRoom/CreateRoomReports';
 import ClassSchedule from './Contents/LMS/ClassSchedule/ClassSchedule';
+// import HomePage from './Contents/LMS/HomePage/HomePage';
 
 const drawerWidth = 283;
 
@@ -178,7 +179,7 @@ const NoFound = () => {
 const Dashboard = (props) => {
   const classes = useStyles();
   const [viewValue, setViewValue] = useState(props.match.params.value || "");
-  const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const adminData = localStorage.getItem("adminData")
     ? JSON.parse(localStorage.getItem("adminData"))
@@ -275,7 +276,7 @@ const Dashboard = (props) => {
       </Drawer>
       <main
         className={clsx(classes.content, {
-          [classes.contentShift]: isDrawerOpen,
+          [classes.contentShift]: isDrawerOpen && viewValue != "home",
         })}
       >
         <div className={classes.toolbar} />
@@ -1001,9 +1002,9 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="class-schedule"
+                name="reschedule-classes"
                 exact
-                path="/dashboard/class-schedule"
+                path="/dashboard/reschedule-classes"
                 component={ClassSchedule}
               />
               <SetRoute

@@ -62,7 +62,7 @@ const styles = theme => ({
 
 const F33FormInitials = (props) => {
 
-  const {classes, data, isLoading} = props;
+  const { classes, data, isLoading } = props;
 
 
   return (
@@ -85,13 +85,13 @@ const F33FormInitials = (props) => {
           marginTop: '-30px'
         }}>
 
-            {data.length>0 ?
-              data.map((dt, i) => (
-                <Fragment key={i}>
-                  <ListItem 
-                    style={{ paddingTop:0 }} 
-                    alignItems="flex-start"
-                  >
+          {data.length > 0 ?
+            data.map((dt, i) => (
+              <Fragment key={i}>
+                <ListItem
+                  style={{ paddingTop: 0 }}
+                  alignItems="flex-start"
+                >
 
                   <ListItemAvatar>
                     <Avatar
@@ -131,21 +131,21 @@ const F33FormInitials = (props) => {
                     </Button>
                   </ListItemSecondaryAction>
 
-                  </ListItem>
-                </Fragment>
-              ))
-              :
-              isLoading &&
-              <Grid container justify="center">
-                <CircularProgress />
-              </Grid>
-            }
+                </ListItem>
+              </Fragment>
+            ))
+            :
+            isLoading &&
+            <Grid container justify="center">
+              <CircularProgress />
+            </Grid>
+          }
 
           {/* 
           <ListItem style={{ paddingTop: 0 }} alignItems="flex-start">
             <ListItemAvatar>
               <Avatar
-                alt="Remy Sharp"
+                alt="img"
                 src={ProfilePlaceHolder}
                 className={classes.smallAvatar}
               />
@@ -181,7 +181,7 @@ const F33FormInitials = (props) => {
           <ListItem style={{ paddingTop: 0 }} alignItems="flex-start">
             <ListItemAvatar>
               <Avatar
-                alt="Remy Sharp"
+                alt="img"
                 src={ProfilePlaceHolder}
                 className={classes.smallAvatar}
               />

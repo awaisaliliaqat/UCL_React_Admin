@@ -176,7 +176,7 @@ class F31Form extends Component {
 
   getRoomsData = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C51CommonAcademicsScheduleClassRoomsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsScheduleClassRoomsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
