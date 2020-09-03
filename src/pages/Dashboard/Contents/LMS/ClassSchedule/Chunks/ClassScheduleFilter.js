@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import { Button } from '@material-ui/core';
+import { Button, TextField, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { DatePicker } from "@material-ui/pickers";
 
@@ -50,7 +50,7 @@ const useStyles = makeStyles(() => ({
 
 const ClassScheduleFilter = props => {
     const classes = useStyles();
-    const { values, handleDateChange, getDataByStatus, onClearFilters, isLoading } = props;
+    const { values, handleDateChange, getDataByStatus, onClearFilters, isLoading, onHandleChange } = props;
 
 
     return (
@@ -59,50 +59,48 @@ const ClassScheduleFilter = props => {
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>
-                    <span className={classes.label}>From Date</span>
+                    <span className={classes.label}>Class Date</span>
                     <DatePicker
                         autoOk
                         invalidDateMessage=""
                         placeholder="Date"
-                        disableFuture
                         variant="inline"
                         inputVariant="outlined"
                         format="dd-MMM-yyyy"
+                        minDate={new Date().setDate(new Date().getDate() + 1)}
                         fullWidth
-                        value={values.fromDate}
+                        value={values.classDate}
                         InputProps={{
-
                             classes: { input: classes.resize }
                         }}
                         onChange={(date) => {
-                            handleDateChange(date, "fromDate");
+                            handleDateChange(date, "classDate");
                         }}
 
                     />
                 </div>
+
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>
-                    <span className={classes.label}>To Date</span>
-                    <DatePicker
-                        autoOk
-                        invalidDateMessage=""
-                        placeholder="Date"
-                        disableFuture
-                        variant="inline"
-                        inputVariant="outlined"
-                        format="dd-MMM-yyyy"
-                        fullWidth
-                        value={values.toDate}
-                        InputProps={{
-
-                            classes: { input: classes.resize }
+                    <span className={classes.label}>Course</span>
+                    <TextField
+                        placeholder="Course Id"
+                        variant="outlined"
+                        select
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.courseId}
+                        name="courseId"
+                        onChange={e => {
+                            onHandleChange(e)
                         }}
-                        onChange={(date) => {
-                            handleDateChange(date, "toDate");
-                        }}
-
-                    />
+                    >
+                        {values.coursesData.map((item) => (
+                            <MenuItem key={item.ID} value={item.ID}>
+                                {item.Label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
                 </div>
 
                 <div className={classes.actions}>
@@ -110,8 +108,8 @@ const ClassScheduleFilter = props => {
                         variant="contained"
                         color="primary"
                         className={classes.button}
-                        disabled={isLoading || !values.teacherId}
-                        onClick={() => getDataByStatus(values.teacherId)}
+                        disabled={isLoading}
+                        onClick={() => getDataByStatus()}
                     > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
                     <Button
                         variant="contained"

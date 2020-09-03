@@ -110,7 +110,10 @@ class F24Reports extends Component {
                             json.DATA[i].programmeCourseIdPrereq = prerequisiteArray.map((data, index) =>
                                 <Fragment key={"pcpr"+index}>{data}<br/></Fragment>
                             );
-                            
+                            let optionalPrerequisiteArray = json.DATA[i].programmeCourseIdOptionalPrereq;
+                            json.DATA[i].programmeCourseIdOptionalPrereq = optionalPrerequisiteArray.map((data, index) =>
+                                <Fragment key={"pcpr"+index}>{data}<br/></Fragment>
+                            );
                             let excludedArray = json.DATA[i].programmeCourseIdExclusions;
                             json.DATA[i].programmeCourseIdExclusions = excludedArray.map((data, index) =>
                                 <Fragment key={"pcpr"+index}>{data}<br/></Fragment>
@@ -213,9 +216,10 @@ class F24Reports extends Component {
         const columns = [
             { name: "SRNo", title: "SR#"},
             { name: "programmeGroupLabel", title: "Programme\xa0Group"},
-            { name: "programmeCourseLabel", title: "Programme\xa0Course"},
-            { name: "programmeCourseIdPrereq", title: "Prerequisite\xa0Courses"},
-            { name: "programmeCourseIdExclusions", title: "Excluded\xa0Courses"},
+            { name: "programmeCourseLabel", title: "Programme Course"},
+            { name: "programmeCourseIdPrereq", title: "Prerequisite Courses"},
+            { name: "programmeCourseIdOptionalPrereq", title: "Optional Prerequisite Courses"},
+            { name: "programmeCourseIdExclusions", title: "Excluded Courses"},
             { name: "action", title:"Action"}
         ]
 
