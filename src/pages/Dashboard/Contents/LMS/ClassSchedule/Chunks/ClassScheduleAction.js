@@ -7,12 +7,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import {
-    Divider, TextField
+    Divider, TextField, Grid, MenuItem
 } from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
-import { DatePicker, TimePicker } from "@material-ui/pickers";
+import { DatePicker } from "@material-ui/pickers";
 
 const useStyles = makeStyles(() => ({
     resize: {
@@ -20,10 +20,20 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+function isEmpty(obj) {
+    if (obj == null) return true;
+    if (obj.length > 0) return false;
+    if (obj.length === 0) return true;
+    if (typeof obj !== "object") return true;
+    for (var key in obj) {
+        if (hasOwnProperty.call(obj, key)) return false;
+    }
+    return true;
+}
+
 const ClassScheduleAction = props => {
-    const { values, handleClose, open, onSaveClick } = props;
+    const { values, handleClose, open, onSaveClick, handleDateChange, onHandleChange, onAutoCompleteChange } = props;
     const classes = useStyles();
-    const { selectedData = {}, sendLoading, uploadLoading, saveLoading } = values;
 
     return (
         <div>
@@ -34,59 +44,113 @@ const ClassScheduleAction = props => {
                         fontSize: 16,
                         color: '#1558a2',
                         fontWeight: 700
-                    }}>Class Re-Schedule</span>
+                    }}>Class Reschedule</span>
                     <Divider />
                 </DialogTitle>
                 <DialogContent style={{
-                    width: 500,
+                    width: 800,
+                    marginBottom: 10
                 }}>
-                    <div style={{
-                        display: 'flex',
-                        marginBottom: 10
-                    }}>
-                        <Autocomplete
-                            id="rooms"
-                            getOptionLabel={(option) => option.Label}
-                            fullWidth
-                            value={{}}
-                            options={[]}
-                            renderInput={(params) => <TextField InputProps={{ classes: { input: classes.resize } }} error={''} label="Room" variant="outlined" {...params}
-                            />}
-                        />
-                    </div>
-                    <div style={{
-                        display: 'flex',
-                        marginBottom: 10
-                    }}>
-                        <DatePicker
-                            autoOk
-                            invalidDateMessage=""
-                            disableFuture
-                            variant="inline"
-                            inputVariant="outlined"
-                            format="dd-MMM-yyyy"
-                            fullWidth
-                            value={null}
-                            label="Date"
-                            style={{
-                                marginRight: 5
-                            }}
-                        />
-                        <TimePicker fullWidth variant="inline" inputVariant="outlined" autoOk label="Time" value={null} />
-                    </div>
+                    <Grid
+                        container
+                        direction="row"
+                        alignItems="center"
+                        spacing={2}
+                    >
+                        <Grid item xs={12} md={4}>
+                            <DatePicker
+                                autoOk
+                                invalidDateMessage=""
+                                variant="inline"
+                                inputVariant="outlined"
+                                format="dd-MM-yyyy"
+                                fullWidth
+                                name="scheduleDate"
+                                minDate={new Date().setDate(new Date().getDate() + 1)}
+                                value={values.scheduleDate}
+                                error={values.scheduleDateError}
+                                onChange={(date) => handleDateChange(date, "scheduleDate")}
+                                label="Date"
+                                style={{
+                                    marginRight: 5
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <TextField
+                                id="scheduleTime"
+                                name="scheduleTime"
+                                variant="outlined"
+                                label="Time Slot"
+                                onChange={onHandleChange}
+                                value={values.scheduleTime}
+                                error={values.scheduleTimeError}
+                                required
+                                fullWidth
+                                select
+                            >
+                                {values.scheduleTimeData.map((dt, i) => {
+                                    return (
+                                        <MenuItem
+                                            key={i}
+                                            value={dt}
+                                        >
+                                            {dt}
+                                        </MenuItem>
+                                    )
+                                })
+                                }
+                            </TextField>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <TextField
+                                id="scheduleDuration"
+                                name="scheduleDuration"
+                                label={"Duration (Minutes)"}
+                                type="number"
+                                onChange={onHandleChange}
+                                value={values.scheduleDuration}
+                                error={values.scheduleDurationError}
+                                required
+                                fullWidth
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Autocomplete
+                                id="scheduleRoom"
+                                name="scheduleRoom"
+                                getOptionLabel={(option) => option.Label}
+                                fullWidth
+                                onChange={(e, value) => onAutoCompleteChange(e, value, "scheduleRoom")}
+                                value={values.scheduleRoomObject}
+                                options={values.classRoomsData}
+                                renderInput={(params) => <TextField InputProps={{ classes: { input: classes.resize } }} error={values.scheduleRoomObjectError} label="Room" variant="outlined" {...params}
+                                />}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <TextField
+                                id="capacity"
+                                variant="outlined"
+                                fullWidth
+                                label="Student Capacity"
+                                value={isEmpty(values.scheduleRoomObject) ? "" : values.scheduleRoomObject.studentCapacity}
+                                readOnly
+                            />
+                        </Grid>
+                    </Grid>
                 </DialogContent>
                 <Divider />
                 <DialogActions style={{ justifyContent: 'center', padding: 20 }}>
-                    {selectedData.statusId !== 6 &&
-                        <Button disabled={!values.accountId || saveLoading} variant="contained"
-                            onClick={(e) => onSaveClick(e, selectedData.id)}
-                            style={{
-                                width: 90
-                            }} color="primary">
-                            {saveLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Save"}
-                        </Button>
-                    }
-                    <Button disabled={uploadLoading || sendLoading} style={{
+                    <Button disabled={values.isLoading} variant="contained"
+                        onClick={() => onSaveClick()}
+                        style={{
+                            width: 90
+                        }} color="primary">
+                        {values.isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Save"}
+                    </Button>
+                    <Button disabled={values.isLoading} style={{
                         width: 90
                     }} variant="outlined" onClick={handleClose} color="primary">
                         Close
@@ -102,7 +166,9 @@ ClassScheduleAction.propTypes = {
     open: PropTypes.bool,
     values: PropTypes.object,
     onHandleChange: PropTypes.func,
-    onSaveClick: PropTypes.func
+    onSaveClick: PropTypes.func,
+    handleDateChange: PropTypes.func,
+    onAutoCompleteChange: PropTypes.func
 };
 
 ClassScheduleAction.defaultProps = {
@@ -110,7 +176,9 @@ ClassScheduleAction.defaultProps = {
     open: false,
     values: {},
     onSaveClick: fn => fn,
-    onHandleChange: fn => fn
+    onHandleChange: fn => fn,
+    handleDateChange: fn => fn,
+    onAutoCompleteChange: fn => fn
 };
 
 export default ClassScheduleAction;

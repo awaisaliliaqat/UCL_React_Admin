@@ -31,12 +31,13 @@ class ClassScheduleTableComponent extends Component {
                 "lessThanOrEqual",
             ],
             tableColumnExtensions: [
+                { columnName: 'id', width: 100 },
                 { columnName: 'sectionLabel', wordWrapEnabled: true },
                 { columnName: 'sectionTypeLabel', wordWrapEnabled: true },
-                { columnName: 'courseId', width: 130 },
-                { columnName: 'courseLabel', wordWrapEnabled: true },
-                { columnName: 'roomLabel', wordWrapEnabled: true },
-                { columnName: 'startTimestamp', wordWrapEnabled: true },
+                { columnName: 'courseId', width: 100 },
+                { columnName: 'courseLabel', wordWrapEnabled: true, width: 250 },
+                { columnName: 'classRoomLabel', wordWrapEnabled: true },
+                { columnName: 'scheduledOn', wordWrapEnabled: true },
                 { columnName: 'action', width: 150 },
             ],
 
