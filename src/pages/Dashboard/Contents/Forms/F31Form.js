@@ -357,7 +357,6 @@ class F31Form extends Component {
                     courseLabel={json.DATA[i].courseLabel}
                     sectionTypeLabel={json.DATA[i].sectionTypeLabel}
                     sectionLabel={json.DATA[i].sectionLabel}
-                    sectionLabel={json.DATA[i].label}
                     teacherName={json.DATA[i].teacherName}
                     teacherId={json.DATA[i].teacherId}
                     activeDate={json.DATA[i].activeDate}
@@ -375,7 +374,6 @@ class F31Form extends Component {
                     courseLabel={json.DATA[i].courseLabel}
                     sectionTypeLabel={json.DATA[i].sectionTypeLabel}
                     sectionLabel={json.DATA[i].sectionLabel}
-                    sectionLabel={json.DATA[i].label}
                     teacherName={json.DATA[i].teacherName}
                     teacherId={json.DATA[i].teacherId}
                     activeDate={json.DATA[i].activeDate}
