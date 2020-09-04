@@ -17,9 +17,9 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import DiscussionIcon from "../../../../../../assets/Images/workfellows.png";
-import CommunityIcon from '../../../../../../assets/Images/community.png';
-import GradedMarksIcon from '../../../../../../assets/Images/grade_book_quiz.png';
-import GDBSummaryIcon from '../../../../../../assets/Images/workflows.png';
+// import CommunityIcon from '../../../../../../assets/Images/community.png';
+// import GradedMarksIcon from '../../../../../../assets/Images/grade_book_quiz.png';
+// import GDBSummaryIcon from '../../../../../../assets/Images/workflows.png';
 
 const styles = theme => ({
   margin: {
@@ -69,7 +69,7 @@ const GradedDiscussion = (props) => {
             <ListItemAvatar>
               <Avatar
                 alt="img"
-                src={CommunityIcon}
+                src={DiscussionIcon}
                 className={classes.smallAvatar}
               />
             </ListItemAvatar>
@@ -90,7 +90,7 @@ const GradedDiscussion = (props) => {
 
                     style={{ paddingLeft: "2px" }}
                   >
-                    Manage graded discussion board
+                    Set gdb to sections
                   </Typography>
                 </React.Fragment>
               }
@@ -102,7 +102,7 @@ const GradedDiscussion = (props) => {
             <ListItemAvatar>
               <Avatar
                 alt="img"
-                src={GradedMarksIcon}
+                src={DiscussionIcon}
                 className={classes.smallAvatar}
               />
             </ListItemAvatar>
@@ -123,7 +123,7 @@ const GradedDiscussion = (props) => {
 
                     style={{ paddingLeft: "2px" }}
                   >
-                    Manage grades
+                    Grade student&apos;s gdb
                   </Typography>
                 </React.Fragment>
               }
@@ -135,7 +135,7 @@ const GradedDiscussion = (props) => {
             <ListItemAvatar>
               <Avatar
                 alt="img"
-                src={GDBSummaryIcon}
+                src={DiscussionIcon}
                 className={classes.smallAvatar}
               />
             </ListItemAvatar>
@@ -156,7 +156,7 @@ const GradedDiscussion = (props) => {
 
                     style={{ paddingLeft: "2px" }}
                   >
-                    Graded Discussion Board Summary
+                    View gdb summary
                   </Typography>
                 </React.Fragment>
               }

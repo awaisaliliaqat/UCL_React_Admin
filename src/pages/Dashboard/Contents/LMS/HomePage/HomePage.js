@@ -27,7 +27,7 @@ class HomePage extends Component {
             classesData: [],
             assignmentsData: [],
             gradedDiscussionData: [],
-            coursesData: [],
+            sectionsData: [],
             attendancesData: [],
             isLoading: false,
             isLoginMenu: false,
@@ -40,10 +40,10 @@ class HomePage extends Component {
 
     componentDidMount() {
         this.getClassesData();
+        this.getSectionsData();
         // this.getAssignmentsData();
-        // this.getCoursesData();
         // this.getGradedDiscussionData();
-        // this.getAttendancesData();
+        this.getAttendancesData();
     }
 
     handleOpenSnackbar = (msg, severity) => {
@@ -191,11 +191,11 @@ class HomePage extends Component {
 
     getAttendancesData = async () => {
         this.setState({ isLoading: true });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C108CommonAcademicsAttendanceStudentsLogView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C00CommonAcademicsAttendanceTeachersLogView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("lmsToken"),
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
             }),
         })
             .then((res) => {
@@ -272,13 +272,13 @@ class HomePage extends Component {
         this.setState({ isLoading: false });
     }
 
-    getCoursesData = async () => {
+    getSectionsData = async () => {
         this.setState({ isLoading: true });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C103CommonAcademicsCoursesStudentsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C00CommonAcademicsSectionsTeachersView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("lmsToken"),
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
             }),
         })
             .then((res) => {
@@ -290,14 +290,13 @@ class HomePage extends Component {
             .then(
                 (json) => {
                     if (json.CODE === 1) {
-                        this.setState({ coursesData: json.DATA || [] });
+                        this.setState({ sectionsData: json.DATA || [] });
                     } else {
                         this.handleOpenSnackbar(
                             json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
                             "error"
                         );
                     }
-                    console.log("TimeTableDataArray", json);
                 },
                 (error) => {
                     if (error.status === 401) {
@@ -403,7 +402,7 @@ class HomePage extends Component {
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={3} container>
                             <Grid item xs={12} sm={12}>
-                                <Profile coursesData={this.state.coursesData} />
+                                <Profile sectionsData={this.state.sectionsData} />
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={9} container spacing={2}>

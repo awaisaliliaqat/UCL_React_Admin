@@ -84,13 +84,8 @@ const NavBar = props => {
     }
 
     const homepage = () => {
-        let userTypeId = window.localStorage.getItem("userTypeId");
-        if (userTypeId == 3) {
-            window.location.replace("#/dashboard/F33Form/0");
-        } else {
-            window.location.replace("#/dashboard");
-        }
-        window.location.reload();
+        window.location.replace("#/dashboard");
+
     }
 
     const handleMenuClose = () => {
