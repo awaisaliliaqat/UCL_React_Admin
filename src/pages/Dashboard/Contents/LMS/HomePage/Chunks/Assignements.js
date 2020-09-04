@@ -90,7 +90,7 @@ const Assignements = (props) => {
 
                     style={{ paddingLeft: "2px" }}
                   >
-                    Manage assignments
+                    Set assignments to sections
                   </Typography>
                 </React.Fragment>
               }
@@ -123,7 +123,7 @@ const Assignements = (props) => {
 
                     style={{ paddingLeft: "2px" }}
                   >
-                    Manage grades
+                    Grade student&apos;s assignments
                   </Typography>
                 </React.Fragment>
               }
@@ -156,7 +156,7 @@ const Assignements = (props) => {
 
                     style={{ paddingLeft: "2px" }}
                   >
-                    Assignments Summary
+                    View assignment summary
                   </Typography>
                 </React.Fragment>
               }
