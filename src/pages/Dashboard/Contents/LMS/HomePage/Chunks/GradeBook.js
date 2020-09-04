@@ -98,7 +98,7 @@ function WorkflowsApproval(props) {
           </ListItem>
           <ListItem style={{
             cursor: "pointer"
-          }} onClick={() => window.location.replace('#/dashboard/F107Form/0')} alignItems="flex-start">
+          }} onClick={() => window.open('#/dashboard/R41Reports')} alignItems="flex-start">
             <ListItemAvatar>
               <Avatar
                 alt="img"

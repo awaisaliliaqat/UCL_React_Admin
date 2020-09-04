@@ -78,7 +78,7 @@ const Profile = (props) => {
         <Divider variant="fullWidth" />
 
         <List style={{ marginLeft: "-5px" }}>
-          {props.coursesData.map((item, index) => {
+          {props.sectionsData.map((item, index) => {
             if (index < 8) {
               return (
                 <ListItem key={index} style={{ marginBottom: '-5px' }} alignItems="flex-start">
@@ -93,13 +93,13 @@ const Profile = (props) => {
                         component="legend"
                         color="textPrimary"
                       >
-                        {item.courseLabel || "heloworld my course"}
+                        {item.label}
                       </Typography>
                     }
                     secondary={
                       <React.Fragment>
                         <Typography variant="caption" color="textSecondary">
-                          {`Course Code: ${item.courseCode}`}
+                          {`${item.courseLabel}`}
                         </Typography>
                       </React.Fragment>
                     }
@@ -126,11 +126,11 @@ const Profile = (props) => {
 
 Profile.propTypes = {
   classes: PropTypes.object.isRequired,
-  coursesData: PropTypes.array
+  sectionsData: PropTypes.array
 }
 
 Profile.defaultProps = {
-  coursesData: []
+  sectionsData: []
 }
 
 export default withStyles(styles)(Profile);
