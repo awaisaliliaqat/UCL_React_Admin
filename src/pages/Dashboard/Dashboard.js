@@ -79,9 +79,11 @@ import R46Reports from "./Contents/Forms/R46Reports";
 import R47Reports from "./Contents/Forms/R47Reports";
 import R49Reports from "./Contents/Forms/R49Reports";
 import R54Reports from "./Contents/Forms/R54Reports";
+import F56Form from './Contents/Forms/F56Form';
 import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
 import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
 import SyncTimeTable from './Contents/LMS/SyncTimeTable/SyncTimeTable';
+import SyncTimeTableToday from './Contents/LMS/SyncTimeTable/SyncTimeTableToday';
 import SyncZoomMeetings from "./Contents/LMS/SyncZoomMeetings/SyncZoomMeetings";
 import CreateRoomForm from './Contents/Forms/CreateRoom/CreateRoomFrom';
 import CreateRoomReports from './Contents/Forms/CreateRoom/CreateRoomReports';
@@ -793,6 +795,21 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="F56Form"
+                exact
+                path="/dashboard/F56Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F56Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"
                 exact
                 path="/dashboard/assign-account-id"
@@ -973,6 +990,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/sync-time-table"
                 component={SyncTimeTable}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="sync-time-table-today"
+                exact
+                path="/dashboard/sync-time-table-today"
+                component={SyncTimeTableToday}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

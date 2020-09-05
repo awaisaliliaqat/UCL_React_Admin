@@ -2,11 +2,10 @@ import React, { Component, Fragment, useState } from "react";
 import PropTypes from 'prop-types';
 import { withStyles } from "@material-ui/styles";
 import Autocomplete from '@material-ui/lab/Autocomplete';
-
 import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
   Button, IconButton, Tooltip, Fab, Dialog, DialogActions, DialogContent,
-  DialogTitle} from "@material-ui/core";
-
+  DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, 
+  TableRow, Paper} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -14,75 +13,64 @@ import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import { DatePicker } from "@material-ui/pickers";
 import { lastDayOfQuarterWithOptions } from "date-fns/fp";
 
-const styles = () => ({ });
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: "rgb(29, 95, 152)", //theme.palette.common.black,
+    color: theme.palette.common.white,
+    fontWeight: 500,
+    border: '1px solid white'
+  },
+  body: {
+    fontSize: 14,
+    border: '1px solid rgb(29, 95, 152)'
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
+
+const styles = ({
+  table: {
+    minWidth: 750,
+  },
+});
 
 const CourseRow = (props) => {
 
   const { rowIndex, rowData, onDelete, isReadOnly } = props;
 
   return (
-    <Fragment>
-      <Grid item xs={12}></Grid>
-      <Grid
-        container
-        direction="row"
-        justify="space-evenly"
-        alignItems="center"
-      >
-        <Grid item xs={1} md={1}>
-          <Typography
-            color="primary"
-            variant="subtitle1"
-            component="div"
-            style={{ float: "left" }}
-          >
-            {rowIndex + 1}:
-        </Typography>
-        </Grid>
-        <Grid item xs={2} md={2}>
-          {rowData.preDay}
-          <TextField
-            type="hidden"
-            id="dayId"
-            name="dayId"
-            value={rowData.preDayId}
-          />
-        </Grid>
-        <Grid item xs={2} md={2}>
-          {rowData.preTimeStart}
-          <TextField
-            type="hidden"
-            id="startTime"
-            name="startTime"
-            value={rowData.preTimeStart}
-          />
-        </Grid>
-        <Grid item xs={2} md={2}>
-          {rowData.preTimeDuration}
-          <TextField
-            type="hidden"
-            id="duration"
-            name="duration"
-            value={rowData.preTimeDuration}
-          />
-        </Grid>
-        <Grid item xs={2} md={2}>
-          {rowData.roomsObject.Label || ""}
-          <TextField
-            type="hidden"
-            id="roomDBId"
-            name="roomDBId"
-            value={rowData.roomsObject.ID || ""}
-          />
-        </Grid>
-
+      <StyledTableRow key={rowIndex}>
+        <StyledTableCell component="th" scope="row">
+          {rowIndex+1}
+        </StyledTableCell>
+        <StyledTableCell align="center">
+            {rowData.preDay}
+            <TextField type="hidden" id="dayId" name="dayId" value={rowData.preDayId}/>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+            {rowData.preTimeStart}
+            <TextField type="hidden" id="startTime" name="startTime" value={rowData.preTimeStart}/>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+            {rowData.preTimeDuration}
+            <TextField type="hidden" id="duration" name="duration" value={rowData.preTimeDuration}/>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+            {rowData.roomsObject.Label || ""}
+            <TextField type="hidden" id="roomDBId"  name="roomDBId" value={rowData.roomsObject.ID || ""}/>
+        </StyledTableCell>
         {isReadOnly ? 
         ""
         :
-        <Grid item xs={1} style={{ textAlign: "center" }}>
-            <Tooltip title="Delete">
+        <StyledTableCell align="center">
+          <Tooltip title="Delete">
             <span>
-
               <Fab
                 color="secondary"
                 aria-label="Delete"
@@ -96,12 +84,11 @@ const CourseRow = (props) => {
               >
                 <DeleteIcon fontSize="small" />
               </Fab>
-              </span>
-            </Tooltip>
-        </Grid>
+            </span>
+          </Tooltip>
+        </StyledTableCell>
         }
-      </Grid>
-    </Fragment>
+    </StyledTableRow>
   );
 }
 
@@ -473,7 +460,7 @@ class F31FormPopupComponent extends Component {
   }
 
   render() {
-    const { sectionId, teacherId } = this.props;
+    const { sectionId, teacherId, classes } = this.props;
     return (
       <Fragment>
         { this.props.isReadOnly ?
@@ -595,6 +582,12 @@ class F31FormPopupComponent extends Component {
             }
             </span>
           </DialogTitle>
+          <Divider
+            style={{
+              backgroundColor: "rgb(58, 127, 187)",
+              opacity: "0.3",
+            }}
+          />
           <DialogContent>
             <Grid
               container
@@ -605,20 +598,16 @@ class F31FormPopupComponent extends Component {
                 marginTop: -10,
               }}
             >
-
               {this.state.isReadOnly ?
               ""
               :
               <Fragment>
-
               <Grid item xs={12} md={4}>
                 <TextField
                   type="hidden"
                   id="sectionId"
                   name="sectionId"
-
                   value={sectionId}
-
                 />
                 <TextField
                   id="preDayId"
@@ -740,10 +729,6 @@ class F31FormPopupComponent extends Component {
                   </Tooltip>
                 </IconButton>
               </Grid>
-
-              </Fragment>
-              }
-
               <Grid item xs={12}>
                 <Divider
                   style={{
@@ -752,76 +737,43 @@ class F31FormPopupComponent extends Component {
                   }}
                 />
               </Grid>
-              <Grid
-                container
-                direction="row"
-                justify="space-evenly"
-                alignItems="center"
-              >
-                <Grid item xs={1} md={1}>
-                  <Typography color="primary">
-                    SR#
-                    </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography color="primary">
-                    Day
-                    </Typography>
-                </Grid>
-                <Grid item xs={2} md={2}>
-                  <Typography color="primary">
-                    Start Time
-                    </Typography>
-                </Grid>
-                <Grid item xs={2} md={2}>
-                  <Typography color="primary">
-                    Duration <small>(Minutes)</small>
-                  </Typography>
-                </Grid>
-                <Grid item xs={2} md={2}>
-                  <Typography color="primary">
-                    Room
-                  </Typography>
-                </Grid>
-
-                {this.state.isReadOnly ?
-                ""
-                :
-                <Grid item xs={1} style={{ textAlign: "center" }}>
-
-                  <Typography color="primary">
-                    Action
-                    </Typography>
-                </Grid>
-
+              </Fragment>
+              }
+              <TableContainer component={Paper}>
+              <Table className={classes.table} size="small" aria-label="customized table">
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>SR#</StyledTableCell>
+                    <StyledTableCell align="center">Day</StyledTableCell>
+                    <StyledTableCell align="center">Start Time</StyledTableCell>
+                    <StyledTableCell align="center">Duration <small>(Minutes)</small></StyledTableCell>
+                    <StyledTableCell align="center">Room</StyledTableCell>
+                    {this.state.isReadOnly ?  ""  :  <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Action</StyledTableCell> }
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                {this.state.rowDataArray.length > 0
+                  ? this.state.rowDataArray.map((dt, i) => (
+                    <CourseRow
+                      key={"RDO" + i}
+                      rowIndex={i}
+                      rowData={dt}
+                      onDelete={(i) => this.handeDeleteCourseRow(i)}
+                      isReadOnly={this.state.isReadOnly}
+                    />
+                  ))
+                  : this.state.isLoading ?
+                  <StyledTableRow key={1}>
+                    <StyledTableCell component="th" scope="row" colSpan={6}><center><CircularProgress/></center></StyledTableCell>
+                  </StyledTableRow>
+                  :
+                  <StyledTableRow key={1}>
+                    <StyledTableCell component="th" scope="row" colSpan={6}><center><b>No Data</b></center></StyledTableCell>
+                  </StyledTableRow>
                 }
-
-              </Grid>
-              {this.state.rowDataArray.length > 0
-                ? this.state.rowDataArray.map((dt, i) => (
-                  <CourseRow
-                    key={"RDO" + i}
-                    rowIndex={i}
-                    rowData={dt}
-                    onDelete={(i) => this.handeDeleteCourseRow(i)}
-                    isReadOnly={this.state.isReadOnly}
-                  />
-                ))
-                : this.state.isLoading && (
-                  <Grid
-                    container
-                    justify="center"
-                    alignItems="center"
-                    style={{ paddingTop: "2em" }}
-                  >
-                    <CircularProgress />
-                  </Grid>
-                )}
-              <br />
-              <br />
-
-              <br />
-
+                </TableBody>
+              </Table>
+            </TableContainer>
             </Grid>
           </DialogContent>
           <Divider
