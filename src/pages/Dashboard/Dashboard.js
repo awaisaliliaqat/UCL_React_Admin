@@ -83,6 +83,7 @@ import F56Form from './Contents/Forms/F56Form';
 import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
 import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
 import SyncTimeTable from './Contents/LMS/SyncTimeTable/SyncTimeTable';
+import SyncTimeTableToday from './Contents/LMS/SyncTimeTable/SyncTimeTableToday';
 import SyncZoomMeetings from "./Contents/LMS/SyncZoomMeetings/SyncZoomMeetings";
 import CreateRoomForm from './Contents/Forms/CreateRoom/CreateRoomFrom';
 import CreateRoomReports from './Contents/Forms/CreateRoom/CreateRoomReports';
@@ -989,6 +990,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/sync-time-table"
                 component={SyncTimeTable}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="sync-time-table-today"
+                exact
+                path="/dashboard/sync-time-table-today"
+                component={SyncTimeTableToday}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
