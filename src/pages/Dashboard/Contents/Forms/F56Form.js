@@ -47,6 +47,7 @@ class F56Form extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
+      roomsMenuItems: [],
       programGroupsMenuItems: [],
       programGroupId: "",
       programGroupIdError: "",
@@ -72,6 +73,47 @@ class F56Form extends Component {
   handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {  return; }
     this.setState({ isOpenSnackbar: false });
+  };
+
+  getRooms = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C56CommonAcademicsScheduleClassRoomsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({roomsMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getRooms", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
   };
 
   getprogramGroups = async () => {
@@ -203,11 +245,15 @@ class F56Form extends Component {
   };
 
   getData = async (sectionId, changeTypeId) => {
+    let subUrl = "/common/C56ChangeRoomOneTimeView";
+    if(changeTypeId===2){
+      subUrl = "/common/C56ChangeRoomPermanentlyView"
+    }
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("sectionId", sectionId);
     data.append("changeTypeId", changeTypeId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C56ChangeRoomView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}${subUrl}`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -244,6 +290,51 @@ class F56Form extends Component {
           }
         }
       );
+    this.setState({isLoading: false});
+  };
+
+  changeRoom = async (id, classRoomId, changeTypeId) => {
+    let data = new FormData();
+    data.append("id", id);
+    data.append("classRoomId", classRoomId);
+    data.append("changeTypeId", changeTypeId);
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C56CommonAcademicsChangeClassRoomsSave`;
+    await fetch(url, {
+      method: "POST",
+      body:data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("changeRoom", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            this.handleOpenSnackbar("Failed to save, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.getData(this.state.sectionId, this.state.changeTypeId);
     this.setState({isLoading: false});
   };
 
@@ -289,7 +380,7 @@ class F56Form extends Component {
             this.setState({
               roomsTableData:[]
             });
-            this.getData(this.state.courseId.id, value);
+            this.getData(this.state.sectionId, value);
         break;
     default:
         break;
@@ -314,6 +405,7 @@ class F56Form extends Component {
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
+    this.getRooms();
     this.getprogramGroups();
   }
 
@@ -483,28 +575,55 @@ class F56Form extends Component {
               <Table className={classes.table} aria-label="customized table">
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>&nbsp;</StyledTableCell>
-                    <StyledTableCell align="center">Monday</StyledTableCell>
-                    <StyledTableCell align="center">Tuesday</StyledTableCell>
-                    <StyledTableCell align="center">Wednesday</StyledTableCell>
-                    <StyledTableCell align="center">Thursday</StyledTableCell>
-                    <StyledTableCell align="center">Friday</StyledTableCell>
-                    <StyledTableCell align="center">Saturday</StyledTableCell>
-                    <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Sunday</StyledTableCell>
+                    <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Day</StyledTableCell>
+                    {this.state.changeTypeId === 1 &&
+                      <StyledTableCell align="center">Date</StyledTableCell>
+                    }
+                    <StyledTableCell align="center">Time</StyledTableCell>
+                    <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Room</StyledTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {this.state.roomsTableData.length > 0 ?
                     this.state.roomsTableData.map((row, index) => (
-                      <StyledTableRow key={row+index}>
-                        <StyledTableCell component="th" scope="row">{row.time.split("-").map((dt, i)=><Fragment key={"time"+dt+i}>{i != 0 ? <Fragment><br/></Fragment> : ""}<span style={{whiteSpace:"nowrap"}}>{dt}</span></Fragment>)}</StyledTableCell>
-                        <StyledTableCell align="center">{row.Monday.split(",").map((dt, i)=><Fragment key={"Monday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
-                        <StyledTableCell align="center">{row.Tuesday.split(",").map((dt, i)=><Fragment key={"Tuesday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
-                        <StyledTableCell align="center">{row.Wednesday.split(",").map((dt, i)=><Fragment key={"Wednesday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
-                        <StyledTableCell align="center">{row.Thursday.split(",").map((dt, i)=><Fragment key={"Thursday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
-                        <StyledTableCell align="center">{row.Friday.split(",").map((dt, i)=><Fragment key={"Friday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
-                        <StyledTableCell align="center">{row.Saturday.split(",").map((dt, i)=><Fragment key={"Saturday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
-                        <StyledTableCell align="center">{row.Sunday.split(",").map((dt, i)=><Fragment key={"Sunday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
+                      <StyledTableRow key={row.id+index}>
+                        <StyledTableCell component="th" scope="row" align="center">{row.dayLabel}</StyledTableCell>
+                        {this.state.changeTypeId === 1 &&
+                          <StyledTableCell align="center">{row.date}</StyledTableCell>
+                        }
+                        <StyledTableCell align="center">{row.startTime}</StyledTableCell>
+                        <StyledTableCell align="center">
+                          {/* {row.classRoomLabel} */}
+                          <TextField
+                            id="roomId"
+                            name="roomId"
+                            variant="outlined"
+                            label="Rooms"
+                            defaultValue={row.classRoomId}
+                            required
+                            fullWidth
+                            select
+                          >
+                            {this.state.roomsMenuItems && !this.state.isLoading ? 
+                              this.state.roomsMenuItems.map((dt, i) => (
+                                <MenuItem
+                                  key={"roomsMenuItems"+row.id+dt.ID}
+                                  value={dt.ID}
+                                  onClick={()=>this.changeRoom(row.id, dt.ID, this.state.changeTypeId)}
+                                >
+                                  {dt.Label}
+                                </MenuItem>
+                              ))
+                            :
+                              <Grid 
+                                container 
+                                justify="center"
+                              >
+                                  <CircularProgress />
+                              </Grid>
+                            }
+                          </TextField>
+                        </StyledTableCell>
                       </StyledTableRow>
                     ))
                     :
