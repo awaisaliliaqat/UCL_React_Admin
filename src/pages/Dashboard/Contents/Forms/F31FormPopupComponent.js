@@ -448,8 +448,11 @@ class F31FormPopupComponent extends Component {
   }
 
   handleUpcomingSchedule(dateId, dateLabel){
+    this.setState({
+      preDate:dateId,
+      rowDataArray: []
+    });
     this.loadData(this.props.sectionId, dateLabel);
-    this.setState({preDate:dateId});
   }
 
   componentDidMount() {
