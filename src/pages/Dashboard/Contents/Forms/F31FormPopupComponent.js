@@ -551,10 +551,10 @@ class F31FormPopupComponent extends Component {
                       id="upcomingSchedule"
                       name="upcomingSchedule"
                       variant="outlined"
-                      label="Date"
+                      label="Upcoming Schedule"
                       required
                       select
-                      style={{width:135}}
+                      style={{width:195}}
                       disabled={this.state.isCopyMode}
                     >
                       {this.props.effectiveDatesArray.length>0 ? (
