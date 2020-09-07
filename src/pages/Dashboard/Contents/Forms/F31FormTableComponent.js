@@ -28,6 +28,7 @@ class F31FormTableComponent extends Component {
         { name: "sectionLabel", title: "Section\xa0Title" },
         { name: "teacherName", title: "Teacher" },
         { name: "activeDate", title: "Effective Date" },
+        { name: "future", title: "Future" },
         { name: "action", title: "Action" },
       ],
       rows: [],
@@ -44,6 +45,7 @@ class F31FormTableComponent extends Component {
       pageSizes: [5, 10, 15, 20],
       defaultSorting: [],
       sortingStateColumnExtensions: [
+        { columnName: "future", sortingEnabled: false },
         { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
@@ -53,12 +55,14 @@ class F31FormTableComponent extends Component {
         { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "teacherName", wordWrapEnabled: true },
         { columnName: "activeDate", wordWrapEnabled: true },
+        { columnName: "future", width: 100, align: "center" },
         { columnName: "action", width: 150, align: "center" },
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
+        { columnName: "future", filteringEnabled: false },
         { columnName: "action", filteringEnabled: false },
       ],
       showFilter: true,

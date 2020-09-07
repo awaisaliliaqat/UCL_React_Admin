@@ -346,6 +346,7 @@ class F31Form extends Component {
             for (var i = 0; i < json.DATA.length; i++) {
               let teacherName = json.DATA[i].teacherName;
               let activeDate = json.DATA[i].activeDate;
+              let futureDate = json.DATA[i].futureEffectiveDate;
               json.DATA[i].action = (
                 teacherName ?
                 <Fragment>
@@ -415,6 +416,46 @@ class F31Form extends Component {
                 </Fragment>
 
               );
+
+              json.DATA[i].future = (
+                <Fragment>
+                  {futureDate && teacherName ?
+                    <F31FormPopupComponent
+                      sectionId={json.DATA[i].ID}
+                      preTimeStartMenuItems={this.state.preTimeStartMenuItems}
+                      preDaysMenuItems={this.state.preDaysMenuItems}
+                      clickOnFormSubmit={() => this.clickOnFormSubmit}
+                      courseLabel={json.DATA[i].courseLabel}
+                      sectionTypeLabel={json.DATA[i].sectionTypeLabel}
+                      sectionLabel={json.DATA[i].sectionLabel}
+                      teacherName={json.DATA[i].teacherName}
+                      teacherId={json.DATA[i].teacherId}
+                      activeDate={json.DATA[i].futureDate}
+                      activeDateInNumber={json.DATA[i].futureEffectiveDateInNumber}
+                      handleOpenSnackbar={this.handleOpenSnackbar}
+                      values={this.state}
+                      onAutoCompleteChange={this.onAutoCompleteChange}
+                      isReadOnly={true}
+                    />
+                  :
+                  <Fragment>
+                    <span>&emsp;</span>
+                    <Fab 
+                      size="small"
+                      disabled={true}
+                    >
+                      <VisibilityOutlinedIcon />
+                    </Fab>
+                    <span>&emsp;</span>
+                  </Fragment>
+                  }
+                </Fragment>
+              );
+
+
+
+
+
             }
             this.setState({ CourseListArray: json.DATA || [], });
           } else {
