@@ -248,6 +248,7 @@ class R46Reports extends Component {
   handleSetProgrammeGroup = (value) => {
     if (value) {
       this.getEffectiveDates(value.ID);
+      this.getData(value.ID, "01-01-1970");
     } else {
       this.setState({ timetableData: [] });
     }
