@@ -203,9 +203,11 @@ class R46Reports extends Component {
     this.setState({
       teacherId: value, 
       teacherIdError: "",
+      effectiveDate:"",
       timetableData:[]
     });
-    if(value) { 
+    if(value) {
+      this.getData(value.id, "01-01-1970");
       this.getEffectiveDates(value.id);
     }
   };
