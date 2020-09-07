@@ -50,6 +50,8 @@ class R46Reports extends Component {
       coursesMenuItems: [],
       courseId: "",
       courseIdError: "",
+      effectiveDateMenuItems: [],
+      effectiveDate:"",
       timetableData: [],
     };
   }
@@ -108,10 +110,55 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getData = async (courseId) => {
+  getEffectiveDates = async (courseId) => {
+    let data = new FormData();
+    data.append("courseId", courseId);
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C54CommonProgrammesCoursesTimeTableEffectiveDatesView`;
+    await fetch(url, {
+      method: "POST",
+      body:data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({effectiveDateMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getEffectiveDates", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  getData = async (courseId, effectiveDate) => {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("courseId", courseId);
+    data.append("effectiveDate", effectiveDate);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C54CommonCoursesSectionsTimeTableView`;
     await fetch(url, {
       method: "POST",
@@ -153,16 +200,16 @@ class R46Reports extends Component {
   };
 
   handleSetCourse = (value) => {
-    if(value) { 
-        this.getData(value.id); 
-    }
-    else { 
-      this.setState({timetableData:[]}); 
-    }
     this.setState({
       courseId: value, 
-      courseIdError: ""
+      courseIdError: "",
+      effectiveDate:"",
+      timetableData:[]
     });
+    if(value) { 
+      this.getEffectiveDates(value.id);
+      this.getData(value.id, "01-01-1970");
+    }    
   };
   
   onHandleChange = (e) => {
@@ -170,8 +217,9 @@ class R46Reports extends Component {
     const errName = `${name}Error`;
     let regex = "";
     switch (name) {
-        case "courseId":
-            this.getData(value);
+        case "effectiveDate":
+            this.setState({timetableData:[]});
+            this.getData(this.state.courseId.id, value);
         break;
     default:
         break;
@@ -296,6 +344,37 @@ class R46Reports extends Component {
                 }
               </TextField> 
               */}
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                id="effectiveDate"
+                name="effectiveDate"
+                variant="outlined"
+                label="Effective Date"
+                onChange={this.onHandleChange}
+                value={this.state.effectiveDate}
+                required
+                fullWidth
+                select
+                disabled={!this.state.courseId}
+              >
+                {this.state.effectiveDateMenuItems && !this.state.isLoading ? 
+                  this.state.effectiveDateMenuItems.map((dt, i) => (
+                    <MenuItem
+                      key={"effectiveDateMenuItems"+dt.id}
+                      value={dt.label}
+                    >
+                      {dt.label}
+                    </MenuItem>
+                  ))
+                :
+                  <Grid 
+                    container 
+                    justify="center">
+                      <CircularProgress />
+                    </Grid>
+                }
+              </TextField> 
             </Grid>
             <TableContainer component={Paper}>
               <Table className={classes.table} aria-label="customized table">
