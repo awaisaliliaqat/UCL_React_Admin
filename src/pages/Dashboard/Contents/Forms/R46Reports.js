@@ -199,17 +199,15 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  handleSetTeacher = (value) => {
+  handleSetTeacher = (value) => {    
+    this.setState({
+      teacherId: value, 
+      teacherIdError: "",
+      timetableData:[]
+    });
     if(value) { 
       this.getEffectiveDates(value.id);
     }
-    else { 
-      this.setState({timetableData:[]}); 
-    }
-    this.setState({
-      teacherId: value, 
-      teacherIdError: ""
-    });
   };
 
   onHandleChange = (e) => {
@@ -218,6 +216,7 @@ class R46Reports extends Component {
     let regex = "";
     switch (name) {
         case "effectiveDate":
+            this.setState({timetableData:[]});
             this.getData(this.state.teacherId.id, value);
         break;
     default:
