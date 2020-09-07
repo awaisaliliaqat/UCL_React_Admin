@@ -11,6 +11,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import AssignSectionToStudentFormTableComponent from './Chunks/AssignSectionToStudentFormTableComponent';
 import ScrollToTop from '../../../../../components/ScrollToTop/ScrollToTop';
+import ExcelIcon from "../../../../../assets/Images/excel.png";
 
 const styles = () => ({
     root: {
@@ -54,7 +55,8 @@ class AssignSectionToStudentForm extends Component {
 
             isOpenSnackbar: false,
             snackbarMessage: "",
-            snackbarSeverity: ""
+            snackbarSeverity: "",
+            isDownloadExcel:false
         }
     }
 
@@ -279,6 +281,57 @@ class AssignSectionToStudentForm extends Component {
                     }
                 });
         this.setState({ isLoading: false })
+    }
+
+    downloadExcelData = async () => {
+        if(
+            !this.state.sessionId || 
+            !this.state.programmeId || 
+            !this.state.offeredCoursesId || 
+            !this.state.assigneLectureSectionId
+        ) {
+            this.handleOpenSnackbar("Session, Programme Group, Offered Course and Assigne Lecture Section are mandatory fields.", "error");
+            return;
+        }
+        if (this.state.isDownloadExcel === false) {
+            this.setState({isDownloadExcel: true});
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C28CommonAssignSectionToStudentsExcelDownload?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&courseId=${this.state.offeredCoursesId}&sectionTypeId=${this.state.assigneLectureSectionId}`;
+            await fetch(url, {
+                method: "GET",
+                headers: new Headers({
+                    Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+                })
+            })
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.blob();
+                    }
+                    return false;
+                })
+                .then(
+                    json => {
+                        if (json) {
+                            var csvURL = window.URL.createObjectURL(json);
+                            var tempLink = document.createElement("a");
+                            tempLink.setAttribute("download", `Applications.xlsx`);
+                            tempLink.href = csvURL;
+                            tempLink.click();
+                            console.log(json);
+                        }
+                    },
+                    error => {
+                        if (error.status === 401) {
+                            this.setState({
+                                isLoginMenu: true,
+                                isReload: false
+                            })
+                        } else {
+                            alert('Failed to fetch, Please try again later.');
+                            console.log(error);
+                        }
+                    });
+            this.setState({isDownloadExcel:false});
+        }
     }
 
 
@@ -557,7 +610,18 @@ class AssignSectionToStudentForm extends Component {
                         variant="h5"
                     >
                         Assign Section to Students
-                        </Typography>
+                        <img 
+                            alt="" 
+                            src={ExcelIcon} 
+                            onClick={() => this.downloadExcelData()} 
+                            style={{
+                                float:"right",
+                                height: 30, 
+                                width: 32,
+                                cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
+                            }}
+                        />
+                    </Typography>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3'
