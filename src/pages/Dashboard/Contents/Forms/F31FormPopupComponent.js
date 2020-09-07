@@ -227,6 +227,7 @@ class F31FormPopupComponent extends Component {
   handleClickOpen = () => {
     if(this.props.isReadOnly && this.props.activeDate){
       this.loadData(this.props.sectionId, this.props.activeDate);
+      console.log("activeDate", this.props.activeDate)
      //this.loadData(this.props.sectionId, this.getDateInString(new Date(this.props.activeDateInNumber)) );
       this.setState({preDate:this.props.activeDateInNumber});
     }else{
@@ -460,7 +461,9 @@ class F31FormPopupComponent extends Component {
   }
 
   render() {
+
     const { sectionId, teacherId, classes } = this.props;
+
     return (
       <Fragment>
         { this.props.isReadOnly ?
@@ -748,7 +751,7 @@ class F31FormPopupComponent extends Component {
                     <StyledTableCell align="center">Start Time</StyledTableCell>
                     <StyledTableCell align="center">Duration <small>(Minutes)</small></StyledTableCell>
                     <StyledTableCell align="center">Room</StyledTableCell>
-                    {this.state.isReadOnly ?  ""  :  <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Action</StyledTableCell> }
+                    {this.state.isReadOnly?"":<StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Action</StyledTableCell>}
                   </TableRow>
                 </TableHead>
                 <TableBody>
