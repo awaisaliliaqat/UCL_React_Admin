@@ -287,15 +287,14 @@ class AssignSectionToStudentForm extends Component {
         if(
             !this.state.sessionId || 
             !this.state.programmeId || 
-            !this.state.offeredCoursesId || 
-            !this.state.assigneLectureSectionId
+            !this.state.offeredCoursesId 
         ) {
             this.handleOpenSnackbar("Session, Programme Group, Offered Course and Assigne Lecture Section are mandatory fields.", "error");
             return;
         }
         if (this.state.isDownloadExcel === false) {
             this.setState({isDownloadExcel: true});
-            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C28CommonAssignSectionToStudentsExcelDownload?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&courseId=${this.state.offeredCoursesId}&sectionTypeId=${this.state.assigneLectureSectionId}`;
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C28CommonAssignSectionToStudentsExcelDownload?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&courseId=${this.state.offeredCoursesId}`;
             await fetch(url, {
                 method: "GET",
                 headers: new Headers({
