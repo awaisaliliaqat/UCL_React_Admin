@@ -5,7 +5,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
   Button, IconButton, Tooltip, Fab, Dialog, DialogActions, DialogContent,
   DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, 
-  TableRow, Paper, FormControlLabel, Switch} from "@material-ui/core";
+  TableRow, Paper} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -199,7 +199,10 @@ class F31FormPopupComponent extends Component {
             }
             this.setState({ rowDataArray: rowDataArray });
           } else {
-            this.props.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,"error");
+            this.props.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
           }
           console.log("loadData", json);
         },
@@ -211,7 +214,10 @@ class F31FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.props.handleOpenSnackbar(
+              "Failed to Save ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -325,6 +331,7 @@ class F31FormPopupComponent extends Component {
     for (let i = 0; i < preDaysMenuItemsTemp.length; i++) {
       if (preDaysMenuItemsTemp[i].id == preDayId) {
         preDay = preDaysMenuItemsTemp[i].label;
+        console.log(preDaysMenuItemsTemp[i].label);
       }
     }
     let preTimeStart = this.state.preTimeStart;
@@ -386,17 +393,15 @@ class F31FormPopupComponent extends Component {
 
   handleChangePreDate = (date) => {
     this.setState({
-      preDate: date,
       preDayId: "",
       preDay: "",
       preTimeStart: "",
       preTimeDuration: "",
-      rowDataArray: this.state.isCopyMode ? this.state.rowDataArray : [],
+      rowDataArray: [],
+      preDate: date,
     });
     sessionStorage.setItem('sessionSelectedDate', date);
-    if(!this.state.isCopyMode){
-      this.loadData(this.props.sectionId, this.getDateInString(date));
-    }
+    this.loadData(this.props.sectionId, this.getDateInString(date));
   };
 
   isCourseSelected = (option) => {
@@ -430,29 +435,17 @@ class F31FormPopupComponent extends Component {
     })
   }
 
-  handleToggleIsCopyMode = () => {
+  handleChangeIsCopyMode = () => {
     let sessionSelectedDate = sessionStorage.getItem('sessionSelectedDate');
     let tomorrowDate = this.getTomorrowDate();
     if(sessionSelectedDate){
       tomorrowDate = new Date(sessionSelectedDate);
     }
     this.setState({
-      isCopyMode:!this.state.isCopyMode,
-      isReadOnly:!this.state.isReadOnly,
+      isCopyMode:true,
+      isReadOnly:false,
       preDate: tomorrowDate
     });
-    if(this.state.isCopyMode){
-      this.loadData(this.props.sectionId, this.props.activeDate);
-      this.setState({preDate:this.props.activeDateInNumber});
-    }
-  }
-
-  handleUpcomingSchedule(dateId, dateLabel){
-    this.setState({
-      preDate:dateId,
-      rowDataArray: []
-    });
-    this.loadData(this.props.sectionId, dateLabel);
   }
 
   componentDidMount() {
@@ -547,89 +540,46 @@ class F31FormPopupComponent extends Component {
               defaultValue={teacherId}
             />
             <span style={{ float: "right"}}>
-              <span style={{ display: "flex"}}>
-              {this.props.isReadOnly && 
-                  <Fragment>
-                    <TextField
-                      id="upcomingSchedule"
-                      name="upcomingSchedule"
-                      variant="outlined"
-                      label="Upcoming Schedule"
-                      required
-                      select
-                      style={{width:195}}
-                      disabled={this.state.isCopyMode}
-                    >
-                      {this.props.effectiveDatesArray.length>0 ? (
-                        this.props.effectiveDatesArray.map((dt) => (
-                          <MenuItem
-                            key={"effectiveDatesArray"+dt.id}
-                            value={dt.id}
-                            onClick={()=>this.handleUpcomingSchedule(dt.id,dt.label)}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <MenuItem>
-                          <CircularProgress />
-                        </MenuItem>
-                      )}
-                    </TextField>
-                    &nbsp;
-                  </Fragment>
-                }
-                <DatePicker
-                  autoOk
-                  name="effectiveDate"
-                  id="effectiveDate"
-                  label="Effective Date"
-                  invalidDateMessage=""
-                  disablePast
-                  minDate={Date.parse(this.getTomorrowDate())}
-                  placeholder=""
-                  variant="inline"
-                  inputVariant="outlined"
-                  format="dd-MM-yyyy"
-                  fullWidth
-                  required
-                  style={{width:115}}
-                  value={this.state.preDate}
-                  onChange={this.handleChangePreDate}
-                  error={!!this.state.preDateError}
-                  helperText={
-                    this.state.preDateError ? this.state.preDateError : " "
-                  }
-                  disabled={this.state.isReadOnly}
-                />
-              </span>
-              {this.props.isReadOnly ? 
-              <Fragment>
-                <FormControlLabel
-                  value="newSchedule"
-                  control={<Switch color="primary" />}
-                  label="New Schedule"
-                  labelPlacement="start"
-                  style={{float:"right",marginTop:-25}}
-                  onClick={()=>this.handleToggleIsCopyMode()}
-                />
-                {/* 
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  size="small"
-                  style={{width: 115, marginTop:-40}}
-                  onClick={()=>this.handleToggleIsCopyMode()}
-                  disabled={this.state.isCopyMode}
-                >
-                  Edit
-                </Button> 
-                */}
-
-              </Fragment>
-              :
-              ""
+            <DatePicker
+              autoOk
+              name="effectiveDate"
+              id="effectiveDate"
+              label="Effective Date"
+              invalidDateMessage=""
+              disablePast
+              minDate={Date.parse(this.getTomorrowDate())}
+              placeholder=""
+              variant="inline"
+              inputVariant="outlined"
+              format="dd-MM-yyyy"
+              fullWidth
+              required
+              style={{width:115}}
+              value={this.state.preDate}
+              onChange={this.handleChangePreDate}
+              error={!!this.state.preDateError}
+              helperText={
+                this.state.preDateError ? this.state.preDateError : " "
               }
+              disabled={this.state.isReadOnly}
+            />
+            {this.props.isReadOnly ? 
+            <Fragment>
+              <br/>
+              <Button 
+                variant="contained" 
+                color="primary" 
+                size="small"
+                style={{width: 115, marginTop:-40}}
+                onClick={()=>this.handleChangeIsCopyMode()}
+                disabled={this.state.isCopyMode}
+              >
+                Edit
+              </Button>
+            </Fragment>
+            :
+            ""
+            }
             </span>
           </DialogTitle>
           <Divider
@@ -733,19 +683,26 @@ class F31FormPopupComponent extends Component {
                   variant="outlined"
                   onChange={this.onHandleChange}
                   value={this.state.preTimeDuration}
+
                   error={!!this.state.preTimeDurationError}
+
                   helperText={this.state.preTimeDurationError}
                 />
               </Grid>
               <Grid item xs={12} md={4}>
                 <Autocomplete
                   id="rooms"
+
                   getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
+
                   fullWidth
                   value={this.state.roomsObject}
                   onChange={this.onAutoCompleteChange}
                   options={this.props.values.roomsData}
-                  renderInput={(params) => <TextField error={!!this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params}/>}
+
+                  renderInput={(params) => <TextField error={!!this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params}
+
+                  />}
                 />
               </Grid>
               <Grid item xs={12} md={4}>

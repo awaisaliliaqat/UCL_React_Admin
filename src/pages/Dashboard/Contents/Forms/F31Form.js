@@ -366,6 +366,7 @@ class F31Form extends Component {
                       values={this.state}
                       onAutoCompleteChange={this.onAutoCompleteChange}
                       isReadOnly={true}
+                      effectiveDatesArray={json.DATA[i].effectiveDatesArray || []}
                     />
                   :
                   <Fragment>
@@ -395,6 +396,7 @@ class F31Form extends Component {
                     values={this.state}
                     onAutoCompleteChange={this.onAutoCompleteChange}
                     isReadOnly={false}
+                    effectiveDatesArray={json.DATA[i].effectiveDatesArray || []}
                   />
                 </Fragment>
                 :
