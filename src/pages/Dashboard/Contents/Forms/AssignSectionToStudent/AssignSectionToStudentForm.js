@@ -312,7 +312,7 @@ class AssignSectionToStudentForm extends Component {
                         if (json) {
                             var csvURL = window.URL.createObjectURL(json);
                             var tempLink = document.createElement("a");
-                            tempLink.setAttribute("download", `Applications.xlsx`);
+                            tempLink.setAttribute("download", `AssignSectiontoStudents.xlsx`);
                             tempLink.href = csvURL;
                             tempLink.click();
                             console.log(json);
