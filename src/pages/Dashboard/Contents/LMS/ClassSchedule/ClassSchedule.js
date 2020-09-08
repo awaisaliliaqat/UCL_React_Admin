@@ -50,7 +50,7 @@ class ClassSchedule extends Component {
 
             coursesData: [],
             courseId: "",
-            classDate: new Date().setDate(new Date().getDate() + 1),
+            classDate: new Date(),
 
             showTableFilter: false,
 
@@ -97,7 +97,6 @@ class ClassSchedule extends Component {
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
                     }
-                    console.log(json);
                 },
                 error => {
                     if (error.status === 401) {
@@ -233,7 +232,6 @@ class ClassSchedule extends Component {
                             "error"
                         );
                     }
-                    console.log(json);
                 },
                 (error) => {
                     if (error.status == 401) {
@@ -256,7 +254,7 @@ class ClassSchedule extends Component {
 
     onClearFilters = () => {
         this.setState({
-            classDate: new Date().setDate(new Date().getDate() + 1),
+            classDate: new Date(),
             courseId: ""
         })
     }
@@ -313,10 +311,19 @@ class ClassSchedule extends Component {
     }
 
     onReschuduleClick = (rowData) => {
+
+
+        const getDate = new Date(rowData.classDate).getDate();
+        const newDate = new Date().getDate();
+        let myDate = null;
+        if (getDate !== newDate) {
+            myDate = new Date(rowData.classDate);
+        }
+
         this.setState({
             isOpenActionMenu: true,
             recordId: rowData.id,
-            scheduleDate: new Date(rowData.classDate),
+            scheduleDate: myDate,
             scheduleTime: rowData.classTime,
             scheduleDuration: rowData.classDuration,
             scheduleRoomId: rowData.classRoomId,
@@ -429,7 +436,6 @@ class ClassSchedule extends Component {
             { name: "scheduledOn", title: "Class Schedule" },
             {
                 name: "action", title: "Action", getCellValue: rowData => {
-                    console.log(rowData);
                     return (
                         <Fragment>
                             <Button onClick={() => this.onReschuduleClick(rowData)}
@@ -471,7 +477,7 @@ class ClassSchedule extends Component {
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <ClassScheduleFilter onAutoCompleteChange={(e, value) => this.onAutoCompleteChange(e, value)} isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={(sectionId) => this.getData(sectionId)} onHandleChange={e => this.onHandleChange(e)} />
+                    <ClassScheduleFilter onAutoCompleteChange={(e, value, name) => this.onAutoCompleteChange(e, value, name)} isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={(sectionId) => this.getData(sectionId)} onHandleChange={e => this.onHandleChange(e)} />
                     <div style={{
                         marginTop: 15,
                         marginBottom: 15,
