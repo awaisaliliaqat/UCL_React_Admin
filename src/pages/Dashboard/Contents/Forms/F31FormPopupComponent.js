@@ -5,7 +5,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
   Button, IconButton, Tooltip, Fab, Dialog, DialogActions, DialogContent,
-  DialogTitle
+  DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead,
+  TableRow, Paper, FormControlLabel, Switch
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
@@ -14,92 +15,81 @@ import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import { DatePicker } from "@material-ui/pickers";
 import { lastDayOfQuarterWithOptions } from "date-fns/fp";
 
-const styles = () => ({});
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: "rgb(29, 95, 152)", //theme.palette.common.black,
+    color: theme.palette.common.white,
+    fontWeight: 500,
+    border: '1px solid white'
+  },
+  body: {
+    fontSize: 14,
+    border: '1px solid rgb(29, 95, 152)'
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
+
+const styles = ({
+  table: {
+    minWidth: 750,
+  },
+});
 
 const CourseRow = (props) => {
 
   const { rowIndex, rowData, onDelete, isReadOnly } = props;
 
   return (
-    <Fragment>
-      <Grid item xs={12}></Grid>
-      <Grid
-        container
-        direction="row"
-        justify="space-evenly"
-        alignItems="center"
-      >
-        <Grid item xs={1} md={1}>
-          <Typography
-            color="primary"
-            variant="subtitle1"
-            component="div"
-            style={{ float: "left" }}
-          >
-            {rowIndex + 1}:
-        </Typography>
-        </Grid>
-        <Grid item xs={2} md={2}>
-          {rowData.preDay}
-          <TextField
-            type="hidden"
-            id="dayId"
-            name="dayId"
-            value={rowData.preDayId}
-          />
-        </Grid>
-        <Grid item xs={2} md={2}>
-          {rowData.preTimeStart}
-          <TextField
-            type="hidden"
-            id="startTime"
-            name="startTime"
-            value={rowData.preTimeStart}
-          />
-        </Grid>
-        <Grid item xs={2} md={2}>
-          {rowData.preTimeDuration}
-          <TextField
-            type="hidden"
-            id="duration"
-            name="duration"
-            value={rowData.preTimeDuration}
-          />
-        </Grid>
-        <Grid item xs={2} md={2}>
-          {rowData.roomsObject.Label || ""}
-          <TextField
-            type="hidden"
-            id="roomDBId"
-            name="roomDBId"
-            value={rowData.roomsObject.ID || ""}
-          />
-        </Grid>
-
-        {isReadOnly ?
-          ""
-          :
-          <Grid item xs={1} style={{ textAlign: "center" }}>
-            <Tooltip title="Delete">
-              <span>
-
-                <Fab
-                  color="secondary"
-                  aria-label="Delete"
-                  size="small"
-                  style={{
-                    height: 36,
-                    width: 36
-                  }}
-                  disabled={isReadOnly}
-                  onClick={() => onDelete(rowIndex)}
-                >
-                  <DeleteIcon fontSize="small" />
-                </Fab>
-              </span>
-            </Tooltip>
-          </Grid>
-        }
+    <StyledTableRow key={rowIndex}>
+      <StyledTableCell component="th" scope="row">
+        {rowIndex + 1}
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        {rowData.preDay}
+        <TextField type="hidden" id="dayId" name="dayId" value={rowData.preDayId} />
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        {rowData.preTimeStart}
+        <TextField type="hidden" id="startTime" name="startTime" value={rowData.preTimeStart} />
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        {rowData.preTimeDuration}
+        <TextField type="hidden" id="duration" name="duration" value={rowData.preTimeDuration} />
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        {rowData.roomsObject.Label || ""}
+        <TextField type="hidden" id="roomDBId" name="roomDBId" value={rowData.roomsObject.ID || ""} />
+      </StyledTableCell>
+      {isReadOnly ?
+        ""
+        :
+        <StyledTableCell align="center">
+          <Tooltip title="Delete">
+            <span>
+              <Fab
+                color="secondary"
+                aria-label="Delete"
+                size="small"
+                style={{
+                  height: 36,
+                  width: 36
+                }}
+                disabled={isReadOnly}
+                onClick={() => onDelete(rowIndex)}
+              >
+                <DeleteIcon fontSize="small" />
+              </Fab>
+            </span>
+          </Tooltip>
+        </StyledTableCell>
+      }
     </StyledTableRow>
   );
 }
@@ -211,7 +201,7 @@ class F31FormPopupComponent extends Component {
             }
             this.setState({ rowDataArray: rowDataArray });
           } else {
-            this.props.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,"error");
+            this.props.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error");
           }
           console.log("loadData", json);
         },
@@ -223,7 +213,7 @@ class F31FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.", "error");
           }
         }
       );
@@ -406,7 +396,7 @@ class F31FormPopupComponent extends Component {
       rowDataArray: this.state.isCopyMode ? this.state.rowDataArray : [],
     });
     sessionStorage.setItem('sessionSelectedDate', date);
-    if(!this.state.isCopyMode){
+    if (!this.state.isCopyMode) {
       this.loadData(this.props.sectionId, this.getDateInString(date));
     }
   };
@@ -432,27 +422,27 @@ class F31FormPopupComponent extends Component {
       roomsObjectError: ""
     })
   }
-  
-  handleChangeIsCopyMode = () => {
+
+  handleToggleIsCopyMode = () => {
     let sessionSelectedDate = sessionStorage.getItem('sessionSelectedDate');
     let tomorrowDate = this.getTomorrowDate();
     if (sessionSelectedDate) {
       tomorrowDate = new Date(sessionSelectedDate);
     }
     this.setState({
-      isCopyMode: true,
-      isReadOnly: false,
+      isCopyMode: !this.state.isCopyMode,
+      isReadOnly: !this.state.isReadOnly,
       preDate: tomorrowDate
     });
-    if(this.state.isCopyMode){
+    if (this.state.isCopyMode) {
       this.loadData(this.props.sectionId, this.props.activeDate);
-      this.setState({preDate:this.props.activeDateInNumber});
+      this.setState({ preDate: this.props.activeDateInNumber });
     }
   }
 
-  handleUpcomingSchedule(dateId, dateLabel){
+  handleUpcomingSchedule(dateId, dateLabel) {
     this.setState({
-      preDate:dateId,
+      preDate: dateId,
       rowDataArray: []
     });
     this.loadData(this.props.sectionId, dateLabel);
@@ -550,42 +540,85 @@ class F31FormPopupComponent extends Component {
               defaultValue={teacherId}
             />
             <span style={{ float: "right" }}>
-              <DatePicker
-                autoOk
-                name="effectiveDate"
-                id="effectiveDate"
-                label="Effective Date"
-                invalidDateMessage=""
-                disablePast
-                minDate={Date.parse(this.getTomorrowDate())}
-                placeholder=""
-                variant="inline"
-                inputVariant="outlined"
-                format="dd-MM-yyyy"
-                fullWidth
-                required
-                style={{ width: 115 }}
-                value={this.state.preDate}
-                onChange={this.handleChangePreDate}
-                error={!!this.state.preDateError}
-                helperText={
-                  this.state.preDateError ? this.state.preDateError : " "
+              <span style={{ display: "flex" }}>
+                {this.props.isReadOnly &&
+                  <Fragment>
+                    <TextField
+                      id="upcomingSchedule"
+                      name="upcomingSchedule"
+                      variant="outlined"
+                      label="Upcoming Schedule"
+                      required
+                      select
+                      style={{ width: 195 }}
+                      disabled={this.state.isCopyMode}
+                    >
+                      {this.props.effectiveDatesArray.length > 0 ? (
+                        this.props.effectiveDatesArray.map((dt) => (
+                          <MenuItem
+                            key={"effectiveDatesArray" + dt.id}
+                            value={dt.id}
+                            onClick={() => this.handleUpcomingSchedule(dt.id, dt.label)}
+                          >
+                            {dt.label}
+                          </MenuItem>
+                        ))
+                      ) : (
+                          <MenuItem>
+                            <CircularProgress />
+                          </MenuItem>
+                        )}
+                    </TextField>
+                    &nbsp;
+                  </Fragment>
                 }
-                disabled={this.state.isReadOnly}
-              />
+                <DatePicker
+                  autoOk
+                  name="effectiveDate"
+                  id="effectiveDate"
+                  label="Effective Date"
+                  invalidDateMessage=""
+                  disablePast
+                  minDate={Date.parse(this.getTomorrowDate())}
+                  placeholder=""
+                  variant="inline"
+                  inputVariant="outlined"
+                  format="dd-MM-yyyy"
+                  fullWidth
+                  required
+                  style={{ width: 115 }}
+                  value={this.state.preDate}
+                  onChange={this.handleChangePreDate}
+                  error={!!this.state.preDateError}
+                  helperText={
+                    this.state.preDateError ? this.state.preDateError : " "
+                  }
+                  disabled={this.state.isReadOnly}
+                />
+              </span>
               {this.props.isReadOnly ?
                 <Fragment>
-                  <br />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    style={{ width: 115, marginTop: -40 }}
-                    onClick={() => this.handleChangeIsCopyMode()}
-                    disabled={this.state.isCopyMode}
-                  >
-                    Edit
-              </Button>
+                  <FormControlLabel
+                    value="newSchedule"
+                    control={<Switch color="primary" />}
+                    label="New Schedule"
+                    labelPlacement="start"
+                    style={{ float: "right", marginTop: -25 }}
+                    onClick={() => this.handleToggleIsCopyMode()}
+                  />
+                  {/* 
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  size="small"
+                  style={{width: 115, marginTop:-40}}
+                  onClick={()=>this.handleToggleIsCopyMode()}
+                  disabled={this.state.isCopyMode}
+                >
+                  Edit
+                </Button> 
+                */}
+
                 </Fragment>
                 :
                 ""
@@ -612,15 +645,12 @@ class F31FormPopupComponent extends Component {
                 ""
                 :
                 <Fragment>
-
                   <Grid item xs={12} md={4}>
                     <TextField
                       type="hidden"
                       id="sectionId"
                       name="sectionId"
-
                       value={sectionId}
-
                     />
                     <TextField
                       id="preDayId"
@@ -696,26 +726,19 @@ class F31FormPopupComponent extends Component {
                       variant="outlined"
                       onChange={this.onHandleChange}
                       value={this.state.preTimeDuration}
-
                       error={!!this.state.preTimeDurationError}
-
                       helperText={this.state.preTimeDurationError}
                     />
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <Autocomplete
                       id="rooms"
-
                       getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
-
                       fullWidth
                       value={this.state.roomsObject}
                       onChange={this.onAutoCompleteChange}
                       options={this.props.values.roomsData}
-
-                      renderInput={(params) => <TextField error={!!this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params}
-
-                      />}
+                      renderInput={(params) => <TextField error={!!this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params} />}
                     />
                   </Grid>
                   <Grid item xs={12} md={4}>
@@ -742,62 +765,51 @@ class F31FormPopupComponent extends Component {
                       </Tooltip>
                     </IconButton>
                   </Grid>
-
+                  <Grid item xs={12}>
+                    <Divider
+                      style={{
+                        backgroundColor: "rgb(58, 127, 187)",
+                        opacity: "0.3",
+                      }}
+                    />
+                  </Grid>
                 </Fragment>
               }
-              <Grid item xs={12}>
-                <Divider
-                  style={{
-                    backgroundColor: "rgb(58, 127, 187)",
-                    opacity: "0.3",
-                  }}
-                />
-              </Grid>
-              <Grid
-                container
-                direction="row"
-                justify="space-evenly"
-                alignItems="center"
-              >
-                <Grid item xs={1} md={1}>
-                  <Typography color="primary">
-                    SR#
-                    </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography color="primary">
-                    Day
-                    </Typography>
-                </Grid>
-                <Grid item xs={2} md={2}>
-                  <Typography color="primary">
-                    Start Time
-                    </Typography>
-                </Grid>
-                <Grid item xs={2} md={2}>
-                  <Typography color="primary">
-                    Duration <small>(Minutes)</small>
-                  </Typography>
-                </Grid>
-                <Grid item xs={2} md={2}>
-                  <Typography color="primary">
-                    Room
-                  </Typography>
-                </Grid>
-
-                {this.state.isReadOnly ?
-                  ""
-                  :
-                  <Grid item xs={1} style={{ textAlign: "center" }}>
-
-                    <Typography color="primary">
-                      Action
-                    </Typography>
-                  </Grid>
-                }
-                </TableBody>
-              </Table>
-            </TableContainer>
+              <TableContainer component={Paper}>
+                <Table className={classes.table} size="small" aria-label="customized table">
+                  <TableHead>
+                    <TableRow>
+                      <StyledTableCell style={{ borderLeft: '1px solid rgb(29, 95, 152)' }}>SR#</StyledTableCell>
+                      <StyledTableCell align="center">Day</StyledTableCell>
+                      <StyledTableCell align="center">Start Time</StyledTableCell>
+                      <StyledTableCell align="center">Duration <small>(Minutes)</small></StyledTableCell>
+                      <StyledTableCell align="center">Room</StyledTableCell>
+                      {this.state.isReadOnly ? "" : <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(29, 95, 152)' }}>Action</StyledTableCell>}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {this.state.rowDataArray.length > 0
+                      ? this.state.rowDataArray.map((dt, i) => (
+                        <CourseRow
+                          key={"RDO" + i}
+                          rowIndex={i}
+                          rowData={dt}
+                          onDelete={(i) => this.handeDeleteCourseRow(i)}
+                          isReadOnly={this.state.isReadOnly}
+                        />
+                      ))
+                      : this.state.isLoading ?
+                        <StyledTableRow key={1}>
+                          <StyledTableCell component="th" scope="row" colSpan={6}><center><CircularProgress /></center></StyledTableCell>
+                        </StyledTableRow>
+                        :
+                        <StyledTableRow key={1}>
+                          <StyledTableCell component="th" scope="row" colSpan={6}><center><b>No Data</b></center></StyledTableCell>
+                        </StyledTableRow>
+                    }
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Grid>
           </DialogContent>
           <Divider
