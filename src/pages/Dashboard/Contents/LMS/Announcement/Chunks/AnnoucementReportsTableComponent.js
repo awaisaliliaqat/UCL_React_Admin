@@ -1,43 +1,24 @@
 import React, { Component } from "react";
-import { Paper, Input, Typography } from "@material-ui/core";
+import PropTypes from 'prop-types';
+import { Paper } from "@material-ui/core";
 import {
-  createStyles,
-  withStyles,
-  WithStyles,
-  Theme,
-  responsiveFontSizes,
-} from "@material-ui/core/styles";
-import {
-  Column,
   FilteringState,
-  GroupingState,
   IntegratedFiltering,
-  IntegratedGrouping,
   IntegratedPaging,
-  IntegratedSelection,
   IntegratedSorting,
   PagingState,
-  SelectionState,
   SortingState,
-  DataTypeProvider,
-  DataTypeProviderProps,
 } from "@devexpress/dx-react-grid";
 import {
-  DragDropProvider,
   Grid,
-  GroupingPanel,
   PagingPanel,
   Table,
   TableFilterRow,
-  TableGroupRow,
   TableHeaderRow,
-  TableSelection,
-  Toolbar,
-  VirtualTable,
-  TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
 
-class F34ReportsTableComponent extends Component {
+
+class AnnoucementReportsTableComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -58,48 +39,30 @@ class F34ReportsTableComponent extends Component {
       defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
-        { columnName: "fileDownload", sortingEnabled: false },
-        { columnName: "solutionFileDownload", sortingEnabled: false },
-        { columnName: "helpingMaterialFileDownload", filteringEnabled: false },
       ],
       tableColumnExtensions: [
-        { columnName: "SRNo", width: 100 },
-        { columnName: "startDateReport", width: 100 },
-        { columnName: "dueDateReport", width: 100 },
-        { columnName: "totalMarks", width: 100, align:"center" },
-        { columnName: "helpingMaterialFileDownload", width:70, wordWrapEnabled: true},
-        { columnName: "solutionFileDownload", width: 80, align:"center" },
-        { columnName: "fileDownload", width: 80, align:"center" },
-        { columnName: "label", wordWrapEnabled: true },
-        { columnName: "instruction", wordWrapEnabled: true },
-        { columnName: "action", width: 120 },
+        { columnName: "label", wordWrapEnabled: true, width: 200 },
+        { columnName: "anouncementDate", width: 200 },
+        { columnName: "anouncementDetails", wordWrapEnabled: true },
+        { columnName: "createdOn", width: 200 },
+        { columnName: "action", width: 150 },
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
-        { columnName: "fileDownload", filteringEnabled: false },
-        { columnName: "solutionFileDownload", filteringEnabled: false },
-        { columnName: "helpingMaterialFileDownload", filteringEnabled: false },
       ],
     };
   }
 
   render() {
     const {
-      formatColumns,
-      currencyColumns,
-      availableFilterOperations,
-      CurrencyEditor,
       tableColumnExtensions,
-      resizingMode,
       defaultSorting,
       sortingStateColumnExtensions,
       filteringStateColumnExtensions,
       defaultFilters,
-      defaultColumnWidths,
-      columnBands,
       pageSizes,
     } = this.state;
 
@@ -118,7 +81,7 @@ class F34ReportsTableComponent extends Component {
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
           />
-          <PagingState defaultCurrentPage={0} defaultPageSize={10} />
+          <PagingState defaultCurrentPage={1} defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
@@ -126,11 +89,11 @@ class F34ReportsTableComponent extends Component {
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children!="Action" && props.children!="Solution" ? (
+              props.children != "Action" ? (
                 <b>{props.children}</b>
               ) : (
-                <b>&emsp;{props.children}</b>
-              )
+                  <b>&emsp;{props.children}</b>
+                )
             }
           />
           {showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
@@ -141,4 +104,16 @@ class F34ReportsTableComponent extends Component {
   }
 }
 
-export default F34ReportsTableComponent;
+AnnoucementReportsTableComponent.propTypes = {
+  data: PropTypes.array,
+  columns: PropTypes.array,
+  showFilter: PropTypes.bool
+}
+
+AnnoucementReportsTableComponent.defaultProps = {
+  data: [],
+  columns: [],
+  showFilter: false
+}
+
+export default AnnoucementReportsTableComponent;

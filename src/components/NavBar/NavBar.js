@@ -168,7 +168,6 @@ const NavBar = props => {
                     } else {
                         alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
                     }
-                    console.log(json);
                 },
                 error => {
                     if (error.status === 401) {

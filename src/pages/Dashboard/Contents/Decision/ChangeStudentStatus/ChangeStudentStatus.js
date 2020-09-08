@@ -289,7 +289,7 @@ class ChangeStudentStatus extends Component {
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <ChangeStudentStatusFilter isLoading={this.state.isLoading} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
+                    <ChangeStudentStatusFilter isLoading={this.state.isLoading} onClearFilters={() => this.onClearFilters} values={this.state} getDataByStatus={() => this.getData()} onHandleChange={e => this.onHandleChange(e)} />
 
                     <div style={{
                         marginTop: 15,

@@ -195,7 +195,6 @@ class DisplayAdmissionApplications extends Component {
                     } else {
                         alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
                     }
-                    console.log(json);
                 },
                 error => {
                     if (error.status === 401) {
@@ -205,7 +204,6 @@ class DisplayAdmissionApplications extends Component {
                         })
                     } else {
                         alert('Failed to fetch, Please try again later.');
-                        console.log(error);
                     }
                 });
 
@@ -238,7 +236,6 @@ class DisplayAdmissionApplications extends Component {
                         })
                     } else {
                         alert('Failed to fetch, Please try again later.');
-                        console.log(error);
                     }
                 }
             );
@@ -280,7 +277,6 @@ class DisplayAdmissionApplications extends Component {
                 tempLink.href = csvURL;
                 tempLink.setAttribute("download", fileName);
                 tempLink.click();
-                console.log(csvURL);
                 if (result.CODE === 1) {
                     //Code
                 } else if (result.CODE === 2) {
@@ -1868,7 +1864,6 @@ class DisplayAdmissionApplications extends Component {
                         flexDirection: 'column'
                     }}>
                         {documentData.map((item, index) => {
-                            console.log(item);
                             return (
                                 <Link key={index} onClick={() =>
                                     this.onDownload(item.fileName)

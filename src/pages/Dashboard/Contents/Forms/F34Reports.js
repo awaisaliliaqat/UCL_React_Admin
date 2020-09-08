@@ -288,6 +288,22 @@ class F34Reports extends Component {
                 :
                 ""
               );
+              let helpingMaterialFileName = json.DATA[i].helpingMaterialFileName || [];
+              json.DATA[i].helpingMaterialFileDownload = (
+                helpingMaterialFileName.length>0 ? 
+                <Fragment>
+                  <Tooltip title="Download">
+                    <IconButton 
+                      onClick={(e)=>this.downloadMultipleFiles(e, helpingMaterialFileName)} 
+                      aria-label="download"
+                    >
+                      <CloudDownloadIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Fragment>
+                :
+                ""
+              );
             }
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
@@ -352,15 +368,17 @@ class F34Reports extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar(
-              "Failed to fetch, Please try again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
             console.log(error);
           }
         }
       );
   };
+
+  downloadMultipleFiles = (e, helpingMaterialFileName) => {
+    console.log(e, helpingMaterialFileName);
+    helpingMaterialFileName.map((dt, i)=>this.DownloadFile(e, dt));
+  }
 
   DownloadFile = (e, fileName) => {
       e.preventDefault();
@@ -383,7 +401,8 @@ class F34Reports extends Component {
                   })
                   return {}
               } else {
-                  alert('Operation Failed, Please try again later.');
+                  //alert('Operation Failed, Please try again later.');
+                  this.handleOpenSnackbar("Operation Failed, Please try again later.","error");
                   return {}
               }
           })
@@ -442,6 +461,7 @@ class F34Reports extends Component {
       { name: "totalMarks", title: "Total\xa0Marks" },
       { name: "fileDownload", title: "Assignment" },
       { name: "solutionFileDownload", title: "Solution" },
+      { name: "helpingMaterialFileDownload", title: "Helping Material" },
       { name: "action", title: "Action" },
     ];
 

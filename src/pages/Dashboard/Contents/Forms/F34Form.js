@@ -11,7 +11,7 @@ import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/Custom
 import { DatePicker } from "@material-ui/pickers";
 import { useDropzone } from "react-dropzone";
 
-const styles = () => ({
+const styles = (theem) => ({
   root: {
     padding: 20,
   },
@@ -34,18 +34,16 @@ const styles = () => ({
     textAlign: "center",
   },
   inputFileFocused: {
-    //width: '40%',
     textAlign:"center",
-    //color:'rgb(29, 95, 152)',
-    //borderColor: 'rgb(29, 95, 152)',
-    //boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
-    //backgroundColor: "#00FF00",
+    "&:hover": {
+      color: theem.palette.primary.main,
+    }
   },
 });
 
 function MyDropzone(props) {
 
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document', multiple:false });
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document', multiple:props.multiple});
   
   const files = acceptedFiles.map((file, index) => {
       const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
@@ -67,7 +65,7 @@ function MyDropzone(props) {
         id="contained-button-file-div"
         {...getRootProps({ className: "dropzone "+`${props.className}` , onChange: event => props.onChange(event) })}
       >
-          <Card style={{ backgroundColor: "#c7c7c7" }}>
+          <Card style={{ backgroundColor: "#c7c7c7" }} className={props.className}>
               <CardContent style={{
                   paddingBottom: 14,
                   paddingTop: 14,
@@ -95,6 +93,8 @@ class F34Form extends Component {
       filesError: "",
       files2: [],
       files2Error: "",
+      files3: [],
+      files3Error: "",
       uploadLoading:false,
       label:"",
       labelError:"",
@@ -392,21 +392,28 @@ class F34Form extends Component {
   handleFileChange = event => {
     const { files = [] } = event.target;
     const fileElement = event.target;
-    let fileStateName = "files";
+    console.log("fileElement", fileElement)
     if (files.length > 0) {
-        if ( (files[0].type === "application/pdf" || files[0].type === "application/msword" || files[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && files[0].size/1000<10000) {
-          if(fileElement.getAttribute("name")=="contained-button-solution-file"){
-            this.setState({files2:files, files2Error: ""});
-          }else{
+      for(let i=0; i<files.length; i++) {
+        if ( (files[i].type === "application/pdf" || files[i].type === "application/msword" || files[i].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && files[i].size/1000<10000) {
+          if(fileElement.getAttribute("name")=="contained-button-file") {
             this.setState({files, filesError: ""});
+          } else if (fileElement.getAttribute("name")=="contained-button-solution-file") {
+            this.setState({files2:files, files2Error: ""});
+          }else if (fileElement.getAttribute("name")=="contained-button-helping-material-file") {
+            this.setState({files3:files, files3Error: ""});
           }
         } else {
-          if(fileElement.getAttribute("name")=="contained-button-solution-file"){
-            this.setState({files2Error: "Please select only pdf, doc or docx file with size less than 10 MBs."});
-          } else {
+          if(fileElement.getAttribute("name")=="contained-button-file"){
             this.setState({filesError: "Please select only pdf, doc or docx file with size less than 10 MBs."});
+          } else if(fileElement.getAttribute("name")=="contained-button-solution-file"){
+            this.setState({files2Error: "Please select only pdf, doc or docx file with size less than 10 MBs."});
+          } else if(fileElement.getAttribute("name")=="contained-button-helping-material-file"){
+            this.setState({files3Error: "Please select only pdf, doc or docx file with size less than 10 MBs."});
           }
+          break;
         }
+      }
     }
   }
 
@@ -732,6 +739,7 @@ class F34Form extends Component {
                     onChange={event => this.handleFileChange(event)} 
                     disabled={this.state.uploadLoading} 
                     className={classes.inputFileFocused}
+                    multiple={false}
                   />
                   <div 
                     style={{
@@ -757,6 +765,7 @@ class F34Form extends Component {
                       onChange={event => this.handleFileChange(event)} 
                       disabled={this.state.uploadLoading} 
                       className={classes.inputFileFocused}
+                      multiple={false}
                     />
                     <div 
                       style={{
@@ -772,9 +781,35 @@ class F34Form extends Component {
                           &emsp;{this.state.files2Error}
                         </span>
                     </div>
-                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  <MyDropzone
+                    name="contained-button-helping-material"
+                    label="Upload helping file"
+                    files={this.state.files3}
+                    onChange={event => this.handleFileChange(event)} 
+                    disabled={this.state.uploadLoading} 
+                    className={classes.inputFileFocused}
+                    multiple={true}
+                  />
+                    <div 
+                      style={{
+                        textAlign:'left', 
+                        marginTop:5, 
+                        fontSize:"0.8rem"
+                      }}>
+                        <span 
+                          style={{
+                            color: '#f44336'
+                          }}
+                        >
+                          &emsp;{this.state.files3Error}
+                        </span>
+                    </div>
+                </Grid>
               </Grid>
             </Grid>
+            <br/>
             <br/>
         </form>
         <BottomBar

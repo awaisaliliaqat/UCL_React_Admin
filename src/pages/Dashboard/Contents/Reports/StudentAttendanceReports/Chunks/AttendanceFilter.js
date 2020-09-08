@@ -5,6 +5,7 @@ import Divider from '@material-ui/core/Divider';
 import { Button, TextField, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { DatePicker } from "@material-ui/pickers";
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -50,7 +51,7 @@ const useStyles = makeStyles(() => ({
 
 const AttendanceFilter = props => {
     const classes = useStyles();
-    const { values, handleDateChange, getDataByStatus, onClearFilters, onHandleChange, isLoading } = props;
+    const { values, handleDateChange, getDataByStatus, onClearFilters, onHandleChange, isLoading, handleAutocompleteChange } = props;
 
 
     return (
@@ -86,29 +87,18 @@ const AttendanceFilter = props => {
                     width: '20%'
                 }}>
                     <span className={classes.label}>Section *</span>
-
-                    <TextField
-                        placeholder="Section"
-                        variant="outlined"
-                        name="sectionId"
-                        id="sectionId"
+                    <Autocomplete
+                        id="section"
+                        getOptionLabel={(option) => typeof option.label === "string" ? option.label : ""}
+                        fullWidth
+                        value={values.sectionObject}
+                        onChange={(e, value) => handleAutocompleteChange(e, value, "section")}
+                        options={values.sectionData}
                         disabled={!values.sectionTypeId}
-                        InputProps={{ classes: { input: classes.resize } }}
-                        value={values.sectionId}
-                        onChange={e => {
-                            onHandleChange(e);
-                            getDataByStatus(e.target.value)
-                        }}
-                        select
-                    >
-                        {values.sectionData.map(item => {
-                            return (
-                                <MenuItem key={item.id} value={item.id}>
-                                    {item.label}
-                                </MenuItem>
-                            );
-                        })}
-                    </TextField>
+                        renderInput={(params) => <TextField error={values.sectionIdError} variant="outlined" placeholder="Sections" {...params}
+                            size="small"
+                        />}
+                    />
                 </div>
 
                 <div className={classes.item} style={{
@@ -190,6 +180,7 @@ const AttendanceFilter = props => {
 
 AttendanceFilter.defaultProps = {
     onHandleChange: fn => fn,
+    handleAutocompleteChange: fn => fn,
     getDataByStatus: fn => fn,
     values: {},
     onClearFilters: fn => fn,
@@ -204,6 +195,7 @@ AttendanceFilter.defaultProps = {
 
 AttendanceFilter.propTypes = {
     onHandleChange: PropTypes.func,
+    handleAutocompleteChange: PropTypes.func,
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
     onClearFilters: PropTypes.func,
