@@ -97,15 +97,15 @@ class F31Form extends Component {
       var hh = Math.floor(tt / 60); // getting hours of day in 0-24 format
       var mm = tt % 60; // getting minutes of the hour in 0-55 format
       times[i] =
-        ("0" + (hh % 12)).slice(-2) +
+        ("0" + ((hh % 12) !== 0 ? (hh % 12) : 12)).slice(-2) +
         ":" +
         ("0" + mm).slice(-2) +
         " " +
         ap[Math.floor(hh / 12)]; // pushing data in array in [00:00 - 12:00 AM/PM format]
       tt = tt + x;
-      // if (times[i] == "08:00 PM") {
-      //   break;
-      // }
+      if (times[i] == "08:00 PM") {
+        break;
+      }
     }
     console.log(times);
     this.setState({ preTimeStartMenuItems: times });
@@ -366,6 +366,7 @@ class F31Form extends Component {
                       values={this.state}
                       onAutoCompleteChange={this.onAutoCompleteChange}
                       isReadOnly={true}
+                      effectiveDatesArray={json.DATA[i].effectiveDatesArray || []}
                     />
                   :
                   <Fragment>
@@ -395,6 +396,7 @@ class F31Form extends Component {
                     values={this.state}
                     onAutoCompleteChange={this.onAutoCompleteChange}
                     isReadOnly={false}
+                    effectiveDatesArray={json.DATA[i].effectiveDatesArray || []}
                   />
                 </Fragment>
                 :
