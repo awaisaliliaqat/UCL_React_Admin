@@ -37,21 +37,6 @@ import {
   TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
 
-const getInputValue = (value) => (value === undefined ? "" : value);
-
-const getColor = (amount) => {
-  if (amount < 3000) {
-    return "#F44336";
-  }
-  if (amount < 5000) {
-    return "#FFC107";
-  }
-  if (amount < 8000) {
-    return "#FF5722";
-  }
-  return "#009688";
-};
-
 class F34ReportsTableComponent extends Component {
   constructor(props) {
     super(props);
@@ -75,14 +60,16 @@ class F34ReportsTableComponent extends Component {
         { columnName: "action", sortingEnabled: false },
         { columnName: "fileDownload", sortingEnabled: false },
         { columnName: "solutionFileDownload", sortingEnabled: false },
+        { columnName: "helpingMaterialFileDownload", filteringEnabled: false },
       ],
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
         { columnName: "startDateReport", width: 100 },
         { columnName: "dueDateReport", width: 100 },
         { columnName: "totalMarks", width: 100, align:"center" },
-        { columnName: "solutionFileDownload", width: 100, align:"center" },
-        { columnName: "fileDownload", width: 100, align:"center" },
+        { columnName: "helpingMaterialFileDownload", width:70, wordWrapEnabled: true},
+        { columnName: "solutionFileDownload", width: 80, align:"center" },
+        { columnName: "fileDownload", width: 80, align:"center" },
         { columnName: "label", wordWrapEnabled: true },
         { columnName: "instruction", wordWrapEnabled: true },
         { columnName: "action", width: 120 },
@@ -94,6 +81,7 @@ class F34ReportsTableComponent extends Component {
         { columnName: "action", filteringEnabled: false },
         { columnName: "fileDownload", filteringEnabled: false },
         { columnName: "solutionFileDownload", filteringEnabled: false },
+        { columnName: "helpingMaterialFileDownload", filteringEnabled: false },
       ],
     };
   }
@@ -130,17 +118,11 @@ class F34ReportsTableComponent extends Component {
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
           />
-          {/* <SelectionState />  */}
-          {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
           <PagingState defaultCurrentPage={0} defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
-          {/* <IntegratedSelection /> */}
-          {/* <DragDropProvider /> */}
           <Table columnExtensions={tableColumnExtensions} />
-          {/* <TableColumnResizing columnExtensions={defaultColumnWidths}/> */}
-          {/* <TableSelection showSelectAll={true} /> */}
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
@@ -153,7 +135,6 @@ class F34ReportsTableComponent extends Component {
           />
           {showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
           <PagingPanel pageSizes={pageSizes} />
-          {/* <Toolbar /> */}
         </Grid>
       </Paper>
     );
