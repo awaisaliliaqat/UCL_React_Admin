@@ -87,6 +87,8 @@ import SyncZoomMeetings from "./Contents/LMS/SyncZoomMeetings/SyncZoomMeetings";
 import CreateRoomForm from './Contents/Forms/CreateRoom/CreateRoomFrom';
 import CreateRoomReports from './Contents/Forms/CreateRoom/CreateRoomReports';
 import ClassSchedule from './Contents/LMS/ClassSchedule/ClassSchedule';
+import AnnouncementForm from './Contents/LMS/Announcement/AnnouncementForm';
+import AnnouncementReports from './Contents/LMS/Announcement/AnnouncementReports';
 import HomePage from './Contents/LMS/HomePage/HomePage';
 
 const drawerWidth = 283;
@@ -1018,6 +1020,27 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <CreateRoomForm
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="announcements"
+                exact
+                path="/dashboard/announcements"
+                component={AnnouncementReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="announcements"
+                exact
+                path="/dashboard/announcements/:recordId"
+                render={(props) => {
+                  return (
+                    <AnnouncementForm
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                     />

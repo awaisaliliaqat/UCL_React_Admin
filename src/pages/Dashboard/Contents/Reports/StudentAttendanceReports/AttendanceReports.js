@@ -10,6 +10,22 @@ import FilterIcon from "mdi-material-ui/FilterOutline";
 import AttendanceTableComponent from './Chunks/AttendanceTableComponent';
 import { format } from 'date-fns';
 
+function isEmpty(obj) {
+    if (obj == null) return true;
+
+    if (obj.length > 0) return false;
+    if (obj.length === 0) return true;
+
+    if (typeof obj !== "object") return true;
+
+    for (var key in obj) {
+        if (hasOwnProperty.call(obj, key)) return false;
+    }
+
+
+    return true;
+}
+
 class AttendanceReports extends Component {
 
     constructor(props) {
@@ -29,6 +45,8 @@ class AttendanceReports extends Component {
             sectionTypeId: 0,
             sectionTypeData: [],
             sectionId: 0,
+            sectionObject: {},
+            sectionIdError: "",
             sectionData: [],
 
             isLoginMenu: false,
@@ -192,7 +210,8 @@ class AttendanceReports extends Component {
             sectionTypeId: 0,
             attendanceData: [],
             sectionData: [],
-            sectionId: 0
+            sectionId: 0,
+            sectionObject: {}
         })
     }
 
@@ -201,6 +220,7 @@ class AttendanceReports extends Component {
         switch (name) {
             case "sectionTypeId":
                 this.setState({
+                    sectionObject: {},
                     sectionId: 0,
                     sectionData: [],
                     attendanceData: []
@@ -219,6 +239,30 @@ class AttendanceReports extends Component {
     handleDateChange = (date, name) => {
         this.setState({
             [name]: date
+        });
+    }
+
+    handleAutocompleteChange = (e, object, name) => {
+        const nameId = `${name}Id`;
+        const nameObject = `${name}Object`;
+        const nameError = `${nameId}Error`;
+        let objId = ""; let obj = {};
+        if (!isEmpty(object)) {
+            switch (name) {
+                case "section":
+                    this.getData(object.id);
+                    break;
+                default:
+                    break;
+            }
+            objId = object.id;
+            obj = object;
+        }
+        this.setState({
+            [nameId]: objId,
+            [nameObject]: obj,
+            [nameError]: "",
+            attendanceData: []
         });
     }
 
@@ -306,7 +350,7 @@ class AttendanceReports extends Component {
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
-                    <AttendanceFilter isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={(sectionId) => this.getData(sectionId)} onHandleChange={e => this.onHandleChange(e)} />
+                    <AttendanceFilter handleAutocompleteChange={(e, object, name) => this.handleAutocompleteChange(e, object, name)} isLoading={this.state.isLoading} handleDateChange={this.handleDateChange} onClearFilters={this.onClearFilters} values={this.state} getDataByStatus={(sectionId) => this.getData(sectionId)} onHandleChange={e => this.onHandleChange(e)} />
                     <div style={{
                         marginTop: 15,
                         marginBottom: 15,

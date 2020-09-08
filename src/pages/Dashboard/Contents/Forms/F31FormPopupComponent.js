@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import { withStyles } from "@material-ui/styles";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
+import {
+  TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
   Button, IconButton, Tooltip, Fab, Dialog, DialogActions, DialogContent,
-  DialogTitle} from "@material-ui/core";
+  DialogTitle
+} from "@material-ui/core";
 
 import AddIcon from "@material-ui/icons/Add";
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
@@ -14,7 +16,7 @@ import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import { DatePicker } from "@material-ui/pickers";
 import { lastDayOfQuarterWithOptions } from "date-fns/fp";
 
-const styles = () => ({ });
+const styles = () => ({});
 
 const CourseRow = (props) => {
 
@@ -76,29 +78,29 @@ const CourseRow = (props) => {
           />
         </Grid>
 
-        {isReadOnly ? 
-        ""
-        :
-        <Grid item xs={1} style={{ textAlign: "center" }}>
+        {isReadOnly ?
+          ""
+          :
+          <Grid item xs={1} style={{ textAlign: "center" }}>
             <Tooltip title="Delete">
-            <span>
+              <span>
 
-              <Fab
-                color="secondary"
-                aria-label="Delete"
-                size="small"
-                style={{
-                  height: 36,
-                  width: 36
-                }}
-                disabled={isReadOnly}
-                onClick={() => onDelete(rowIndex)}
-              >
-                <DeleteIcon fontSize="small" />
-              </Fab>
+                <Fab
+                  color="secondary"
+                  aria-label="Delete"
+                  size="small"
+                  style={{
+                    height: 36,
+                    width: 36
+                  }}
+                  disabled={isReadOnly}
+                  onClick={() => onDelete(rowIndex)}
+                >
+                  <DeleteIcon fontSize="small" />
+                </Fab>
               </span>
             </Tooltip>
-        </Grid>
+          </Grid>
         }
       </Grid>
     </Fragment>
@@ -238,13 +240,13 @@ class F31FormPopupComponent extends Component {
   };
 
   handleClickOpen = () => {
-    if(this.props.isReadOnly && this.props.activeDate){
+    if (this.props.isReadOnly && this.props.activeDate) {
       this.loadData(this.props.sectionId, this.props.activeDate);
-     //this.loadData(this.props.sectionId, this.getDateInString(new Date(this.props.activeDateInNumber)) );
-      this.setState({preDate:this.props.activeDateInNumber});
-    }else{
+      //this.loadData(this.props.sectionId, this.getDateInString(new Date(this.props.activeDateInNumber)) );
+      this.setState({ preDate: this.props.activeDateInNumber });
+    } else {
       let sessionSelectedDate = sessionStorage.getItem('sessionSelectedDate');
-      if(sessionSelectedDate){
+      if (sessionSelectedDate) {
         this.handleChangePreDate(new Date(sessionSelectedDate));
       } else {
         this.loadData(this.props.sectionId, this.getDateInString(this.state.preDate));
@@ -394,7 +396,7 @@ class F31FormPopupComponent extends Component {
       [errName]: "",
     });
   };
-  
+
   onHandleChangePreDay = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -439,24 +441,15 @@ class F31FormPopupComponent extends Component {
     })
   }
 
-  onAutoCompleteChange = (e, value) => {
-    let object = isEmpty(value) ? {} : value;
-    this.setState({
-      roomsObject: object,
-      roomsId: object.id || "",
-      roomsObjectError: ""
-    })
-  }
-
   handleChangeIsCopyMode = () => {
     let sessionSelectedDate = sessionStorage.getItem('sessionSelectedDate');
     let tomorrowDate = this.getTomorrowDate();
-    if(sessionSelectedDate){
+    if (sessionSelectedDate) {
       tomorrowDate = new Date(sessionSelectedDate);
     }
     this.setState({
-      isCopyMode:true,
-      isReadOnly:false,
+      isCopyMode: true,
+      isReadOnly: false,
       preDate: tomorrowDate
     });
   }
@@ -476,7 +469,7 @@ class F31FormPopupComponent extends Component {
     const { sectionId, teacherId } = this.props;
     return (
       <Fragment>
-        { this.props.isReadOnly ?
+        {this.props.isReadOnly ?
           <IconButton
             color="primary"
             aria-label="View"
@@ -490,7 +483,7 @@ class F31FormPopupComponent extends Component {
               </Fab>
             </Tooltip>
           </IconButton>
-        :
+          :
           <IconButton
             color="primary"
             aria-label="Add"
@@ -546,53 +539,53 @@ class F31FormPopupComponent extends Component {
                 " - " +
                 this.props.teacherName}
             </Typography>
-            <TextField 
-              type="hidden" 
+            <TextField
+              type="hidden"
               id="teacherId"
-              name="teacherId" 
+              name="teacherId"
               defaultValue={teacherId}
             />
-            <span style={{ float: "right"}}>
-            <DatePicker
-              autoOk
-              name="effectiveDate"
-              id="effectiveDate"
-              label="Effective Date"
-              invalidDateMessage=""
-              disablePast
-              minDate={Date.parse(this.getTomorrowDate())}
-              placeholder=""
-              variant="inline"
-              inputVariant="outlined"
-              format="dd-MM-yyyy"
-              fullWidth
-              required
-              style={{width:115}}
-              value={this.state.preDate}
-              onChange={this.handleChangePreDate}
-              error={!!this.state.preDateError}
-              helperText={
-                this.state.preDateError ? this.state.preDateError : " "
-              }
-              disabled={this.state.isReadOnly}
-            />
-            {this.props.isReadOnly ? 
-            <Fragment>
-              <br/>
-              <Button 
-                variant="contained" 
-                color="primary" 
-                size="small"
-                style={{width: 115, marginTop:-40}}
-                onClick={()=>this.handleChangeIsCopyMode()}
-                disabled={this.state.isCopyMode}
-              >
-                Edit
+            <span style={{ float: "right" }}>
+              <DatePicker
+                autoOk
+                name="effectiveDate"
+                id="effectiveDate"
+                label="Effective Date"
+                invalidDateMessage=""
+                disablePast
+                minDate={Date.parse(this.getTomorrowDate())}
+                placeholder=""
+                variant="inline"
+                inputVariant="outlined"
+                format="dd-MM-yyyy"
+                fullWidth
+                required
+                style={{ width: 115 }}
+                value={this.state.preDate}
+                onChange={this.handleChangePreDate}
+                error={!!this.state.preDateError}
+                helperText={
+                  this.state.preDateError ? this.state.preDateError : " "
+                }
+                disabled={this.state.isReadOnly}
+              />
+              {this.props.isReadOnly ?
+                <Fragment>
+                  <br />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    style={{ width: 115, marginTop: -40 }}
+                    onClick={() => this.handleChangeIsCopyMode()}
+                    disabled={this.state.isCopyMode}
+                  >
+                    Edit
               </Button>
-            </Fragment>
-            :
-            ""
-            }
+                </Fragment>
+                :
+                ""
+              }
             </span>
           </DialogTitle>
           <DialogContent>
@@ -607,141 +600,141 @@ class F31FormPopupComponent extends Component {
             >
 
               {this.state.isReadOnly ?
-              ""
-              :
-              <Fragment>
+                ""
+                :
+                <Fragment>
 
-              <Grid item xs={12} md={4}>
-                <TextField
-                  type="hidden"
-                  id="sectionId"
-                  name="sectionId"
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      type="hidden"
+                      id="sectionId"
+                      name="sectionId"
 
-                  value={sectionId}
+                      value={sectionId}
 
-                />
-                <TextField
-                  id="preDayId"
-                  name="preDayId"
-                  variant="outlined"
-                  label="Day"
-                  onChange={this.onHandleChangePreDay}
-                  value={this.state.preDayId}
-                  error={!!this.state.preDayError}
-                  helperText={
-                    this.state.preDayError
-                  }
-                  required
-                  fullWidth
-                  select
-                >
-                  {this.state.preDaysMenuItems ? (
-                    this.state.preDaysMenuItems.map((dt) => (
-                      <MenuItem
-                        key={"preDaysMenuItems" + dt.id}
-                        value={dt.id}
-                      >
-                        {dt.label}
-                      </MenuItem>
-                    ))
-                  ) : (
-                      <MenuItem>
-                        <CircularProgress />
-                      </MenuItem>
-                    )}
-                </TextField>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  id="preTimeStart"
-                  name="preTimeStart"
-                  variant="outlined"
-                  label="Time Slot"
-                  onChange={this.onHandleChange}
-                  value={this.state.preTimeStart}
-                  error={!!this.state.preTimeStartError}
-                  helperText={
-                    this.state.preTimeStartError
-                  }
-                  required
-                  fullWidth
-                  select
-                >
-                  {this.state.preTimeStartMenuItems ? (
-                    this.state.preTimeStartMenuItems.map((dt, i) => (
-                      <MenuItem
-                        key={"preTimeStartMenuItems" + dt + i}
-                        value={dt}
-                      >
-                        {dt}
-                      </MenuItem>
-                    ))
-                  ) : (
-                      <MenuItem>
-                        <CircularProgress />
-                      </MenuItem>
-                    )}
-                </TextField>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  id="preTimeDuration"
-                  name="preTimeDuration"
-                  label={"Duration (Minutes)"}
-                  type="number"
-                  required
-                  fullWidth
-                  variant="outlined"
-                  onChange={this.onHandleChange}
-                  value={this.state.preTimeDuration}
+                    />
+                    <TextField
+                      id="preDayId"
+                      name="preDayId"
+                      variant="outlined"
+                      label="Day"
+                      onChange={this.onHandleChangePreDay}
+                      value={this.state.preDayId}
+                      error={!!this.state.preDayError}
+                      helperText={
+                        this.state.preDayError
+                      }
+                      required
+                      fullWidth
+                      select
+                    >
+                      {this.state.preDaysMenuItems ? (
+                        this.state.preDaysMenuItems.map((dt) => (
+                          <MenuItem
+                            key={"preDaysMenuItems" + dt.id}
+                            value={dt.id}
+                          >
+                            {dt.label}
+                          </MenuItem>
+                        ))
+                      ) : (
+                          <MenuItem>
+                            <CircularProgress />
+                          </MenuItem>
+                        )}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      id="preTimeStart"
+                      name="preTimeStart"
+                      variant="outlined"
+                      label="Time Slot"
+                      onChange={this.onHandleChange}
+                      value={this.state.preTimeStart}
+                      error={!!this.state.preTimeStartError}
+                      helperText={
+                        this.state.preTimeStartError
+                      }
+                      required
+                      fullWidth
+                      select
+                    >
+                      {this.state.preTimeStartMenuItems ? (
+                        this.state.preTimeStartMenuItems.map((dt, i) => (
+                          <MenuItem
+                            key={"preTimeStartMenuItems" + dt + i}
+                            value={dt}
+                          >
+                            {dt}
+                          </MenuItem>
+                        ))
+                      ) : (
+                          <MenuItem>
+                            <CircularProgress />
+                          </MenuItem>
+                        )}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      id="preTimeDuration"
+                      name="preTimeDuration"
+                      label={"Duration (Minutes)"}
+                      type="number"
+                      required
+                      fullWidth
+                      variant="outlined"
+                      onChange={this.onHandleChange}
+                      value={this.state.preTimeDuration}
 
-                  error={!!this.state.preTimeDurationError}
+                      error={!!this.state.preTimeDurationError}
 
-                  helperText={this.state.preTimeDurationError}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Autocomplete
-                  id="rooms"
+                      helperText={this.state.preTimeDurationError}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <Autocomplete
+                      id="rooms"
 
-                  getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
+                      getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
 
-                  fullWidth
-                  value={this.state.roomsObject}
-                  onChange={this.onAutoCompleteChange}
-                  options={this.props.values.roomsData}
+                      fullWidth
+                      value={this.state.roomsObject}
+                      onChange={this.onAutoCompleteChange}
+                      options={this.props.values.roomsData}
 
-                  renderInput={(params) => <TextField error={!!this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params}
+                      renderInput={(params) => <TextField error={!!this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params}
 
-                  />}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  id="capacity"
-                  value={isEmpty(this.state.roomsObject) ? "" : this.state.roomsObject.studentCapacity}
-                  variant="outlined"
-                  fullWidth
-                  placeholder="Student Capacity"
-                  readOnly
-                />
-              </Grid>
-              <Grid item xs={1} style={{ textAlign: "center" }}>
-                <IconButton
-                  color="primary"
-                  aria-label="Add"
-                  component="span"
-                  onClick={this.handeAddCourseRow}
-                >
-                  <Tooltip title="Add New">
-                    <Fab color="primary" aria-label="add" size="small">
-                      <AddIcon />
-                    </Fab>
-                  </Tooltip>
-                </IconButton>
-              </Grid>
+                      />}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      id="capacity"
+                      value={isEmpty(this.state.roomsObject) ? "" : this.state.roomsObject.studentCapacity}
+                      variant="outlined"
+                      fullWidth
+                      placeholder="Student Capacity"
+                      readOnly
+                    />
+                  </Grid>
+                  <Grid item xs={1} style={{ textAlign: "center" }}>
+                    <IconButton
+                      color="primary"
+                      aria-label="Add"
+                      component="span"
+                      onClick={this.handeAddCourseRow}
+                    >
+                      <Tooltip title="Add New">
+                        <Fab color="primary" aria-label="add" size="small">
+                          <AddIcon />
+                        </Fab>
+                      </Tooltip>
+                    </IconButton>
+                  </Grid>
 
-              </Fragment>
+                </Fragment>
               }
 
               <Grid item xs={12}>
@@ -785,14 +778,14 @@ class F31FormPopupComponent extends Component {
                 </Grid>
 
                 {this.state.isReadOnly ?
-                ""
-                :
-                <Grid item xs={1} style={{ textAlign: "center" }}>
+                  ""
+                  :
+                  <Grid item xs={1} style={{ textAlign: "center" }}>
 
-                  <Typography color="primary">
-                    Action
+                    <Typography color="primary">
+                      Action
                     </Typography>
-                </Grid>
+                  </Grid>
 
                 }
 
@@ -834,9 +827,9 @@ class F31FormPopupComponent extends Component {
             <Button autoFocus onClick={this.handleClose} color="secondary">
               Close
             </Button>
-            {this.state.isReadOnly ? 
+            {this.state.isReadOnly ?
               ""
-            :
+              :
               <Button
                 onClick={this.props.clickOnFormSubmit()}
                 color="primary"
@@ -884,7 +877,7 @@ F31FormPopupComponent.defaultTypes = {
   preTimeStartMenuItems: "",
 
   preDaysMenuItems: "",
-  isReadOnly:true
+  isReadOnly: true
 
 }
 
