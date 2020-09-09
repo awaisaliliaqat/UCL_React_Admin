@@ -23,12 +23,13 @@ class ChangeStudentStatus extends Component {
       studentData: [],
       editRecord: [],
       studentId: "",
+      studentName: "",
+      studentStatus: 1,
       sessionId: "",
       sessionData: [],
       isLoginMenu: false,
       isReload: false,
       showTableFilter: false,
-
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
@@ -41,8 +42,8 @@ class ChangeStudentStatus extends Component {
   }
 
   onClearFilters = () => {
-    this.setState({
-      studentId: "",
+    this.setState({ 
+      studentId: ""
     });
   };
 
@@ -64,11 +65,9 @@ class ChangeStudentStatus extends Component {
   };
 
   getData = async () => {
-    this.setState({
-      isLoading: true,
-    });
+    this.setState({isLoading:true});
     const reload = this.state.studentId === "";
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonStudentsView?studentId=${this.state.studentId}`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonStudentsView?studentId=${this.state.studentId}&studentName=${this.state.studentName}&isActive=${this.state.studentStatus}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -84,18 +83,11 @@ class ChangeStudentStatus extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({
-              studentData: json.DATA || [],
-            });
+            this.setState({studentData: json.DATA || []});
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          this.setState({
-            isLoading: false,
-          });
+          this.setState({isLoading: false});
           console.log(json);
         },
         (error) => {
@@ -105,15 +97,10 @@ class ChangeStudentStatus extends Component {
               isReload: reload,
             });
           } else {
-            this.handleOpenSnackbar(
-              "Failed to load Students Data ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
             console.log(error);
           }
-          this.setState({
-            isLoading: false,
-          });
+          this.setState({isLoading: false});
         }
       );
   };
@@ -139,10 +126,7 @@ class ChangeStudentStatus extends Component {
               sessionData: json.DATA || [],
             });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log(json);
         },
@@ -153,10 +137,7 @@ class ChangeStudentStatus extends Component {
               isReload: true,
             });
           } else {
-            this.handleOpenSnackbar(
-              "Failed to load Students Data ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
             console.log(error);
           }
         }
@@ -187,10 +168,7 @@ class ChangeStudentStatus extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             setTimeout(() => window.location.reload(), 1000);
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log(json);
         },
@@ -202,10 +180,7 @@ class ChangeStudentStatus extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
