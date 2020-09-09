@@ -6,18 +6,17 @@ import Logo from '../../../../../assets/Images/logo.png';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
-
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@material-ui/core';
 
 const styles = (theme) => ({
     closeButton: {
         top: theme.spacing(1),
         right: theme.spacing(2),
         zIndex: 1,
-        border: '1px solid #b3b3b3',
-        borderRadius: 0,
+        border: '1px solid #b43329',
+        borderRadius: 5,
         position: 'fixed',
-        padding: 5,
+        padding: 3,
         '@media print': {
             display: 'none'
         }
@@ -139,6 +138,27 @@ const styles = (theme) => ({
     }
 });
 
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+      backgroundColor: "rgb(47, 87, 165)", //theme.palette.common.black,
+      color: theme.palette.common.white,
+      fontWeight: 500,
+      border: '1px solid white'
+    },
+    body: {
+      fontSize: 14,
+      border: '1px solid rgb(29, 95, 152)'
+    },
+  }))(TableCell);
+  
+  const StyledTableRow = withStyles((theme) => ({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+      },
+    },
+  }))(TableRow);
+
 class DisplayAdmissionApplications extends Component {
     constructor(props) {
         super(props);
@@ -210,7 +230,7 @@ class DisplayAdmissionApplications extends Component {
     render() {
         const { classes } = this.props;
         const { data } = this.state;
-        const { enrolledCourses = [], enrolledSections = [] } = data;
+        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[] } = data;
         return (
             <Fragment>
                 {this.state.isLoading &&
@@ -227,7 +247,7 @@ class DisplayAdmissionApplications extends Component {
                     marginRight: 10,
                 }}>
                     <IconButton onClick={() => window.close()} aria-label="close" className={classes.closeButton}>
-                        <CloseIcon />
+                        <CloseIcon color="secondary"/>
                     </IconButton>
                     <div className={classes.headerContainer}>
                         <img alt="" src={Logo} width={100} />
@@ -965,6 +985,50 @@ class DisplayAdmissionApplications extends Component {
                                         }}>{item.sectionLabel}</span>
                                     );
                                 })}
+                            </div>
+                        </Fragment>
+
+                        <Fragment>
+                            <div className={classes.valuesContainer}>
+                                <span 
+                                    style={{
+                                        fontSize: 'larger'
+                                    }}
+                                >
+                                    Submit Assignments
+                                </span>
+                            </div>
+                            <div style={{
+                                marginLeft: '3%',
+                                marginRight: '3%',
+                                marginTop: '2%',
+                                marginBottom: '1%',
+                                display: 'flex'
+                            }}>
+                                {assignmentsSubmitted.length ? 
+                                <TableContainer component={Paper}>
+                                    <Table size="small" aria-label="customized table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Title</StyledTableCell>
+                                                <StyledTableCell align="center">Marks</StyledTableCell>
+                                                <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Remarks</StyledTableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {assignmentsSubmitted.map((item, index)=>
+                                            <StyledTableRow key={index}>
+                                                <StyledTableCell component="th" scope="row">{item.assignmentLabel}</StyledTableCell>
+                                                <StyledTableCell align="center">{item.marks}</StyledTableCell>
+                                                <StyledTableCell align="center">{item.remarks}</StyledTableCell>
+                                            </StyledTableRow>
+                                        )} 
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                :
+                                ""
+                                }
                             </div>
                         </Fragment>
 

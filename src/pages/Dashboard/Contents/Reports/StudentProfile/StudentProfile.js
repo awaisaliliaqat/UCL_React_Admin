@@ -17,7 +17,6 @@ class EditStudentInformation extends Component {
             isLoginMenu: false,
             isReload: false,
             eventDate: null,
-
         }
     }
 
@@ -52,9 +51,7 @@ class EditStudentInformation extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                        this.setState({
-                            admissionData: json.DATA || []
-                        })
+                        this.setState({admissionData: json.DATA || []});
                     } else {
                         alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
                     }
