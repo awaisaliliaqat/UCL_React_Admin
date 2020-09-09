@@ -48,19 +48,14 @@ const useStyles = makeStyles(() => ({
 }));
 
 const ChangeStudentStatusFilter = props => {
+    
     const classes = useStyles();
     const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading } = props;
-
 
     return (
         <Fragment>
             <div className={classes.container}>
-
-
-
-                <div className={classes.item} style={{
-                    width: '20%'
-                }}>
+                <div className={classes.item} style={{ width: '20%' }}>
                     <span className={classes.label}>Nucleus ID</span>
                     <TextField
                         placeholder="ID"
@@ -68,12 +63,34 @@ const ChangeStudentStatusFilter = props => {
                         InputProps={{ classes: { input: classes.resize } }}
                         value={values.studentId}
                         name="studentId"
-                        onChange={e => {
-                            onHandleChange(e)
-
-                        }}
-
+                        onChange={e => { onHandleChange(e) }}
                     />
+                </div>
+                <div className={classes.item} style={{ width: '20%' }}>
+                    <span className={classes.label}>Name</span>
+                    <TextField
+                        placeholder="Name"
+                        variant="outlined"
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.studentName}
+                        name="studentName"
+                        onChange={e => { onHandleChange(e) }}
+                    />
+                </div>
+                <div className={classes.item} style={{ width: '20%' }}>
+                    <span className={classes.label}>Status</span>
+                    <TextField
+                        placeholder="Status"
+                        variant="outlined"
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.studentStatus}
+                        name="studentStatus"
+                        onChange={e => { onHandleChange(e) }}
+                        select
+                    >
+                    <MenuItem value={0}>Deactive</MenuItem>
+                    <MenuItem value={1} selected={true}>Active</MenuItem>
+                </TextField>
                 </div>
                 <div className={classes.actions}>
                     <Button
@@ -83,15 +100,17 @@ const ChangeStudentStatusFilter = props => {
                         disabled={isLoading}
                         onClick={() => getDataByStatus()}
                     > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
+                    {/* 
                     <Button
                         variant="contained"
                         color="primary"
                         className={classes.button}
-                        style={{
-                            marginLeft: 8,
-                        }}
+                        style={{marginLeft: 8}}
                         onClick={() => onClearFilters()}
-                    >Clear</Button>
+                    >
+                        Clear
+                    </Button> 
+                    */}
                 </div>
             </div>
             <Divider style={{
@@ -111,10 +130,7 @@ const ChangeStudentStatusFilter = props => {
                     InputProps={{ classes: { input: classes.resize } }}
                     value={values.sessionId}
                     name="sessionId"
-                    onChange={e => {
-                        onHandleChange(e)
-
-                    }}
+                    onChange={e => { onHandleChange(e) }}
                     select
                 >
                     {values.sessionData.map(item => {
