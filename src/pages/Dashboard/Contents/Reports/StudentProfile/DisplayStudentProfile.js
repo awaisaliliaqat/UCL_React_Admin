@@ -85,8 +85,8 @@ const styles = (theme) => ({
         fontSize: 'larger',
         backgroundColor: '#2f57a5',
         color: 'white',
-        '-webkit-print-color-adjust': 'exact',
-        'color-adjust': 'exact',
+        'WebkitPrintColorAdjust': 'exact',
+        'colorAdjust': 'exact',
     },
     image: {
         height: 140,
@@ -98,8 +98,8 @@ const styles = (theme) => ({
         backgroundSize: 'cover',
         backgroundpPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        '-webkit-print-color-adjust': 'exact',
-        'color-adjust': 'exact',
+        'WebkitPrintColorAdjust': 'exact',
+        'colorAdjust': 'exact',
     },
     flexColumn: {
         display: 'flex',
@@ -108,8 +108,8 @@ const styles = (theme) => ({
     valuesContainer: {
         backgroundColor: 'rgb(47, 87, 165)',
         color: 'white',
-        '-webkit-print-color-adjust': 'exact',
-        'color-adjust': 'exact',
+        'WebkitPrintColorAdjust': 'exact',
+        'colorAdjust': 'exact',
         padding: 6,
         marginTop: 10,
         marginBottom: 10,
@@ -230,7 +230,7 @@ class DisplayAdmissionApplications extends Component {
     render() {
         const { classes } = this.props;
         const { data } = this.state;
-        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[] } = data;
+        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[] } = data;
         return (
             <Fragment>
                 {this.state.isLoading &&
@@ -271,8 +271,8 @@ class DisplayAdmissionApplications extends Component {
                         <div style={{
                             backgroundColor: 'rgb(47, 87, 165)',
                             color: 'white',
-                            '-webkit-print-color-adjust': 'exact',
-                            'color-adjust': 'exact',
+                            'WebkitPrintColorAdjust': 'exact',
+                            'colorAdjust': 'exact',
                             padding: 6,
                             marginTop: 10
                         }}>
@@ -1011,6 +1011,7 @@ class DisplayAdmissionApplications extends Component {
                                         <TableHead>
                                             <TableRow>
                                                 <StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Title</StyledTableCell>
+                                                <StyledTableCell align="center">Section</StyledTableCell>
                                                 <StyledTableCell align="center">Marks</StyledTableCell>
                                                 <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Remarks</StyledTableCell>
                                             </TableRow>
@@ -1019,8 +1020,55 @@ class DisplayAdmissionApplications extends Component {
                                         {assignmentsSubmitted.map((item, index)=>
                                             <StyledTableRow key={index}>
                                                 <StyledTableCell component="th" scope="row">{item.assignmentLabel}</StyledTableCell>
+                                                <StyledTableCell align="center">{item.sectionLabel}</StyledTableCell>
                                                 <StyledTableCell align="center">{item.marks}</StyledTableCell>
                                                 <StyledTableCell align="center">{item.remarks}</StyledTableCell>
+                                            </StyledTableRow>
+                                        )} 
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                :
+                                ""
+                                }
+                            </div>
+                        </Fragment>
+
+                        <Fragment>
+                            <div className={classes.valuesContainer}>
+                                <span 
+                                    style={{
+                                        fontSize: 'larger'
+                                    }}
+                                >
+                                    Graded Discussion Board
+                                </span>
+                            </div>
+                            <div style={{
+                                marginLeft: '3%',
+                                marginRight: '3%',
+                                marginTop: '2%',
+                                marginBottom: '1%',
+                                display: 'flex'
+                            }}>
+                                {gradedDiscussionsBoard.length ? 
+                                <TableContainer component={Paper}>
+                                    <Table size="small" aria-label="customized table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Title</StyledTableCell>
+                                                <StyledTableCell align="center">Section</StyledTableCell>
+                                                <StyledTableCell align="center">Marks</StyledTableCell>
+                                                <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Discussion&nbsp;Essay</StyledTableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {gradedDiscussionsBoard.map((item, index)=>
+                                            <StyledTableRow key={index}>
+                                                <StyledTableCell component="th" scope="row">{item.discussionLabel}</StyledTableCell>
+                                                <StyledTableCell align="center">{item.sectionLabel}</StyledTableCell>
+                                                <StyledTableCell align="center">{item.marks}</StyledTableCell>
+                                                <StyledTableCell align="center">{item.discussionEssay}</StyledTableCell>
                                             </StyledTableRow>
                                         )} 
                                         </TableBody>
