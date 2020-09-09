@@ -995,7 +995,7 @@ class DisplayAdmissionApplications extends Component {
                                         fontSize: 'larger'
                                     }}
                                 >
-                                    Submit Assignments
+                                    Submitted Assignments
                                 </span>
                             </div>
                             <div style={{
