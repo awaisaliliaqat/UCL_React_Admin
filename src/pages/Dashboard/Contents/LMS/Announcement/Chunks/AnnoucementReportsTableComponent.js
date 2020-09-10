@@ -39,19 +39,25 @@ class AnnoucementReportsTableComponent extends Component {
       defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
+        { columnName: "groupAnouncement", sortingEnabled: false },
+        { columnName: "sectionAnouncement", sortingEnabled: false },
       ],
       tableColumnExtensions: [
+        { columnName: "groupAnouncement", wordWrapEnabled: true },
+        { columnName: "sectionAnouncement", wordWrapEnabled: true },
         { columnName: "label", wordWrapEnabled: true, width: 200 },
         { columnName: "anouncementDate", width: 200 },
         { columnName: "anouncementDetails", wordWrapEnabled: true },
         { columnName: "createdOn", width: 200 },
-        { columnName: "action", width: 150 },
+        { columnName: "action", width: 110 },
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
+        { columnName: "groupAnouncement", filteringEnabled: false },
+        { columnName: "sectionAnouncement", filteringEnabled: false },
       ],
     };
   }
@@ -81,7 +87,7 @@ class AnnoucementReportsTableComponent extends Component {
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
           />
-          <PagingState defaultCurrentPage={1} defaultPageSize={10} />
+          <PagingState defaultCurrentPage={0} defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
