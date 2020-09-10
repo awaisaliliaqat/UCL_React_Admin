@@ -83,6 +83,12 @@ class ChangeStudentStatus extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            let studentData = json.DATA || [];
+            for(let i=0; i<studentData.length; i++) {
+              let fName = studentData[i].firstName;
+              let lName = studentData[i].lastName;
+              studentData[i].firstName = fName+" "+lName;
+            }
             this.setState({studentData: json.DATA || []});
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -222,26 +228,16 @@ class ChangeStudentStatus extends Component {
   render() {
     const columns = [
       { name: "studentId", title: "Nucleus Id" },
-      {
-        name: "firstName",
-        title: "Name",
-        getCellValue: (rowData) => {
-          return (
-            <Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>
-          );
-        },
-      },
+      //{ name: "firstName", title: "Name", getCellValue: (rowData) => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}},
+      { name: "firstName", title: "Name"},
       { name: "genderLabel", title: "Gender" },
       { name: "degreeLabel", title: "Degree Programme" },
       { name: "mobileNo", title: "Mobile No" },
       { name: "email", title: "Email" },
       { name: "sessionLabel", title: "Session" },
       { name: "statusLabel", title: "Status" },
-      {
-        name: "action",
-        title: "Selection",
-        getCellValue: (rowData) => {
-          return (
+      { name: "action", title: "Selection", 
+        getCellValue: (rowData) => { return (
             <Checkbox
               icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 30 }} />}
               checkedIcon={<CheckBoxIcon style={{ fontSize: 30 }} />}
@@ -361,18 +357,16 @@ class ChangeStudentStatus extends Component {
                 color="secondary"
                 onClick={() => this.clickOnFormSubmit(0)}
               >
-                {this.state.isLoading ? (
+                {this.state.isLoading ? 
                   <CircularProgress
                     style={{
                       color: "white",
-                      paddingLeft: 40,
-                      paddingRight: 40,
                     }}
-                    size={24}
+                    size={28}
                   />
-                ) : (
+                 : 
                   "Deactivate"
-                )}
+                }
               </Button>
             </Fragment>
           }
