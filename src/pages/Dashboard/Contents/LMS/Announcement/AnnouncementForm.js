@@ -3,12 +3,15 @@ import PropTypes from 'prop-types';
 import { withStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import { TextField, Grid } from "@material-ui/core";
+import { TextField, Grid, MenuItem, FormControl, InputLabel, Select, Chip, checked, Checkbox} from "@material-ui/core";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { DatePicker } from "@material-ui/pickers";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
 
-const styles = () => ({
+const styles = (theme) => ({
   root: {
     paddingBottom: 40,
     paddingLeft: 20,
@@ -22,30 +25,61 @@ const styles = () => ({
     width: "98%",
     marginBottom: 25,
     fontSize: 20,
+  },
+  formControl: {
+    '& #programmeGroupId':{
+      display:"inline-table",
+      paddingRight:0,
+      paddingLeft:0
+    }
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    whiteSpace: "break-spaces",
+    paddingRight:22,
+    paddingLeft:5
+  },
+  chip: {
+    margin: 2,
   }
 });
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 class AnnouncementForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       recordId: this.props.match.params.recordId,
-
       isLoading: false,
-
       isReload: false,
       isLoginMenu: false,
-
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-
       label: "",
       labelError: "",
       anouncementDetails: "",
       anouncementDetailsError: "",
       anouncementDate: null,
-      anouncementDateError: ""
+      anouncementDateError: "",
+      programmeGroupId:[],
+      programmeGroupIdError:"",
+      programmeGroupsMenuItems:[],
+      sectionId:[],
+      sectionIdString:"",
+      sectionIdError:"",
+      sectionsMenuItems:[]
     };
   }
 
@@ -64,6 +98,91 @@ class AnnouncementForm extends Component {
     this.setState({
       isOpenSnackbar: false,
     });
+  };
+
+  getprogramGroups = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C58CommonActiveSessionProgrammeGroupView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ programmeGroupsMenuItems: json.DATA || [] });
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getprogramGroups", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  getSections = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C58CommonAcademicsActiveSessionSectionsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({sectionsMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getSections", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
   };
 
   loadData = async (index) => {
@@ -90,10 +209,12 @@ class AnnouncementForm extends Component {
             const data = json.DATA || [];
             if (data.length > 0) {
               this.setState({
+                programmeGroupId: data[0].GroupAnouncementArray.map((item, index)=>item.Id),
                 label: data[0].label,
                 anouncementDetails: data[0].anouncementDetails,
                 anouncementDate: data[0].anouncementDateSimple,
-              })
+              });
+              this.handleSetSection(data[0].SectionAnouncementArray || []);
             } else {
               window.location = "#/dashboard/announcements";
             }
@@ -160,8 +281,12 @@ class AnnouncementForm extends Component {
       anouncementDetails: "",
       anouncementDetailsError: "",
       anouncementDate: null,
-      anouncementDateError: ""
-
+      anouncementDateError: "",
+      programmeGroupId:[],
+      programmeGroupIdError:"",
+      sectionId:[],
+      sectionIdString:"",
+      sectionIdError:""
     })
   }
 
@@ -196,12 +321,11 @@ class AnnouncementForm extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             if (this.state.recordId == 0) {
               this.resetForm();
+            }else{
+              this.viewReport();
             }
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log(json);
         },
@@ -213,10 +337,7 @@ class AnnouncementForm extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -227,7 +348,51 @@ class AnnouncementForm extends Component {
     window.location = "#/dashboard/announcements";
   };
 
+  getprogramGroupsLabelFromID = (id) => {
+    let res = this.state.programmeGroupsMenuItems.find((obj)=>obj.Id===id);
+    if(res){
+      return res.Label;
+    }
+    return "";
+  }
+
+  isSectionSelected = (option) => {
+    return this.state.sectionId.some((obj) => JSON.stringify(obj) == JSON.stringify(option));
+  };
+
+  handleDateChange = (name, date) => {
+    const errorName = `${name}Error`;
+    this.setState({
+      [name]: date,
+      [errorName]: ""
+    });
+  };
+
+  handleSetSection = (value) => {
+    let sectionIdString = "";
+    for(let i=0;i<value.length;i++){
+      if(i!=0){ sectionIdString+=","; }
+      sectionIdString+=value[i].id;
+    }
+    this.setState({
+      sectionId: value, 
+      sectionIdString:sectionIdString,
+      sectionIdError: ""
+    });
+  };
+
+  onHandleChange = (e) => {
+    const { name, value } = e.target;
+    const errName = `${name}Error`;
+    this.setState({
+      [name]: value,
+      [errName]: "",
+    });
+  };
+
   componentDidMount() {
+    this.getprogramGroups();
+    this.getSections();
     this.props.setDrawerOpen(false);
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
@@ -248,24 +413,10 @@ class AnnouncementForm extends Component {
     }
   }
 
-  handleDateChange = (name, date) => {
-    const errorName = `${name}Error`;
-    this.setState({
-      [name]: date,
-      [errorName]: ""
-    });
-  };
-
-  onHandleChange = (e) => {
-    const { name, value } = e.target;
-    const errName = `${name}Error`;
-    this.setState({
-      [name]: value,
-      [errName]: "",
-    });
-  };
-
   render() {
+
+    const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+    const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
     const { classes } = this.props;
     return (
@@ -300,6 +451,111 @@ class AnnouncementForm extends Component {
                 marginRight: 10,
               }}
             >
+              <Grid item xs={12} md={6}>
+                <FormControl variant="outlined" fullWidth className={classes.formControl}>
+                  <InputLabel id="programmeGroupId-label">Programme Groups</InputLabel>
+                  <Select
+                    multiple
+                    labelId="programmeGroupId-label"
+                    id="programmeGroupId"
+                    name="programmeGroupId"
+                    label="Programme Groups"
+                    value={this.state.programmeGroupId}
+                    onChange={this.onHandleChange}
+                    renderValue={(selected) => (
+                      <div className={classes.chips}>
+                        {selected.map((value) => (
+                            <Chip 
+                              key={value} 
+                              label={this.getprogramGroupsLabelFromID(value)} 
+                              className={classes.chip} 
+                              color="primary"
+                              variant="outlined"
+                            />
+                        ))}
+                      </div>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                    {this.state.programmeGroupsMenuItems.map((item) => (
+                      <MenuItem key={item.Id} value={item.Id}>
+                        {item.Label}
+                      </MenuItem>
+                    ))} 
+                  </Select>
+                </FormControl>
+                {/* <TextField
+                  id="programmeGroupId"
+                  name="programmeGroupId"
+                  required
+                  fullWidth
+                  select
+                  multiple
+                  input={<Input id="select-multiple-chip" />}
+                  label="Programme Group"
+                  variant="outlined"
+                  onChange={this.onHandleChange}
+                  value={this.state.programmeGroupId}
+                  error={this.state.programmeGroupIdError}
+                  helperText={this.state.programmeGroupIdError}
+                >
+                  <MenuItem value={1}>L1</MenuItem>
+                  <MenuItem value={2}>L2</MenuItem>
+                  {/* 
+                  {this.state.programmeGroupsMenuItems.map((item) => (
+                    <MenuItem key={item.ID} value={item.ID}>
+                      {item.label}
+                    </MenuItem>
+                  ))} 
+                </TextField>
+                */}
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Autocomplete
+                  multiple
+                  fullWidth
+                  id="sectionId"
+                  options={this.state.sectionsMenuItems}
+                  value={this.state.sectionId}
+                  onChange={(event, value) => this.handleSetSection(value)}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
+                  getOptionSelected={(option) => this.isSectionSelected(option)}
+                  renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                      <Chip
+                        label={option.label}
+                        color="primary"
+                        variant="outlined"
+                        {...getTagProps({ index })}
+                      />
+                    ))
+                  }
+                  renderOption={(option, {selected}) => (
+                    <Fragment>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                        color="primary"
+                      />
+                      {option.label}
+                    </Fragment>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Sections"
+                      placeholder="Search and Select"
+                      error={!!this.state.sectionIdError}
+                      helperText={this.state.sectionIdError ? this.state.sectionIdError : "" }
+                    />
+                  )}
+                />
+                <TextField type="hidden" name="sectionId" value={this.state.sectionIdString}/>
+              </Grid>
               <Grid item xs={12} sm={6}>
                 <DatePicker
                   autoOk
@@ -316,8 +572,8 @@ class AnnouncementForm extends Component {
                   required
                   value={this.state.anouncementDate}
                   onChange={date => this.handleDateChange("anouncementDate", date)}
-                  error={this.state.anouncementDateError}
-
+                  error={!!this.state.anouncementDateError}
+                  helperText={this.state.anouncementDateError ? this.state.anouncementDateError : " "}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -330,8 +586,8 @@ class AnnouncementForm extends Component {
                   variant="outlined"
                   onChange={this.onHandleChange}
                   value={this.state.label}
-                  error={this.state.labelError}
-
+                  error={!!this.state.labelError}
+                  helperText={this.state.labelError ? this.state.labelError : ""}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -346,8 +602,8 @@ class AnnouncementForm extends Component {
                   rows={5}
                   onChange={this.onHandleChange}
                   value={this.state.anouncementDetails}
-                  error={this.state.anouncementDetailsError}
-
+                  error={!!this.state.anouncementDetailsError}
+                  helperText={this.state.anouncementDetailsError}
                 />
               </Grid>
 

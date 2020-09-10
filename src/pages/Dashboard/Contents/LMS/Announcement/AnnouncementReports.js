@@ -64,10 +64,12 @@ class AnnouncementReports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({
-              admissionData: json.DATA || [],
-            });
+            this.setState({admissionData: json.DATA || []});
             for (var i = 0; i < json.DATA.length; i++) {
+              let GroupAnouncementArray = json.DATA[i].GroupAnouncementArray || [];
+              json.DATA[i].groupAnouncement = (GroupAnouncementArray.map((item, index) => <Fragment key={item.Label+index}>{index ?<br/>:""}<span>{item.Label}</span></Fragment>));
+              let SectionAnouncementArray = json.DATA[i].SectionAnouncementArray || [];
+              json.DATA[i].sectionAnouncement = (SectionAnouncementArray.map((item, index) =>  <Fragment key={item.label+index}>{index ?<br/>:""}<span>{item.label}</span></Fragment>));
               const id = json.DATA[i].id;
               json.DATA[i].action = (
                 <EditDeleteTableComponent
@@ -91,6 +93,7 @@ class AnnouncementReports extends Component {
           } else {
             this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error");
           }
+          console.log("getData", json)
         },
         (error) => {
           if (error.status === 401) {
@@ -99,10 +102,7 @@ class AnnouncementReports extends Component {
               isReload: true,
             });
           } else {
-            this.handleOpenSnackbar(
-              "Failed to load announcements data, Please try again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to load announcements data, Please try again later.","error");
             console.log(error);
           }
         }
@@ -168,6 +168,8 @@ class AnnouncementReports extends Component {
   render() {
 
     const columns = [
+      { name: "groupAnouncement", title: "Groups" },
+      { name: "sectionAnouncement", title: "Sections" },
       { name: "label", title: "Title" },
       { name: "anouncementDate", title: "Announcement\xa0Date" },
       { name: "anouncementDetails", title: "Announcements" },
