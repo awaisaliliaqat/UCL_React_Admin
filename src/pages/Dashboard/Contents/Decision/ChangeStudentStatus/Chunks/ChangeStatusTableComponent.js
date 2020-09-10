@@ -1,15 +1,8 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
-import {
-    FilteringState, IntegratedFiltering,
-    IntegratedSorting, SortingState
-} from '@devexpress/dx-react-grid';
-import {
-    Grid, Table, TableFilterRow,
-    TableHeaderRow
-} from '@devexpress/dx-react-grid-material-ui';
+import {FilteringState, IntegratedFiltering, IntegratedSorting, SortingState} from '@devexpress/dx-react-grid';
+import {Grid, Table, TableFilterRow, TableHeaderRow} from '@devexpress/dx-react-grid-material-ui';
 import PropTypes from "prop-types";
-
 
 class ChangeStatusTableComponent extends Component {
 
@@ -30,7 +23,6 @@ class ChangeStatusTableComponent extends Component {
                 "lessThan",
                 "lessThanOrEqual",
             ],
-
             resizingMode: "widget",
             defaultFilters: [],
             filteringStateColumnExtensions: [
@@ -44,7 +36,11 @@ class ChangeStatusTableComponent extends Component {
                 { columnName: 'mobileNo', wordWrapEnabled: true },
                 { columnName: 'email', wordWrapEnabled: true, width: 200 },
                 { columnName: 'sessionLabel', wordWrapEnabled: true },
-                { columnName: 'action', width: 130 },
+                { columnName: 'action', width: 130, align:"center" },
+            ],
+            defaultSorting: [],
+            sortingStateColumnExtensions: [
+                { columnName: "action", sortingEnabled: false },
             ],
         };
     }
@@ -78,11 +74,7 @@ class ChangeStatusTableComponent extends Component {
                                 <b>&emsp;{props.children}</b>
                         )}
                     />
-                    {showFilter ?
-                        <TableFilterRow showFilterSelector={true} />
-                        :
-                        ""
-                    }
+                    {showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
                 </Grid>
             </Paper>
         );
@@ -93,8 +85,6 @@ ChangeStatusTableComponent.propTypes = {
     columns: PropTypes.array,
     rows: PropTypes.array,
     showFilter: PropTypes.bool
-
-
 }
 
 ChangeStatusTableComponent.defaultProps = {
