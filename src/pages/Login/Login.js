@@ -16,32 +16,109 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import { Link } from 'react-router-dom';
+import BackgroundUcl from '../../assets/Images/bg_ucl2.gif';
+import NucleusLogo from '../../assets/Images/nUCLeus_logo.jpg';
+
+// const useStyles = makeStyles((theme) => ({
+//   root: {
+//     height: '100vh',
+//   },
+//   image: {
+//     backgroundImage: `url(${BackgroundUcl})`,
+//     backgroundRepeat: 'no-repeat',
+//     backgroundColor:
+//       theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+//     backgroundSize: 'cover',
+//     height: '100%',
+    
+//     //backgroundPosition: 'center',
+//   },
+//   image_logo: {
+//     backgroundImage: `url(${NucleusLogo})`,
+//     backgroundRepeat: 'no-repeat',
+//     backgroundSize: 'cover',
+//     // backgroundColor:
+//     //   theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+//     // backgroundSize: 'cover',
+//     backgroundPosition: 'center',
+//     height:'100px',
+//     width:'230px'
+   
+//   },
+//   paper: {
+//     margin: theme.spacing(2, 2),
+//     display: 'flex',
+//     justifyContent: 'space-between',
+//     flexDirection: 'column',
+//     alignItems: 'center',
+//   },
+//   avatar: {
+//     margin: theme.spacing(1),
+//     backgroundColor: theme.palette.secondary.main,
+//   },
+//   // form: {
+//   //   width: '100%', // Fix IE 11 issue.
+//   //   marginTop: theme.spacing(1),
+//   // },
+//   form: {
+//     width: '90%', // Fix IE 11 issue.
+//     marginTop: theme.spacing(1),
+//   },
+
+//   submit: {
+//     margin: theme.spacing(3, 0, 2),
+//   },
+//   container: {
+//     display: 'flex',
+//     flexDirection: 'column',
+//     justifyContent: 'space-between',
+//     height: '100%'
+//   }
+// }));
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: '100vh',
   },
   image: {
-    backgroundImage: `url(${Background})`,
+    backgroundImage: `url(${BackgroundUcl})`,
     backgroundRepeat: 'no-repeat',
     backgroundColor:
-      theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+    theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
     backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    height: '100%',
+    
+    //backgroundPosition: 'center',
   },
+  image_logo: {
+    backgroundImage: `url(${NucleusLogo})`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    marginTop: -50,
+    // backgroundColor:
+    //   theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+    // backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    height:'100px',
+    width:'230px'
+   
+  },
+
   paper: {
     margin: theme.spacing(2, 2),
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     flexDirection: 'column',
     alignItems: 'center',
+  
+    
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: '90%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -50,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     height: '100%'
   }
 }));
@@ -107,15 +184,118 @@ const Login = () => {
   return (
     <Fragment>
       <Grid container component="main" className={classes.root}>
-        <NavBar logo={Logo} title="University College London" />
-        <CssBaseline />
-        <Grid item xs={false} sm={4} md={7} className={classes.image} />
-        <Grid item xs={12} sm={8} md={5} justify="space-between" component={Paper} elevation={6} square style={{ marginTop: 55 }}>
+        {/* <NavBar logo={Logo} title="University College London" /> */}
+      
+        <Grid item xs={false} sm={12} md={12} className={classes.image} > 
+        <Grid container justify="space-between"   className={classes.root}> 
+          <Grid item xs={false} sm={5} md={6} justify="space-between"   elevation={6} square style={{ textAlign:'center',marginLeft:'2%',marginTop:'9%' }}>
+           
+            <Typography variant="h2" style={{ textAlign:'left',color:'white',textShadow:'1px 1px 2px black' }} component="h2" gutterBottom>
+              WELCOME TO NUCLEUS <br/> THE UNIVERSITY COLLEGE LAHORE PORTAL
+           </Typography>
+            
+
+          </Grid>
+        
+          <Grid item xs={12} sm={5} md={5} style={{marginB1ottom:'10%',alignContent:'center', }}>
+          <Grid item xs={12} sm={5} md={8}   elevation={6} square style={{alignContent:'center', borderRadius:'18px' ,width:'95%',background:'white',marginRight:'3%',marginTop: 85,m1arginBottom:'4%' }}>
+            <div component={Paper} elevation={6} className={classes.container}>
+              <div   className={classes.paper}>
+                  <div style={{height:'50px'}}/>
+                <Grid item  className={classes.image_logo} />
+                <div style={{paddingTop:'20px'}}>
+                <Typography variant="h5" style={{ textAlign:'left',fontWeight:700 }} component="h2" gutterBottom>
+                    SIGN IN
+                </Typography>
+                </div>
+                 <form onSubmit={e => onFormSubmit(e)} className={classes.form}>
+                <TextField
+                  variant="outlined"
+                 size ='small'
+                  margin="normal"
+                
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  onChange={() => setError('')}
+                  autoComplete="email"
+                  autoFocus
+                />
+                <TextField
+                   variant="outlined"
+                  margin="normal"
+                  size ='small'
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  onChange={() => setError('')}
+                  type={show ? "text" : "password"}
+                  id="password"
+                  InputProps={{
+                    endAdornment:
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {show ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+
+                  }}
+                />
+                <span style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginBottom: '-12px',
+                  color: '#e04848'
+                }}>{error}</span>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  style={{ backgroundColor: `${isLoading ? "#6272ce" : ""}` }}
+                  color="primary"
+                  className={classes.submit}
+                  disabled={isLoading}
+                >
+                  {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Login"}
+                </Button>
+                <Grid container>
+                  <Grid style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end'
+                  }} item xs>
+                    <Link to="/forgot-password" variant="body2">
+                      Forgot password?
+                </Link>
+                  </Grid>
+                </Grid>
+              </form>
+        
+              </div>
+                <div style={{ paddingBottom: 25}}>
+                  <Copyright style={{fontSize:'0.7em'}}  />
+                </div>
+            </div>
+           </Grid>
+        </Grid>
+          </Grid>
+       
+        
+        </Grid>
+        {/* <Grid item xs={false} sm={4} md={7} className={classes.image} /> */}
+        {/* <Grid item xs={12} sm={8} md={5} justify="space-between" component={Paper} elevation={6} square style={{ marginTop: 55 }}>
           <div className={classes.container}>
             <div className={classes.paper}>
               <Typography component="h1" variant="h5">
                 Login
-          </Typography>
+             </Typography>
               <Typography component="h5" variant="body2">
 
               </Typography>
@@ -190,7 +370,7 @@ const Login = () => {
               <Copyright />
             </div>
           </div>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Fragment>
   );
