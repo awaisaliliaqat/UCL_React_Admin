@@ -27,7 +27,6 @@ const styles = (theme) => ({
     fontSize: 20,
   },
   formControl: {
-    color:"pink",
     '& #programmeGroupId':{
       display:"inline-table",
       paddingRight:0,
@@ -209,11 +208,6 @@ class AnnouncementForm extends Component {
           if (json.CODE === 1) {
             const data = json.DATA || [];
             if (data.length > 0) {
-              let sectionIdString = ""
-              for(let i=0;i<data[0].length;i++){
-                if(i!=0){ sectionIdString+=","; }
-                sectionIdString+=data[0].SectionAnouncementArray[i].id;
-              }
               this.setState({
                 programmeGroupId: data[0].GroupAnouncementArray.map((item, index)=>item.Id),
                 label: data[0].label,
@@ -326,7 +320,9 @@ class AnnouncementForm extends Component {
           if (json.CODE === 1) {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             if (this.state.recordId == 0) {
-              //this.resetForm();
+              this.resetForm();
+            }else{
+              this.viewReport();
             }
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
