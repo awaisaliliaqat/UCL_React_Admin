@@ -33,12 +33,9 @@ class ChangeStudentStatus extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
+      programmeGroupId:"",
+      programmeGroupsMenuItems:[]
     };
-  }
-
-  componentDidMount() {
-    this.getSessionData();
-    //this.getData();
   }
 
   onClearFilters = () => {
@@ -64,10 +61,47 @@ class ChangeStudentStatus extends Component {
     });
   };
 
+  getProgrammeGroups = async () => {
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonOfferedSessionProgrammesGroupView`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({programmeGroupsMenuItems: json.DATA || []});
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getProgrammeGroups",json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+            console.log(error);
+          }
+        }
+      );
+  };
+
   getData = async () => {
     this.setState({isLoading:true});
     const reload = this.state.studentId === "";
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonStudentsView?studentId=${this.state.studentId}&studentName=${this.state.studentName}&isActive=${this.state.studentStatus}`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonStudentsView?studentId=${this.state.studentId}&studentName=${this.state.studentName}&programmeGroupId=${this.state.programmeGroupId}&isActive=${this.state.studentStatus}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -224,6 +258,12 @@ class ChangeStudentStatus extends Component {
   handleToggleTableFilter = () => {
     this.setState({ showTableFilter: !this.state.showTableFilter });
   };
+
+  componentDidMount() {
+    this.getProgrammeGroups();
+    this.getSessionData();
+    //this.getData();
+  }
 
   render() {
     const columns = [
