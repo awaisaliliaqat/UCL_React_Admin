@@ -247,8 +247,8 @@ class R46Reports extends Component {
 
   handleSetProgrammeGroup = (value) => {
     if (value) {
-      this.getEffectiveDates(value.ID);
-      this.getData(value.ID, "01-01-1970");
+      this.getEffectiveDates(value.Id);
+      this.getData(value.Id, "01-01-1970");
     } else {
       this.setState({ timetableData: [] });
     }
@@ -264,7 +264,7 @@ class R46Reports extends Component {
     let regex = "";
     switch (name) {
       case "effectiveDates":
-        this.getData(this.state.programGroupId.ID, value);
+        this.getData(this.state.programGroupId.Id, value);
         break;
       default:
         break;
