@@ -405,6 +405,7 @@ class R46Reports extends Component {
             bottomRightButtonAction={this.handleGenerate}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
+            disableRightButton={!this.state.monthId}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
