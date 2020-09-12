@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Fragment} from "react";
 import PropTypes from 'prop-types';
 import AssignmentsIcon from '../../../../../../assets/Images/grade_book_assignments.png';
 import { withStyles } from "@material-ui/core/styles";
@@ -73,7 +73,37 @@ const Profile = (props) => {
           <br />
         </div>
         <br />
-
+        <Typography variant="caption">Announcements</Typography>
+        <Divider variant="fullWidth" />
+        <div style={{
+          paddingLeft: "10px", marginTop: "5px", overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        }}>
+          {props.anouncementData.map((item, index) => {
+            if (index < 5) {
+              return (
+                <Fragment key={item.label+index}>
+                  <Link onClick={() => props.onAnnouncementClick(item)} variant="body1" className={classes.handCursor}>
+                    <div style={{
+                      width: 200,
+                      textOverflow: 'ellipsis',
+                      display: 'inline-block',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap'
+                    }}> {item.label}</div> <span style={{
+                      fontSize: 12,
+                      color: 'grey',
+                      float: 'right',
+                      marginTop: 5
+                    }}>{item.anouncementDate}</span>
+                  </Link>
+                  <br />
+                </Fragment>
+              )
+            }
+          })}
+        </div>
+        <br />
         <Typography variant="caption">Enrolled Sections</Typography>
         <Divider variant="fullWidth" />
 
