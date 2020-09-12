@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import { TextField, Grid, MenuItem, FormControl, InputLabel, Select, Chip, checked, Checkbox} from "@material-ui/core";
+import { TextField, Grid, MenuItem, FormControl, InputLabel, Select, Chip, checked, Checkbox, helperText, 
+  FormControlLabel, FormLabel, FormGroup, FormHelperText} from "@material-ui/core";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { DatePicker } from "@material-ui/pickers";
@@ -79,7 +80,10 @@ class AnnouncementForm extends Component {
       sectionId:[],
       sectionIdString:"",
       sectionIdError:"",
-      sectionsMenuItems:[]
+      sectionsMenuItems:[],
+      isAnnouncementForTeachers: false,
+      isAnnouncementForStudents: false,
+      announcementForError:""
     };
   }
 
@@ -207,13 +211,19 @@ class AnnouncementForm extends Component {
         (json) => {
           if (json.CODE === 1) {
             const data = json.DATA || [];
-            if (data.length > 0) {
+            if (data.length > 0) {              
               this.setState({
                 programmeGroupId: data[0].GroupAnouncementArray.map((item, index)=>item.Id),
                 label: data[0].label,
                 anouncementDetails: data[0].anouncementDetails,
                 anouncementDate: data[0].anouncementDateSimple,
               });
+              if(data[0].anouncementTypeId==1 || data[0].anouncementTypeId==2){
+                this.setState({isAnnouncementForTeachers:true});
+              }
+              if(data[0].anouncementTypeId==1 || data[0].anouncementTypeId==3){
+                this.setState({isAnnouncementForStudents:true});
+              }
               this.handleSetSection(data[0].SectionAnouncementArray || []);
             } else {
               window.location = "#/dashboard/announcements";
@@ -243,7 +253,7 @@ class AnnouncementForm extends Component {
 
   isFormValid = () => {
     let isValid = true;
-    let { labelError, anouncementDateError, anouncementDetailsError } = this.state;
+    let { labelError, anouncementDateError, anouncementDetailsError, announcementForError } = this.state;
 
     if (!this.state.anouncementDate) {
       anouncementDateError = "Please select the announcement date";
@@ -266,9 +276,14 @@ class AnnouncementForm extends Component {
       anouncementDetailsError = "";
     }
 
-    this.setState({
-      labelError, anouncementDateError, anouncementDetailsError
-    })
+    if (!this.state.isAnnouncementForTeachers && !this.state.isAnnouncementForStudents) {
+      announcementForError = "Please select";
+      isValid = false;
+    } else {
+      announcementForError = "";
+    }
+
+    this.setState({labelError, anouncementDateError, anouncementDetailsError, announcementForError});
 
     return isValid;
   }
@@ -286,7 +301,10 @@ class AnnouncementForm extends Component {
       programmeGroupIdError:"",
       sectionId:[],
       sectionIdString:"",
-      sectionIdError:""
+      sectionIdError:"",
+      isAnnouncementForStudents:false,
+      isAnnouncementForTeachers:false,
+      announcementForError:""
     })
   }
 
@@ -390,6 +408,11 @@ class AnnouncementForm extends Component {
     });
   };
 
+  handleAnnouncementChange = (event) => {
+    console.log(event.target);
+    this.setState({[event.target.name]: event.target.checked });
+  };
+
   componentDidMount() {
     this.getprogramGroups();
     this.getSections();
@@ -417,8 +440,8 @@ class AnnouncementForm extends Component {
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
     const { classes } = this.props;
+
     return (
       <Fragment>
         <LoginMenu
@@ -590,7 +613,7 @@ class AnnouncementForm extends Component {
                   helperText={this.state.labelError ? this.state.labelError : ""}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={8} md={10}>
                 <TextField
                   id="anouncementDetails"
                   name="anouncementDetails"
@@ -606,7 +629,23 @@ class AnnouncementForm extends Component {
                   helperText={this.state.anouncementDetailsError}
                 />
               </Grid>
-
+              <Grid item xs={4} md={2}>
+                <FormControl required error={!!this.state.announcementForError} component="fieldset" className={classes.formControl}>
+                  <FormLabel component="legend">Announcement For</FormLabel>
+                  <FormGroup style={{marginLeft:"1em"}}>
+                    <br/>
+                    <FormControlLabel
+                      control={<Checkbox checked={this.state.isAnnouncementForTeachers} onChange={this.handleAnnouncementChange} name="isAnnouncementForTeachers" color="primary"  value={1}/>}
+                      label="Teachers"
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={this.state.isAnnouncementForStudents} onChange={this.handleAnnouncementChange} name="isAnnouncementForStudents" color="primary" value={1}/>}
+                      label="Students"
+                    />
+                  </FormGroup>
+                  <FormHelperText>{this.state.announcementForError}</FormHelperText>
+                </FormControl>
+              </Grid>
             </Grid>
             <br />
           </Grid>

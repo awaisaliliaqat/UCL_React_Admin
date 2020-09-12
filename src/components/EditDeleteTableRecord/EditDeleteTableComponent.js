@@ -82,6 +82,19 @@ function EditDeleteTableComponent(props) {
           </DialogActions>
         </form>
       </Dialog>
+      {!props.hideEditAction &&
+        <Tooltip title="Edit">
+          <IconButton
+            onClick={() => props.editRecord()}
+            disabled={props.disabledEditAction}
+          >
+            <EditIcon
+              style={{color:"#ff9800"}}
+              fontSize="small"
+            />
+          </IconButton>
+        </Tooltip>
+      }
       {!props.hideDeleteAction &&
         <Tooltip title="Delete">
           <IconButton
@@ -90,18 +103,7 @@ function EditDeleteTableComponent(props) {
           >
             <DeleteIcon
               fontSize="small"
-            />
-          </IconButton>
-        </Tooltip>
-      }
-      {!props.hideEditAction &&
-        <Tooltip title="Edit">
-          <IconButton
-            onClick={() => props.editRecord()}
-            disabled={props.disabledEditAction}
-          >
-            <EditIcon
-              fontSize="small"
+              color="error"
             />
           </IconButton>
         </Tooltip>
