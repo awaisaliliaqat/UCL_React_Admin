@@ -173,6 +173,7 @@ class AnnouncementReports extends Component {
       { name: "label", title: "Title" },
       { name: "anouncementDate", title: "Announcement\xa0Date" },
       { name: "anouncementDetails", title: "Announcements" },
+      { name: "anouncementTypeLabel", title: "Announcements For" },
       { name: "createdOn", title: "Created On" },
       { name: "action", title: "Action" },
     ];
