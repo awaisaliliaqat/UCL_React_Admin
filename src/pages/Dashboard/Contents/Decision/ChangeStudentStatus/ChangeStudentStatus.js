@@ -270,6 +270,7 @@ class ChangeStudentStatus extends Component {
       { name: "studentId", title: "Nucleus Id" },
       //{ name: "firstName", title: "Name", getCellValue: (rowData) => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}},
       { name: "firstName", title: "Name"},
+      { name: "middleName", title: "Middle Name"},
       { name: "genderLabel", title: "Gender" },
       { name: "degreeLabel", title: "Degree Programme" },
       { name: "mobileNo", title: "Mobile No" },
