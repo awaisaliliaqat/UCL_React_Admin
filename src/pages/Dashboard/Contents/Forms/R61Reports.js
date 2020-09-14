@@ -5,7 +5,6 @@ import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableConta
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import BottomBar from "../../../../components/BottomBar/BottomBar";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -48,28 +47,12 @@ class R46Reports extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-      coursesMenuItems: [],
-      courseId: "",
-      courseIdError: "",
-      sectionsMenuItems: [],
-      sectionId: "",
-      sectionIdError:"",
-      monthsMenuItems: [
-        {id:1, label:"January"},
-        {id:2, label:"February"},
-        {id:3, label:"March"},
-        {id:4, label:"April"},
-        {id:5, label:"May"},
-        {id:6, label:"June"},
-        {id:7, label:"July"},
-        {id:8, label:"August"},
-        {id:9, label:"September"},
-        {id:10, label:"October"},
-        {id:11, label:"November"},
-        {id:12, label:"December"}
-      ],
-      monthId: "",
-      tableData: [],
+      teachersMenuItems: [],
+      teacherId: {},
+      teacherIdError: "",
+      effectiveDateMenuItems: [],
+      effectiveDate:"",
+      timetableData: [],
     };
   }
 
@@ -86,9 +69,9 @@ class R46Reports extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getCourses = async () => {
+  getTeachers = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C59CommonSessionOfferedProgrammeCoursesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C46CommonTeacherView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -104,12 +87,12 @@ class R46Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({coursesMenuItems: json.DATA || []});
+            this.setState({teachersMenuItems: json.DATA || []});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getCourses", json);
+          console.log("getTeachers", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -127,11 +110,11 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getSections = async (courseId) => {
+  getEffectiveDates = async (teacherId) => {
     let data = new FormData();
-    data.append("courseId", courseId);
+    data.append("teacherId", teacherId);
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C59CommonAcademicsSectionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C61TeacherTimeTableEffectiveDatesView `;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -148,12 +131,12 @@ class R46Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({sectionsMenuItems: json.DATA || []});
+            this.setState({effectiveDateMenuItems: json.DATA || []});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getSections", json);
+          console.log("getEffectiveDates", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -171,12 +154,12 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getData = async (sectionId, monthId) => {
+  getData = async (teacherId, effectiveDate) => {
     this.setState({isLoading: true});
     let data = new FormData();
-    data.append("sectionId", sectionId);
-    data.append("monthId", monthId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C59CommonStudentsView`;
+    data.append("teacherId", teacherId);
+    data.append("effectiveDate", effectiveDate);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C61TimeTableForTeacherView`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -193,7 +176,7 @@ class R46Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({tableData: json.DATA || []});
+            this.setState({timetableData: json.DATA || []});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -216,25 +199,17 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  handleSetCourse = (value) => {    
+  handleSetTeacher = (value) => {    
     this.setState({
-      courseId: value, 
-      courseIdError: "",
-      sectionId:"",
-      sectionsMenuItems:[],
-      tableData:[]
+      teacherId: value, 
+      teacherIdError: "",
+      effectiveDate:"",
+      timetableData:[]
     });
     if(value) {
-      this.getSections(value.id);
+      this.getData(value.id, "01-01-1970");
+      this.getEffectiveDates(value.id);
     }
-  };
-
-  handleSetSection = (value) => {    
-    this.setState({
-      sectionId: value, 
-      sectionError: "",
-      tableData:[]
-    });
   };
 
   onHandleChange = (e) => {
@@ -242,8 +217,9 @@ class R46Reports extends Component {
     const errName = `${name}Error`;
     let regex = "";
     switch (name) {
-        case "monthId":
-            //this.setState({tableData:[]});
+        case "effectiveDate":
+            this.setState({timetableData:[]});
+            this.getData(this.state.teacherId.id, value);
         break;
     default:
         break;
@@ -256,25 +232,20 @@ class R46Reports extends Component {
 
   isCourseValid = () => {
     let isValid = true;        
-    if (!this.state.courseId) {
-        this.setState({courseIdError:"Please select course."});
-        document.getElementById("courseId").focus();
+    if (!this.state.teacherId) {
+        this.setState({teacherIdError:"Please select course."});
+        document.getElementById("teacherId").focus();
         isValid = false;
     } else {
-        this.setState({courseIdError:""});
+        this.setState({teacherIdError:""});
     }
     return isValid;
   }
 
-  handleGenerate = () => {
-    //this.getData(this.state.sectionId.id, this.state.monthId);
-    window.open(`#/R59ReportsAttendanceSheet/${this.state.sectionId.id+"&"+this.state.monthId+"&"+1}`,"_blank");
-    window.open(`#/R59ReportsAttendanceSheet/${this.state.sectionId.id+"&"+this.state.monthId+"&"+2}`,"_blank");
-  }
-
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.getCourses();
+    //this.getTeachers();
+    this.getEffectiveDates();
   }
 
   render() {
@@ -307,7 +278,7 @@ class R46Reports extends Component {
               }}
               variant="h5"
             >
-              Attendance Sheet
+              Teacher Timetable
             </Typography>
           </div>
           <Divider
@@ -323,67 +294,47 @@ class R46Reports extends Component {
             alignItems="center"
             spacing={2}
           >
+            {/* 
             <Grid item xs={12} md={4}>
               <Autocomplete
                 fullWidth
-                id="courseId"
-                options={this.state.coursesMenuItems}
-                value={this.state.courseId}
-                onChange={(event, value) => this.handleSetCourse(value)}
+                id="teacherId"
+                options={this.state.teachersMenuItems}
+                value={this.state.teacherId}
+                onChange={(event, value) => this.handleSetTeacher(value)}
                 getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     variant="outlined"
-                    label="Courses"
+                    label="Teachers"
                     placeholder="Search and Select"
                     required
-                    error={!!this.state.courseIdError}
-                    helperText={this.state.courseIdError ? this.state.courseIdError : "" }
+                    error={!!this.state.teacherIdError}
+                    helperText={this.state.teacherIdError ? this.state.teacherIdError : "" }
                   />
                 )}
               />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Autocomplete
-                fullWidth
-                id="sectionId"
-                disabled={!this.state.courseId}
-                options={this.state.sectionsMenuItems}
-                value={this.state.sectionId}
-                onChange={(event, value) => this.handleSetSection(value)}
-                getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    label="Sections"
-                    placeholder="Search and Select"
-                    required
-                    error={!!this.state.sectionIdError}
-                    helperText={this.state.sectionIdError ? this.state.sectionIdError : "" }
-                  />
-                )}
-              />
-            </Grid>
+            </Grid> 
+            */}
             <Grid item xs={12} md={4}>
               <TextField
-                id="monthId"
-                name="monthId"
+                id="effectiveDate"
+                name="effectiveDate"
                 variant="outlined"
-                label="Month"
+                label="Effective Date"
                 onChange={this.onHandleChange}
-                value={this.state.monthId}
+                value={this.state.effectiveDate}
                 required
                 fullWidth
                 select
-                disabled={!this.state.sectionId}
+                disabled={!this.state.teacherId}
               >
-                {this.state.monthsMenuItems && !this.state.isLoading ? 
-                  this.state.monthsMenuItems.map((dt, i) => (
+                {this.state.effectiveDateMenuItems && !this.state.isLoading ? 
+                  this.state.effectiveDateMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"monthsMenuItems"+dt.id}
-                      value={dt.id}
+                      key={"effectiveDateMenuItems"+dt.id}
+                      value={dt.label}
                     >
                       {dt.label}
                     </MenuItem>
@@ -397,17 +348,48 @@ class R46Reports extends Component {
                 }
               </TextField> 
             </Grid>
+            <TableContainer component={Paper}>
+              <Table className={classes.table} aria-label="customized table">
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>&nbsp;</StyledTableCell>
+                    <StyledTableCell align="center">Monday</StyledTableCell>
+                    <StyledTableCell align="center">Tuesday</StyledTableCell>
+                    <StyledTableCell align="center">Wednesday</StyledTableCell>
+                    <StyledTableCell align="center">Thursday</StyledTableCell>
+                    <StyledTableCell align="center">Friday</StyledTableCell>
+                    <StyledTableCell align="center">Saturday</StyledTableCell>
+                    <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)'}}>Sunday</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state.timetableData.length > 0 ?
+                    this.state.timetableData.map((row, index) => (
+                      <StyledTableRow key={row+index}>
+                        <StyledTableCell component="th" scope="row">{row.time.split("-").map((dt, i)=><Fragment key={"time"+dt+i}>{i != 0 ? <Fragment><br/></Fragment> : ""}<span style={{whiteSpace:"nowrap"}}>{dt}</span></Fragment>)}</StyledTableCell>
+                        <StyledTableCell align="center">{row.Monday.split(",").map((dt, i)=><Fragment key={"Monday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
+                        <StyledTableCell align="center">{row.Tuesday.split(",").map((dt, i)=><Fragment key={"Tuesday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
+                        <StyledTableCell align="center">{row.Wednesday.split(",").map((dt, i)=><Fragment key={"Wednesday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
+                        <StyledTableCell align="center">{row.Thursday.split(",").map((dt, i)=><Fragment key={"Thursday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
+                        <StyledTableCell align="center">{row.Friday.split(",").map((dt, i)=><Fragment key={"Friday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
+                        <StyledTableCell align="center">{row.Saturday.split(",").map((dt, i)=><Fragment key={"Saturday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
+                        <StyledTableCell align="center">{row.Sunday.split(",").map((dt, i)=><Fragment key={"Sunday"+dt+i}>{i != 0 ? <Fragment><br/><br/></Fragment> : ""}{dt}</Fragment>)}</StyledTableCell>
+                      </StyledTableRow>
+                    ))
+                    :
+                    this.state.isLoading ?
+                    <StyledTableRow key={1}>
+                      <StyledTableCell component="th" scope="row" colSpan={8}><center><CircularProgress/></center></StyledTableCell>
+                    </StyledTableRow>
+                    :
+                    <StyledTableRow key={1}>
+                      <StyledTableCell component="th" scope="row" colSpan={8}><center><b>No Data</b></center></StyledTableCell>
+                    </StyledTableRow>
+                  }
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Grid>
-          <BottomBar
-            left_button_text="View"
-            left_button_hide={true}
-            bottomLeftButtonAction={this.viewReport}
-            right_button_text="Genrate"
-            bottomRightButtonAction={this.handleGenerate}
-            loading={this.state.isLoading}
-            isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.monthId}
-          />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}

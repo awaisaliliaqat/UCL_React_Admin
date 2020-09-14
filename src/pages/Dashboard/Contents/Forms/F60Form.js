@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Paper, Divider, CircularProgress, Grid} from "@material-ui/core";
+  TableHead, TableRow, Paper, Divider, CircularProgress, Grid, InputAdornment} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -268,8 +268,7 @@ class R46Reports extends Component {
 
   handleGenerate = () => {
     //this.getData(this.state.sectionId.id, this.state.monthId);
-    window.open(`#/R59ReportsAttendanceSheet/${this.state.sectionId.id+"&"+this.state.monthId+"&"+1}`,"_blank");
-    window.open(`#/R59ReportsAttendanceSheet/${this.state.sectionId.id+"&"+this.state.monthId+"&"+2}`,"_blank");
+    window.open(`#/R59ReportsAttendanceSheet/${this.state.sectionId.id+"&"+this.state.monthId}`,"_blank");
   }
 
   componentDidMount() {
@@ -293,11 +292,9 @@ class R46Reports extends Component {
             padding: 20,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-            }}
+          <Grid 
+            container
+            justify="space-between"
           >
             <Typography
               style={{
@@ -307,9 +304,9 @@ class R46Reports extends Component {
               }}
               variant="h5"
             >
-              Attendance Sheet
+              Discussion Forum
             </Typography>
-          </div>
+          </Grid>
           <Divider
             style={{
               backgroundColor: "rgb(58, 127, 187)",
@@ -343,59 +340,6 @@ class R46Reports extends Component {
                   />
                 )}
               />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Autocomplete
-                fullWidth
-                id="sectionId"
-                disabled={!this.state.courseId}
-                options={this.state.sectionsMenuItems}
-                value={this.state.sectionId}
-                onChange={(event, value) => this.handleSetSection(value)}
-                getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    label="Sections"
-                    placeholder="Search and Select"
-                    required
-                    error={!!this.state.sectionIdError}
-                    helperText={this.state.sectionIdError ? this.state.sectionIdError : "" }
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <TextField
-                id="monthId"
-                name="monthId"
-                variant="outlined"
-                label="Month"
-                onChange={this.onHandleChange}
-                value={this.state.monthId}
-                required
-                fullWidth
-                select
-                disabled={!this.state.sectionId}
-              >
-                {this.state.monthsMenuItems && !this.state.isLoading ? 
-                  this.state.monthsMenuItems.map((dt, i) => (
-                    <MenuItem
-                      key={"monthsMenuItems"+dt.id}
-                      value={dt.id}
-                    >
-                      {dt.label}
-                    </MenuItem>
-                  ))
-                :
-                  <Grid 
-                    container 
-                    justify="center">
-                      <CircularProgress />
-                    </Grid>
-                }
-              </TextField> 
             </Grid>
           </Grid>
           <BottomBar

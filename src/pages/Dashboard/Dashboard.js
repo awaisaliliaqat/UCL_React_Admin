@@ -81,6 +81,8 @@ import R49Reports from "./Contents/Forms/R49Reports";
 import R54Reports from "./Contents/Forms/R54Reports";
 import F56Form from './Contents/Forms/F56Form';
 import R59Reports from "./Contents/Forms/R59Reports";
+import F60Form from './Contents/Forms/F60Form';
+import R61Reports from "./Contents/Forms/R61Reports";
 import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
 import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
 import SyncTimeTable from './Contents/LMS/SyncTimeTable/SyncTimeTable';
@@ -819,6 +821,36 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R59Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F60Form"
+                exact
+                path="/dashboard/F60Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F60Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R61Reports"
+                exact
+                path="/dashboard/R61Reports"
+                render={(props) => {
+                  return (
+                    <R61Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

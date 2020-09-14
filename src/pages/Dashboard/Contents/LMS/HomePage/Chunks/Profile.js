@@ -63,8 +63,12 @@ const Profile = (props) => {
         <Typography variant="caption">Quick Links</Typography>
         <Divider variant="fullWidth" />
         <div style={{ paddingLeft: "10px", marginTop: "5px" }}>
+          <Link href="#/dashboard/R61Reports" target="_blank" variant="body1" className={classes.handCursor}>
+            Timetable
+          </Link>
+          <br />
           <Link href="#/dashboard/F33Form/0" target="_blank" variant="body1" className={classes.handCursor}>
-            Time Table
+            Calendar
           </Link>
           <br />
           <Link href="#/dashboard/teacher-attendance-report" target="_blank" variant="body1" className={classes.handCursor}>
