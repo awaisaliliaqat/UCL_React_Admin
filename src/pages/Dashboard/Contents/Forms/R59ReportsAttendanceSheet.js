@@ -12,9 +12,10 @@ import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper}
 const styles = (theme) => ({
 		mainDiv: {
 			margin: "10px 10px 0px 10px",
-			'@media print': {
-				//minWidth: '11in'
-			}
+			"@media print": {
+        minWidth: "7.5in",
+        maxWidth: "11in"
+      }
 		},
     closeButton: {
         top: theme.spacing(1),
@@ -135,11 +136,12 @@ class DisplayAdmissionApplications extends Component {
       this.setState({ isOpenSnackbar: false });
     };
 
-    getData = async (sectionId, monthId) => {
+    getData = async (sectionId, monthId, pageNumber) => {
       this.setState({isLoading: true});
       let data = new FormData();
       data.append("sectionId", sectionId);
       data.append("monthId", monthId);
+      data.append("pageNumber", pageNumber);
       const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C59CommonStudentsView`;
       await fetch(url, {
         method: "POST",
@@ -181,9 +183,9 @@ class DisplayAdmissionApplications extends Component {
     };
 
     componentDidMount() {
-      const { id = "0&0" } = this.props.match.params;
+      const { id = "0&0&0" } = this.props.match.params;
       let ids = id.split("&");
-      this.getData(ids[0],ids[1]);
+      this.getData(ids[0],ids[1],ids[2]);
     }
 
     render() {
