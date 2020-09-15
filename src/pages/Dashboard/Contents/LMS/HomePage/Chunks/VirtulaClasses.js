@@ -87,7 +87,8 @@ const VirtulaClasses = (props) => {
                       className={classes.inline}
                       color="textPrimary"
                     >
-                      {item.title}
+                      {/* {item.title} */}
+                      {item.sectionLabel}
                     </Typography>
                   }
                   secondary={
