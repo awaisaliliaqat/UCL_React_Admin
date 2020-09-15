@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -18,21 +18,21 @@ import {
   withStyles,
   Tooltip,
   Button,
-  ListItemSecondaryAction
+  ListItemSecondaryAction,
 } from "@material-ui/core";
-import HelpIcon from '../../../../../../assets/Images/my_objectives_training.png';
+import TrainingIcon from "../../../../../../assets/Images/my_objectives_training.png";
 // import CreateIcon from "@material-ui/icons/Create";
-import AssignmentsIcon from '../../../../../../assets/Images/grade_book_assignments.png';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import AssignmentsIcon from "../../../../../../assets/Images/grade_book_assignments.png";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 // import NotificationsIcon from "@material-ui/icons/Notifications";
 // import ScheduleIcon from "@material-ui/icons/Schedule";
 
-const styles = theme => ({
+const styles = (theme) => ({
   margin: {
-    margin: theme.spacing(2)
+    margin: theme.spacing(2),
   },
   extendedIcon: {
-    marginRight: theme.spacing.unit
+    marginRight: theme.spacing(),
   },
   smallAvatar: {
     width: 30,
@@ -40,39 +40,43 @@ const styles = theme => ({
     marginTop: 5,
   },
   card: {
-    cursor: "pointer"
+    cursor: "pointer",
   },
   bigAvatar: {
     width: 40,
     height: 40,
     marginTop: 5,
-    borderRadius: 0
-  }
+    borderRadius: 0,
+  },
 });
 const VirtulaClasses = (props) => {
   const classes = props.classes;
-
   return (
     <Card>
       <CardHeader
         title={<Typography color="primary">Classes</Typography>}
         subheader={"Join your virtual classes"}
-        onClick={() => window.open('#/dashboard/F33Form/0')}
-        avatar={<Avatar className={classes.bigAvatar} src={HelpIcon} />}
+        onClick={() => window.open("#/dashboard/F33Form/0")}
+        avatar={<Avatar className={classes.bigAvatar} src={TrainingIcon} />}
         className={classes.card}
       />
-
-      <CardContent style={{ height: '210px' }}>
-        <List style={{
-          marginTop: '-30px'
-        }}>
+      <CardContent style={{ height: "210px" }}>
+        <List
+          style={{
+            marginTop: "-30px",
+          }}
+        >
           {props.classesData.map((item, index) => {
             return (
-              <ListItem key={index} style={{ paddingTop: 0 }} alignItems="flex-start">
+              <ListItem
+                key={index}
+                style={{ paddingTop: 0 }}
+                alignItems="flex-start"
+              >
                 <ListItemAvatar>
                   <Avatar
                     alt="img"
-                    src={AssignmentsIcon}
+                    src={TrainingIcon}
                     className={classes.smallAvatar}
                   />
                 </ListItemAvatar>
@@ -83,14 +87,14 @@ const VirtulaClasses = (props) => {
                       className={classes.inline}
                       color="textPrimary"
                     >
-                      {item.title}
+                      {/* {item.title} */}
+                      {item.sectionLabel}
                     </Typography>
                   }
                   secondary={
                     <React.Fragment>
                       <Typography
                         variant="caption"
-
                         style={{ paddingLeft: "2px" }}
                       >
                         {item.startTime}
@@ -99,22 +103,28 @@ const VirtulaClasses = (props) => {
                   }
                 />
                 <ListItemSecondaryAction style={{ right: 0 }}>
-                  <Button disabled={!item.meetingStartUrl} onClick={(e) => props.onJoinClick(e, item)} color="primary">
+                  <Button
+                    disabled={!item.meetingStartUrl}
+                    onClick={(e) => props.onJoinClick(e, item)}
+                    color="primary"
+                  >
                     Join
-              </Button>
+                  </Button>
                 </ListItemSecondaryAction>
               </ListItem>
-
-            )
+            );
           })}
-
         </List>
       </CardContent>
       <Divider variant="middle" />
       <CardActions style={{ textAlign: "center" }} className={classes.actions}>
         <div>
           <Tooltip title="View All">
-            <Link style={{ textDecoration: 'none' }} to="/dashboard/F33Form/0" target="_blank">
+            <Link
+              style={{ textDecoration: "none" }}
+              to="/dashboard/F33Form/0"
+              target="_blank"
+            >
               <IconButton aria-label="View">
                 <VisibilityIcon />
               </IconButton>
@@ -138,16 +148,16 @@ const VirtulaClasses = (props) => {
       </CardActions>
     </Card>
   );
-}
+};
 VirtulaClasses.propTypes = {
   classes: PropTypes.object.isRequired,
   classesData: PropTypes.array,
-  onJoinClick: PropTypes.func
-}
+  onJoinClick: PropTypes.func,
+};
 
 VirtulaClasses.defaultProps = {
   classesData: [],
-  onJoinClick: fn => fn
-}
+  onJoinClick: (fn) => fn,
+};
 
 export default withStyles(styles)(VirtulaClasses);
