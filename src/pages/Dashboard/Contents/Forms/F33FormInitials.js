@@ -107,7 +107,7 @@ const F33FormInitials = (props) => {
                         className={classes.inline}
                         color="textPrimary"
                       >
-                        {dt.title}
+                        {dt.sectionLabel}
                       </Typography>
                     }
                     secondary={
