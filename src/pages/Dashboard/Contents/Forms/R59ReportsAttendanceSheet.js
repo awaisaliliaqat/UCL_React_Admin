@@ -192,7 +192,7 @@ class DisplayAdmissionApplications extends Component {
         const { classes } = this.props;
         const { tableData } = this.state;
         const { sessionLabel = "", monthName="", courseLabel="", totalStudents="", noOfDays = [], studentNamesList=[] } = tableData;
-        let noOfDays1 = [1,2,3,4,5,6,7,8,9,10];
+        let noOfDays1 = [1,2,3,4,5,6,7,8,9,10,11];
         return (
             <Fragment>
                 {this.state.isLoading &&
@@ -229,7 +229,7 @@ class DisplayAdmissionApplications extends Component {
 															<TableHead>
 															  <TableRow>
                                   <StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Name</StyledTableCell>
-                                  <StyledTableCell align="center" colSpan={noOfDays1.length}>Dates</StyledTableCell>
+                                  <StyledTableCell align="center" colSpan={noOfDays1.length} style={{minWidth:"70%"}}>Dates</StyledTableCell>
                                   <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Total</StyledTableCell>
                                 </TableRow>
 															</TableHead>
