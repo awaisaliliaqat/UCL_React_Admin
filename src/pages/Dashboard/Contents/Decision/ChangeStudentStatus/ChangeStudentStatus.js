@@ -118,11 +118,11 @@ class ChangeStudentStatus extends Component {
         (json) => {
           if (json.CODE === 1) {
             let studentData = json.DATA || [];
-            for(let i=0; i<studentData.length; i++) {
-              let fName = studentData[i].firstName;
-              let lName = studentData[i].lastName;
-              studentData[i].firstName = fName+" "+lName;
-            }
+            // for(let i=0; i<studentData.length; i++) {
+            //   let fName = studentData[i].firstName;
+            //   let lName = studentData[i].lastName;
+            //   studentData[i].firstName = fName+" "+lName;
+            // }
             this.setState({studentData: json.DATA || []});
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -269,8 +269,9 @@ class ChangeStudentStatus extends Component {
     const columns = [
       { name: "studentId", title: "Nucleus Id" },
       //{ name: "firstName", title: "Name", getCellValue: (rowData) => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}},
-      { name: "firstName", title: "Name"},
+      { name: "firstName", title: "First Name"},
       { name: "middleName", title: "Middle Name"},
+      { name: "lastName", title: "Last Name"},
       { name: "genderLabel", title: "Gender" },
       { name: "degreeLabel", title: "Degree Programme" },
       { name: "mobileNo", title: "Mobile No" },
