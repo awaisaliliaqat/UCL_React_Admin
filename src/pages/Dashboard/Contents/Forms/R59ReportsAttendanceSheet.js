@@ -192,6 +192,7 @@ class DisplayAdmissionApplications extends Component {
         const { classes } = this.props;
         const { tableData } = this.state;
         const { sessionLabel = "", monthName="", courseLabel="", totalStudents="", noOfDays = [], studentNamesList=[] } = tableData;
+        let noOfDays1 = [1,2,3,4,5,6,7,8,9,10,11];
         return (
             <Fragment>
                 {this.state.isLoading &&
@@ -226,34 +227,45 @@ class DisplayAdmissionApplications extends Component {
 											<TableContainer component={Paper} style={{overflowX:"inherit"}}>
 													<Table size="small" className={classes.table} aria-label="customized table">
 															<TableHead>
-															<TableRow>
-																			<StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>&nbsp;</StyledTableCell>
-																			<StyledTableCell align="center" colSpan={noOfDays.length}>Dates</StyledTableCell>
-																			<StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>&nbsp;</StyledTableCell>
-																	</TableRow>
-																	<TableRow>
-																			<StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Name</StyledTableCell>
-                                      {noOfDays.length > 0 ?
-                                        noOfDays.map((item, index)=>
-                                          <StyledTableCell key={"h"+item} align="center">{item}</StyledTableCell>
-                                        )
-                                      :
-                                        <StyledTableCell align="center">&nbsp;</StyledTableCell>
-                                      }
-																			<StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Total</StyledTableCell>
-																	</TableRow>
+															  <TableRow>
+                                  <StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Name</StyledTableCell>
+                                  <StyledTableCell align="center" colSpan={noOfDays1.length} style={{minWidth:"70%"}}>Dates</StyledTableCell>
+                                  <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Total</StyledTableCell>
+                                </TableRow>
 															</TableHead>
 															<TableBody>
-															{studentNamesList.map((item, index)=>
-																	<StyledTableRow key={index}>
-																			<StyledTableCell component="th" scope="row">{item}</StyledTableCell>
-                                      {noOfDays.map((item2, index2)=>
-                                        <StyledTableCell key={item+item2+index2} align="center">&nbsp;</StyledTableCell>
-                                      )}
-                                      <StyledTableCell align="center">&nbsp;</StyledTableCell>
-																	</StyledTableRow>
-															)} 
-															</TableBody>
+                              <TableRow>
+                                <StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)', height:40}}>&nbsp;</StyledTableCell>
+                                {noOfDays1.length > 0 ?
+                                  noOfDays1.map((item, index)=>
+                                    <StyledTableCell key={"h"+item} align="center">&nbsp;</StyledTableCell>
+                                  )
+                                :
+                                  <StyledTableCell align="center">&nbsp;</StyledTableCell>
+                                }
+                                <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)'}}>&nbsp;</StyledTableCell>
+                            </TableRow>
+                              <TableRow>
+                                <StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)', height:40}}>&nbsp;</StyledTableCell>
+                                {noOfDays1.length > 0 ?
+                                  noOfDays1.map((item, index)=>
+                                    <StyledTableCell key={"h"+item} align="center">&nbsp;</StyledTableCell>
+                                  )
+                                :
+                                  <StyledTableCell align="center">&nbsp;</StyledTableCell>
+                                }
+                                <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)'}}>&nbsp;</StyledTableCell>
+                            </TableRow>
+                            {studentNamesList.map((item, index)=>
+                                <StyledTableRow key={index}>
+                                    <StyledTableCell component="th" scope="row">{item}</StyledTableCell>
+                                    {noOfDays1.map((item2, index2)=>
+                                      <StyledTableCell key={item+item2+index2} align="center">&nbsp;</StyledTableCell>
+                                    )}
+                                    <StyledTableCell align="center">&nbsp;</StyledTableCell>
+                                </StyledTableRow>
+                            )} 
+                            </TableBody>
 													</Table>
 											</TableContainer>
                     </div>

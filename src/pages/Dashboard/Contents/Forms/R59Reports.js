@@ -269,7 +269,6 @@ class R46Reports extends Component {
   handleGenerate = () => {
     //this.getData(this.state.sectionId.id, this.state.monthId);
     window.open(`#/R59ReportsAttendanceSheet/${this.state.sectionId.id+"&"+this.state.monthId+"&"+1}`,"_blank");
-    window.open(`#/R59ReportsAttendanceSheet/${this.state.sectionId.id+"&"+this.state.monthId+"&"+2}`,"_blank");
   }
 
   componentDidMount() {

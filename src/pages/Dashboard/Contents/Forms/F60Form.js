@@ -1,22 +1,33 @@
 import React, { Component, Fragment } from "react";
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Paper, Divider, CircularProgress, Grid, InputAdornment} from "@material-ui/core";
+  TableHead, TableRow, TablePagination, Paper, Divider, CircularProgress, Grid,
+  List, ListItem, ListItemText, ListItemAvatar, Avatar, Tooltip, IconButton} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
+import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import ImageIcon from '@material-ui/icons/Image';
+import LibraryAddOutlinedIcon from '@material-ui/icons/LibraryAddOutlined';
+import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
+import F60FormPopupComponent from "./F60FormPopupComponent";
+import PostAddIcon from '@material-ui/icons/PostAdd';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: "rgb(29, 95, 152)", //theme.palette.common.black,
     color: theme.palette.common.white,
     fontWeight: 500,
-    border: '1px solid white'
+    border: '1px solid rgb(29, 95, 152)',
+    borderRadius:'5px 5px 0px 0px'
   },
   body: {
     fontSize: 14,
-    border: '1px solid rgb(29, 95, 152)'
+    border: '1px solid rgb(29, 95, 152)',
+    "&:hover":{
+      cursor:"pointer"
+    }
   },
 }))(TableCell);
 
@@ -24,6 +35,14 @@ const StyledTableRow = withStyles((theme) => ({
   root: {
     '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.action.hover,
+      "&:hover":{
+        backgroundColor:"#bdbdbd"
+      }
+    },
+    '&:nth-of-type(even)': {
+      "&:hover":{
+        backgroundColor:"#bdbdbd"
+      }
     },
   },
 }))(TableRow);
@@ -31,6 +50,38 @@ const StyledTableRow = withStyles((theme) => ({
 const styles = ({
   table: {
     minWidth: 750,
+    width: '100%',
+  },
+  tableContainer: {
+    //maxHeight: 440,
+  },
+});
+
+const theme = createMuiTheme({
+  overrides: {
+    // Style sheet name
+    MuiInputLabel:{
+      // Name of the rule
+      outlined: {
+        // Some CSS
+        transform: 'translate(40px, 20px) scale(1)',
+        '&:focus':{
+          borderColor:"green"
+        }
+      },
+    },
+    MuiAutocomplete: {
+      inputRoot: {
+        '&&&[class*="MuiOutlinedInput-root"] $input:nth-of-type(1)': {
+              paddingLeft: 35,
+          },
+        },
+    },
+    MuiSvgIcon: {
+      colorPrimary: {
+        color: '#174A84',
+      },
+    },
   },
 });
 
@@ -54,22 +105,11 @@ class R46Reports extends Component {
       sectionsMenuItems: [],
       sectionId: "",
       sectionIdError:"",
-      monthsMenuItems: [
-        {id:1, label:"January"},
-        {id:2, label:"February"},
-        {id:3, label:"March"},
-        {id:4, label:"April"},
-        {id:5, label:"May"},
-        {id:6, label:"June"},
-        {id:7, label:"July"},
-        {id:8, label:"August"},
-        {id:9, label:"September"},
-        {id:10, label:"October"},
-        {id:11, label:"November"},
-        {id:12, label:"December"}
-      ],
       monthId: "",
       tableData: [],
+      popupBoxOpen:false,
+      page:0,
+      rowsPerPage:10
     };
   }
 
@@ -84,6 +124,27 @@ class R46Reports extends Component {
   handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {  return; }
     this.setState({ isOpenSnackbar: false });
+  };
+
+  handlePopupOpen = () => {
+    this.setState({ 
+      popupBoxOpen: true
+    });
+  };
+
+  handlePopupClose = () => {
+    this.setState({
+      popupBoxOpen: false,
+    });
+  }
+
+  handleChangePage = (event, newPage) => {
+    this.setState({page:newPage});
+  };
+
+  handleChangeRowsPerPage = (event) => {
+    this.setState({rowsPerPage:+event.target.value});
+    this.setState({page:0});
   };
 
   getCourses = async () => {
@@ -280,6 +341,55 @@ class R46Reports extends Component {
 
     const { classes } = this.props;
 
+    const columns = [
+      { id: 'name', label: 'Name', minWidth: 170 },
+      { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+      {
+        id: 'population',
+        label: 'Population',
+        minWidth: 170,
+        align: 'right',
+        format: (value) => value.toLocaleString('en-US'),
+      },
+      {
+        id: 'size',
+        label: 'Size\u00a0(km\u00b2)',
+        minWidth: 170,
+        align: 'right',
+        format: (value) => value.toLocaleString('en-US'),
+      },
+      {
+        id: 'density',
+        label: 'Density',
+        minWidth: 170,
+        align: 'right',
+        format: (value) => value.toFixed(2),
+      },
+    ];
+    
+    function createData(name, code, population, size) {
+      const density = population / size;
+      return { name, code, population, size, density };
+    }
+    
+    const rows = [
+      createData('India', 'IN', 1324171354, 3287263),
+      createData('China', 'CN', 1403500365, 9596961),
+      createData('Italy', 'IT', 60483973, 301340),
+      createData('United States', 'US', 327167434, 9833520),
+      createData('Canada', 'CA', 37602103, 9984670),
+      createData('Australia', 'AU', 25475400, 7692024),
+      createData('Germany', 'DE', 83019200, 357578),
+      createData('Ireland', 'IE', 4857000, 70273),
+      createData('Mexico', 'MX', 126577691, 1972550),
+      createData('Japan', 'JP', 126317000, 377973),
+      createData('France', 'FR', 67022000, 640679),
+      createData('United Kingdom', 'GB', 67545757, 242495),
+      createData('Russia', 'RU', 146793744, 17098246),
+      createData('Nigeria', 'NG', 200962417, 923768),
+      createData('Brazil', 'BR', 210147125, 8515767),
+    ];
+
     return (
       <Fragment>
         <LoginMenu
@@ -296,6 +406,18 @@ class R46Reports extends Component {
             container
             justify="space-between"
           >
+            <F60FormPopupComponent
+              // recordId={this.state.recordId}
+              // fileName={this.state.fileName}
+              // downloadFile={this.downloadFile}
+              handlePopupClose={this.handlePopupClose}
+              popupBoxOpen={this.state.popupBoxOpen}
+              // popupTitle={this.state.popupTitle}
+              // totalMarks={this.state.totalMarks}
+              // handleOpenSnackbar={this.handleOpenSnackbar}
+              // getData={this.getData}
+              // assignmentGradedData={this.state.assignmentGradedData}
+            />
             <Typography
               style={{
                 color: "#1d5f98",
@@ -306,6 +428,18 @@ class R46Reports extends Component {
             >
               Discussion Forum
             </Typography>
+            <span style={{ 
+                float: "right",
+                marginBottom: -6
+            }}>
+              <Tooltip title="Add Topic">
+                  <IconButton
+                    onClick={this.handlePopupOpen}
+                  >
+                      <PostAddIcon fontSize="large" color="primary"/>
+                  </IconButton>
+              </Tooltip> 
+            </span>
           </Grid>
           <Divider
             style={{
@@ -318,9 +452,9 @@ class R46Reports extends Component {
             container 
             justify="center"
             alignItems="center"
-            spacing={2}
           >
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={12}>
+            <MuiThemeProvider theme={theme}>
               <Autocomplete
                 fullWidth
                 id="courseId"
@@ -329,19 +463,70 @@ class R46Reports extends Component {
                 onChange={(event, value) => this.handleSetCourse(value)}
                 getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
                 renderInput={(params) => (
+                  console.log("params", params),
+                  <Fragment>
+                  <SearchOutlinedIcon color="primary" style={{marginBottom:-45, paddingLeft:12}}/>
+                  
                   <TextField
                     {...params}
+                    //InputLabelProps={{ className: classes.outlined}}
                     variant="outlined"
-                    label="Courses"
+                    label="Topics"
                     placeholder="Search and Select"
-                    required
                     error={!!this.state.courseIdError}
                     helperText={this.state.courseIdError ? this.state.courseIdError : "" }
                   />
+                  </Fragment>
                 )}
               />
+              </MuiThemeProvider>
+              <br/>
             </Grid>
+            <Paper className={classes.table}>
+              <TableContainer className={classes.tableContainer}>
+                <Table stickyHeader size="small" aria-label="sticky table">
+                  <TableHead>
+                    <StyledTableRow>
+                        <StyledTableCell 
+                          colSpan={6}
+                        >
+                          Topics
+                        </StyledTableCell>
+                    </StyledTableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage).map((row) => {
+                      return (
+                        <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                          <StyledTableCell colspan={6}>
+                            <ListItem>
+                              <ListItemAvatar>
+                                <Avatar>
+                                  <ImageIcon />
+                                </Avatar>
+                              </ListItemAvatar>
+                              <ListItemText primary="Photos" secondary="Jan 9, 2014" />
+                            </ListItem>
+                          </StyledTableCell>
+                        </StyledTableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={rows.length}
+                rowsPerPage={this.state.rowsPerPage}
+                page={this.state.page}
+                onChangePage={this.handleChangePage}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+              />
+            </Paper>
           </Grid>
+          <br/>
+          <br/>  
           <BottomBar
             left_button_text="View"
             left_button_hide={true}

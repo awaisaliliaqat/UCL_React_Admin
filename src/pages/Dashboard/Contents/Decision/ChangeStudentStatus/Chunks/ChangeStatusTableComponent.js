@@ -32,6 +32,7 @@ class ChangeStatusTableComponent extends Component {
                 { columnName: 'studentId', width: 120 },
                 { columnName: 'firstName', wordWrapEnabled: true },
                 { columnName: 'middleName', wordWrapEnabled: true },
+                { columnName: 'lastName', wordWrapEnabled: true },
                 { columnName: 'genderLabel', wordWrapEnabled: true, width: 130 },
                 { columnName: 'degreeLabel', wordWrapEnabled: true, width: 250 },
                 { columnName: 'mobileNo', wordWrapEnabled: true },
