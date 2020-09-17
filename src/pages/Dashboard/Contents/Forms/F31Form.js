@@ -354,7 +354,7 @@ class F31Form extends Component {
                       sectionId={json.DATA[i].ID}
                       preTimeStartMenuItems={this.state.preTimeStartMenuItems}
                       preDaysMenuItems={this.state.preDaysMenuItems}
-                      clickOnFormSubmit={() => this.clickOnFormSubmit}
+                      clickOnFormSubmit={this.clickOnFormSubmit}
                       courseLabel={json.DATA[i].courseLabel}
                       sectionTypeLabel={json.DATA[i].sectionTypeLabel}
                       sectionLabel={json.DATA[i].sectionLabel}
@@ -367,6 +367,7 @@ class F31Form extends Component {
                       onAutoCompleteChange={this.onAutoCompleteChange}
                       isReadOnly={true}
                       effectiveDatesArray={json.DATA[i].effectiveDatesArray || []}
+                      isLoading={this.state.isLoading}
                     />
                   :
                   <Fragment>
@@ -384,7 +385,7 @@ class F31Form extends Component {
                     sectionId={json.DATA[i].ID}
                     preTimeStartMenuItems={this.state.preTimeStartMenuItems}
                     preDaysMenuItems={this.state.preDaysMenuItems}
-                    clickOnFormSubmit={() => this.clickOnFormSubmit}
+                    clickOnFormSubmit={this.clickOnFormSubmit}
                     courseLabel={json.DATA[i].courseLabel}
                     sectionTypeLabel={json.DATA[i].sectionTypeLabel}
                     sectionLabel={json.DATA[i].sectionLabel}
@@ -397,6 +398,7 @@ class F31Form extends Component {
                     onAutoCompleteChange={this.onAutoCompleteChange}
                     isReadOnly={false}
                     effectiveDatesArray={json.DATA[i].effectiveDatesArray || []}
+                    isLoading={this.state.isLoading}
                   />
                 </Fragment>
                 :
