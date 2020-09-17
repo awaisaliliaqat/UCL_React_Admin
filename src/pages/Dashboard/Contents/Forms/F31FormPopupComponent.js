@@ -145,7 +145,9 @@ class F31FormPopupComponent extends Component {
       roomsObjectError: "",
       roomsId: "",
       isReadOnly: false,
-      isCopyMode: false
+      isCopyMode: false,
+      upcomingSchedule:"",
+      upcomingScheduleError:""
     };
   }
 
@@ -434,10 +436,18 @@ class F31FormPopupComponent extends Component {
       isReadOnly: !this.state.isReadOnly,
       //preDate: tomorrowDate
     });
-    // if (this.state.isCopyMode) {
-    //   this.loadData(this.props.sectionId, this.props.activeDate);
-    //   this.setState({ preDate: this.props.activeDateInNumber });
-    // }
+    if (this.state.isCopyMode) {
+      this.loadData(this.props.sectionId, this.props.activeDate);
+      this.setState({ 
+        preDate: this.props.activeDateInNumber,
+        upcomingSchedule: this.props.activeDateInNumber
+      });
+    }else{
+      if(Date.now()>this.state.preDate){
+        //console.log(this.state.upcomingSchedule+" "+new Date(this.state.preDate));
+        this.setState({preDate: tomorrowDate});
+      }
+    }
   }
 
   handleUpcomingSchedule(dateId, dateLabel) {
@@ -554,6 +564,8 @@ class F31FormPopupComponent extends Component {
                       name="upcomingSchedule"
                       variant="outlined"
                       label="Upcoming Schedule"
+                      value={this.state.upcomingSchedule}
+                      onChange={this.onHandleChange}
                       required
                       select
                       style={{ width: 195 }}
