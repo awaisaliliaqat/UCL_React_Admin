@@ -432,12 +432,12 @@ class F31FormPopupComponent extends Component {
     this.setState({
       isCopyMode: !this.state.isCopyMode,
       isReadOnly: !this.state.isReadOnly,
-      preDate: tomorrowDate
+      //preDate: tomorrowDate
     });
-    if (this.state.isCopyMode) {
-      this.loadData(this.props.sectionId, this.props.activeDate);
-      this.setState({ preDate: this.props.activeDateInNumber });
-    }
+    // if (this.state.isCopyMode) {
+    //   this.loadData(this.props.sectionId, this.props.activeDate);
+    //   this.setState({ preDate: this.props.activeDateInNumber });
+    // }
   }
 
   handleUpcomingSchedule(dateId, dateLabel) {
