@@ -448,11 +448,17 @@ class F31FormPopupComponent extends Component {
     this.loadData(this.props.sectionId, dateLabel);
   }
 
+  handleSave = () => {
+    this.props.clickOnFormSubmit();
+    this.setState({isLoading:true});
+  }
+
   componentDidMount() {
     this.setState({
       preTimeStartMenuItems: this.props.preTimeStartMenuItems,
       preDaysMenuItems: this.props.preDaysMenuItems,
-      isReadOnly: this.props.isReadOnly
+      isReadOnly: this.props.isReadOnly,
+      isLoading:this.props.isLoading
     });
     // if (this.state.recordId != 0) {
     //   this.loadData(this.state.recordId);
@@ -826,12 +832,12 @@ class F31FormPopupComponent extends Component {
               ""
               :
               <Button
-                onClick={this.props.clickOnFormSubmit()}
+                onClick={()=>this.handleSave()}
                 color="primary"
                 autoFocus
-                disabled={this.state.isReadOnly}
+                disabled={this.state.isReadOnly || this.state.isLoading}
               >
-                Save
+                {this.state.isLoading ? <CircularProgress size={18}/> : "Save"}
               </Button>
             }
           </DialogActions>
