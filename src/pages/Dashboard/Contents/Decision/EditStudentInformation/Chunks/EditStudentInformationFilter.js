@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(() => ({
@@ -68,9 +68,7 @@ const AddmissionDecisionFilter = props => {
                         name="studentId"
                         onChange={e => {
                             onHandleChange(e)
-
                         }}
-
                     />
                 </div>
                 <div className={classes.item} style={{
@@ -85,10 +83,60 @@ const AddmissionDecisionFilter = props => {
                         name="applicationId"
                         onChange={e => {
                             onHandleChange(e)
-
                         }}
-
                     />
+                </div>
+                <div className={classes.item} style={{ width: "20%" }}>
+                  <span className={classes.label}>Name</span>
+                  <TextField
+                    placeholder="Name"
+                    variant="outlined"
+                    InputProps={{ classes: { input: classes.resize } }}
+                    value={values.studentName}
+                    name="studentName"
+                    onChange={(e) => {
+                      onHandleChange(e);
+                    }}
+                  />
+                </div>
+                <div className={classes.item} style={{ width: "20%" }}>
+                  <span className={classes.label}>Programme Group</span>
+                  <TextField
+                    placeholder="Status"
+                    variant="outlined"
+                    InputProps={{ classes: { input: classes.resize } }}
+                    value={values.programmeGroupId}
+                    name="programmeGroupId"
+                    onChange={(e) => {
+                      onHandleChange(e);
+                    }}
+                    select
+                  >
+                    {values.programmeGroupsMenuItems.map((item) => 
+                        <MenuItem key={item.Id} value={item.Id}>
+                            {item.Label}
+                        </MenuItem>    
+                    )}
+                  </TextField>
+                </div>
+                <div className={classes.item} style={{ width: "20%" }}>
+                  <span className={classes.label}>Status</span>
+                  <TextField
+                    placeholder="Status"
+                    variant="outlined"
+                    InputProps={{ classes: { input: classes.resize } }}
+                    value={values.studentStatus}
+                    name="studentStatus"
+                    onChange={(e) => {
+                      onHandleChange(e);
+                    }}
+                    select
+                  >
+                    <MenuItem value={0}>Deactive</MenuItem>
+                    <MenuItem value={1} selected={true}>
+                      Active
+                    </MenuItem>
+                  </TextField>
                 </div>
                 <div className={classes.actions}>
                     <Button
