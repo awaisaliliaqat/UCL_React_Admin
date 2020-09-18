@@ -49,13 +49,7 @@ const useStyles = makeStyles(() => ({
 
 const ChangeStudentStatusFilter = (props) => {
   const classes = useStyles();
-  const {
-    values,
-    onHandleChange,
-    getDataByStatus,
-    onClearFilters,
-    isLoading,
-  } = props;
+  const {values, onHandleChange, getDataByStatus, onClearFilters, isLoading} = props;
 
   return (
     <Fragment>
