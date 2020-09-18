@@ -56,7 +56,7 @@ class AssignSectionToStudentForm extends Component {
             isOpenSnackbar: false,
             snackbarMessage: "",
             snackbarSeverity: "",
-            isDownloadExcel:false
+            isDownloadExcel: false
         }
     }
 
@@ -126,7 +126,7 @@ class AssignSectionToStudentForm extends Component {
                         this.setState({
                             sessionData: json.DATA || []
                         });
-                        let selectedRow = json.DATA.find( data => data.isActive==1 );
+                        let selectedRow = json.DATA.find(data => data.isActive == 1);
                         if (selectedRow) {
                             this.setState({
                                 sessionId: selectedRow.ID,
@@ -284,16 +284,16 @@ class AssignSectionToStudentForm extends Component {
     }
 
     downloadExcelData = async () => {
-        if(
-            !this.state.sessionId || 
-            !this.state.programmeId || 
-            !this.state.offeredCoursesId 
+        if (
+            !this.state.sessionId ||
+            !this.state.programmeId ||
+            !this.state.offeredCoursesId
         ) {
             this.handleOpenSnackbar("Session, Programme Group, Offered Course and Assigne Lecture Section are mandatory fields.", "error");
             return;
         }
         if (this.state.isDownloadExcel === false) {
-            this.setState({isDownloadExcel: true});
+            this.setState({ isDownloadExcel: true });
             const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C28CommonAssignSectionToStudentsExcelDownload?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&courseId=${this.state.offeredCoursesId}`;
             await fetch(url, {
                 method: "GET",
@@ -329,7 +329,7 @@ class AssignSectionToStudentForm extends Component {
                             console.log(error);
                         }
                     });
-            this.setState({isDownloadExcel:false});
+            this.setState({ isDownloadExcel: false });
         }
     }
 
@@ -579,15 +579,9 @@ class AssignSectionToStudentForm extends Component {
             },
             { name: "studentId", title: "Nucleus Id" },
             {
-                name: "firstName", title: "Student Name", getCellValue: row => {
-                    return (
-                        <Fragment>
-                            {`${row.firstName} ${row.lastName}`}
-                        </Fragment>
-                    );
-                }
+                name: "displayName", title: "Student Name"
             },
-            { name: "programmeLabel", title: "Programme"},
+            { name: "programmeLabel", title: "Programme" },
             { name: "lectureSectionLabel", title: "Lecture Section" },
             { name: "tutorialSectionLabel", title: "Tutorial Section" },
         ]
@@ -609,13 +603,13 @@ class AssignSectionToStudentForm extends Component {
                         variant="h5"
                     >
                         Assign Section to Students
-                        <img 
-                            alt="" 
-                            src={ExcelIcon} 
-                            onClick={() => this.downloadExcelData()} 
+                        <img
+                            alt=""
+                            src={ExcelIcon}
+                            onClick={() => this.downloadExcelData()}
                             style={{
-                                float:"right",
-                                height: 30, 
+                                float: "right",
+                                height: 30,
                                 width: 32,
                                 cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
                             }}
