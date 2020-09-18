@@ -15,31 +15,69 @@ class EditStudentInformation extends Component {
             isLoading: false,
             admissionData: [],
             studentId: "",
+            studentId: "",
+            studentName: "",
+            studentStatus: 1,
             applicationId: "",
             isLoginMenu: false,
             isReload: false,
             eventDate: null,
-
+            programmeGroupId:"",
+            programmeGroupsMenuItems:[]
         }
-    }
-
-    componentDidMount() {
-        this.getData();
     }
 
     onClearFilters = () => {
         this.setState({
             studentId: "",
-            applicationId: ""
+            applicationId: "",
+            studentName:"",
+            programmeGroupId:"",
+            studentStatus:1
         })
     }
 
-    getData = async () => {
-        this.setState({
-            isLoading: true
+    getProgrammeGroups = async () => {
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonOfferedSessionProgrammesGroupView`;
+        await fetch(url, {
+          method: "GET",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+          }),
         })
+          .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+          })
+          .then(
+            (json) => {
+              if (json.CODE === 1) {
+                this.setState({programmeGroupsMenuItems: json.DATA || []});
+              } else {
+                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+              }
+              console.log("getProgrammeGroups",json);
+            },
+            (error) => {
+              if (error.status === 401) {
+                this.setState({
+                  isLoginMenu: true,
+                  isReload: true,
+                });
+              } else {
+                this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+                console.log(error);
+              }
+            }
+          );
+      };
+
+    getData = async () => {
+        this.setState({isLoading: true});
         const reload = this.state.studentId === "" && this.state.applicationId === "";
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonStudentsView?applicationId=${this.state.applicationId}&studentId=${this.state.studentId}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonStudentsView?applicationId=${this.state.applicationId}&studentId=${this.state.studentId}&studentName=${this.state.studentName}&programmeGroupId=${this.state.programmeGroupId}&isActive=${this.state.studentStatus}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -86,6 +124,11 @@ class EditStudentInformation extends Component {
         this.setState({
             [name]: value
         })
+    }
+
+    componentDidMount() {
+        this.getProgrammeGroups();
+        //this.getData();
     }
 
     render() {
