@@ -62,39 +62,40 @@ import F33Form from "./Contents/Forms/F33Form";
 import F34Form from "./Contents/Forms/F34Form";
 import F34Reports from "./Contents/Forms/F34Reports";
 import F36Form from "./Contents/Forms/F36Form";
-import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
-import TeacherAttendance from './Contents/LMS/TeacherAttendance/TeacherAttendance';
-import StudentReports from './Contents/Reports/StudentReports/StudentReports';
-import TeacherAttendanceReports from './Contents/Reports/TeacherAttendanceReports/AttendanceReports';
-import StudentAttendanceReports from './Contents/Reports/StudentAttendanceReports/AttendanceReports';
+import ControlledDialog from "../../components/ControlledDialog/ControlledDialog";
+import TeacherAttendance from "./Contents/LMS/TeacherAttendance/TeacherAttendance";
+import StudentReports from "./Contents/Reports/StudentReports/StudentReports";
+import TeacherAttendanceReports from "./Contents/Reports/TeacherAttendanceReports/AttendanceReports";
+import StudentAttendanceReports from "./Contents/Reports/StudentAttendanceReports/AttendanceReports";
 import F39Form from "./Contents/Forms/F39Form";
 import F39Reports from "./Contents/Forms/F39Reports";
-import F40Form from './Contents/LMS/F40GradedDiscussion/F40Form';
-import F40Reports from './Contents/LMS/F40GradedDiscussion/F40Reports';
-import GradedDiscussionBoardList from './Contents/LMS/GradedDiscussionBoardList/GradedDiscussionBoardList';
-import GradedDiscussionBoardStudentList from './Contents/LMS/GradedDiscussionBoardStudentList/GradedDiscussionBoardStudentList';
-import GradedDiscussionSummary from './Contents/Reports/GradedDiscussionSummary/GradedDiscussionSummary';
+import F40Form from "./Contents/LMS/F40GradedDiscussion/F40Form";
+import F40Reports from "./Contents/LMS/F40GradedDiscussion/F40Reports";
+import GradedDiscussionBoardList from "./Contents/LMS/GradedDiscussionBoardList/GradedDiscussionBoardList";
+import GradedDiscussionBoardStudentList from "./Contents/LMS/GradedDiscussionBoardStudentList/GradedDiscussionBoardStudentList";
+import GradedDiscussionSummary from "./Contents/Reports/GradedDiscussionSummary/GradedDiscussionSummary";
 import R41Reports from "./Contents/Forms/R41Reports";
 import R46Reports from "./Contents/Forms/R46Reports";
 import R47Reports from "./Contents/Forms/R47Reports";
 import R49Reports from "./Contents/Forms/R49Reports";
 import R54Reports from "./Contents/Forms/R54Reports";
-import F56Form from './Contents/Forms/F56Form';
+import R63Reports from "./Contents/Forms/R63Reports";
+import F56Form from "./Contents/Forms/F56Form";
 import R59Reports from "./Contents/Forms/R59Reports";
-import F60Form from './Contents/Forms/F60Form';
+import F60Form from "./Contents/Forms/F60Form";
 import R61Reports from "./Contents/Forms/R61Reports";
-import F62Form from './Contents/Forms/F62Form';
-import StudentProfile from './Contents/Reports/StudentProfile/StudentProfile';
-import ChangeStudentStatus from './Contents/Decision/ChangeStudentStatus/ChangeStudentStatus';
-import SyncTimeTable from './Contents/LMS/SyncTimeTable/SyncTimeTable';
-import SyncTimeTableToday from './Contents/LMS/SyncTimeTable/SyncTimeTableToday';
+import F62Form from "./Contents/Forms/F62Form";
+import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
+import ChangeStudentStatus from "./Contents/Decision/ChangeStudentStatus/ChangeStudentStatus";
+import SyncTimeTable from "./Contents/LMS/SyncTimeTable/SyncTimeTable";
+import SyncTimeTableToday from "./Contents/LMS/SyncTimeTable/SyncTimeTableToday";
 import SyncZoomMeetings from "./Contents/LMS/SyncZoomMeetings/SyncZoomMeetings";
-import CreateRoomForm from './Contents/Forms/CreateRoom/CreateRoomFrom';
-import CreateRoomReports from './Contents/Forms/CreateRoom/CreateRoomReports';
-import ClassSchedule from './Contents/LMS/ClassSchedule/ClassSchedule';
-import AnnouncementForm from './Contents/LMS/Announcement/AnnouncementForm';
-import AnnouncementReports from './Contents/LMS/Announcement/AnnouncementReports';
-import HomePage from './Contents/LMS/HomePage/HomePage';
+import CreateRoomForm from "./Contents/Forms/CreateRoom/CreateRoomFrom";
+import CreateRoomReports from "./Contents/Forms/CreateRoom/CreateRoomReports";
+import ClassSchedule from "./Contents/LMS/ClassSchedule/ClassSchedule";
+import AnnouncementForm from "./Contents/LMS/Announcement/AnnouncementForm";
+import AnnouncementReports from "./Contents/LMS/Announcement/AnnouncementReports";
+import HomePage from "./Contents/LMS/HomePage/HomePage";
 
 const drawerWidth = 283;
 
@@ -127,15 +128,15 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 3,
     paddingBottom: 3,
     paddingLeft: 25,
-    color: 'white',
+    color: "white",
     width: drawerWidth - 70,
-    textOverflow: 'clip',
-    whiteSpace: 'break-spaces'
+    textOverflow: "clip",
+    whiteSpace: "break-spaces",
   },
   active: {
     backgroundColor: "#103C6E",
     paddingTop: 5,
-    paddingBottom: 5
+    paddingBottom: 5,
   },
   content: {
     flexGrow: 1,
@@ -196,7 +197,10 @@ const Dashboard = (props) => {
   const { featureList = [] } = adminData;
 
   useEffect(() => {
-    const check = adminData.isZoomVerified === 0 && adminData.userTypeId === 3 && window.localStorage.getItem("isViewDialog") == 0;
+    const check =
+      adminData.isZoomVerified === 0 &&
+      adminData.userTypeId === 3 &&
+      window.localStorage.getItem("isViewDialog") == 0;
     setDialogOpen(check);
   }, []);
 
@@ -210,12 +214,19 @@ const Dashboard = (props) => {
     setDrawerOpen(!prevFlag);
   };
 
-
-
   return (
     <Fragment>
-      <ControlledDialog open={isDialogOpen} handleClose={() => { setDialogOpen(false); localStorage.setItem("isViewDialog", 1); }} title={'Error'}
-        content={'Please accept zoom invitation sent on your registered email id '} />
+      <ControlledDialog
+        open={isDialogOpen}
+        handleClose={() => {
+          setDialogOpen(false);
+          localStorage.setItem("isViewDialog", 1);
+        }}
+        title={"Error"}
+        content={
+          "Please accept zoom invitation sent on your registered email id "
+        }
+      />
       <NavBar
         setOpenMenu={(e) => setOpenMenu(e)}
         isOpenMenu={isDrawerOpen}
@@ -237,33 +248,47 @@ const Dashboard = (props) => {
         <Toolbar />
         <div className={classes.drawerContainer}>
           <div>
-            {
-              featureList.map(feature => {
-                const { items = [] } = feature;
-                return (
-                  <div key={feature.typeId} className={classes.menuListContainer}>
-                    <Typography className={classes.menuTitle} noWrap variant="h6">
-                      <img alt="" className={classes.menuTitleIcon} src={Leaf} /> <div>{feature.typeLabel}</div>
-                    </Typography>
-                    <MenuList style={{
-                      outline: 'none'
-                    }}>
-                      {
-                        items.map(option => {
-                          return (
-                            <MenuItem key={option.id} className={`${classes.menuItemPadding}`}>
-                              <Link style={{ textDecoration: 'none' }} to={option.webUrl}>
-                                <Typography className={`${classes.menuItemText} ${viewValue === `${option.action}` && classes.active}`}
-                                  noWrap variant="body2">{option.label}</Typography>
-                              </Link>
-                            </MenuItem>
-                          );
-                        })
-                      }
-                    </MenuList>
-                  </div>
-                );
-              })}
+            {featureList.map((feature) => {
+              const { items = [] } = feature;
+              return (
+                <div key={feature.typeId} className={classes.menuListContainer}>
+                  <Typography className={classes.menuTitle} noWrap variant="h6">
+                    <img alt="" className={classes.menuTitleIcon} src={Leaf} />{" "}
+                    <div>{feature.typeLabel}</div>
+                  </Typography>
+                  <MenuList
+                    style={{
+                      outline: "none",
+                    }}
+                  >
+                    {items.map((option) => {
+                      return (
+                        <MenuItem
+                          key={option.id}
+                          className={`${classes.menuItemPadding}`}
+                        >
+                          <Link
+                            style={{ textDecoration: "none" }}
+                            to={option.webUrl}
+                          >
+                            <Typography
+                              className={`${classes.menuItemText} ${
+                                viewValue === `${option.action}` &&
+                                classes.active
+                              }`}
+                              noWrap
+                              variant="body2"
+                            >
+                              {option.label}
+                            </Typography>
+                          </Link>
+                        </MenuItem>
+                      );
+                    })}
+                  </MenuList>
+                </div>
+              );
+            })}
           </div>
           <div
             style={{
@@ -801,6 +826,36 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="R54Reports"
+                exact
+                path="/dashboard/R54Reports"
+                render={(props) => {
+                  return (
+                    <R54Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R63Reports"
+                exact
+                path="/dashboard/R63Reports"
+                render={(props) => {
+                  return (
+                    <R63Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="F56Form"
                 exact
                 path="/dashboard/F56Form/:recordId"
@@ -1099,10 +1154,7 @@ const Dashboard = (props) => {
                 path="/dashboard/maintain-class-rooms/:recordId"
                 render={(props) => {
                   return (
-                    <CreateRoomForm
-                      {...props}
-                      isDrawerOpen={isDrawerOpen}
-                    />
+                    <CreateRoomForm {...props} isDrawerOpen={isDrawerOpen} />
                   );
                 }}
               />
@@ -1120,10 +1172,7 @@ const Dashboard = (props) => {
                 path="/dashboard/announcements/:recordId"
                 render={(props) => {
                   return (
-                    <AnnouncementForm
-                      {...props}
-                      isDrawerOpen={isDrawerOpen}
-                    />
+                    <AnnouncementForm {...props} isDrawerOpen={isDrawerOpen} />
                   );
                 }}
               />
