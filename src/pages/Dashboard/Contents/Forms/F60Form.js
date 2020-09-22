@@ -389,6 +389,7 @@ class R60Form extends Component {
                     onClick={this.handlePopupOpen}
                   >
                       <PostAddIcon fontSize="large" color="primary"/>
+                      <Typography component="span" color="primary" variant="h6">New Topic</Typography>
                   </IconButton>
               </Tooltip>
               </Fragment>
