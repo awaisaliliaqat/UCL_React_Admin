@@ -82,9 +82,48 @@ class HomePage extends Component {
 		});
 	};
 
+	// getClassesData = async () => {
+	// 	this.setState({ isLoading: true });
+	// 	const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C33CommonAcademicsTimeTableUpcomingClassesView`;
+	// 	await fetch(url, {
+	// 		method: "GET",
+	// 		headers: new Headers({
+	// 			Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+	// 		}),
+	// 	})
+	// 		.then((res) => {
+	// 			if (!res.ok) {
+	// 				throw res;
+	// 			}
+	// 			return res.json();
+	// 		})
+	// 		.then(
+	// 			(json) => {
+	// 				if (json.CODE === 1) {
+	// 					this.setState({ classesData: json.DATA || [] });
+	// 				} else {
+	// 					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
+	// 				}
+	// 				console.log("TimeTableDataArray", json);
+	// 			},
+	// 			(error) => {
+	// 				if (error.status === 401) {
+	// 					this.setState({
+	// 						isLoginMenu: true,
+	// 						isReload: true,
+	// 					});
+	// 				} else {
+	// 					console.log(error);
+	// 					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+	// 				}
+	// 			}
+	// 		);
+	// 	this.setState({ isLoading: false });
+	// };
+
 	getClassesData = async () => {
 		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C33CommonAcademicsTimeTableUpcomingClassesView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C60CommonAcademicsTeacherSectionsView`;
 		await fetch(url, {
 			method: "GET",
 			headers: new Headers({
@@ -522,7 +561,7 @@ class HomePage extends Component {
 							</Grid>
 						</Grid>
 						<Grid item xs={12} sm={9} container spacing={2}>
-							<Grid item xs={4}>
+							<Grid item xs={4}> 
 								<VirtulaClasses
 									onJoinClick={(e, data) => this.onJoinClick(e, data)}
 									classesData={this.state.classesData}
