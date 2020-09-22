@@ -414,7 +414,8 @@ class R60Form extends Component {
                     <Autocomplete
                       fullWidth
                       id="courseId"
-                      options={this.state.coursesMenuItems}
+                      // options={this.state.coursesMenuItems}
+                      options={[]}
                       value={this.state.courseId}
                       onChange={(event, value) => this.handleSetCourse(value)}
                       getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
