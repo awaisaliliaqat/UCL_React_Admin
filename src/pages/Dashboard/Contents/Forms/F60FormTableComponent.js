@@ -5,19 +5,24 @@ import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableConta
   List, ListItem, ListItemText, ListItemAvatar, Avatar, Tooltip, IconButton} from "@material-ui/core";
 import ImageIcon from '@material-ui/icons/Image';
 import SpeakerNotesOutlinedIcon from '@material-ui/icons/SpeakerNotesOutlined';
+import { color } from "highcharts";
 
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: "rgb(29, 95, 152)", //theme.palette.common.black,
+    //backgroundColor: "rgb(29, 95, 152)", //theme.palette.common.black,
+    backgroundColor:"#f6f8fa",
     color: theme.palette.common.white,
     fontWeight: 500,
-    border: '1px solid rgb(29, 95, 152)',
-    borderRadius:'5px 5px 0px 0px'
+    //border: '1px solid rgb(29, 95, 152)',
+    border: '1px solid #e1e4e8',
+    borderRadius:'5px 5px 0px 0px',
+    color: "rgb(29, 95, 152)"
   },
   body: {
     fontSize: 14,
-    border: '1px solid rgb(29, 95, 152)',
+    //border: '1px solid rgb(29, 95, 152)',
+    border: '1px solid #f6f8fa',
     "&:hover":{
       cursor:"pointer"
     }
@@ -27,14 +32,16 @@ const StyledTableCell = withStyles((theme) => ({
 const StyledTableRow = withStyles((theme) => ({
   root: {
     '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
+      //backgroundColor: theme.palette.action.hover,
       "&:hover":{
-        backgroundColor:"#bdbdbd"
+        //backgroundColor:"#bdbdbd"
+        backgroundColor:"#f6f8fa"
       }
     },
     '&:nth-of-type(even)': {
       "&:hover":{
-        backgroundColor:"#bdbdbd"
+        //backgroundColor:"#bdbdbd"
+        backgroundColor:"#f6f8fa"
       }
     },
   },
