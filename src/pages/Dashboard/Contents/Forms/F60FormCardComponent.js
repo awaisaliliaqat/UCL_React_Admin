@@ -59,7 +59,7 @@ const styles = (theme) => createStyles({
 
 const SubReplyComponent = props => {
 
-  const { classes, subMessageData=[], onFormSubmit} = props;
+  const { classes, subMessageData=[], onFormSubmit, handleOpenSnackbar} = props;
 
   let messageRepliesArray = subMessageData.messageRepliesArray || [];
 
@@ -67,11 +67,21 @@ const SubReplyComponent = props => {
 
   const [open, setOpen] = useState(false);
   const [replayMsg, setReplayMsg] = useState("");
+  const [replayMsgError, setReplayMsgError] = useState("");
 
   const handleSetReplayMsg=(e)=>{
     let value = e.target.value;
-    console.log("value123", value);
     setReplayMsg(value);
+    setReplayMsgError("");
+  }
+
+  const onSubmit=()=>{
+    if(replayMsg){
+      onFormSubmit(subMessageData.id, replayMsg);
+    }else{
+      setReplayMsgError("Please type some messsage");
+      handleOpenSnackbar(<span>Please type some messsage</span>,"error");
+    }
   }
 
   return (
@@ -79,9 +89,9 @@ const SubReplyComponent = props => {
         <Button 
           size="small" 
           color="primary"
-          variant="outlined"
+          variant="contained"
           onClick={()=>{setOpen(!open)}}
-          style={{fontSize:10, padding:0, marginTop:10, fontWeight:700}}
+          style={{fontSize:10, padding:0, marginTop:10, fontWeight:500}}
         >
           Reply
         </Button>
@@ -108,6 +118,7 @@ const SubReplyComponent = props => {
               className={clsx(classes.margin, classes.textField)} 
               variant="outlined"
               size="small"
+              error={replayMsgError}
             >
               <InputLabel htmlFor="outlined-reply">Reply</InputLabel>
               <OutlinedInput
@@ -125,7 +136,8 @@ const SubReplyComponent = props => {
                         paddingTop: 8,
                         paddingBottom: 8,
                       }}
-                      onClick={()=>onFormSubmit(subMessageData.id, replayMsg)}
+                      //onClick={()=>onFormSubmit(subMessageData.id, replayMsg)}
+                      onClick={()=>onSubmit()}
                     >
                       <SendOutlinedIcon />
                     </Button>
@@ -150,7 +162,7 @@ const SubReplyComponent = props => {
                 marginBottom:5
               }}
             >
-              <ListItemAvatar>
+              <ListItemAvatar style={{minWidth:40}}>
                 <Avatar
                   alt={row.replyBy} 
                   src="/static/images/avatar/1.jpg" 
@@ -160,21 +172,21 @@ const SubReplyComponent = props => {
                     height:30,
                     fontSize:"0.9em"
                   }} 
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    <Typography 
-                      component="span"
-                      color="primary"
-                      style={{
-                        fontWeight:600,
-                        fontSize:"0.9em"
-                      }}
-                    >
-                      {row.replyBy}
-                    </Typography>
-                  }
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Typography 
+                    component="span"
+                    color="primary"
+                    style={{
+                      fontWeight:600,
+                      fontSize:"0.9em"
+                    }}
+                  >
+                    {row.replyBy}
+                  </Typography>
+                }
                   secondary={
                     <Fragment>
                       <Typography
@@ -271,6 +283,15 @@ class F60FormCardComponent extends Component {
     this.setState({isLoading: false});
   };
 
+  onSubmit(messageId, messageText){
+    if(this.state.replayMsg){
+      this.onFormSubmit(messageId, messageText);
+    }else{
+      this.setState({replayMsgError:"Please type some messsage"});
+      this.props.handleOpenSnackbar(<span>Please type some messsage</span>,"error");
+    }
+  }
+
   onFormSubmit = async (messageId, messageText) => {
     // if (
     //   !this.isTopicValid() ||
@@ -301,6 +322,10 @@ class F60FormCardComponent extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.props.handleOpenSnackbar(json.USER_MESSAGE, "success");
+            this.setState({
+              replayMsg:"",
+              replayMsgError:""
+            });
             this.getData(this.state.topicId);
           } else {
             this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -476,13 +501,14 @@ class F60FormCardComponent extends Component {
                         paddingTop: 15,
                         paddingBottom: 15,
                       }}
-                      onClick={()=>this.onFormSubmit(messageData.id, this.state.replayMsg)}
+                      onClick={()=>this.onSubmit(messageData.id, this.state.replayMsg)}
                     >
-                      <SendOutlinedIcon />
+                     {this.state.isLoading ? <CircularProgress /> : <SendOutlinedIcon /> }
                     </Button>
                   </InputAdornment>
                 }
                 labelWidth={40}
+                error={this.state.replayMsgError}
               />
             </FormControl>
             &nbsp;
@@ -549,6 +575,8 @@ class F60FormCardComponent extends Component {
                             classes={classes}
                             subMessageData={row}
                             onFormSubmit={this.onFormSubmit}
+                            handleOpenSnackbar={this.props.handleOpenSnackbar}
+                            isLoading={this.state.isLoading}
                           />
                         </Fragment>
                       }

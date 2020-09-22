@@ -265,8 +265,9 @@ class F60FormPopupComponent extends Component {
               onClick={() => this.onFormSubmit()}
               color="primary"
               autoFocus
+              disabled={this.state.isLoading}
             >
-              Save
+              {this.state.isLoading ? <CircularProgress size={24}/> :"Save"}
             </Button>
           </DialogActions>
         </Dialog>
