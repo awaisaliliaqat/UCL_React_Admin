@@ -3,6 +3,7 @@ import { withStyles } from "@material-ui/styles";
 import { Grid, Typography, Button } from "@material-ui/core";
 import Profile from "./Chunks/Profile";
 import VirtulaClasses from "./Chunks/VirtulaClasses";
+import MessageCenter from "./Chunks/MessageCenter";
 import GradeBook from "./Chunks/GradeBook";
 import Attendances from "./Chunks/Attendances";
 import Quiz from "./Chunks/Quiz";
@@ -28,6 +29,7 @@ class HomePage extends Component {
 			classesData: [],
 			assignmentsData: [],
 			gradedDiscussionData: [],
+			messageCenterData:[],
 			sectionsData: [],
 			attendancesData: [],
 			isLoading: false,
@@ -51,6 +53,7 @@ class HomePage extends Component {
 		// this.getGradedDiscussionData();
 		this.getAttendancesData();
 		this.getAnnoucementsData();
+		this.getMessageCenterData();
 	}
 
 	handleAnnouncmentDialog = () => {
@@ -82,48 +85,9 @@ class HomePage extends Component {
 		});
 	};
 
-	// getClassesData = async () => {
-	// 	this.setState({ isLoading: true });
-	// 	const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C33CommonAcademicsTimeTableUpcomingClassesView`;
-	// 	await fetch(url, {
-	// 		method: "GET",
-	// 		headers: new Headers({
-	// 			Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-	// 		}),
-	// 	})
-	// 		.then((res) => {
-	// 			if (!res.ok) {
-	// 				throw res;
-	// 			}
-	// 			return res.json();
-	// 		})
-	// 		.then(
-	// 			(json) => {
-	// 				if (json.CODE === 1) {
-	// 					this.setState({ classesData: json.DATA || [] });
-	// 				} else {
-	// 					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
-	// 				}
-	// 				console.log("TimeTableDataArray", json);
-	// 			},
-	// 			(error) => {
-	// 				if (error.status === 401) {
-	// 					this.setState({
-	// 						isLoginMenu: true,
-	// 						isReload: true,
-	// 					});
-	// 				} else {
-	// 					console.log(error);
-	// 					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
-	// 				}
-	// 			}
-	// 		);
-	// 	this.setState({ isLoading: false });
-	// };
-
 	getClassesData = async () => {
 		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C60CommonAcademicsTeacherSectionsView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C33CommonAcademicsTimeTableUpcomingClassesView`;
 		await fetch(url, {
 			method: "GET",
 			headers: new Headers({
@@ -144,6 +108,45 @@ class HomePage extends Component {
 						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
 					}
 					console.log("TimeTableDataArray", json);
+				},
+				(error) => {
+					if (error.status === 401) {
+						this.setState({
+							isLoginMenu: true,
+							isReload: true,
+						});
+					} else {
+						console.log(error);
+						this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+					}
+				}
+			);
+		this.setState({ isLoading: false });
+	};
+
+	getMessageCenterData = async () => {
+		this.setState({ isLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C60CommonAcademicsTeacherSectionsView`;
+		await fetch(url, {
+			method: "GET",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+			.then((res) => {
+				if (!res.ok) {
+					throw res;
+				}
+				return res.json();
+			})
+			.then(
+				(json) => {
+					if (json.CODE === 1) {
+						this.setState({ messageCenterData: json.DATA || [] });
+					} else {
+						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
+					}
+					console.log("getMessageCenterData", json);
 				},
 				(error) => {
 					if (error.status === 401) {
@@ -584,8 +587,14 @@ class HomePage extends Component {
 								<GradeBook />
 							</Grid>
 							<Grid item xs={4}>
-								<Quiz />
+								<MessageCenter 
+									onJoinClick={(e, data) => this.onJoinClick(e, data)}
+									classesData={this.state.messageCenterData}
+								/>
 							</Grid>
+							{/* <Grid item xs={4}>
+								<Quiz />
+							</Grid> */}
 							<Grid item xs={4}>
 								<GradedDiscussion
 									data={this.state.gradedDiscussionData}

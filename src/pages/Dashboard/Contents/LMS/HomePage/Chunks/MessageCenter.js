@@ -20,7 +20,8 @@ import {
   Button,
   ListItemSecondaryAction,
 } from "@material-ui/core";
-import TrainingIcon from "../../../../../../assets/Images/my_objectives_training.png";
+//import TrainingIcon from "../../../../../../assets/Images/my_objectives_training.png";MessageCenterIcon
+import TrainingIcon from "../../../../../../assets/Images/message_center_icon.png";
 // import CreateIcon from "@material-ui/icons/Create";
 import AssignmentsIcon from "../../../../../../assets/Images/grade_book_assignments.png";
 import VisibilityIcon from "@material-ui/icons/Visibility";
@@ -54,9 +55,10 @@ const VirtulaClasses = (props) => {
   return (
     <Card>
       <CardHeader
-        title={<Typography color="primary">Classes</Typography>}
-        subheader={"Join your virtual classes"}
-        onClick={() => window.open("#/dashboard/F33Form/0")}
+        title={<Typography color="primary">Message Center</Typography>}
+        //subheader={"Join your virtual classes"}
+        //onClick={() => window.open("#/dashboard/F33Form/0")}
+        onClick={() => window.open("#/dashboard/F60Form/0")}
         avatar={<Avatar className={classes.bigAvatar} src={TrainingIcon} />}
         className={classes.card}
       />
@@ -88,27 +90,29 @@ const VirtulaClasses = (props) => {
                       color="textPrimary"
                     >
                       {/* {item.title} */}
-                      {item.sectionLabel}
+                      {item.label}
                     </Typography>
                   }
-                  secondary={
-                    <React.Fragment>
-                      <Typography
-                        variant="caption"
-                        style={{ paddingLeft: "2px" }}
-                      >
-                        {item.startTime}
-                      </Typography>
-                    </React.Fragment>
-                  }
+                  // secondary={
+                  //   <React.Fragment>
+                  //     <Typography
+                  //       variant="caption"
+                  //       style={{ paddingLeft: "2px" }}
+                  //     >
+                  //       {item.startTime}
+                  //     </Typography>
+                  //   </React.Fragment>
+                  // }
                 />
                 <ListItemSecondaryAction style={{ right: 0 }}>
                   <Button
-                    disabled={!item.meetingStartUrl}
-                    onClick={(e) => props.onJoinClick(e, item)}
+                    //disabled={!item.meetingStartUrl}
+                    disabled={!item.id}
+                    //onClick={(e) => props.onJoinClick(e, item)}
+                    onClick={(e) => window.location="#/dashboard/F60Form/"+item.id}
                     color="primary"
                   >
-                    Join
+                    Open
                   </Button>
                 </ListItemSecondaryAction>
               </ListItem>
@@ -122,7 +126,7 @@ const VirtulaClasses = (props) => {
           <Tooltip title="View All">
             <Link
               style={{ textDecoration: "none" }}
-              to="/dashboard/F33Form/0"
+              to="/dashboard/F60Form/0"
               target="_blank"
             >
               <IconButton aria-label="View">
