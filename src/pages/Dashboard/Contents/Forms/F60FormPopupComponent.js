@@ -99,8 +99,9 @@ class F60FormPopupComponent extends Component {
       !this.isTopicValid() ||
       !this.isDescriptionValid() 
     ) { return; }
-    let myForm = document.getElementById("myForm");
-    const data = new FormData(myForm);
+    //let myForm = document.getElementById("myForm");
+    //const data = new FormData(myForm);
+    const data = new FormData();
     data.append("sectionId", 35);
     data.append("createdByFlag", 1);
     data.append("topic", this.state.topic);
