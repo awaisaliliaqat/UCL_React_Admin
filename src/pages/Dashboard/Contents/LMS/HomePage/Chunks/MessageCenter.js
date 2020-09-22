@@ -56,7 +56,7 @@ const VirtulaClasses = (props) => {
     <Card>
       <CardHeader
         title={<Typography color="primary">Message Center</Typography>}
-        //subheader={"Join your virtual classes"}
+        subheader={"Class Discussions"}
         //onClick={() => window.open("#/dashboard/F33Form/0")}
         onClick={() => window.open("#/dashboard/F60Form/0")}
         avatar={<Avatar className={classes.bigAvatar} src={TrainingIcon} />}
