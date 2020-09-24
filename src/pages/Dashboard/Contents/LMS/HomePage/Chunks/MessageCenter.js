@@ -109,7 +109,9 @@ const VirtulaClasses = (props) => {
                     //disabled={!item.meetingStartUrl}
                     disabled={!item.id}
                     //onClick={(e) => props.onJoinClick(e, item)}
-                    onClick={(e) => window.location="#/dashboard/F60Form/"+item.id}
+                    onClick={(e) =>
+                      (window.location = "#/dashboard/F60Form/" + item.id)
+                    }
                     color="primary"
                   >
                     Open
@@ -126,7 +128,7 @@ const VirtulaClasses = (props) => {
           <Tooltip title="View All">
             <Link
               style={{ textDecoration: "none" }}
-              to="/dashboard/F60Form/0"
+              //to="/dashboard/F60Form/0"
               target="_blank"
             >
               <IconButton aria-label="View">

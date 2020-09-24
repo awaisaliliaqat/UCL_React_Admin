@@ -453,7 +453,9 @@ class HomePage extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ anouncementData: json.DATA || [] });
-            this.handleAnnouncmentDialog(this.state.anouncementData);
+            // alert(localStorage.getItem("announcementReadFlag"));
+            if (localStorage.getItem("announcementReadFlag") != 1)
+              this.handleAnnouncmentDialog(this.state.anouncementData);
           } else {
             this.handleOpenSnackbar(
               <span>
@@ -570,13 +572,14 @@ class HomePage extends Component {
   };
 
   onAnnouncementClose = () => {
-    const myData = window.localStorage.getItem("lmsData")
-      ? JSON.parse(window.localStorage.getItem("lmsData"))
-      : {};
-    myData.anouncementDate = "";
-    myData.anouncementLabel = "";
-    myData.anouncementDetails = "";
-    window.localStorage.setItem("lmsData", JSON.stringify(myData));
+    // const myData = window.localStorage.getItem("lmsData")
+    //   ? JSON.parse(window.localStorage.getItem("lmsData"))
+    //   : {};
+    // myData.anouncementDate = "";
+    // myData.anouncementLabel = "";
+    // myData.anouncementDetails = "";
+    //window.localStorage.setItem("lmsData", JSON.stringify(myData));
+    window.localStorage.setItem("announcementReadFlag", 1);
     this.setState({
       anouncementOpen: false,
       anouncementDetails: "",
