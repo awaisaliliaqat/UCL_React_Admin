@@ -2,11 +2,8 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { useTheme } from "@material-ui/styles";
 import { numberExp } from "../../../../utils/regularExpression";
 import {TextField, Grid, CircularProgress, Divider, Typography, Button, IconButton,
-  Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, Card, 
-  CardContent } from "@material-ui/core";
+  Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery } from "@material-ui/core";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
-import { useDropzone } from "react-dropzone";
-import CloudDownloadOutlinedIcon from '@material-ui/icons/CloudDownloadOutlined';
 
 function CheckPopupFullScreen (props){
   const theme = useTheme();
@@ -17,7 +14,7 @@ function CheckPopupFullScreen (props){
   return <Fragment/>;
 }
 
-class F36FormPopupComponent extends Component {
+class F60FormPopupComponent extends Component {
 
   constructor(props) {
     super(props);
@@ -31,13 +28,10 @@ class F36FormPopupComponent extends Component {
       isPopupFullScreen: false,
       isLoginMenu: false,
       isReload: false,
-      files: [],
-      filesError: "",
-      obtainedMarks: "",
-      obtainedMarksError: "",
-      remarks:"",
-      remarksError:"",
-      totalMarks:""
+      topic:"",
+      tppicError:"",
+      description:"",
+      descriptionError:""
     };
   }
 
@@ -48,29 +42,11 @@ class F36FormPopupComponent extends Component {
   handlePopupClose = () => {
     this.props.handlePopupClose();
     this.setState({
-      files: [],
-      filesError: "",
-      obtainedMarks: "",
-      obtainedMarksError: "",
-      remarks:"",
-      remarksError:""
+      topic:"",
+      topicError:"",
+      description:"",
+      descriptionError:""
     });
-  }
-
-  handleFileChange = event => {
-    const { files = [] } = event.target;
-    if (files.length > 0) {
-        if ( (files[0].type === "application/pdf" || files[0].type === "application/msword" || files[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && files[0].size/1000<10000) {
-            this.setState({
-                files,
-                filesError: ""
-            })
-        } else {
-            this.setState({
-                filesError: "Please select only pdf, doc or docx file with size less than 10 MBs."
-            })
-        }
-    }
   }
 
   onHandleChange = (e) => {
@@ -93,38 +69,26 @@ class F36FormPopupComponent extends Component {
     });
   };
 
-  isRemarksValid = () => {
+  isTopicValid = () => {
     let isValid = true;
-    if (!this.state.remarks) {
-      this.setState({ remarksError: "Please select module." });
-      document.getElementById("remarks").focus();
+    if (!this.state.topic) {
+      this.setState({ topicError: "Please enter topic title." });
+      document.getElementById("topic").focus();
       isValid = false;
     } else {
-      this.setState({ remarksError: "" });
+      this.setState({ topicError: "" });
     }
     return isValid;
   };
 
-  isobtainedMarksValid = () => {
+  isDescriptionValid = () => {
     let isValid = true;
-    if (!this.state.obtainedMarks) {
-      this.setState({ obtainedMarksError: "Please enter marks." });
-      document.getElementById("obtainedMarks").focus();
+    if (!this.state.description) {
+      this.setState({ descriptionError: "Please enter topic description." });
+      document.getElementById("description").focus();
       isValid = false;
     } else {
-      this.setState({ obtainedMarksError: "" });
-    }
-    return isValid;
-  };
-
-  isFileValid = () => {
-    let isValid = true;
-    if (this.state.files.length<1 && this.state.recordId==0) {
-      this.setState({ filesError: "Please select file." });
-      document.getElementById("contained-button-file-div").focus();
-      isValid = false;
-    } else {
-      this.setState({ filesError: "" });
+      this.setState({ descriptionError: "" });
     }
     return isValid;
   };
@@ -132,16 +96,18 @@ class F36FormPopupComponent extends Component {
   onFormSubmit = async (e) => {
     //e.preventDefault();
     if (
-      !this.isFileValid() ||
-      !this.isobtainedMarksValid() ||
-      !this.isRemarksValid()
-    ) {
-      return;
-    }
-    let myForm = document.getElementById("myForm");
-    const data = new FormData(myForm);
+      !this.isTopicValid() ||
+      !this.isDescriptionValid() 
+    ) { return; }
+    //let myForm = document.getElementById("myForm");
+    //const data = new FormData(myForm);
+    const data = new FormData();
+    data.append("sectionId", 35);
+    data.append("createdByFlag", 1);
+    data.append("topic", this.state.topic);
+    data.append("description", this.state.description);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsStudentsAssignmentsResultSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C60CommonAcademicsForumsSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -193,7 +159,7 @@ class F36FormPopupComponent extends Component {
 
   render() {
 
-    const {popupBoxOpen, handlePopupClose, popupTitle, downloadFile, fileName, totalMarks, assignmentGradedData} = this.props;
+    const {popupBoxOpen} = this.props;
     
     return (
       <Fragment>
@@ -215,25 +181,19 @@ class F36FormPopupComponent extends Component {
               height:30
             }}
           >
-            <Typography
-              style={{
-                color: "rgb(250, 253, 255)",
-                fontWeight: 600,
-                //borderBottom: "1px solid rgb(58, 127, 187, 0.3)",
-                fontSize: 20,
-              }}
+            <Typography 
+              component="span" 
+              variant="h5"
+              style={{color:"#fafdff"}}
             >
-              {popupTitle}
-              <Typography component="span" variant="h5">
-                Topic&nbsp;{totalMarks}
-              </Typography>
-            </Typography>
+              Add Topic
+            </Typography> 
             <IconButton
               aria-label="close"
               onClick={this.handlePopupClose}
               style={{
                 position: "relative",
-                top: "-46px",
+                top: "-18px",
                 right: "-24px",
                 float: "right",
               }}
@@ -249,35 +209,34 @@ class F36FormPopupComponent extends Component {
               <Grid
                 container
                 direction="row"
-                //justify="space-evenly"
                 alignItems="center"
               >
+                {/* 
                 <TextField
                   type="hidden"
                   id="id"
                   name="id"
                   defaultValue={this.props.recordId}
-                />
+                /> 
+                */}
                 <Grid item xs={12} md={12}>
                   <TextField
-                    id="topicTitle"
-                    name="obtainedMarks"
+                    id="topic"
+                    name="topic"
                     label="Title"
                     required
                     fullWidth
                     variant="outlined"
                     onChange={this.onHandleChange}
-                    value={this.state.obtainedMarks}
-                    error={!!this.state.obtainedMarksError}
-                    helperText={
-                      this.state.obtainedMarksError ? this.state.obtainedMarksError : " "
-                    }
+                    value={this.state.topic}
+                    error={!!this.state.topicError}
+                    helperText={this.state.topicError ? this.state.topicError : " "}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
                     id="description"
-                    name="remarks"
+                    name="description"
                     label="Description"
                     required
                     fullWidth
@@ -285,11 +244,9 @@ class F36FormPopupComponent extends Component {
                     rows={5}
                     variant="outlined"
                     onChange={this.onHandleChange}
-                    value={this.state.remarks}
-                    error={!!this.state.remarksError}
-                    helperText={
-                      this.state.remarksError ? this.state.remarksError : " "
-                    }
+                    value={this.state.description}
+                    error={!!this.state.descriptionError}
+                    helperText={this.state.descriptionError ? this.state.descriptionError : " "}
                   />
                 </Grid>
               </Grid>
@@ -309,8 +266,9 @@ class F36FormPopupComponent extends Component {
               onClick={() => this.onFormSubmit()}
               color="primary"
               autoFocus
+              disabled={this.state.isLoading}
             >
-              Save
+              {this.state.isLoading ? <CircularProgress size={24}/> :"Save"}
             </Button>
           </DialogActions>
         </Dialog>
@@ -318,4 +276,4 @@ class F36FormPopupComponent extends Component {
     );
   }
 }
-export default F36FormPopupComponent;
+export default F60FormPopupComponent;
