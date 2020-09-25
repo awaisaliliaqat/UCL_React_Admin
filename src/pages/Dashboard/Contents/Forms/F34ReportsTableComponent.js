@@ -71,6 +71,7 @@ class F34ReportsTableComponent extends Component {
         { columnName: "solutionFileDownload", width: 80, align:"center" },
         { columnName: "fileDownload", width: 80, align:"center" },
         { columnName: "label", wordWrapEnabled: true },
+        { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "instruction", wordWrapEnabled: true },
         { columnName: "action", width: 120 },
       ],

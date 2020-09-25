@@ -162,7 +162,7 @@ class F60FormTableComponent extends Component {
                     <StyledTableCell 
                       colSpan={6}
                     >
-                      Topics
+                      <Typography component="span" variant="body1">Topics</Typography>
                     </StyledTableCell>
                 </StyledTableRow>
               </TableHead>
