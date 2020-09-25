@@ -57,8 +57,7 @@ const VirtulaClasses = (props) => {
       <CardHeader
         title={<Typography color="primary">Message Center</Typography>}
         subheader={"Class Discussions"}
-        //onClick={() => window.open("#/dashboard/F33Form/0")}
-        onClick={() => window.open("#/dashboard/F60Form/0")}
+        //onClick={() => window.open("#/dashboard/F60Form/0")}
         avatar={<Avatar className={classes.bigAvatar} src={TrainingIcon} />}
         className={classes.card}
       />
@@ -113,6 +112,7 @@ const VirtulaClasses = (props) => {
                       (window.location = "#/dashboard/F60Form/" + item.id)
                     }
                     color="primary"
+                    disabled={true}
                   >
                     Open
                   </Button>
@@ -126,15 +126,18 @@ const VirtulaClasses = (props) => {
       <CardActions style={{ textAlign: "center" }} className={classes.actions}>
         <div>
           <Tooltip title="View All">
-            <Link
+            {/* <Link
               style={{ textDecoration: "none" }}
-              //to="/dashboard/F60Form/0"
+              to="/dashboard/F60Form/0"
               target="_blank"
-            >
-              <IconButton aria-label="View">
+              disabled={true}
+            > */}
+              <IconButton 
+                aria-label="View"
+              >
                 <VisibilityIcon />
               </IconButton>
-            </Link>
+            {/* </Link> */}
           </Tooltip>
           {/* <Tooltip title="In Progress">
             <IconButton aria-label="In Progress">
