@@ -157,7 +157,10 @@ class R46Reports extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ effectiveDateMenuItems: json.DATA || [] });
-            this.getData(courseId, json.DATA[0].label);
+            if(json.DATA[0]){
+              this.getData(courseId, json.DATA[0].label);
+              this.setState({effectiveDate:json.DATA[0].label});
+            }
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(

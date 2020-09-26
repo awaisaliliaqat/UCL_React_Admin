@@ -113,7 +113,7 @@ const AddmissionDecisionFilter = props => {
                     select
                   >
                     {values.programmeGroupsMenuItems.map((item) => 
-                        <MenuItem key={item.Id} value={item.Id}>
+                        <MenuItem key={item.ID} value={item.ID}>
                             {item.Label}
                         </MenuItem>    
                     )}

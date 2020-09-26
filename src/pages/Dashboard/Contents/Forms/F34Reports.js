@@ -455,6 +455,7 @@ class F34Reports extends Component {
     const columns = [
       { name: "SRNo", title: "SR#" },
       { name: "label", title: "Label" },
+      { name: "sectionLabel", title: "Section" },
       { name: "startDateReport", title: "Start\xa0Date" },
       { name: "dueDateReport", title: "Due\xa0Date" },
       { name: "instruction", title: "Instruction" },
