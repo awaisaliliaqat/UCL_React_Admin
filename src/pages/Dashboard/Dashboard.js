@@ -85,6 +85,9 @@ import R59Reports from "./Contents/Forms/R59Reports";
 import F60Form from "./Contents/Forms/F60Form";
 import R61Reports from "./Contents/Forms/R61Reports";
 import F62Form from "./Contents/Forms/F62Form";
+import F64Form from "./Contents/Forms/F64Form";
+import F65Form from "./Contents/Forms/F65Form";
+import F65Reports from "./Contents/Forms/F65Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentStatus from "./Contents/Decision/ChangeStudentStatus/ChangeStudentStatus";
 import SyncTimeTable from "./Contents/LMS/SyncTimeTable/SyncTimeTable";
@@ -922,6 +925,51 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F62Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F64Form"
+                exact
+                path="/dashboard/F64Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F64Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F65Form"
+                exact
+                path="/dashboard/F65Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F65Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F65Reports"
+                exact
+                path="/dashboard/F65Reports"
+                render={(props) => {
+                  return (
+                    <F65Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

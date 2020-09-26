@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
-import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { withStyles, createMuiTheme, MuiThemeProvider, createStyles} from '@material-ui/core/styles';
 import {Typography, TextField, Divider, CircularProgress, Grid, Tooltip, 
-IconButton, Hidden} from "@material-ui/core";
+IconButton, Hidden, Button} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -18,7 +18,7 @@ import PostAddIcon from '@material-ui/icons/PostAdd';
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import Collapse from '@material-ui/core/Collapse';
 
-const styles = ({
+const styles = createStyles((theme)=>createStyles({
   table: {
     minWidth: 750,
     width: '100%',
@@ -26,7 +26,10 @@ const styles = ({
   tableContainer: {
     //maxHeight: 440,
   },
-});
+  button: {
+    margin: 0, //theme.spacing(1),
+  },
+}));
 
 const theme = createMuiTheme({
   palette: {
@@ -377,13 +380,14 @@ class R60Form extends Component {
               {!this.state.isOnReplyForm &&
               <Fragment>
                 <Tooltip title="Topic Filter">
-                <IconButton
-                  style={{ marginLeft: "-10px" }}
-                  onClick={this.handleToggleTableFilter}
-                >
-                  <FilterIcon fontSize="default" color="primary" />
-                </IconButton>
+                  <IconButton
+                    style={{ marginLeft: "-10px" }}
+                    onClick={this.handleToggleTableFilter}
+                  >
+                    <FilterIcon fontSize="default" color="primary" />
+                  </IconButton>
               </Tooltip>
+              {/* 
               <Tooltip title="Add Topic">
                   <IconButton
                     onClick={this.handlePopupOpen}
@@ -391,7 +395,16 @@ class R60Form extends Component {
                       <PostAddIcon fontSize="large" color="primary"/>
                       <Typography component="span" color="primary" variant="h6">New Topic</Typography>
                   </IconButton>
-              </Tooltip>
+              </Tooltip> 
+              */}
+              <Button
+                variant="text"
+                color="primary"
+                className={classes.button}
+                onClick={this.handlePopupOpen}
+              >
+                <PostAddIcon fontSize="default" color="primary"/>&nbsp;Add Topic
+              </Button>
               </Fragment>
               }
             </span>

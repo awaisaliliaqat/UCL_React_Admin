@@ -4,8 +4,7 @@ import PropTypes from "prop-types";
 import { withStyles } from '@material-ui/core/styles';
 import Logo from '../../../../assets/Images/logo.png';
 import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {IconButton, Typography, CircularProgress} from '@material-ui/core';
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@material-ui/core';
 
@@ -258,7 +257,7 @@ class DisplayAdmissionApplications extends Component {
                             </TableRow>
                             {studentNamesList.map((item, index)=>
                                 <StyledTableRow key={index}>
-                                    <StyledTableCell component="th" scope="row">{item}</StyledTableCell>
+                                    <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" style={{fontWeight:600}}>{item}</Typography></StyledTableCell>
                                     {noOfDays1.map((item2, index2)=>
                                       <StyledTableCell key={item+item2+index2} align="center">&nbsp;</StyledTableCell>
                                     )}
