@@ -2,10 +2,14 @@ import React, { Component, Fragment } from "react";
 import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableContainer, 
   TableHead, TableRow, TablePagination, Paper, Divider, CircularProgress, Grid,
-  List, ListItem, ListItemText, ListItemAvatar, Avatar, Tooltip, IconButton} from "@material-ui/core";
+  List, ListItem, ListItemText, ListItemAvatar, Avatar, Tooltip, IconButton,
+Badge} from "@material-ui/core";
 import ImageIcon from '@material-ui/icons/Image';
 import SpeakerNotesOutlinedIcon from '@material-ui/icons/SpeakerNotesOutlined';
 import { color } from "highcharts";
+import MailOutlineOutlinedIcon from '@material-ui/icons/MailOutlineOutlined';
+import SmsOutlinedIcon from '@material-ui/icons/SmsOutlined';
+import ForumOutlinedIcon from '@material-ui/icons/ForumOutlined';
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -173,9 +177,10 @@ class F60FormTableComponent extends Component {
                       <StyledTableCell colSpan={6}>
                         <ListItem onClick={()=>handleReplyFormShow(row.id)}>
                           <ListItemAvatar>
-                            <Avatar>
+                            <Avatar style={{backgroundColor:"#f6f8fa"}}>
                               {/* <ImageIcon /> */}
-                              <SpeakerNotesOutlinedIcon color="primary"/>
+                              {/* <SpeakerNotesOutlinedIcon color="primary"/> */}
+                              <ForumOutlinedIcon color="primary"/>
                             </Avatar>
                           </ListItemAvatar>
                           <ListItemText 
@@ -191,8 +196,14 @@ class F60FormTableComponent extends Component {
                                   {row.topic}
                               </Typography>
                             } 
-                            secondary={row.createdOn} 
+                          secondary={<span>  by M Umar,&nbsp;{row.createdOn}</span>} 
                           />
+                          <Badge color="secondary" badgeContent={10} style={{float:"right"}}>
+                            <Tooltip title="Number of replies">
+                              {/* <MailOutlineOutlinedIcon style={{color:"#b6babf"}} /> */}
+                              <SmsOutlinedIcon style={{color:"#b6babf"}} />
+                            </Tooltip>
+                          </Badge>
                         </ListItem>
                       </StyledTableCell>
                     </StyledTableRow>

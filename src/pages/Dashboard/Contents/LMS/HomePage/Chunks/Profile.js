@@ -75,6 +75,14 @@ const Profile = (props) => {
             Attendance Report
           </Link>
           <br />
+          <Link href="#/dashboard/F64Form/0" target="_blank" variant="body1" className={classes.handCursor}>
+            Manual Attendance
+          </Link>
+          <br/>
+          <Link href="#/dashboard/F65Form/0" target="_blank" variant="body1" className={classes.handCursor}>
+            Create Announcement
+          </Link>
+          <br/>
         </div>
         <br />
         <Typography variant="caption">Announcements</Typography>
