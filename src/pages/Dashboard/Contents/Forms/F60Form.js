@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { withStyles, createMuiTheme, MuiThemeProvider, createStyles} from '@material-ui/core/styles';
 import {Typography, TextField, Divider, CircularProgress, Grid, Tooltip, 
-IconButton, Hidden, Button} from "@material-ui/core";
+IconButton, Hidden, Button, Fab} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -28,6 +28,17 @@ const styles = createStyles((theme)=>createStyles({
   },
   button: {
     margin: 0, //theme.spacing(1),
+  },
+  addTopicBtn: {
+    float:"right",
+    position:"fixed",
+    zIndex:2,
+    margin: theme.spacing(1),
+    bottom: theme.spacing(0),
+    right: theme.spacing(2),
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -387,23 +398,14 @@ class R60Form extends Component {
                     <FilterIcon fontSize="default" color="primary" />
                   </IconButton>
               </Tooltip>
-              {/* 
-              <Tooltip title="Add Topic">
-                  <IconButton
-                    onClick={this.handlePopupOpen}
-                  >
-                      <PostAddIcon fontSize="large" color="primary"/>
-                      <Typography component="span" color="primary" variant="h6">New Topic</Typography>
-                  </IconButton>
-              </Tooltip> 
-              */}
               <Button
                 variant="text"
                 color="primary"
                 className={classes.button}
                 onClick={this.handlePopupOpen}
               >
-                <PostAddIcon fontSize="default" color="primary"/>&nbsp;Add Topic
+                <PostAddIcon fontSize="default" color="primary"/>
+                &nbsp;Add Topic
               </Button>
               </Fragment>
               }
@@ -422,39 +424,66 @@ class R60Form extends Component {
             alignItems="center"
           >
             <Grid item xs={12}>
-              <Hidden smUp={this.state.isOnReplyForm} mdDown={this.state.isOnReplyForm}>
+              <Hidden smUp={!!this.state.isOnReplyForm} mdDown={!!this.state.isOnReplyForm}>
                 <Collapse in={this.state.showTableFilter} timeout="auto" unmountOnExit>
-                  <MuiThemeProvider theme={theme}>
-                    <Autocomplete
-                      fullWidth
-                      id="courseId"
-                      // options={this.state.coursesMenuItems}
-                      options={[]}
-                      value={this.state.courseId}
-                      onChange={(event, value) => this.handleSetCourse(value)}
-                      getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
-                      renderInput={(params) => (
-                        console.log("params", params),
-                        <Fragment>
-                        <SearchOutlinedIcon color="primary" style={{marginBottom:-45, paddingLeft:12}}/>
-                        <TextField
-                          {...params}
-                          variant="outlined"
-                          label="Topics"
-                          placeholder="Search and Select"
-                          error={!!this.state.courseIdError}
-                          helperText={this.state.courseIdError ? this.state.courseIdError : "" }
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                        <Autocomplete
+                          fullWidth
+                          id="sectionId"
+                          // options={this.state.sectionsMenuItems}
+                          options={[]}
+                          value={this.state.sectionId}
+                          //onChange={(event, value) => this.handleSetSection(value)}
+                          getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              variant="outlined"
+                              label="Section"
+                              placeholder="Search and Select"
+                              error={!!this.state.sectionIdError}
+                              helperText={this.state.sectionIdError ? this.state.sectionIdError : "" }
+                            />
+                          )}
+                          style={{marginTop:4}}
                         />
-                        </Fragment>
-                      )}
-                      style={{marginTop:"-1em"}}
-                    />
-                  </MuiThemeProvider>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <MuiThemeProvider theme={theme}>
+                        <Autocomplete
+                          fullWidth
+                          id="courseId"
+                          // options={this.state.coursesMenuItems}
+                          options={[]}
+                          value={this.state.courseId}
+                          onChange={(event, value) => this.handleSetCourse(value)}
+                          getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
+                          renderInput={(params) => (
+                            console.log("params", params),
+                            <Fragment>
+                            <SearchOutlinedIcon color="primary" style={{marginBottom:-45, paddingLeft:12}}/>
+                            <TextField
+                              {...params}
+                              variant="outlined"
+                              label="Topics"
+                              placeholder="Search and Select"
+                              error={!!this.state.courseIdError}
+                              helperText={this.state.courseIdError ? this.state.courseIdError : "" }
+                            />
+                            </Fragment>
+                          )}
+                          style={{marginTop:"-1em"}}
+                        />
+                      </MuiThemeProvider>
+                    </Grid>
+                  </Grid>
                   <br/>
                 </Collapse>
                 <F60FormTableComponent 
                   handleReplyFormShow={this.handleReplyFormShow}
                   rows={this.state.tableData}
+                  isLoading={this.state.isLoading}
                 />
               </Hidden>
             </Grid>
@@ -468,9 +497,25 @@ class R60Form extends Component {
                 />
               </Hidden>
             </Grid>
+            <Grid item xs={12}>
+              <Hidden smUp={this.state.isOnReplyForm} mdDown={this.state.isOnReplyForm}>
+                <Fab
+                  variant="extended"
+                  size="small"
+                  color="primary"
+                  aria-label="add"
+                  className={classes.addTopicBtn}
+                  onClick={this.handlePopupOpen}
+                >
+                    <PostAddIcon className={classes.extendedIcon} />
+                    Add Topic
+                </Fab>
+              </Hidden>
+            </Grid>
           </Grid>
-          <br/>  
-          {/* <BottomBar
+          <br/>
+          {/* 
+          <BottomBar
             left_button_text="View"
             left_button_hide={true}
             bottomLeftButtonAction={this.viewReport}
@@ -479,7 +524,8 @@ class R60Form extends Component {
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
             disableRightButton={!this.state.monthId}
-          /> */}
+          /> 
+          */}
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}
