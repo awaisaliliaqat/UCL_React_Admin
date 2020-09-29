@@ -249,14 +249,14 @@ class R66Reports extends Component {
               })
               .then(
                   json => {
-                      if (json) {
-                          var csvURL = window.URL.createObjectURL(json);
-                          var tempLink = document.createElement("a");
-                          tempLink.setAttribute("download", `Students_List.pdf`);
-                          tempLink.href = csvURL;
-                          tempLink.click();
-                          console.log(json);
-                      }
+                    if(json){
+                      var csvURL = window.URL.createObjectURL(json);
+                      var tempLink = document.createElement("a");
+                      tempLink.setAttribute("download", `Students_List.pdf`);
+                      tempLink.href = csvURL;
+                      tempLink.click();
+                      console.log("downloadPDFData:", json);
+                    }
                   },
                   error => {
                       if (error.status === 401) {
