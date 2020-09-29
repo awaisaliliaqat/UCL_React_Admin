@@ -127,7 +127,7 @@ class R66Reports extends Component {
           if (error.status === 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: false,
+              isReload: true,
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
@@ -171,7 +171,7 @@ class R66Reports extends Component {
           if (error.status === 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: false,
+              isReload: true,
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
@@ -217,7 +217,7 @@ class R66Reports extends Component {
           if (error.status === 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: true,
+              isReload: false,
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
@@ -230,16 +230,11 @@ class R66Reports extends Component {
   };
 
   downloadPDFData = async () => {
-
-    if(
-      !this.isSchoolValid()
-    )
-    {return;}
-    return;
+    if( !this.isSchoolValid() ) {return;}
       if (this.state.isDownloadPdf === false) {
           this.setState({isDownloadPdf: true})
-          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsSummaryPdfDownload?programmeGroupId=${this.state.programmeGroupId}&programId=${this.state.programId}`;
-      //    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
+          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsPdfDownload?schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${this.state.courseId}`;
+        //const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
           await fetch(url, {
               method: "GET",
               headers: new Headers({
@@ -257,7 +252,7 @@ class R66Reports extends Component {
                       if (json) {
                           var csvURL = window.URL.createObjectURL(json);
                           var tempLink = document.createElement("a");
-                          tempLink.setAttribute("download", `Teacher_Assignment_Summary.pdf`);
+                          tempLink.setAttribute("download", `Students_List.pdf`);
                           tempLink.href = csvURL;
                           tempLink.click();
                           console.log(json);
@@ -270,8 +265,9 @@ class R66Reports extends Component {
                               isReload: false
                           })
                       } else {
-                          alert('Failed to fetch, Please try again later.');
-                          console.log(error);
+                        this.handleOpenSnackbar("Failed to download, Please try again later.","error");
+                        //alert('Failed to fetch, Please try again later.');
+                        console.log(error);
                       }
                   });
           this.setState({
@@ -382,7 +378,7 @@ class R66Reports extends Component {
       { name: "studentName", title: "Student\xa0Name" },
       { name: "schoolLabel", title: "School" },
       { name: "programmeGroupLabel", title: "Program Group" },
-      { name: "dateOfAdmission", title: "Date of Admission" },
+      //{ name: "dateOfAdmission", title: "Date of Admission" },
       { name: "statusLabel", title: "Status" }
     ];
 
@@ -601,10 +597,12 @@ class R66Reports extends Component {
           ) : (
             <Grid 
               container 
-              justify="center" 
-              alignItems="center"
+              justify="center"
             >
-              <CircularProgress />
+              <Grid item xs={12} style={{textAlign:"center"}}>
+                <br/>
+                <CircularProgress disableShrink />
+              </Grid>
             </Grid>
           )}
           <CustomizedSnackbar

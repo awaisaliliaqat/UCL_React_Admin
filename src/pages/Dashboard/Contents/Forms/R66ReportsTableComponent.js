@@ -35,7 +35,7 @@ class R66ReportsTableComponent extends Component {
         { columnName: "schoolLabel", wordWrapEnabled: true },
         { columnName: "programmeGroupLabel", wordWrapEnabled: true },
         { columnName: "dateOfAdmission", width: 150},
-        { columnName: "statusLabel", width: 80}
+        { columnName: "statusLabel", width: 120}
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
