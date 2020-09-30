@@ -1,8 +1,7 @@
-import React, { Component, Fragment, useState, useEffect } from "react";
+import React, { Component, Fragment } from "react";
 import { useTheme } from "@material-ui/styles";
-import { numberExp } from "../../../../utils/regularExpression";
 import {TextField, Grid, CircularProgress, Divider, Typography, Button, IconButton,
-  Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery } from "@material-ui/core";
+  Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, MenuItem } from "@material-ui/core";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 
 function CheckPopupFullScreen (props){
@@ -28,6 +27,8 @@ class F60FormPopupComponent extends Component {
       isPopupFullScreen: false,
       isLoginMenu: false,
       isReload: false,
+      sectionId:"",
+      sectionIdError:"",
       topic:"",
       tppicError:"",
       description:"",
@@ -42,6 +43,8 @@ class F60FormPopupComponent extends Component {
   handlePopupClose = () => {
     this.props.handlePopupClose();
     this.setState({
+      sectionId:"",
+      sectionIdError:"",
       topic:"",
       topicError:"",
       description:"",
@@ -52,21 +55,34 @@ class F60FormPopupComponent extends Component {
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
-    // let regex = "";
-    // switch (name) {
-    //     case "obtainedMarks":
-    //         regex = new RegExp(numberExp);
-    //         if (value && !regex.test(value)) {
-    //             return;
-    //         }
-    //         break;
-    // default:
-    //     break;
-    // }
     this.setState({
       [name]: value,
       [errName]: "",
     });
+  };
+
+  isSectionValid = () => {
+    let isValid = true;        
+    if (!this.state.sectionId) {
+        this.setState({sectionIdError:"Please select section."});
+        document.getElementById("sectionId").focus();
+        isValid = false;
+    } else {
+        this.setState({sectionIdError:""});
+    }
+    return isValid;
+  }
+
+  isTopicValid = () => {
+    let isValid = true;
+    if (!this.state.topic) {
+      this.setState({ topicError: "Please enter topic title." });
+      document.getElementById("topic").focus();
+      isValid = false;
+    } else {
+      this.setState({ topicError: "" });
+    }
+    return isValid;
   };
 
   isTopicValid = () => {
@@ -96,13 +112,14 @@ class F60FormPopupComponent extends Component {
   onFormSubmit = async (e) => {
     //e.preventDefault();
     if (
+      !this.isSectionValid() ||
       !this.isTopicValid() ||
       !this.isDescriptionValid() 
     ) { return; }
     //let myForm = document.getElementById("myForm");
     //const data = new FormData(myForm);
     const data = new FormData();
-    data.append("sectionId", 35);
+    data.append("sectionId", this.state.sectionId);
     data.append("createdByFlag", 1);
     data.append("topic", this.state.topic);
     data.append("description", this.state.description);
@@ -126,7 +143,7 @@ class F60FormPopupComponent extends Component {
           if (json.CODE === 1) {
             this.props.handleOpenSnackbar(json.USER_MESSAGE, "success");
             this.handlePopupClose();
-            this.props.getData();
+            this.props.getData(0,0);
           } else {
             this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
@@ -147,19 +164,9 @@ class F60FormPopupComponent extends Component {
     this.setState({ isLoading: false });
   };
 
-  componentDidUpdate(prevProps){
-    if (this.props.recordId !== prevProps.recordId) {
-      this.setState({
-        obtainedMarks:this.props.assignmentGradedData.obtainedMarks,
-        remarks:this.props.assignmentGradedData.remarks,
-        totalMarks:this.props.assignmentGradedData.totalMarks
-      });
-    }
-  }
-
   render() {
 
-    const {popupBoxOpen} = this.props;
+    const {popupBoxOpen, sectionsMenuItems} = this.props;
     
     return (
       <Fragment>
@@ -210,16 +217,36 @@ class F60FormPopupComponent extends Component {
                 container
                 direction="row"
                 alignItems="center"
+                spacing={1}
               >
-                {/* 
-                <TextField
-                  type="hidden"
-                  id="id"
-                  name="id"
-                  defaultValue={this.props.recordId}
-                /> 
-                */}
-                <Grid item xs={12} md={12}>
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    id="sectionId"
+                    name="sectionId"
+                    variant="outlined"
+                    label="Sections"
+                    onChange={this.onHandleChange}
+                    value={this.state.sectionId}
+                    error={!!this.state.sectionIdError}
+                    helperText={this.state.sectionIdError ? this.state.sectionIdError : " "}
+                    required
+                    fullWidth
+                    select
+                  >
+                    {sectionsMenuItems && !this.state.isLoading ? (
+                      sectionsMenuItems.map((dt, i) => (
+                        <MenuItem key={"sectionsMenuItems" + dt.id} value={dt.id}>
+                          {dt.label}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <Grid container justify="center">
+                        <CircularProgress disableShrink />
+                      </Grid>
+                    )}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} md={8}>
                   <TextField
                     id="topic"
                     name="topic"

@@ -57,11 +57,11 @@ const VirtulaClasses = (props) => {
       <CardHeader
         title={<Typography color="primary">Message Center</Typography>}
         subheader={"Class Discussions"}
-        //onClick={() => window.open("#/dashboard/F60Form/0")}
+        onClick={() => window.open("#/dashboard/F60Form/0")}
         avatar={<Avatar className={classes.bigAvatar} src={TrainingIcon} />}
         className={classes.card}
       />
-      <CardContent style={{ height: "210px" }}>
+      <CardContent style={{ height: "210px", overflowY:"hidden"}}>
         <List
           style={{
             marginTop: "-30px",
@@ -92,27 +92,23 @@ const VirtulaClasses = (props) => {
                       {item.label}
                     </Typography>
                   }
-                  // secondary={
-                  //   <React.Fragment>
-                  //     <Typography
-                  //       variant="caption"
-                  //       style={{ paddingLeft: "2px" }}
-                  //     >
-                  //       {item.startTime}
-                  //     </Typography>
-                  //   </React.Fragment>
-                  // }
+                  secondary={
+                    <React.Fragment>
+                      <Typography
+                        variant="caption"
+                        style={{ paddingLeft: "2px" }}
+                      >
+                        {item.sectionLabel}
+                      </Typography>
+                    </React.Fragment>
+                  }
                 />
                 <ListItemSecondaryAction style={{ right: 0 }}>
                   <Button
-                    //disabled={!item.meetingStartUrl}
                     disabled={!item.id}
-                    //onClick={(e) => props.onJoinClick(e, item)}
-                    onClick={(e) =>
-                      (window.location = "#/dashboard/F60Form/" + item.id)
-                    }
+                    onClick={(e) => window.open("#/dashboard/F60Form/"+item.sectionId)}
                     color="primary"
-                    disabled={true}
+                    //disabled={true}
                   >
                     Open
                   </Button>
@@ -126,18 +122,18 @@ const VirtulaClasses = (props) => {
       <CardActions style={{ textAlign: "center" }} className={classes.actions}>
         <div>
           <Tooltip title="View All">
-            {/* <Link
+            <Link
               style={{ textDecoration: "none" }}
               to="/dashboard/F60Form/0"
               target="_blank"
               disabled={true}
-            > */}
+            >
               <IconButton 
                 aria-label="View"
               >
                 <VisibilityIcon />
               </IconButton>
-            {/* </Link> */}
+            </Link>
           </Tooltip>
           {/* <Tooltip title="In Progress">
             <IconButton aria-label="In Progress">

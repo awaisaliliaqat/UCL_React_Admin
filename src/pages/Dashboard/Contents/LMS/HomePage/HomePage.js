@@ -134,7 +134,7 @@ class HomePage extends Component {
 
   getMessageCenterData = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C60CommonAcademicsTeacherSectionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C60CommonAcademicsTeacherSectionsForumsView`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
