@@ -172,7 +172,7 @@ class R60Form extends Component {
     this.setState({isLoading: false});
   };
 
-  getTopics = async (sectionId) => {
+  getTopics = async (sectionId=0) => {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("sectionId", sectionId);
