@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { withStyles, createMuiTheme, MuiThemeProvider, createStyles} from '@material-ui/core/styles';
 import {Typography, TextField, Divider, CircularProgress, Grid, Tooltip, 
-IconButton, Hidden, Button, Fab} from "@material-ui/core";
+IconButton, Hidden, Button, Fab, MenuItem} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -74,8 +74,9 @@ const theme = createMuiTheme({
 
 class R60Form extends Component {
   constructor(props) {
-    super();
+    super(props);
     this.state = {
+      recordId: this.props.match.params.recordId,
       isLoading: false,
       showTableFilter: false,
       showSearchBar: false,
@@ -86,17 +87,15 @@ class R60Form extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-      coursesMenuItems: [],
-      courseId: "",
-      courseIdError: "",
       sectionsMenuItems: [],
       sectionId: "",
       sectionIdError:"",
-      monthId: "",
+      topicsMenuItems: [],
+      topicId: {},
+      topicIdError: "",
       tableData: [],
       popupBoxOpen:false,
-      isOnReplyForm:false,
-      topicId:0
+      isOnReplyForm:false
     };
   }
 
@@ -134,58 +133,12 @@ class R60Form extends Component {
     this.setState({page:0});
   };
 
-  getCourses = async () => {
+  getSections = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C59CommonSessionOfferedProgrammeCoursesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C60CommonAcademicsTeacherSectionsView`;
     await fetch(url, {
       method: "POST",
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({coursesMenuItems: json.DATA || []});
-          } else {
-            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-          }
-          console.log("getCourses", json);
-        },
-        (error) => {
-          if (error.status === 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
-            console.log(error);
-          }
-        }
-      );
-    this.setState({isLoading: false});
-  };
-
-  getSections = async (courseId) => {
-    let data = new FormData();
-    data.append("courseId", courseId);
-    this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C59CommonAcademicsSectionsView`;
-    await fetch(url, {
-      method: "POST",
-      body:data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
+      headers: new Headers({Authorization:"Bearer "+localStorage.getItem("uclAdminToken")}),
     })
       .then((res) => {
         if (!res.ok) {
@@ -219,10 +172,55 @@ class R60Form extends Component {
     this.setState({isLoading: false});
   };
 
-  getData = async (sectionId) => {
+  getTopics = async (sectionId) => {
     this.setState({isLoading: true});
     let data = new FormData();
-    data.append("sectionId", 35);
+    data.append("sectionId", sectionId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C60CommonAcademicsTeacherSectionsForumsTopicView`;
+    await fetch(url, {
+      method: "POST",
+      body:data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({topicsMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getTopics", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  getData = async (sectionId=0,topicId=0) => {
+    this.setState({isLoading: true});
+    let data = new FormData();
+    data.append("sectionId", sectionId);
+    data.append("forumId", topicId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C60CommonAcademicsForumsView`;
     await fetch(url, {
       method: "POST",
@@ -263,25 +261,33 @@ class R60Form extends Component {
     this.setState({isLoading: false});
   };
 
-  handleSetCourse = (value) => {    
+  handleSetSection = (value) => {    
+    let sectionId = 0;
+    if(value){
+      sectionId = value.id;
+    }
+    this.getTopics(sectionId);
+    this.getData(sectionId,0);
     this.setState({
-      courseId: value, 
-      courseIdError: "",
-      sectionId:"",
-      sectionsMenuItems:[],
+      topicId:{},
+      topicIdError:"",
+      sectionId: value, 
+      sectionIdError: "",
       tableData:[]
     });
-    if(value) {
-      this.getSections(value.id);
-    }
   };
 
-  handleSetSection = (value) => {    
+  handleSetTopic = (value) => {    
     this.setState({
-      sectionId: value, 
-      sectionError: "",
+      topicId: value, 
+      topicIdError: "",
       tableData:[]
     });
+    let topicId = 0;
+    if(value){
+      topicId = value.id;
+    }
+    this.getData(this.state.sectionId,topicId);
   };
 
   onHandleChange = (e) => {
@@ -289,29 +295,24 @@ class R60Form extends Component {
     const errName = `${name}Error`;
     let regex = "";
     switch (name) {
-        case "monthId":
-            //this.setState({tableData:[]});
-        break;
-    default:
-        break;
+      case "sectionId":
+        this.getTopics(value);
+        this.getData(value,0);
+        this.setState({
+          topicId:{},
+          topicIdError:"",
+          sectionId: value, 
+          sectionIdError: "",
+          tableData:[]
+        });
+      break;
+      default:
     }
     this.setState({
       [name]: value,
       [errName]: "",
     });
   };
-
-  isCourseValid = () => {
-    let isValid = true;        
-    if (!this.state.courseId) {
-        this.setState({courseIdError:"Please select course."});
-        document.getElementById("courseId").focus();
-        isValid = false;
-    } else {
-        this.setState({courseIdError:""});
-    }
-    return isValid;
-  }
 
   handleToggleTableFilter = () => {
     this.setState({ showTableFilter: !this.state.showTableFilter });
@@ -330,8 +331,18 @@ class R60Form extends Component {
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    //this.getCourses();
-    this.getData();
+    this.getSections();
+    if(this.state.recordId!=0) {
+      this.getTopics(this.state.recordId);
+      this.getData(this.state.recordId,0);
+      this.setState({
+        sectionId:this.state.recordId,
+        showTableFilter:true
+      });
+    } else {
+      this.getTopics(0);
+      this.getData(0,0);
+    }
   }
 
   render() {
@@ -359,6 +370,7 @@ class R60Form extends Component {
               popupBoxOpen={this.state.popupBoxOpen}
               handleOpenSnackbar={this.handleOpenSnackbar}
               getData={this.getData}
+              sectionsMenuItems={this.state.sectionsMenuItems}
             />
             <Typography
               style={{
@@ -428,13 +440,40 @@ class R60Form extends Component {
                 <Collapse in={this.state.showTableFilter} timeout="auto" unmountOnExit>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
+                      <TextField
+                        id="sectionId"
+                        name="sectionId"
+                        variant="outlined"
+                        label="Section"
+                        onChange={this.onHandleChange}
+                        value={this.state.sectionId}
+                        error={!!this.state.sectionIdError}
+                        helperText={this.state.sectionIdError}
+                        required
+                        fullWidth
+                        select
+                        style={{marginTop:3}}
+                      >
+                        <MenuItem value={0}>All</MenuItem>
+                        {this.state.sectionsMenuItems && !this.state.isLoading ? (
+                          this.state.sectionsMenuItems.map((dt, i) => (
+                            <MenuItem key={"sectionsMenuItems" + dt.id} value={dt.id}>
+                              {dt.label}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <Grid container justify="center">
+                            <CircularProgress disableShrink />
+                          </Grid>
+                        )}
+                      </TextField>
+                        {/* 
                         <Autocomplete
                           fullWidth
                           id="sectionId"
-                          // options={this.state.sectionsMenuItems}
-                          options={[]}
+                          options={this.state.sectionsMenuItems}
                           value={this.state.sectionId}
-                          //onChange={(event, value) => this.handleSetSection(value)}
+                          onChange={(event, value) => this.handleSetSection(value)}
                           getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
                           renderInput={(params) => (
                             <TextField
@@ -447,20 +486,20 @@ class R60Form extends Component {
                             />
                           )}
                           style={{marginTop:4}}
-                        />
+                        /> 
+                        */}
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <MuiThemeProvider theme={theme}>
                         <Autocomplete
                           fullWidth
-                          id="courseId"
-                          // options={this.state.coursesMenuItems}
-                          options={[]}
-                          value={this.state.courseId}
-                          onChange={(event, value) => this.handleSetCourse(value)}
+                          id="topicId"
+                          options={this.state.topicsMenuItems}
+                          value={this.state.topicId}
+                          onChange={(event, value) => this.handleSetTopic(value)}
                           getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
                           renderInput={(params) => (
-                            console.log("params", params),
+                            //console.log("params", params),
                             <Fragment>
                             <SearchOutlinedIcon color="primary" style={{marginBottom:-45, paddingLeft:12}}/>
                             <TextField
@@ -468,8 +507,8 @@ class R60Form extends Component {
                               variant="outlined"
                               label="Topics"
                               placeholder="Search and Select"
-                              error={!!this.state.courseIdError}
-                              helperText={this.state.courseIdError ? this.state.courseIdError : "" }
+                              error={!!this.state.topicIdError}
+                              helperText={this.state.topicIdError}
                             />
                             </Fragment>
                           )}
