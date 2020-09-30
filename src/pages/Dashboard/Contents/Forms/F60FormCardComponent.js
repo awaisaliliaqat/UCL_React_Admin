@@ -443,7 +443,7 @@ class F60FormCardComponent extends Component {
                 {messageData.topic}
               </Typography>
             }
-            subheader={messageData.createdOn}
+            subheader={<span>&nbsp;&mdash;&nbsp;by&nbsp;{messageData.replyBy},&nbsp;&nbsp;{messageData.createdOn}</span>}
           />
           {/* 
           <CardMedia

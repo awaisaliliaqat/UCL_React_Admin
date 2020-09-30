@@ -149,12 +149,10 @@ class F60FormTableComponent extends Component {
 
   render() {
 
-    const { classes, handleReplyFormShow } = this.props;    
+    const { classes, handleReplyFormShow, rows=[], isLoading} = this.props;    
 
     //const { columns, rows } = this.state;
     //console.log("topic", rows);
-
-    const {  rows=[] } = this.props;
 
     return (
       <Fragment>
@@ -171,44 +169,64 @@ class F60FormTableComponent extends Component {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {rows.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage).map((row) => {
-                  return (
-                    <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                      <StyledTableCell colSpan={6}>
-                        <ListItem onClick={()=>handleReplyFormShow(row.id)}>
-                          <ListItemAvatar>
-                            <Avatar style={{backgroundColor:"#f6f8fa"}}>
-                              {/* <ImageIcon /> */}
-                              {/* <SpeakerNotesOutlinedIcon color="primary"/> */}
-                              <ForumOutlinedIcon color="primary"/>
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText 
-                            primary={
-                              <Typography 
-                                component="span"
-                                color="primary"
-                                style={{
-                                  fontWeight:600,
-                                  fontSize:18
-                                }}
-                              >
-                                  {row.topic}
-                              </Typography>
-                            } 
-                          secondary={<span>  by M Umar,&nbsp;{row.createdOn}</span>} 
-                          />
-                          <Badge color="secondary" badgeContent={10} style={{float:"right"}}>
-                            <Tooltip title="Number of replies">
-                              {/* <MailOutlineOutlinedIcon style={{color:"#b6babf"}} /> */}
-                              <SmsOutlinedIcon style={{color:"#b6babf"}} />
-                            </Tooltip>
-                          </Badge>
-                        </ListItem>
+                {rows.length > 0 ?                
+                  rows.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage).map((row) => {
+                    return (
+                      <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                        <StyledTableCell colSpan={6}>
+                          <ListItem onClick={()=>handleReplyFormShow(row.id)}>
+                            <ListItemAvatar>
+                              <Avatar style={{backgroundColor:"#f6f8fa"}}>
+                                {/* <ImageIcon /> */}
+                                {/* <SpeakerNotesOutlinedIcon color="primary"/> */}
+                                <ForumOutlinedIcon color="primary"/>
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText 
+                              primary={
+                                <Typography 
+                                  component="span"
+                                  color="primary"
+                                  style={{
+                                    fontWeight:600,
+                                    fontSize:18
+                                  }}
+                                >
+                                    {row.topic}
+                                </Typography>
+                              } 
+                            secondary={<span>&nbsp;&mdash;&nbsp;by&nbsp;{row.createdBy},&nbsp;&nbsp;{row.createdOn}</span>} 
+                            />
+                            <Badge color="secondary" badgeContent={row.numberOfMessages} style={{float:"right"}}>
+                              <Tooltip title="Number of replies">
+                                {/* <MailOutlineOutlinedIcon style={{color:"#b6babf"}} /> */}
+                                <SmsOutlinedIcon style={{color:"#b6babf"}} />
+                              </Tooltip>
+                            </Badge>
+                          </ListItem>
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    );
+                  })
+                  :
+                  isLoading ?
+                    <StyledTableRow hover tabIndex={-1}>
+                      <StyledTableCell colSpan={6} align="center">
+                        <br/>
+                        <CircularProgress disableShrink/>
+                        &emsp;<Typography color="primary" variant="body1">Loading ...</Typography>
+                        <br/>
                       </StyledTableCell>
                     </StyledTableRow>
-                  );
-                })}
+                    :
+                    <StyledTableRow hover tabIndex={-1}>
+                      <StyledTableCell colSpan={6} align="center">
+                        <br/>
+                        <Typography color="primary" variant="body1" style={{fontWeight:600}}>No Data</Typography>
+                        <br/>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                }
               </TableBody>
             </Table>
           </TableContainer>

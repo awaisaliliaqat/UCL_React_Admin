@@ -35,7 +35,9 @@ const styles = () => ({
   },
   handCursor: {
     cursor: "pointer",
-    listStyleType: "square"
+    listStyleType: "square",
+    fontSize:"0.9em",
+    fontWeight:500
   },
 });
 
@@ -62,7 +64,7 @@ const Profile = (props) => {
       <CardContent style={{ paddingBottom: 0 }}>
         <Typography variant="caption">Quick Links</Typography>
         <Divider variant="fullWidth" />
-        <div style={{ paddingLeft: "10px", marginTop: "5px" }}>
+        <div style={{paddingLeft: "10px", marginTop:"5px"}}>
           <Link href="#/dashboard/R61Reports" target="_blank" variant="body1" className={classes.handCursor}>
             Timetable
           </Link>
@@ -81,6 +83,10 @@ const Profile = (props) => {
           <br/>
           <Link href="#/dashboard/F65Form/0" target="_blank" variant="body1" className={classes.handCursor}>
             Create Announcement
+          </Link>
+          <br/>
+          <Link href="#/dashboard/F67Form/0" target="_blank" variant="body1" className={classes.handCursor}>
+            Sections Content
           </Link>
           <br/>
         </div>

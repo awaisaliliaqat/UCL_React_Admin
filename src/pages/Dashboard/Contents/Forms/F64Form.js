@@ -67,6 +67,7 @@ class R46Reports extends Component {
       preDate: this.getTodaysDate(),
       preDateError: "",
       tableData: [],
+      isAttendanceEditable: false
     };
   }
 
@@ -196,8 +197,19 @@ class R46Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({tableData: []});
+            this.setState({
+              tableData: [],
+              isAttendanceEditable:false
+            });
             this.setState({tableData: json.DATA[0].studentNamesList || []});
+            let studentNamesList = json.DATA[0].studentNamesList || [];
+            let studentNamesListLength = studentNamesList.length;
+            for(let i=0; i<studentNamesListLength; i++){
+              if(studentNamesList[i].isPresent){
+                this.setState({isAttendanceEditable:true});
+                break;
+              }
+            }
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -502,7 +514,7 @@ class R46Reports extends Component {
                                 color="primary"
                                 name="studentId"
                                 value={dt.id}
-                                inputProps={{ 'aria-label': 'studentId' }}
+                                inputProps={{ 'aria-label': 'studentId'}}
                               />
                               </StyledTableCell>
                             </StyledTableRow>
@@ -533,6 +545,7 @@ class R46Reports extends Component {
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
             disableRightButton={!this.state.tableData.length}
+            hideRightButton={this.state.isAttendanceEditable}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
