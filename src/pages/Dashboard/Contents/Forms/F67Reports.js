@@ -122,7 +122,7 @@ function CourseContentPopup (props) {
                   <StyledTableCell align="center">
                     <Tooltip title="Download">
                       <IconButton 
-                        onClick={(e)=>props.downloadFile(e, dt.fileSource)}
+                        onClick={(e)=>props.downloadFile(e, dt.fileSource, dt.fileName, false)}
                         aria-label="download"
                       >
                         <CloudDownloadIcon color="primary" />
@@ -132,7 +132,7 @@ function CourseContentPopup (props) {
                  <StyledTableCell align="center">
                  <Tooltip title="Download">
                     <IconButton 
-                      onClick={(e)=>props.downloadFile(e, dt.fileSource, true)}
+                      onClick={(e)=>props.downloadFile(e, dt.fileSource, dt.fileName, true)}
                       aria-label="download"
                     >
                       <VisibilityOutlinedIcon color="primary" />
@@ -335,12 +335,8 @@ class F67Reports extends Component {
       );
   };
 
-  downloadMultipleFiles = (e, helpingMaterialFileName) => {
-    console.log(e, helpingMaterialFileName);
-    helpingMaterialFileName.map((dt, i)=>this.DownloadFile(e, dt));
-  }
 
-  downloadFile = (e, fileName, viewOnly=false) => {
+  downloadFile = (e, fileName, fileLabel, viewOnly=false) => {
     e.preventDefault();
     const data = new FormData();
     data.append("fileName", fileName);
@@ -385,7 +381,7 @@ class F67Reports extends Component {
           let csvURL = window.URL.createObjectURL(result);
           let tempLink = document.createElement("a");
           tempLink.href = csvURL;
-          tempLink.setAttribute("download", fileName);
+          tempLink.setAttribute("download", fileLabel);
           tempLink.click();
         }
         
