@@ -82,6 +82,7 @@ import R54Reports from "./Contents/Forms/R54Reports";
 import R63Reports from "./Contents/Forms/R63Reports";
 import F56Form from "./Contents/Forms/F56Form";
 import R59Reports from "./Contents/Forms/R59Reports";
+import R68Reports from "./Contents/Forms/R68Reports";
 import F60Form from "./Contents/Forms/F60Form";
 import R61Reports from "./Contents/Forms/R61Reports";
 import F62Form from "./Contents/Forms/F62Form";
@@ -1018,6 +1019,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F67Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R68Reports"
+                exact
+                path="/dashboard/R68Reports"
+                render={(props) => {
+                  return (
+                    <R68Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
