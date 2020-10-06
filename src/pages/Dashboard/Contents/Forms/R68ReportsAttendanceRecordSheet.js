@@ -1,0 +1,286 @@
+
+import React, { Component, Fragment } from 'react';
+import PropTypes from "prop-types";
+import { withStyles } from '@material-ui/core/styles';
+import Logo from '../../../../assets/Images/logo.png';
+import CloseIcon from '@material-ui/icons/Close';
+import {IconButton, Typography, CircularProgress} from '@material-ui/core';
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@material-ui/core';
+
+const styles = (theme) => ({
+		mainDiv: {
+			margin: "10px 10px 0px 10px",
+			"@media print": {
+        minWidth: "7.5in",
+        maxWidth: "11in"
+      }
+		},
+    closeButton: {
+        top: theme.spacing(1),
+        right: theme.spacing(2),
+        zIndex: 1,
+        border: '1px solid #ff4040',
+        borderRadius: 5,
+        position: 'fixed',
+        padding: 3,
+        '@media print': {
+            display: 'none'
+        }
+    },
+    bottomSpace: {
+        marginBottom: 40,
+        '@media print': {
+            display: 'none'
+        }
+    },
+    overlay: {
+      display: 'flex',
+      justifyContent: 'start',
+      flexDirection: 'column',
+      alignItems: 'center',
+      position: 'fixed',
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0,0,0,0.2)',
+      zIndex: 2,
+    },
+    overlayContent: {
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '300px',
+        color: 'white',
+        fontSize:48
+    },
+    headerContainer: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    titleContainer: {
+        display: 'black',
+        marginLeft: 20
+    },
+    title: {
+        fontSize: 36,
+        fontWeight: 'bolder',
+        fontFamily: 'sans-serif',
+        color: '#2f57a5',
+        letterSpacing: 1,
+    },
+    subTitle: {
+        fontSize: 24,
+        fontWeight: 600,
+        color: '#2f57a5',
+		},
+		subTitle2: {
+			fontSize: 18,
+			fontWeight: 600,
+			color: '#2f57a5',
+	},
+	flexColumn: {
+			display: 'flex',
+			flexDirection: 'column'
+	},
+	table: {
+    minWidth: 700
+	}
+});
+
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+      backgroundColor: "rgb(47, 87, 165)", //theme.palette.common.black,
+      color: theme.palette.common.white,
+      fontWeight: 500,
+      border: '1px solid white'
+    },
+    body: {
+      fontSize: 14,
+      border: '1px solid rgb(29, 95, 152)'
+    },
+  }))(TableCell);
+  
+  const StyledTableRow = withStyles((theme) => ({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+      },
+    },
+  }))(TableRow);
+
+class DisplayAdmissionApplications extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            documentData: [],
+            data: {},
+            isLoading: false,
+            isLoginMenu: false,
+            isReload: false,
+            fromDateLabel:"",
+            toDateLabel:"",
+            tableData:[]
+        }
+    }
+
+    handleOpenSnackbar = (msg, severity) => {
+      this.setState({
+        isOpenSnackbar: true,
+        snackbarMessage: msg,
+        snackbarSeverity: severity,
+      });
+    };
+  
+    handleCloseSnackbar = (event, reason) => {
+      if (reason === "clickaway") {  return; }
+      this.setState({ isOpenSnackbar: false });
+    };
+
+    getDateInString = (todayDate=0) => {
+      let today = new Date(parseInt(todayDate));
+      let dd = today.getDate();
+      let mm = today.getMonth() + 1;
+      let yyyy = today.getFullYear();
+      if (dd < 10) { dd = "0" + dd; }
+      if (mm < 10) { mm = "0" + mm; }
+      today = dd + "/" + mm + "/" + yyyy;
+      return today;
+    };
+
+    getData = async (sessionId=0, programmeGroupId=0, fromDate=0, toDate=0) => {
+      this.setState({isLoading: true});
+      let data = new FormData();
+      data.append("academicsSessionId", sessionId);
+      data.append("programmmeGroupId", programmeGroupId);
+      data.append("fromDate", this.getDateInString(fromDate));
+      data.append("toDate", this.getDateInString(toDate));
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C68TeachersProgrammeGroupAttandance`;
+      await fetch(url, {
+        method: "POST",
+        body:data,
+        headers: new Headers({
+          Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw res;
+          }
+          return res.json();
+        })
+        .then(
+          (json) => {
+            if (json.CODE === 1) {
+              this.setState({tableData: json.DATA || []});
+            } else {
+              //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+              this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            }
+            console.log("getData", json);
+          },
+          (error) => {
+            if (error.status === 401) {
+              this.setState({
+                isLoginMenu: true,
+                isReload: true,
+              });
+            } else {
+              //alert('Failed to fetch, Please try again later.');
+              this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+              console.log(error);
+            }
+          }
+        );
+      this.setState({isLoading: false});
+    };
+
+    componentDidMount() {
+      const { id = "0&0&0&0" } = this.props.match.params;
+      let ids = id.split("&");
+      console.log(ids[0]+" - "+ids[1]+" - "+ids[2]+" - "+ids[3]);
+      this.getDateInString(ids[2]);
+      this.getData(ids[0],ids[1],ids[2],ids[3]);
+      this.setState({
+        fromDateLabel:this.getDateInString(ids[2]),
+        toDateLabel:this.getDateInString(ids[3])
+      });
+    }
+
+    render() {
+        const { classes } = this.props;
+        const { tableData } = this.state;
+        const { sessionLabel = "" } = tableData;
+        return (
+            <Fragment>
+                {this.state.isLoading &&
+                    <div className={classes.overlay}>
+                        <div className={classes.overlayContent}>
+                            <CircularProgress style={{ marginBottom: 10, color: 'white' }} size={36} />
+                            <span>Loading...</span>
+                        </div>
+                    </div>
+                }
+								<div
+									className={classes.mainDiv}
+								>
+                    <IconButton onClick={() => window.close()} aria-label="close" className={classes.closeButton}>
+                        <CloseIcon color="secondary"/>
+                    </IconButton>
+                    <div className={classes.headerContainer}>
+                        <div className={classes.titleContainer}>
+                            <span className={classes.title}>University College Lahore&emsp;&emsp;&emsp;&emsp;{sessionLabel}</span>
+														<br/>
+														<span className={classes.subTitle}>Attandance Record Sheet&nbsp;&nbsp;<small>{this.state.fromDateLabel+" - "+this.state.toDateLabel}</small></span>
+                        </div>
+                    </div>
+                    <div className={classes.flexColumn}>
+											<br/>
+											<TableContainer component={Paper} style={{overflowX:"inherit"}}>
+													<Table size="small" className={classes.table} aria-label="customized table">
+															<TableHead>
+															  <TableRow>
+                                  <StyledTableCell style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Section</StyledTableCell>
+                                  <StyledTableCell>Course</StyledTableCell>
+                                  <StyledTableCell align="center">Type</StyledTableCell>
+                                  <StyledTableCell align="center" colSpan="1" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Total</StyledTableCell>
+                                </TableRow>
+															</TableHead>
+															<TableBody>
+                            {this.state.tableData.length > 0 ? 
+                              this.state.tableData.map((row, index)=>
+                              <Fragment key={"row"+row.teacherId+index}>
+                              <TableRow>
+                                  <StyledTableCell colSpan="4" style={{backgroundColor:"#e1e3e8"}}><b>{row.teacherLabel}</b></StyledTableCell>
+                              </TableRow>
+                              {row.teacherSectionData.map((row2, index2)=>
+                                <TableRow key={"row"+row2.sectionId+index2}>
+                                  <StyledTableCell style={{ borderLeft: '1px solid rgb(47, 87, 165)'}}>{row2.sectionLabel}</StyledTableCell>
+                                  <StyledTableCell>{row2.courseLabel}</StyledTableCell>
+                                  <StyledTableCell align="center">{row2.sectionTypeLabel}</StyledTableCell>
+                                  <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)'}}>{row2.attandanceCount}</StyledTableCell>
+                                </TableRow>  
+                              )}
+                              </Fragment>
+                              )
+                              :
+                              <TableRow>
+                                <StyledTableCell colSpan="9"></StyledTableCell>
+                              </TableRow>
+                              }
+                            </TableBody>
+													</Table>
+											</TableContainer>
+                    </div>
+                    <div className={classes.bottomSpace}></div>
+                </div>
+            </Fragment >
+        );
+    }
+}
+
+DisplayAdmissionApplications.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(DisplayAdmissionApplications);
