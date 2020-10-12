@@ -7,6 +7,7 @@ import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { DatePicker } from "@material-ui/pickers";
+import { format } from "date-fns";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 
 const StyledTableCell = withStyles((theme) => ({
@@ -62,8 +63,11 @@ class R46Reports extends Component {
       courseId: "",
       courseIdError: "",
       sectionsMenuItems: [],
-      sectionId: {},
+      sectionId: "",
       sectionIdError:"",
+      startTimeId:"",
+      startTimeIdError:"",
+      startTimeMenuItems:[],
       preDate: this.getTodaysDate(),
       preDateError: "",
       tableData: [],
@@ -76,6 +80,17 @@ class R46Reports extends Component {
     //tomorrowDate.setDate(tomorrowDate.getDate() + 1);
     return todaysDate;
   }
+
+  getDateInString = (todayDate) => {
+    let today = todayDate;
+    let dd = today.getDate();
+    let mm = today.getMonth() + 1;
+    let yyyy = today.getFullYear();
+    if (dd < 10) { dd = "0" + dd; }
+    if (mm < 10) { mm = "0" + mm; }
+    today = dd + "-" + mm + "-" + yyyy;
+    return today;
+  };
 
   handleOpenSnackbar = (msg, severity) => {
     this.setState({
@@ -175,11 +190,58 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getData = async (sectionId,classDate) => {
+  getTimeSlots = async (sectionId, classDate) => {
+    let data = new FormData();
+    data.append("sectionId", sectionId);
+    data.append("classDate", `${format(classDate, "dd-MM-yyyy")}`);
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C64CommonAcademicsSectionsStartTimeView`;
+    await fetch(url, {
+      method: "POST",
+      body:data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({startTimeMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getSections", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  getData = async (sectionId,classDate,startTimeId) => {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("sectionId", sectionId);
-    data.append("classDate", classDate);
+    //data.append("classDate", classDate);
+    data.append("classDate",`${format(classDate, "dd-MM-yyyy")}`);
+    data.append("startTime", startTimeId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C64CommonStudentsView`;
     await fetch(url, {
       method: "POST",
@@ -201,13 +263,19 @@ class R46Reports extends Component {
               tableData: [],
               isAttendanceEditable:false
             });
-            this.setState({tableData: json.DATA[0].studentNamesList || []});
-            let studentNamesList = json.DATA[0].studentNamesList || [];
-            let studentNamesListLength = studentNamesList.length;
-            for(let i=0; i<studentNamesListLength; i++){
-              if(studentNamesList[i].isPresent){
+            let data = json.DATA || [];
+            this.setState({tableData: data[0].studentNamesList || []});
+            //let studentNamesList = data[0].studentNamesList || [];
+            //let studentNamesListLength = studentNamesList.length;
+            // for(let i=0; i<studentNamesListLength; i++){
+            //   if(studentNamesList[i].isPresent){
+            //     this.setState({isAttendanceEditable:true});
+            //     break;
+            //   }
+            // }
+            if(data[0].isEditAble){
+              if(data[0].isEditAble==0){
                 this.setState({isAttendanceEditable:true});
-                break;
               }
             }
           } else {
@@ -231,6 +299,72 @@ class R46Reports extends Component {
       );
     this.setState({isLoading: false});
   };
+
+  handleSetCourse = (value) => {    
+    this.setState({
+      sectionId:"",
+      sectionsMenuItems:[],
+      preDate: this.getTodaysDate(),
+      startTimeId:"",
+      tableData:[],
+      courseId: value, 
+      courseIdError: "",
+    });
+    if(value) {
+      this.getSections(value.id);
+    }
+  };
+
+  handleSetSection = (value) => {    
+    this.setState({
+      preDate: this.getTodaysDate(),
+      startTimeId:"",
+      tableData:[],
+      sectionId: value, 
+      sectionError: "",
+    });
+    if(value) {
+      this.getTimeSlots(value.id, this.state.preDate);
+    }
+  };
+
+  handleChangePreDate = (date) => {
+    this.setState({
+      preDate: date,
+      startTimeId:"",
+      tableData: []
+    });
+    this.getTimeSlots(this.state.sectionId.id, date);
+  };
+
+  onHandleChange = (e) => {
+    const { name, value } = e.target;
+    const errName = `${name}Error`;
+    let regex = "";
+    switch (name) {
+        case "startTime":
+          this.setState({tableData:[]});
+        break;
+    default:
+        break;
+    }
+    this.setState({
+      [name]: value,
+      [errName]: "",
+    });
+  };
+
+  isCourseValid = () => {
+    let isValid = true;        
+    if (!this.state.courseId) {
+        this.setState({courseIdError:"Please select course."});
+        document.getElementById("courseId").focus();
+        isValid = false;
+    } else {
+        this.setState({courseIdError:""});
+    }
+    return isValid;
+  }
 
   onFormSubmit = async (e) => {
     let myForm = document.getElementById("myForm");
@@ -258,7 +392,8 @@ class R46Reports extends Component {
               tableData:[],
               preDate:this.getTodaysDate(),
               sectionId:{},
-              courseId:""
+              courseId:"",
+              startTimeId:""
             });
             setTimeout(() => {
                 //window.location.reload();
@@ -281,71 +416,6 @@ class R46Reports extends Component {
         }
       );
     this.setState({ isLoading: false });
-  };
-
-  getDateInString = (todayDate) => {
-    let today = todayDate;
-    let dd = today.getDate();
-    let mm = today.getMonth() + 1;
-    let yyyy = today.getFullYear();
-    if (dd < 10) { dd = "0" + dd; }
-    if (mm < 10) { mm = "0" + mm; }
-    today = dd + "-" + mm + "-" + yyyy;
-    return today;
-  };
-
-  handleSetCourse = (value) => {    
-    this.setState({
-      courseId: value, 
-      courseIdError: "",
-      sectionId:{},
-      sectionsMenuItems:[],
-      tableData:[]
-    });
-    if(value) {
-      this.getSections(value.id);
-    }
-  };
-
-  handleSetSection = (value) => {    
-    this.setState({
-      sectionId: value, 
-      sectionError: "",
-      tableData:[]
-    });
-  };
-
-  onHandleChange = (e) => {
-    const { name, value } = e.target;
-    const errName = `${name}Error`;
-    let regex = "";
-    switch (name) {
-        case "monthId":
-            //this.setState({tableData:[]});
-        break;
-    default:
-        break;
-    }
-    this.setState({
-      [name]: value,
-      [errName]: "",
-    });
-  };
-
-  isCourseValid = () => {
-    let isValid = true;        
-    if (!this.state.courseId) {
-        this.setState({courseIdError:"Please select course."});
-        document.getElementById("courseId").focus();
-        isValid = false;
-    } else {
-        this.setState({courseIdError:""});
-    }
-    return isValid;
-  }
-
-  handleChangePreDate = (date) => {
-    this.setState({preDate: date});
   };
 
   componentDidMount() {
@@ -442,37 +512,62 @@ class R46Reports extends Component {
                 )}
               />
             </Grid>
-            <Grid item>
+            <Grid item xs={4} md={2}>
               <DatePicker
                 autoOk
                 name="effectiveDate"
                 id="effectiveDate"
                 label="Date"
                 invalidDateMessage=""
-                //disablePast
                 disableFuture
-                //minDate={Date.parse(this.getTomorrowDate())}
+                minDate="2020-01-01"
                 placeholder=""
                 variant="inline"
                 inputVariant="outlined"
                 format="dd-MM-yyyy"
                 fullWidth
                 required
-                style={{ width: 115 }}
                 value={this.state.preDate}
                 onChange={this.handleChangePreDate}
                 error={!!this.state.preDateError}
                 helperText={this.state.preDateError}
-                disabled={!this.state.sectionId.id}
+                disabled={!this.state.sectionId}
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={4} md={2}>
+              <TextField
+                id="startTime"
+                name="startTimeId"
+                variant="outlined"
+                label="Time"
+                onChange={this.onHandleChange}
+                value={this.state.startTimeId}
+                error={!!this.state.startTimeIdError}
+                helperText={this.state.startTimeIdError}
+                disabled={!this.state.sectionId}
+                required
+                fullWidth
+                select
+              >
+                {this.state.startTimeMenuItems && !this.state.isLoading ? (
+                  this.state.startTimeMenuItems.map((dt, i) => (
+                    <MenuItem key={"startTimesMenuItems"+dt.id} value={dt.id}>
+                      {dt.startTime}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <Grid container justify="center">
+                    <CircularProgress disableShrink />
+                  </Grid>
+                )}
+              </TextField>
+            </Grid>
+            <Grid item xs={2} md={1}>
               <Button 
                 variant="contained" 
                 color="primary"
-                disabled={!this.state.sectionId.id}
-                onClick={()=>this.getData(this.state.sectionId.id,this.getDateInString(this.state.preDate))}
-                //size="large"
+                disabled={!this.state.startTimeId}
+                onClick={()=>this.getData(this.state.sectionId.id ,this.state.preDate, this.state.startTimeId)}
                 style={{
                   paddingTop:14,
                   paddingBottom:14
@@ -491,8 +586,9 @@ class R46Reports extends Component {
             </Grid>
             <Grid item xs={12}>
               <form id="myForm">
-                <TextField type="hidden" name="classDate" value={this.getDateInString(this.state.preDate)}/>
-                <TextField type="hidden" name="sectionId" value={this.state.sectionId.id}/>
+              <TextField type="hidden" name="sectionId" value={this.state.sectionId?this.state.sectionId.id:""}/>
+              <TextField type="hidden" name="classDate" value={this.getDateInString(this.state.preDate)}/>
+              <TextField type="hidden" name="startTime" value={this.state.startTimeId}/>  
                 <TableContainer component={Paper} style={{overflowX:"inherit"}}>
                   <Table size="small" className={classes.table} aria-label="customized table">
                       <TableHead>
