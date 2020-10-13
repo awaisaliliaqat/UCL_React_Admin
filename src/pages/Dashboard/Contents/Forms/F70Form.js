@@ -1,13 +1,11 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import { numberFreeExp, numberExp } from "../../../../utils/regularExpression";
-import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography, Chip,
-  Select, IconButton, Tooltip, Checkbox} from "@material-ui/core";
+import {TextField, Grid, Divider, Typography, Chip,
+   Checkbox} from "@material-ui/core";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { DatePicker } from "@material-ui/pickers";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
