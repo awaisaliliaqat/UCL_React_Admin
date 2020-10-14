@@ -237,7 +237,7 @@ class F69Reports extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              Gazette Holiday
+              Holidays
             </Typography>
             <div style={{ float: "right" }}>
               <Tooltip title="Table Filter">

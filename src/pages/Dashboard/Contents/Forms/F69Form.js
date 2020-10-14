@@ -384,7 +384,7 @@ class F69Form extends Component {
               }}
               variant="h5"
             >
-              Gazette Holiday
+              Holidays
             </Typography>
             <Divider
               style={{

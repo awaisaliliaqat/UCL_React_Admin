@@ -384,7 +384,7 @@ class F201Form extends Component {
       for(let i=0; i<recordCount; i++){
         let eleValue = marks[i].value;
         let eleId = marks[i].id;
-        if(eleValue==null || eleValue==0 || eleValue=="0" || eleValue==""){
+        if(eleValue==null || eleValue==""){
           isValid = false;
           document.getElementById(eleId).focus();
           this.handleOpenSnackbar("Please enter marks for all students.","error");
