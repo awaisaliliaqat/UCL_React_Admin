@@ -200,9 +200,9 @@ class F69Reports extends Component {
       { name: "SRNo", title: "SR#" },
       { name: "label", title: "Title" },
       { name: "programmeGroupLabel", title: "Programme Group" },
-      { name: "noOfDays", title: "Days" },
-      { name: "effectiveDateFrom", title: "From Date" },
-      { name: "effectiveDateTo", title: "To Date" },
+      //{ name: "noOfDays", title: "Days" },
+      { name: "effectiveDateFrom", title: "Date" },
+      //{ name: "effectiveDateTo", title: "To Date" },
       { name: "action", title: "Action" },
     ];
 
