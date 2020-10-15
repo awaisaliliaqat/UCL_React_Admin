@@ -111,6 +111,7 @@ import F202Form from "./Contents/Forms/F202Form";
 import F203Form from "./Contents/Forms/F203Form";
 import F204Form from "./Contents/Forms/F204Form";
 import F204Reports from "./Contents/Forms/F204Reports";
+import F205Form from "./Contents/Forms/F205Form";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 
 const drawerWidth = 283;
@@ -1426,12 +1427,27 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="F34Form"
+                name="F204Form"
                 exact
                 path="/dashboard/F204Reports"
                 render={(props) => {
                   return (
                     <F204Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F205Form"
+                exact
+                path="/dashboard/F205Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F205Form
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
