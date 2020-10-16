@@ -1,20 +1,14 @@
 import React, { Component, Fragment } from "react";
 import {Divider, IconButton, Tooltip, CircularProgress, Grid, Typography, Fab} from "@material-ui/core";
-import ExcelIcon from "../../../../assets/Images/excel.png";
 import F205FormFilter from "./F205FormFilter";
-import TablePanel from "../../../../components/ControlledTable/RerenderTable/TablePanel";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import { format } from "date-fns";
 import F205FormTableComponent from "./F205FormTableComponent";
 import F205FormPopupComponent from "./F205FormPopupComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import EditIcon from '@material-ui/icons/Edit';
-import BottomBar from "../../../../components/BottomBar/BottomBar";
 
 class F205Form extends Component {
   constructor(props) {
@@ -42,6 +36,7 @@ class F205Form extends Component {
       popupTitle:"",
       recordId:"",
       fileName:"",
+      fileUrl: "",
       examGradedData:{}
     };
   }
@@ -63,11 +58,12 @@ class F205Form extends Component {
     });
   };
 
-  handlePopupOpen = (popupTitle, recordId, fileName, totalMarks, examGradedData) => {
+  handlePopupOpen = (popupTitle, recordId, fileName, fileUrl, totalMarks, examGradedData) => {
     this.setState({ 
       popupTitle: popupTitle,
       recordId: recordId,
       fileName: fileName,
+      fileUrl: fileUrl,
       popupBoxOpen: true,
       totalMarks: totalMarks,
       examGradedData: examGradedData
@@ -80,6 +76,7 @@ class F205Form extends Component {
       popupTitle:"",
       recordId:"",
       fileName:"",
+      fileUrl: "",
       totalMarks:"",
       examGradedData:{}
     });
@@ -97,7 +94,7 @@ class F205Form extends Component {
 
   getData = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C205CommonAcademicsExamsResults`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C205CommonAcademicsExamsResultsView`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -121,16 +118,18 @@ class F205Form extends Component {
               let fileName = data[i].examFileName;
               let fileUrl = data[i].examFileUrl;
               let isExamGraded = data[i].isExamGraded;
-              let gradedExamUrl = data[i].gradedExamUrl;
+              let gradedExamFileName = data[i].gradedExamFileName;
+              let gradedExamFileUrl = data[i].gradedExamFileUrl;
               let obtainedMarks = data[i].obtainedMarks;
               let remarks = data[i].remarks;
               let totalMarks = data[i].totalMarks;
               let examGradedData = {};
               if(isExamGraded){
                 examGradedData = {
-                  gradedExamUrl:gradedExamUrl,
+                  gradedExamFileName: gradedExamFileName,
+                  gradedExamFileUrl: gradedExamFileUrl,
                   obtainedMarks: obtainedMarks,
-                  remarks:remarks
+                  remarks: remarks
                 }
               }
               data[i].action = (
@@ -146,7 +145,7 @@ class F205Form extends Component {
                           :
                           {height:36, width:36, backgroundColor:"rgb(29, 95, 152)"}
                       }
-                      onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName, totalMarks, examGradedData)}
+                      onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName, fileUrl, totalMarks, examGradedData)}
                     >
                       <EditIcon fontSize="small"/>
                     </Fab>
@@ -164,10 +163,10 @@ class F205Form extends Component {
                       <CloudDownloadIcon />
                     </IconButton>
                   </Tooltip>
-                  {gradedExamUrl && 
+                  {gradedExamFileUrl && 
                   <Tooltip title="Download Graded Exam">
                     <IconButton 
-                      onClick={(e)=>this.downloadFile(e, gradedExamUrl, gradedExamUrl)} 
+                      onClick={(e)=>this.downloadFile(e, gradedExamFileUrl, gradedExamFileName)} 
                       aria-label="download"
                       style={{color:"rgb(76, 175, 80)"}}
                     >
@@ -247,14 +246,15 @@ class F205Form extends Component {
   //     );
   // };
 
-  downloadFile = (e, fileUrl, fileName=fileUrl) => {
+  downloadFile = (e, fileUrl, fileName="") => {
     e.preventDefault();
     let data = new FormData();
     data.append("fileName", fileUrl);
+    if(fileName==null || fileName=="") {fileName = fileUrl;}
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonViewFile`;
     fetch(url, {
         method: "POST",
-        body:data,
+        body: data,
         headers: new Headers({
             Authorization: "Bearer "+localStorage.getItem("uclAdminToken"),
         }),
@@ -352,6 +352,7 @@ class F205Form extends Component {
         <F205FormPopupComponent
           recordId={this.state.recordId}
           fileName={this.state.fileName}
+          fileUrl={this.state.fileUrl}
           downloadFile={this.downloadFile}
           handlePopupClose={this.handlePopupClose}
           popupBoxOpen={this.state.popupBoxOpen}
@@ -361,16 +362,10 @@ class F205Form extends Component {
           getData={this.getData}
           examGradedData={this.state.examGradedData}
         />
-        <div
-          style={{
-            padding: 20,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-            }}
+        <div style={{padding: 20}}>
+          <Grid
+            container
+            justify="space-between"
           >
             <Typography
               style={{
@@ -380,20 +375,8 @@ class F205Form extends Component {
               }}
               variant="h5"
             >
-              {/* <Tooltip title="Back">
-                <IconButton onClick={() => window.history.back()}>
-                  <ArrowBackIcon fontSize="small" color="primary" />
-                </IconButton>
-              </Tooltip> */}
               Exam Grading
             </Typography>
-            {/* 
-              <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
-                  height: 30, width: 32,
-                  cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
-               }}
-              /> 
-            */}
             <div style={{ float: "right" }}>
               {/* <Hidden xsUp={true}> */}
               {/* <Tooltip title="Search Bar">
@@ -413,7 +396,7 @@ class F205Form extends Component {
                 </IconButton>
               </Tooltip>
             </div>
-          </div>
+          </Grid>
           <Divider
             style={{
               backgroundColor: "rgb(58, 127, 187)",

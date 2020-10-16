@@ -67,7 +67,7 @@ class F34ReportsTableComponent extends Component {
         { columnName: "startTimestampReport", width: 180 },
         { columnName: "endTimestampReport", width: 180 },
         { columnName: "totalMarks", width: 100, align:"center" },
-        { columnName: "fileDownload", width: 60, align:"center" },
+        { columnName: "fileDownload", width: 75, align:"center" },
         { columnName: "label", wordWrapEnabled: true },
         { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "instruction", wordWrapEnabled: true },
@@ -125,7 +125,7 @@ class F34ReportsTableComponent extends Component {
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children!="Action" && props.children!="Solution" ? (
+              props.children!="Action" && props.children!="Exam" ? (
                 <b>{props.children}</b>
               ) : (
                 <b>&emsp;{props.children}</b>

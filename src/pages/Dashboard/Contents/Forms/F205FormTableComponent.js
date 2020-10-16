@@ -37,9 +37,9 @@ class F205FormTableComponent extends Component {
         { columnName: "startDateReport", width: 130 },
         { columnName: "endDateReport", width: 130 },
         { columnName: "totalMarks", width:130, align:"center" },
-        { columnName: "fileDownload", width:130, align:"center" },
         { columnName: "instruction", wordWrapEnabled: true },
-        { columnName: "action", width: 120, align:"center" },
+        { columnName: "fileDownload", width:120, align:"center" },
+        { columnName: "action", width: 100, align:"center" },
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
@@ -103,11 +103,10 @@ class F205FormTableComponent extends Component {
             showGroupingControls
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children != "Action" && props.children != "Download" ? (
-                <b>{props.children}</b>
-              ) : (
+              props.children=="Action" || props.children=="Download" ? 
                 <b>&emsp;{props.children}</b>
-              )
+               : 
+                <b>{props.children}</b>
             }
           />
           <TableGroupRow icon columnExtensions={tableGroupColumnExtension}/>

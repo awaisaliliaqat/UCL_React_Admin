@@ -182,7 +182,7 @@ class F205FormPopupComponent extends Component {
     let myForm = document.getElementById("myForm");
     const data = new FormData(myForm);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C36CommonAcademicsStudentsExamsResultSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C205CommonAcademicsStudentsExamsResultSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -234,7 +234,7 @@ class F205FormPopupComponent extends Component {
 
   render() {
 
-    const {popupBoxOpen, handlePopupClose, popupTitle, downloadFile, fileName, totalMarks, examGradedData} = this.props;
+    const {popupBoxOpen, handlePopupClose, popupTitle, downloadFile, fileName, fileUrl, totalMarks, examGradedData} = this.props;
     
     return (
       <Fragment>
@@ -277,17 +277,17 @@ class F205FormPopupComponent extends Component {
               &nbsp;
               <Tooltip title="Download Exam">
                 <IconButton 
-                  onClick={(e)=>downloadFile(e, fileName)} 
+                  onClick={(e)=>downloadFile(e, fileUrl, fileName)} 
                   aria-label="download"
                   color="primary"
                 >
                   <CloudDownloadOutlinedIcon />
                 </IconButton>
               </Tooltip>
-              {examGradedData.gradedExamUrl && 
+              {examGradedData.gradedExamFileUrl && 
               <Tooltip title="Download Graded Exam">
                 <IconButton 
-                  onClick={(e)=>downloadFile(e, examGradedData.gradedExamUrl)} 
+                  onClick={(e)=>downloadFile(e, examGradedData.gradedExamFileUrl, examGradedData.gradedExamFileName)} 
                   aria-label="download"
                   style={{color:"rgb(76, 175, 80)"}}
                 >
@@ -328,15 +328,14 @@ class F205FormPopupComponent extends Component {
                     name="obtainedMarks"
                     label="Obtained Marks"
                     type="number"
+                    length="10"
                     required
                     fullWidth
                     variant="outlined"
                     onChange={this.onHandleChange}
                     value={this.state.obtainedMarks}
                     error={!!this.state.obtainedMarksError}
-                    helperText={
-                      this.state.obtainedMarksError ? this.state.obtainedMarksError : " "
-                    }
+                    helperText={this.state.obtainedMarksError ? this.state.obtainedMarksError : " "}
                   />
                 </Grid>
                 <Grid item xs={12}>
