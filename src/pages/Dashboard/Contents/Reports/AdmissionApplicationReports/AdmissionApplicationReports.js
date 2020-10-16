@@ -351,10 +351,7 @@ class AdmissionApplicationReports extends Component {
     DownloadFile = (fileName) => {
         const data = new FormData();
         data.append("fileName", fileName);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${
-            process.env.REACT_APP_SUB_API_NAME
-            }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
-
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
         fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -425,11 +422,7 @@ class AdmissionApplicationReports extends Component {
             { name: "Student Id", dataIndex: "studentId", sortable: false, customStyleHeader: { width: '12%', textAlign: 'center' } },
             { name: "Application Id", dataIndex: "applicationId", sortable: false, customStyleHeader: { width: '13%' } },
             {
-                name: "Name", renderer: rowData => {
-                    return (
-                        <Fragment>{`${rowData.firstName} ${rowData.middleName} ${rowData.lastName}`}</Fragment>
-                    )
-                }, sortable: false, customStyleHeader: { width: '10%' }
+                name: "Name", dataIndex: "displayName", sortable: false, customStyleHeader: { width: '10%' }
             },
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
             { name: "Date of Birth", dataIndex: "dateOfBirth", sortable: false, customStyleHeader: { width: '15%' } },
