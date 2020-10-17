@@ -1,13 +1,20 @@
 import React, { Component, Fragment } from "react";
-import { withStyles } from '@material-ui/core/styles';
-import {Typography, TextField, MenuItem, Divider, CircularProgress, Grid} from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+import {
+  Typography,
+  TextField,
+  MenuItem,
+  Divider,
+  CircularProgress,
+  Grid,
+} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import { DatePicker } from "@material-ui/pickers";
 
-const styles = ({ });
+const styles = {};
 
 class R46Reports extends Component {
   constructor(props) {
@@ -25,14 +32,16 @@ class R46Reports extends Component {
       snackbarSeverity: "",
       academicSessionIdMenuItems: [],
       academicSessionId: "",
+      academicSessionLabel: "",
       academicSessionIdError: "",
       programmeGroupIdMenuItems: [],
       programmeGroupId: "",
+      programmeGroupLabel: "",
       programmeGroupIdError: "",
-      fromDate:new Date(),
-      fromDateError:"",
-      toDate:new Date(),
-      toDateError:""
+      fromDate: new Date(),
+      fromDateError: "",
+      toDate: new Date(),
+      toDateError: "",
     };
   }
 
@@ -45,7 +54,9 @@ class R46Reports extends Component {
   };
 
   handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {  return; }
+    if (reason === "clickaway") {
+      return;
+    }
     this.setState({ isOpenSnackbar: false });
   };
 
@@ -78,10 +89,21 @@ class R46Reports extends Component {
                 var tempid = this.state.academicSessionIdMenuItems[i].ID;
                 this.loadProgrammeGroups(tempid);
                 this.state.academicSessionId = tempid;
+                this.setState({
+                  academicSessionLabel: this.state.academicSessionIdMenuItems[i]
+                    .Label,
+                });
               }
             }
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadAcademicSession", json);
         },
@@ -93,7 +115,10 @@ class R46Reports extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -123,7 +148,14 @@ class R46Reports extends Component {
           if (json.CODE === 1) {
             this.setState({ programmeGroupIdMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadProgrammeGroups", json);
         },
@@ -135,7 +167,10 @@ class R46Reports extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -143,11 +178,11 @@ class R46Reports extends Component {
   };
 
   handleChangeFromDate = (date) => {
-    this.setState({fromDate: date});
+    this.setState({ fromDate: date });
   };
 
   handleChangeToDate = (date) => {
-    this.setState({toDate: date});
+    this.setState({ toDate: date });
   };
 
   onHandleChange = (e) => {
@@ -155,10 +190,29 @@ class R46Reports extends Component {
     const errName = `${name}Error`;
     let regex = "";
     switch (name) {
-        case "academicSessionId":
-          this.loadProgrammeGroups(value);
+      case "academicSessionId":
+        for (var i = 0; i < this.state.academicSessionIdMenuItems.length; i++) {
+          if (value == this.state.academicSessionIdMenuItems[i].Id) {
+            this.setState({
+              academicSessionLabel: this.state.academicSessionIdMenuItems[i]
+                .Label,
+            });
+          }
+        }
+        this.loadProgrammeGroups(value);
         break;
-    default:
+      case "programmeGroupId":
+        for (var i = 0; i < this.state.programmeGroupIdMenuItems.length; i++) {
+          if (value == this.state.programmeGroupIdMenuItems[i].Id) {
+            this.setState({
+              programmeGroupLabel: this.state.programmeGroupIdMenuItems[i]
+                .Label,
+            });
+          }
+        }
+
+        break;
+      default:
         break;
     }
     this.setState({
@@ -168,24 +222,40 @@ class R46Reports extends Component {
   };
 
   isCourseValid = () => {
-    let isValid = true;        
+    let isValid = true;
     if (!this.state.courseId) {
-        this.setState({courseIdError:"Please select course."});
-        document.getElementById("courseId").focus();
-        isValid = false;
+      this.setState({ courseIdError: "Please select course." });
+      document.getElementById("courseId").focus();
+      isValid = false;
     } else {
-        this.setState({courseIdError:""});
+      this.setState({ courseIdError: "" });
     }
     return isValid;
-  }
+  };
 
   handleGenerate = () => {
     let fromDate = new Date(this.state.fromDate).getTime();
     let toDate = new Date(this.state.toDate).getTime();
-    console.log(fromDate+"-"+toDate);
-    window.open(`#/R68ReportsAttendanceRecordSheet/${this.state.academicSessionId+"&"+this.state.programmeGroupId+"&"+fromDate+"&"+toDate}`,"_blank");
+    let programmeGroup = this.state.programmeGroupId;
+    console.log(fromDate + "-" + toDate);
+    window.open(
+      `#/R68ReportsAttendanceRecordSheet/${
+        this.state.academicSessionId +
+        "&" +
+        this.state.programmeGroupId +
+        "&" +
+        fromDate +
+        "&" +
+        toDate +
+        "&" +
+        this.state.programmeGroupLabel +
+        "&" +
+        this.state.academicSessionLabel
+      }`,
+      "_blank"
+    );
     //window.open(`#/R68ReportsAttendanceRecordSheet/0`,"_blank");
-  }
+  };
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
@@ -193,7 +263,6 @@ class R46Reports extends Component {
   }
 
   render() {
-
     const { classes } = this.props;
 
     return (
@@ -231,13 +300,8 @@ class R46Reports extends Component {
               opacity: "0.3",
             }}
           />
-          <br/>
-          <Grid 
-            container 
-            justify="center"
-            alignItems="center"
-            spacing={2}
-          >
+          <br />
+          <Grid container justify="center" alignItems="center" spacing={2}>
             <Grid item xs={12} md={6}>
               <TextField
                 id="academicSessionId"
@@ -329,7 +393,6 @@ class R46Reports extends Component {
                 onChange={this.handleChangeToDate}
                 error={!!this.state.toDateError}
                 helperText={this.state.toDateError}
-
               />
             </Grid>
           </Grid>
