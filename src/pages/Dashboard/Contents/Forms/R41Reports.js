@@ -302,6 +302,9 @@ class R41Reports extends Component {
     {return;}
     if (this.state.isDownloadZip === false) {
       this.setState({isDownloadZip: true});
+      let fileLabel = "Section_Assignments.zip";
+      let sectionObj = this.state.sectionsMenuItems.find(obj => obj.id === this.state.sectionId);
+      if(sectionObj){ fileLabel = `${sectionObj.label.replace(" ","_")}_Assignments.zip`}
       let data = new FormData();
       data.append("sectionId", this.state.sectionId);
       data.append("assignmentId", this.state.assignmentId);
@@ -323,7 +326,7 @@ class R41Reports extends Component {
           if (json) {
               var csvURL = window.URL.createObjectURL(json);
               var tempLink = document.createElement("a");
-              tempLink.setAttribute("download", `Teacher_Assignments.zip`);
+              tempLink.setAttribute("download", fileLabel);
               tempLink.href = csvURL;
               tempLink.click();
               console.log(json);
