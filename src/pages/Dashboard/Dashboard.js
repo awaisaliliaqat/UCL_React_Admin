@@ -96,6 +96,7 @@ import F69Form from "./Contents/Forms/F69Form";
 import F69Reports from "./Contents/Forms/F69Reports";
 import F70Form from "./Contents/Forms/F70Form";
 import F70Reports from "./Contents/Forms/F70Reports";
+import R71Reports from "./Contents/Forms/R71Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentStatus from "./Contents/Decision/ChangeStudentStatus/ChangeStudentStatus";
 import SyncTimeTable from "./Contents/LMS/SyncTimeTable/SyncTimeTable";
@@ -1109,6 +1110,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F70Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R71Reports"
+                exact
+                path="/dashboard/R71Reports"
+                render={(props) => {
+                  return (
+                    <R71Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
