@@ -3,6 +3,7 @@ import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button} from "@mat
 import {Typography, TextField, MenuItem} from "@material-ui/core";
 import ExcelIcon from "../../../../assets/Images/excel.png";
 import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
+import ZipIcon from "../../../../assets/Images/zip_export_icon.png";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
 import R41ReportsTableComponent from "./R41ReportsTableComponent";
@@ -32,6 +33,7 @@ class R41Reports extends Component {
       showTableFilter: false,
       showSearchBar: false,
       isDownloadPdf: false,
+      isDownloadZip: false,
       applicationStatusId: 1,
       isLoginMenu: false,
       isReload: false,
@@ -240,7 +242,6 @@ class R41Reports extends Component {
   };
 
   downloadPDFData = async () => {
-
     if(
       !this.isCourseValid() ||
       !this.isSectionValid() ||
@@ -290,6 +291,57 @@ class R41Reports extends Component {
             isDownloadPdf: false
           })
       }
+  }
+
+  downloadZipFile = async () => {
+    if(
+      !this.isCourseValid() ||
+      !this.isSectionValid() ||
+      !this.isAssignmentValid()
+    )
+    {return;}
+    if (this.state.isDownloadZip === false) {
+      this.setState({isDownloadZip: true});
+      let data = new FormData();
+      data.append("sectionId", this.state.sectionId);
+      data.append("assignmentId", this.state.assignmentId);
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsSummaryCompressDownload`;
+      await fetch(url, {
+          method: "POST",
+          body: data,
+          headers: new Headers({
+              Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+          })
+      })
+      .then(res => {
+          if (res.status === 200) {
+              return res.blob();
+          }
+          return false;
+      })
+      .then(json => {
+          if (json) {
+              var csvURL = window.URL.createObjectURL(json);
+              var tempLink = document.createElement("a");
+              tempLink.setAttribute("download", `Teacher_Assignments.zip`);
+              tempLink.href = csvURL;
+              tempLink.click();
+              console.log(json);
+          }
+      },
+      error => {
+          if (error.status === 401) {
+              this.setState({
+                  isLoginMenu: true,
+                  isReload: false
+              })
+          } else {
+              alert('Failed to fetch, Please try again later.');
+              console.log(error);
+          }
+      });
+      this.setState({isDownloadZip: false});
+    }
   }
 
   getSectionIdFromCourseId = (courseId) => {
@@ -475,6 +527,27 @@ class R41Reports extends Component {
                     style = {{
                       height: 22, 
                       width: 22,
+                      marginBottom: -7,
+                      cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`,
+                    }}
+                  />
+                }
+              </Tooltip>
+              &emsp;
+              <Tooltip title="Export ZIP">
+                {this.state.isDownloadZip ?
+                  <CircularProgress 
+                    size={14}
+                    style={{cursor: `${this.state.isDownloadZip ? 'wait' : 'pointer'}`}}
+                  />
+                  :
+                  <img 
+                    alt="" 
+                    src={ZipIcon} 
+                    onClick={() => this.downloadZipFile()} 
+                    style = {{
+                      height: 22, 
+                      width: 18,
                       marginBottom: -7,
                       cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`,
                     }}
