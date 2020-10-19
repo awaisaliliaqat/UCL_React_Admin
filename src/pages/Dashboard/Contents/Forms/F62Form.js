@@ -67,6 +67,9 @@ class R46Reports extends Component {
       preDate: this.getTodaysDate(),
       preDateError: "",
       tableData: [],
+      startTimes: [],
+      startTime: "",
+      startTimeError: "",
     };
   }
 
@@ -174,10 +177,68 @@ class R46Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getData = async (sectionId,classDate) => {
+
+  getStartTime = async (sectionId,classDate) => {
+    const data = new FormData();
+    data.append("sectionId", sectionId);
+    data.append("classDate", classDate);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C62CommonAcademicsSectionsStartTimeView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({
+              startTimes: json.DATA,
+            });
+          } else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  getData = async (sectionId,classDate,startTime) => {
+
+
+
+    console.log("startTime"+startTime);
+
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("sectionId", sectionId);
+    data.append("startTime", startTime);
     data.append("classDate", classDate);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C62CommonStudentsView`;
     await fetch(url, {
@@ -301,8 +362,14 @@ class R46Reports extends Component {
       sectionError: "",
       tableData:[]
     });
-  };
 
+    if(value!=null){
+      this.getStartTime(value.id,this.getDateInString(this.state.preDate));
+    }
+  
+
+  };
+ 
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -334,11 +401,12 @@ class R46Reports extends Component {
 
   handleChangePreDate = (date) => {
     this.setState({preDate: date});
+    this.getStartTime(this.state.sectionId.id,this.getDateInString(date));
   };
-
+ 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.getCourses();
+    this.getCourses(); 
   }
 
   render() {
@@ -408,7 +476,7 @@ class R46Reports extends Component {
                 )}
               />
             </Grid>
-            <Grid item xs={4} md={3}>
+            <Grid item xs={3} md={2}>
               <Autocomplete
                 fullWidth
                 id="sectionId"
@@ -451,15 +519,36 @@ class R46Reports extends Component {
                 onChange={this.handleChangePreDate}
                 error={!!this.state.preDateError}
                 helperText={this.state.preDateError}
-                disabled={!this.state.sectionId.id}
+                disabled={this.state.sectionId!=null?!this.state.sectionId.id:false}
               />
             </Grid>
+            <Grid item xs={3} md={2}>
+                <TextField
+                  id="startTime"
+                  name="startTime"
+                  label="Start Time"
+                  required
+                  fullWidth
+                  disabled={!this.state.sectionId}
+                  variant="outlined"
+                  onChange={this.onHandleChange}
+                  value={this.state.startTime}
+                  error={this.state.startTimeError}
+                  select
+                >
+                  {this.state.startTimes.map((item) => (
+                    <MenuItem key={"startTimes"+item.id} value={item.id}>
+                      {item.startTime}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
             <Grid item xs={2}>
               <Button 
                 variant="contained" 
                 color="primary"
-                disabled={!this.state.sectionId.id}
-                onClick={()=>this.getData(this.state.sectionId.id,this.getDateInString(this.state.preDate))}
+                disabled={!this.state.startTime}
+                onClick={()=>this.getData(this.state.sectionId.id,this.getDateInString(this.state.preDate),this.state.startTime)}
                 //size="large"
                 style={{
                   paddingTop:14,
@@ -477,10 +566,14 @@ class R46Reports extends Component {
               }}
             />
             </Grid>
+            {this.state.sectionId!=null?
+           
             <Grid item xs={12}>
               <form id="myForm">
                 <TextField type="hidden" name="classDate" value={this.getDateInString(this.state.preDate)}/>
+               
                 <TextField type="hidden" name="sectionId" value={this.state.sectionId.id}/>
+                <TextField type="hidden" name="startTime" value={this.state.startTime}/>
                 <TableContainer component={Paper} style={{overflowX:"inherit"}}>
                   <Table size="small" className={classes.table} aria-label="customized table">
                       <TableHead>
@@ -521,6 +614,9 @@ class R46Reports extends Component {
                 </TableContainer>
               </form>
             </Grid>
+            :
+            ""
+              }
           </Grid>
           <br/>
           <br/>
