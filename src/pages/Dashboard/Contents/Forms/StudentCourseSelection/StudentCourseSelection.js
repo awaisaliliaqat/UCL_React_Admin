@@ -3,12 +3,10 @@ import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import StudentCourseSelectionFilter from "./Chunks/StudentCourseSelectionFilter";
 import TablePanel from "../../../../../components/ControlledTable/RerenderTable/TablePanel";
-import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import StudentCourseSelectionAction from "./Chunks/StudentCourseSelectionAction";
 import ExcelIcon from "../../../../../assets/Images/excel.png";
-import { color } from "highcharts";
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 
@@ -35,114 +33,12 @@ class StudentCourseSelection extends Component {
       regStatusId: 1,
       studentId: "",
       studentName: "",
-      isDownloadExcel:false
+      isDownloadExcel: false
     };
   }
 
   componentDidMount() {
     this.getSessionData();
-    // this.setState({
-    //     achivementsData:[
-    //         {
-    //             "moduleNumber": "1",
-    //             "courses": "CS123 - Computer Sciences, 02 - Introduction to Economics, 4a - Statistics 1",
-    //             "marks": "30"
-    //         },
-    //         {
-    //             "moduleNumber": "2",
-    //             "courses": "5a - Mathematics1, CS123 - Computer Sciences, 66 - Microeconomics",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "3",
-    //             "courses": "CS123 - Computer Sciences, 15 - Economics of Labour",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "4",
-    //             "courses": "9626 - Information Technology, CS123 - Computer Sciences, L101 - Criminal Law",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "5",
-    //             "courses": "L103 - Legal Systems and Method, CS123 - Computer Sciences",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "6",
-    //             "courses": "CS123 - Computer Sciences",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "7",
-    //             "courses": "L104 - Contract Law, AS11 - Awais Course, CS123 - Computer Sciences",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "8",
-    //             "courses": "L104 - Contract Law, CS123 - Computer Sciences, 9704 - Art and Design",
-    //             "marks": "30"
-    //         },
-    //         {
-    //             "moduleNumber": "9",
-    //             "courses": "CS123 - Computer Sciences, 02 - Introduction to Economics, 4a - Statistics 1",
-    //             "marks": "30"
-    //         },
-    //         {
-    //             "moduleNumber": "10",
-    //             "courses": "5a - Mathematics1, CS123 - Computer Sciences, 66 - Microeconomics",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "11",
-    //             "courses": "CS123 - Computer Sciences, 15 - Economics of Labour",
-    //             "marks": "30"
-    //         },
-    //     ],
-    //     moduleData:[
-    //         {
-    //             "moduleNumber": "1",
-    //             "courses": "CS123 - Computer Sciences, 02 - Introduction to Economics, 4a - Statistics 1",
-    //             "marks": "30"
-    //         },
-    //         {
-    //             "moduleNumber": "2",
-    //             "courses": "5a - Mathematics1, CS123 - Computer Sciences, 66 - Microeconomics",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "3",
-    //             "courses": "CS123 - Computer Sciences, 15 - Economics of Labour",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "4",
-    //             "courses": "9626 - Information Technology, CS123 - Computer Sciences, L101 - Criminal Law",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "5",
-    //             "courses": "L103 - Legal Systems and Method, CS123 - Computer Sciences",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "6",
-    //             "courses": "CS123 - Computer Sciences",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "7",
-    //             "courses": "L104 - Contract Law, AS11 - Awais Course, CS123 - Computer Sciences",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "8",
-    //             "courses": "L104 - Contract Law, CS123 - Computer Sciences, 9704 - Art and Design",
-    //             "marks": "30"
-    //         },
-    //         {
-    //             "moduleNumber": "9",
-    //             "courses": "CS123 - Computer Sciences, 02 - Introduction to Economics, 4a - Statistics 1",
-    //             "marks": "30"
-    //         },
-    //         {
-    //             "moduleNumber": "10",
-    //             "courses": "5a - Mathematics1, CS123 - Computer Sciences, 66 - Microeconomics",
-    //             "marks": "30"
-    //         }, {
-    //             "moduleNumber": "11",
-    //             "courses": "CS123 - Computer Sciences, 15 - Economics of Labour",
-    //             "marks": "30"
-    //         },
-    //     ]
-    // });
   }
 
   getSessionData = async () => {
@@ -214,16 +110,16 @@ class StudentCourseSelection extends Component {
           if (json.CODE === 1) {
             let coursesData = json.DATA || [];
             let selectedCoursesData = [];
-            for(let i=0; i<coursesData.length; i++){
-                if(coursesData[i].isRegistered){
-                    selectedCoursesData.push(coursesData[i]);
-                }
+            for (let i = 0; i < coursesData.length; i++) {
+              if (coursesData[i].isRegistered) {
+                selectedCoursesData.push(coursesData[i]);
+              }
             }
             this.setState({
               coursesData: json.DATA || [],
               isOpenActionMenu: true,
               selectedData: rowData,
-              selectedCoursesData:selectedCoursesData
+              selectedCoursesData: selectedCoursesData
             });
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
@@ -247,7 +143,7 @@ class StudentCourseSelection extends Component {
   };
 
   getModulesData = async (rowData) => {
-    this.setState({viewLoading: true});
+    this.setState({ viewLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonProgrammeModulesView?academicsSessionId=${this.state.sessionId}&programmeId=${rowData.programmeId}&studentId=${rowData.id}`;
     await fetch(url, {
       method: "GET",
@@ -269,10 +165,10 @@ class StudentCourseSelection extends Component {
               let coursesArray = json.DATA[i].courses.split(",");
               let courses = coursesArray.map((data, index) => (
                 <Fragment key={"pmc" + data + index}>
-                  {achivedCoursesArray.indexOf(data)!==-1 ?
-                    <span 
+                  {achivedCoursesArray.indexOf(data) !== -1 ?
+                    <span
                       style={{
-                        color:"#4caf50"
+                        color: "#4caf50"
                       }}
                     >
                       {data}
@@ -446,51 +342,51 @@ class StudentCourseSelection extends Component {
   };
 
   downloadExcelData = async () => {
-   
-      if (this.state.isDownloadExcel === false) {
-          this.setState({
-              isDownloadExcel: true
-          })
-          
-          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonStudentsCourseSelectionBySessionIdExcelDownload?sessionId=${this.state.sessionId}`;
-          await fetch(url, {
-              method: "GET",
-              headers: new Headers({
-                  Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+
+    if (this.state.isDownloadExcel === false) {
+      this.setState({
+        isDownloadExcel: true
+      })
+
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonStudentsCourseSelectionBySessionIdExcelDownload?sessionId=${this.state.sessionId}`;
+      await fetch(url, {
+        method: "GET",
+        headers: new Headers({
+          Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+        })
+      })
+        .then(res => {
+          if (res.status === 200) {
+            return res.blob();
+          }
+          return false;
+        })
+        .then(
+          json => {
+            if (json) {
+              var csvURL = window.URL.createObjectURL(json);
+              var tempLink = document.createElement("a");
+              tempLink.setAttribute("download", `Applications.xlsx`);
+              tempLink.href = csvURL;
+              tempLink.click();
+              console.log(json);
+            }
+          },
+          error => {
+            if (error.status === 401) {
+              this.setState({
+                isLoginMenu: true,
+                isReload: false
               })
-          })
-              .then(res => {
-                  if (res.status === 200) {
-                      return res.blob();
-                  }
-                  return false;
-              })
-              .then(
-                  json => {
-                      if (json) {
-                          var csvURL = window.URL.createObjectURL(json);
-                          var tempLink = document.createElement("a");
-                          tempLink.setAttribute("download", `Applications.xlsx`);
-                          tempLink.href = csvURL;
-                          tempLink.click();
-                          console.log(json);
-                      }
-                  },
-                  error => {
-                      if (error.status === 401) {
-                          this.setState({
-                              isLoginMenu: true,
-                              isReload: false
-                          })
-                      } else {
-                          alert('Failed to fetch, Please try again later.');
-                          console.log(error);
-                      }
-                  });
-          this.setState({
-              isDownloadExcel: false
-          })
-      }
+            } else {
+              alert('Failed to fetch, Please try again later.');
+              console.log(error);
+            }
+          });
+      this.setState({
+        isDownloadExcel: false
+      })
+    }
   }
 
   onSaveClick = () => {
@@ -522,8 +418,8 @@ class StudentCourseSelection extends Component {
           if (json.CODE === 1) {
             alert("Saved");
             this.getData();
-            this.setState({ 
-              readOnly: false, 
+            this.setState({
+              readOnly: false,
               isOpenActionMenu: false
             });
           } else {
@@ -570,7 +466,7 @@ class StudentCourseSelection extends Component {
   };
 
   onReadOnly = () => {
-    this.setState({readOnly:true});
+    this.setState({ readOnly: true });
   }
 
   handleCheckboxChange = (e, value = {}, type = 0) => {
@@ -603,10 +499,10 @@ class StudentCourseSelection extends Component {
   };
 
   handleSetCourses = (value = []) => {
-    for(let i=0; i<value.length; i++){
+    for (let i = 0; i < value.length; i++) {
       value[i].isRegistered = 1;
     }
-    this.setState({selectedCoursesData: value});
+    this.setState({ selectedCoursesData: value });
   }
 
   render() {
@@ -619,12 +515,8 @@ class StudentCourseSelection extends Component {
       },
       {
         name: "Student Name",
-        renderer: (rowData) => {
-          return (
-            <Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>
-          );
-        },
-        sortIndex: "firstName",
+        dataIndex: "displayName",
+        sortIndex: "displayName",
         sortable: true,
         customStyleHeader: { width: "17%" },
       },
@@ -656,7 +548,7 @@ class StudentCourseSelection extends Component {
         renderer: (rowData) => {
           return (
             <Fragment>
-              <IconButton 
+              <IconButton
                 aria-label="View"
                 disabled={this.state.viewLoading}
                 onClick={() => {
@@ -688,7 +580,7 @@ class StudentCourseSelection extends Component {
                 View
               </Button> 
               */}
-              <IconButton 
+              <IconButton
                 aria-label="View"
                 disabled={this.state.viewLoading}
                 onClick={() => {
@@ -736,7 +628,7 @@ class StudentCourseSelection extends Component {
         <StudentCourseSelectionAction
           onSave={() => this.onSaveClick()}
           open={this.state.isOpenActionMenu}
-          handleClose={() => this.setState({ isOpenActionMenu: false, readOnly:false })}
+          handleClose={() => this.setState({ isOpenActionMenu: false, readOnly: false })}
           selectedData={this.state.selectedData}
           coursesData={this.state.coursesData}
           moduleData={this.state.moduleData}
@@ -773,8 +665,8 @@ class StudentCourseSelection extends Component {
             </Typography>
             <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
               height: 30, width: 32,
-                cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
-              }}
+              cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
+            }}
             />
           </div>
           <Divider
@@ -818,15 +710,15 @@ class StudentCourseSelection extends Component {
           />
           {//this.state.coursesData.map((item, i) => {
             this.state.selectedCoursesData.map((item, i) => {
-            if (item.isRegistered === 1) {
-              return (
-                <Fragment key={"coursesData"+i+item}>
-                  <input name="courseId" value={item.id} type="hidden" />
-                  <input name="isRepeat" value={item.isRepeat || 0} type="hidden"/>
-                </Fragment>
-              );
-            }
-          })}
+              if (item.isRegistered === 1) {
+                return (
+                  <Fragment key={"coursesData" + i + item}>
+                    <input name="courseId" value={item.id} type="hidden" />
+                    <input name="isRepeat" value={item.isRepeat || 0} type="hidden" />
+                  </Fragment>
+                );
+              }
+            })}
           <input type="submit" style={{ display: "none" }} id="courseSubmit" />
         </form>
       </Fragment>

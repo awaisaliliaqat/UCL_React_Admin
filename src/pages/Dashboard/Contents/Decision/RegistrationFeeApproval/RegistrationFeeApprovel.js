@@ -240,8 +240,7 @@ class RegistrationFeeApprovel extends Component {
     };
 
     onDownload = (fileName) => {
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${
-            process.env.REACT_APP_SUB_API_NAME
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME
             }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
 
         fetch(url, {
@@ -466,11 +465,7 @@ class RegistrationFeeApprovel extends Component {
         const columns = [
             { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
             {
-                name: "Name", renderer: rowData => {
-                    return (
-                        <Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>
-                    )
-                }, sortable: false, customStyleHeader: { width: '12%' }
+                name: "Name", dataIndex: "displayName", sortable: false, customStyleHeader: { width: '12%' }
             },
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '9%' } },
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },

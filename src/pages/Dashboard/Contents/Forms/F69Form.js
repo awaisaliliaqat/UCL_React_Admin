@@ -280,7 +280,7 @@ class F69Form extends Component {
     if(
       !this.isLabelValid()
       || !this.isProgrammeGroupIdValid()
-      || !this.isDaysValid()
+      //|| !this.isDaysValid()
     ){ return; }
 
     this.onFormSubmit();
@@ -288,7 +288,8 @@ class F69Form extends Component {
 
   onFormSubmit = async (e) => {
     let myForm = document.getElementById("myForm");
-    const data = new FormData(myForm);
+    let data = new FormData(myForm);
+    data.append("noOfDays", 1);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C69CommonHolidaysSave`;
     await fetch(url, {
@@ -400,7 +401,7 @@ class F69Form extends Component {
                 marginRight: 10,
               }}
             >
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={12}>
                 <TextField
                   id="label"
                   name="label"
@@ -482,6 +483,7 @@ class F69Form extends Component {
                   helperText={this.state.preDateError ? this.state.preDateError : " "}
                 />
               </Grid>
+              {/* 
               <Grid item xs={12} md={6}>
                 <TextField
                   id="days"
@@ -496,7 +498,8 @@ class F69Form extends Component {
                   error={!!this.state.noOfDaysError}
                   helperText={this.state.noOfDaysError}
                 />
-              </Grid>
+              </Grid> 
+              */}
             </Grid>
             <br />
             <br />

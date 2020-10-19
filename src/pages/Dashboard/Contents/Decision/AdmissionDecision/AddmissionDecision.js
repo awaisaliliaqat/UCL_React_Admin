@@ -393,11 +393,7 @@ class AddmissionDecision extends Component {
         const columns = [
             { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
             {
-                name: "Name", renderer: rowData => {
-                    return (
-                        <Fragment>{`${rowData.firstName} ${rowData.middleName} ${rowData.lastName}`}</Fragment>
-                    )
-                }, sortable: false, customStyleHeader: { width: '13%' }
+                name: "Name", dataIndex: "displayName", sortable: false, customStyleHeader: { width: '13%' }
             },
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },

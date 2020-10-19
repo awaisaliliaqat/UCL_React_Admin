@@ -1,26 +1,19 @@
 import React, { Component, Fragment } from "react";
-import {
-  Divider,
-  IconButton,
-  Tooltip,
-  CircularProgress,
-  Grid,
-} from "@material-ui/core";
+import {Divider, IconButton, Tooltip, CircularProgress, Grid} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import ExcelIcon from "../../../../assets/Images/excel.png";
 import TablePanel from "../../../../components/ControlledTable/RerenderTable/TablePanel";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
-import F69ReportsTableComponent from "./F69ReportsTableComponent";
+import F204ReportsTableComponent from "./F204ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
-import EditDeleteTableComponent from "../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
-import DeleteIcon from "@material-ui/icons/Delete";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
-class F69Reports extends Component {
+class F204Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,7 +22,7 @@ class F69Reports extends Component {
       showSearchBar: false,
       isDownloadExcel: false,
       applicationStatusId: 1,
-      admissionData: [],
+      admissionData: null,
       genderData: [],
       degreeData: [],
       studentName: "",
@@ -62,9 +55,25 @@ class F69Reports extends Component {
     });
   };
 
-  getData = async () => {
+  onClearFilters = () => {
+    this.setState({
+      studentName: "",
+      genderId: 0,
+      degreeId: 0,
+      applicationId: "",
+      eventDate: null,
+    });
+  };
+
+  handleDateChange = (date) => {
+    this.setState({
+      eventDate: date,
+    });
+  };
+
+  getData = async (status) => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C69CommonHolidaysView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C204CommonAcademicsExamsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -80,39 +89,38 @@ class F69Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let data = json.DATA || [];
-            this.setState({admissionData: data});
+            this.setState({
+              admissionData: json.DATA || [],
+            });
             for (var i = 0; i < json.DATA.length; i++) {
-              let isValidDelete = data[i].isValid;
-              data[i].action = (
-                // <EditDeleteTableRecord
-                //   recordId={json.DATA[i].id}
-                //   DeleteData={this.DeleteData}
-                //   onEditURL={`#/dashboard/F69Form/${json.DATA[i].id}`}
-                //   handleOpenSnackbar={this.handleOpenSnackbar}
-                // />
-                isValidDelete==1 ? 
-                <EditDeleteTableComponent
-                  recordId={data[i].id}
-                  deleteRecord={this.DeleteData}
-                  hideEditAction={true}
+              json.DATA[i].action = (
+                <EditDeleteTableRecord
+                  recordId={json.DATA[i].id}
+                  DeleteData={this.DeleteData}
+                  onEditURL={`#/dashboard/F204Form/${json.DATA[i].id}`}
+                  handleOpenSnackbar={this.handleOpenSnackbar}
                 />
-                :
-                <IconButton
-                  disabled={true}
-                >
-                  <DeleteIcon
-                    fontSize="small"
-                  />
-                </IconButton>
               );
-              data[i].programmeGroupLabel = data[i].programmeGroup.Label;
+              let fileName = json.DATA[i].fileName;
+              let fileUrl = json.DATA[i].fileUrl;
+              json.DATA[i].fileDownload = (
+                <Fragment>
+                  <Tooltip title="Download">
+                    <IconButton 
+                      onClick={(e)=>this.DownloadFile(e, fileUrl, fileName)}
+                      aria-label="download"
+                    >
+                      <CloudDownloadIcon color="primary" />
+                    </IconButton>
+                  </Tooltip>
+                </Fragment>
+              );
             }
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
           }
-          console.log(json);
+          console.log("getData", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -135,7 +143,7 @@ class F69Reports extends Component {
   DeleteData = async (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C69CommonHolidaysDelete`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C204CommonAcademicsExamsDelete`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -156,7 +164,7 @@ class F69Reports extends Component {
             this.getData();
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
           }
           console.log(json);
         },
@@ -175,6 +183,62 @@ class F69Reports extends Component {
       );
   };
 
+  DownloadFile = (e, fileUrl, fileName=fileUrl) => {
+      e.preventDefault();
+      const data = new FormData();
+      data.append("fileName", fileUrl);
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonViewFile`;
+      fetch(url, {
+          method: "POST",
+          body:data,
+          headers: new Headers({
+              Authorization: "Bearer "+localStorage.getItem("uclAdminToken"),
+          }),
+      })
+      .then((res) => {
+          if (res.status === 200) {
+              return res.blob();
+          } else if (res.status === 401) {
+              this.setState({
+                isLoginMenu: true,
+                isReload: false
+              });
+              return {}
+          } else {
+              //alert('Operation Failed, Please try again later.');
+              this.handleOpenSnackbar("Operation Failed, Please try again later.","error");
+              return {}
+          }
+      })
+      .then((result) => {
+                    
+          if(result.type!="application/json"){
+            this.handleOpenSnackbar("Operation Failed, Please try again later.","error");
+          }
+          
+          var fileURL = window.URL.createObjectURL(result);
+          var tempLink = document.createElement("a");
+          tempLink.href = fileURL;
+          tempLink.setAttribute("download", fileName);
+          tempLink.click();
+
+          if (result.CODE === 1) {
+              //Code
+          } else if (result.CODE === 2) {
+              alert("SQL Error (" +result.CODE +"): " +result.USER_MESSAGE +"\n" +result.SYSTEM_MESSAGE);
+          } else if (result.CODE === 3) {
+              alert("Other Error ("+result.CODE+"): " +result.USER_MESSAGE +"\n" +result.SYSTEM_MESSAGE);
+          } else if (result.error === 1) {
+              alert(result.error_message);
+          } else if (result.success === 0 && result.redirect_url !== "") {
+              window.location = result.redirect_url;
+          }
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+  };
+
   onHandleChange = (e) => {
     const { name, value } = e.target;
     this.setState({
@@ -191,18 +255,21 @@ class F69Reports extends Component {
   };
 
   componentDidMount() {
+    this.props.setDrawerOpen(false);
     this.getData();
   }
 
   render() {
-    
+
     const columns = [
       { name: "SRNo", title: "SR#" },
-      { name: "label", title: "Title" },
-      { name: "programmeGroupLabel", title: "Programme Group" },
-      //{ name: "noOfDays", title: "Days" },
-      { name: "effectiveDateFrom", title: "Date" },
-      //{ name: "effectiveDateTo", title: "To Date" },
+      { name: "label", title: "Label" },
+      { name: "sectionLabel", title: "Section" },
+      { name: "startTimestampReport", title: "Starts On" },
+      { name: "endTimestampReport", title: "Ends On" },
+      { name: "instruction", title: "Instruction" },
+      { name: "totalMarks", title: "Total\xa0Marks" },
+      { name: "fileDownload", title: "Exam" },
       { name: "action", title: "Action" },
     ];
 
@@ -237,9 +304,25 @@ class F69Reports extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              Holidays
+              Exams Reports
             </Typography>
+            {/* 
+              <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
+                  height: 30, width: 32,
+                  cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
+               }}
+              /> 
+            */}
             <div style={{ float: "right" }}>
+              {/* <Hidden xsUp={true}> */}
+              {/* <Tooltip title="Search Bar">
+                    <IconButton
+                        onClick={this.handleToggleSearchBar}
+                    >
+                        <FilterIcon fontSize="default" color="primary"/>
+                    </IconButton>
+                </Tooltip> */}
+              {/* </Hidden> */}
               <Tooltip title="Table Filter">
                 <IconButton
                   style={{ marginLeft: "-10px" }}
@@ -257,19 +340,17 @@ class F69Reports extends Component {
             }}
           />
           <br/>
-          {this.state.admissionData.length>0 ? (
-            <F69ReportsTableComponent
+          {this.state.admissionData ? (
+            <F204ReportsTableComponent
               data={this.state.admissionData}
               columns={columns}
               showFilter={this.state.showTableFilter}
             />
-          ) : this.state.isLoading ?
+          ) : (
             <Grid container justify="center" alignItems="center">
               <CircularProgress />
             </Grid>
-            :
-            ""
-          }
+          )}
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}
@@ -281,4 +362,4 @@ class F69Reports extends Component {
     );
   }
 }
-export default F69Reports;
+export default F204Reports;

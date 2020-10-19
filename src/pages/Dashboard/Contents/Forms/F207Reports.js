@@ -1,26 +1,16 @@
 import React, { Component, Fragment } from "react";
-import {
-  Divider,
-  IconButton,
-  Tooltip,
-  CircularProgress,
-  Grid,
-} from "@material-ui/core";
+import { Divider, IconButton, Tooltip, CircularProgress, Grid} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import ExcelIcon from "../../../../assets/Images/excel.png";
-import TablePanel from "../../../../components/ControlledTable/RerenderTable/TablePanel";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
-import F69ReportsTableComponent from "./F69ReportsTableComponent";
+import F207ReportsTableComponent from "./F207ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
-import EditDeleteTableComponent from "../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
-import DeleteIcon from "@material-ui/icons/Delete";
+import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
 
-class F69Reports extends Component {
+class F207Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,7 +19,7 @@ class F69Reports extends Component {
       showSearchBar: false,
       isDownloadExcel: false,
       applicationStatusId: 1,
-      admissionData: [],
+      admissionData: null,
       genderData: [],
       degreeData: [],
       studentName: "",
@@ -64,9 +54,9 @@ class F69Reports extends Component {
 
   getData = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C69CommonHolidaysView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C207CommonAcademicsLetterGradesView`;
     await fetch(url, {
-      method: "POST",
+      method: "GET",
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -80,33 +70,17 @@ class F69Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let data = json.DATA || [];
-            this.setState({admissionData: data});
+            this.setState({
+              admissionData: json.DATA || [],
+            });
             for (var i = 0; i < json.DATA.length; i++) {
-              let isValidDelete = data[i].isValid;
-              data[i].action = (
-                // <EditDeleteTableRecord
-                //   recordId={json.DATA[i].id}
-                //   DeleteData={this.DeleteData}
-                //   onEditURL={`#/dashboard/F69Form/${json.DATA[i].id}`}
-                //   handleOpenSnackbar={this.handleOpenSnackbar}
-                // />
-                isValidDelete==1 ? 
-                <EditDeleteTableComponent
-                  recordId={data[i].id}
+              json.DATA[i].action = (
+                <EditDeleteTableRecord
+                  recordId={json.DATA[i].id}
                   deleteRecord={this.DeleteData}
                   hideEditAction={true}
                 />
-                :
-                <IconButton
-                  disabled={true}
-                >
-                  <DeleteIcon
-                    fontSize="small"
-                  />
-                </IconButton>
               );
-              data[i].programmeGroupLabel = data[i].programmeGroup.Label;
             }
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
@@ -127,15 +101,13 @@ class F69Reports extends Component {
           }
         }
       );
-    this.setState({
-      isLoading: false,
-    });
+    this.setState({isLoading: false});
   };
 
   DeleteData = async (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C69CommonHolidaysDelete`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C207CommonAcademicsLetterGradesDelete`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -191,18 +163,14 @@ class F69Reports extends Component {
   };
 
   componentDidMount() {
-    this.getData();
+    this.getData(this.state.applicationStatusId);
   }
 
   render() {
     
     const columns = [
       { name: "SRNo", title: "SR#" },
-      { name: "label", title: "Title" },
-      { name: "programmeGroupLabel", title: "Programme Group" },
-      //{ name: "noOfDays", title: "Days" },
-      { name: "effectiveDateFrom", title: "Date" },
-      //{ name: "effectiveDateTo", title: "To Date" },
+      { name: "label", title: "Letter\xa0Grade" },
       { name: "action", title: "Action" },
     ];
 
@@ -218,11 +186,10 @@ class F69Reports extends Component {
             padding: 20,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-            }}
+          <Grid
+            container
+            justify="space-between"
+            spacing={2}
           >
             <Typography
               style={{
@@ -237,7 +204,7 @@ class F69Reports extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              Holidays
+              Letter Grade Reports
             </Typography>
             <div style={{ float: "right" }}>
               <Tooltip title="Table Filter">
@@ -249,27 +216,25 @@ class F69Reports extends Component {
                 </IconButton>
               </Tooltip>
             </div>
-          </div>
+          </Grid>
           <Divider
             style={{
               backgroundColor: "rgb(58, 127, 187)",
               opacity: "0.3",
             }}
           />
-          <br/>
-          {this.state.admissionData.length>0 ? (
-            <F69ReportsTableComponent
+          <br />
+          {this.state.admissionData ? (
+            <F207ReportsTableComponent
               data={this.state.admissionData}
               columns={columns}
               showFilter={this.state.showTableFilter}
             />
-          ) : this.state.isLoading ?
+          ) : (
             <Grid container justify="center" alignItems="center">
               <CircularProgress />
             </Grid>
-            :
-            ""
-          }
+          )}
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}
@@ -281,4 +246,4 @@ class F69Reports extends Component {
     );
   }
 }
-export default F69Reports;
+export default F207Reports;

@@ -14,6 +14,7 @@ import DisplayAdmissionApplication from "../components/DisplayAdmissionApplicati
 import DisplayStudentProfile from '../pages/Dashboard/Contents/Reports/StudentProfile/DisplayStudentProfile';
 import R59ReportsAttendanceSheet from '../pages/Dashboard/Contents/Forms/R59ReportsAttendanceSheet';
 import R68ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R68ReportsAttendanceRecordSheet';
+import R71ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R71ReportsAttendanceRecordSheet';
 
 const CheckLogin = () => {
   const uclAdminToken = localStorage.getItem("uclAdminToken");
@@ -38,6 +39,7 @@ const AppRoute = () => {
             <PrivateRoutes exact path="/view-student-profile/:id" component={DisplayStudentProfile} />
             <PrivateRoutes exact path="/R59ReportsAttendanceSheet/:id" component={R59ReportsAttendanceSheet} />
             <PrivateRoutes exact path="/R68ReportsAttendanceRecordSheet/:id" component={R68ReportsAttendanceRecordSheet} />
+            <PrivateRoutes exact path="/R71ReportsAttendanceRecordSheet/:id" component={R71ReportsAttendanceRecordSheet} />
             <PrivateRoutes exact path="*" component={Dashboard} />
           </Switch>
         </Suspense>
