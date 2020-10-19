@@ -91,6 +91,12 @@ import F65Reports from "./Contents/Forms/F65Reports";
 import R66Reports from "./Contents/Forms/R66Reports";
 import F67Form from "./Contents/Forms/F67Form";
 import F67Reports from "./Contents/Forms/F67Reports";
+import R68Reports from "./Contents/Forms/R68Reports";
+import F69Form from "./Contents/Forms/F69Form";
+import F69Reports from "./Contents/Forms/F69Reports";
+import F70Form from "./Contents/Forms/F70Form";
+import F70Reports from "./Contents/Forms/F70Reports";
+import R71Reports from "./Contents/Forms/R71Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentStatus from "./Contents/Decision/ChangeStudentStatus/ChangeStudentStatus";
 import SyncTimeTable from "./Contents/LMS/SyncTimeTable/SyncTimeTable";
@@ -101,6 +107,17 @@ import CreateRoomReports from "./Contents/Forms/CreateRoom/CreateRoomReports";
 import ClassSchedule from "./Contents/LMS/ClassSchedule/ClassSchedule";
 import AnnouncementForm from "./Contents/LMS/Announcement/AnnouncementForm";
 import AnnouncementReports from "./Contents/LMS/Announcement/AnnouncementReports";
+import F201Form from "./Contents/Forms/F201Form";
+import F202Form from "./Contents/Forms/F202Form";
+import F203Form from "./Contents/Forms/F203Form";
+import F204Form from "./Contents/Forms/F204Form";
+import F204Reports from "./Contents/Forms/F204Reports";
+import F205Form from "./Contents/Forms/F205Form";
+import R206Reports from "./Contents/Forms/R206Reports";
+import F207Form from "./Contents/Forms/F207Form";
+import F207Reports from "./Contents/Forms/F207Reports";
+import F208Form from "./Contents/Forms/F208Form";
+import F208Reports from "./Contents/Forms/F208Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 
 const drawerWidth = 283;
@@ -1027,6 +1044,96 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="R68Reports"
+                exact
+                path="/dashboard/R68Reports"
+                render={(props) => {
+                  return (
+                    <R68Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F69Form"
+                exact
+                path="/dashboard/F69Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F69Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F69Form"
+                exact
+                path="/dashboard/F69Reports"
+                render={(props) => {
+                  return (
+                    <F69Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F70Form"
+                exact
+                path="/dashboard/F70Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F70Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F70Form"
+                exact
+                path="/dashboard/F70Reports"
+                render={(props) => {
+                  return (
+                    <F70Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R71Reports"
+                exact
+                path="/dashboard/R71Reports"
+                render={(props) => {
+                  return (
+                    <R71Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"
                 exact
                 path="/dashboard/assign-account-id"
@@ -1278,6 +1385,171 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/reschedule-classes"
                 component={ClassSchedule}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F201Form"
+                exact
+                path="/dashboard/F201Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F201Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F202Form"
+                exact
+                path="/dashboard/F202Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F202Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F203Form"
+                exact
+                path="/dashboard/F203Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F203Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F204Form"
+                exact
+                path="/dashboard/F204Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F204Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F204Form"
+                exact
+                path="/dashboard/F204Reports"
+                render={(props) => {
+                  return (
+                    <F204Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F205Form"
+                exact
+                path="/dashboard/F205Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F205Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R206Reports"
+                exact
+                path="/dashboard/R206Reports"
+                render={(props) => {
+                  return (
+                    <R206Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F207Form"
+                exact
+                path="/dashboard/F207Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F207Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F207Form"
+                exact
+                path="/dashboard/F207Reports"
+                render={(props) => {
+                  return (
+                    <F207Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F208Form"
+                exact
+                path="/dashboard/F208Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F208Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F208Form"
+                exact
+                path="/dashboard/F208Reports"
+                render={(props) => {
+                  return (
+                    <F208Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

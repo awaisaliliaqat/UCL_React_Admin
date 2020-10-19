@@ -3,10 +3,9 @@ import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button} from "@mat
 import {Typography, TextField, MenuItem} from "@material-ui/core";
 import ExcelIcon from "../../../../assets/Images/excel.png";
 import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
-import ZipIcon from "../../../../assets/Images/zip_export_icon.png";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
-import R41ReportsTableComponent from "./R41ReportsTableComponent";
+import R206ReportsTableComponent from "./R206ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
@@ -25,7 +24,7 @@ function isEmpty(obj) {
   return true;
 }
 
-class R41Reports extends Component {
+class R206Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,23 +32,22 @@ class R41Reports extends Component {
       showTableFilter: false,
       showSearchBar: false,
       isDownloadPdf: false,
-      isDownloadZip: false,
       applicationStatusId: 1,
       isLoginMenu: false,
       isReload: false,
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-      assignmentsData: [],
+      examsData: [],
       coursesMenuItems: [],
       courseId: "",
       courseIdError: "",
-      assignmentsMenuItems: [],
+      examsMenuItems: [],
       sectionId: "",
       sectionIdError: "",
       sectionsMenuItems: [],
-      assignmentId:"",
-      assignmentIdError:"",
+      examId:"",
+      examIdError:"",
       sectionId:""
     };
   }
@@ -69,7 +67,7 @@ class R41Reports extends Component {
 
   getCourses = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsCoursesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C206CommonAcademicsExamsCoursesView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -112,7 +110,7 @@ class R41Reports extends Component {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("courseId", courseId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsSectionsTeachersView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C206CommonAcademicsSectionsTeachersView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -152,11 +150,11 @@ class R41Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getAssignments = async (sectionId) => {
+  getExams = async (sectionId) => {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("sectionId", sectionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C206CommonAcademicsExamsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -173,12 +171,12 @@ class R41Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({assignmentsMenuItems: json.DATA || []});
+            this.setState({examsMenuItems: json.DATA || []});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getAssignments", json);
+          console.log("getExams", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -196,12 +194,12 @@ class R41Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  getData = async (sectionId, assignmentId) => {
+  getData = async (sectionId, examId) => {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("sectionId", sectionId);
-    data.append("assignmentId", assignmentId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsSummaryView`;
+    data.append("examId", examId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C206CommonAcademicsExamsSummaryView`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -218,7 +216,7 @@ class R41Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({assignmentsData: json.DATA || []});
+            this.setState({examsData: json.DATA || []});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -242,10 +240,11 @@ class R41Reports extends Component {
   };
 
   downloadPDFData = async () => {
+
     if(
       !this.isCourseValid() ||
       !this.isSectionValid() ||
-      !this.isAssignmentValid()
+      !this.isExamValid()
     )
     {return;}
     
@@ -270,7 +269,7 @@ class R41Reports extends Component {
                       if (json) {
                           var csvURL = window.URL.createObjectURL(json);
                           var tempLink = document.createElement("a");
-                          tempLink.setAttribute("download", `Teacher_Assignment_Summary.pdf`);
+                          tempLink.setAttribute("download", `Teacher_Exam_Summary.pdf`);
                           tempLink.href = csvURL;
                           tempLink.click();
                           console.log(json);
@@ -293,60 +292,6 @@ class R41Reports extends Component {
       }
   }
 
-  downloadZipFile = async () => {
-    if(
-      !this.isCourseValid() ||
-      !this.isSectionValid() ||
-      !this.isAssignmentValid()
-    )
-    {return;}
-    if (this.state.isDownloadZip === false) {
-      this.setState({isDownloadZip: true});
-      let fileLabel = "Section_Assignments.zip";
-      let sectionObj = this.state.sectionsMenuItems.find(obj => obj.id === this.state.sectionId);
-      if(sectionObj){ fileLabel = `${sectionObj.label.replace(" ","_")}_Assignments.zip`}
-      let data = new FormData();
-      data.append("sectionId", this.state.sectionId);
-      data.append("assignmentId", this.state.assignmentId);
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsSummaryCompressDownload`;
-      await fetch(url, {
-          method: "POST",
-          body: data,
-          headers: new Headers({
-              Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-          })
-      })
-      .then(res => {
-          if (res.status === 200) {
-              return res.blob();
-          }
-          return false;
-      })
-      .then(json => {
-          if (json) {
-              var csvURL = window.URL.createObjectURL(json);
-              var tempLink = document.createElement("a");
-              tempLink.setAttribute("download", fileLabel);
-              tempLink.href = csvURL;
-              tempLink.click();
-              console.log(json);
-          }
-      },
-      error => {
-          if (error.status === 401) {
-              this.setState({
-                  isLoginMenu: true,
-                  isReload: false
-              })
-          } else {
-              alert('Failed to fetch, Please try again later.');
-              console.log(error);
-          }
-      });
-      this.setState({isDownloadZip: false});
-    }
-  }
-
   getSectionIdFromCourseId = (courseId) => {
     let coursesMenuItems = this.state.coursesMenuItems;
     let res = coursesMenuItems.find((dt) => dt.id === courseId);
@@ -365,22 +310,22 @@ class R41Reports extends Component {
         case "courseId":
             this.setState({
               sectionId: "",
-              assignmentId: "",
-              assignmentsData: []
+              examId: "",
+              examsData: []
             });
             this.getSections(value);
-            //this.getAssignments(this.getSectionIdFromCourseId(value));
+            //this.getExams(this.getSectionIdFromCourseId(value));
           break;
         case "sectionId":
             this.setState({
-              assignmentId: "",
-              assignmentsData: []
+              examId: "",
+              examsData: []
             });
-            this.getAssignments(value);
+            this.getExams(value);
           break;
-          case "assignmentId":
+          case "examId":
             this.setState({
-              assignmentsData: []
+              examsData: []
             });
           break;
     default:
@@ -416,14 +361,14 @@ class R41Reports extends Component {
     return isValid;
   }
 
-  isAssignmentValid = () => {
+  isExamValid = () => {
     let isValid = true;        
-    if (!this.state.assignmentId) {
-        this.setState({assignmentIdError:"Please select assignment."});
-        document.getElementById("assignmentId").focus();
+    if (!this.state.examId) {
+        this.setState({examIdError:"Please select exam."});
+        document.getElementById("examId").focus();
         isValid = false;
     } else {
-        this.setState({assignmentIdError:""});
+        this.setState({examIdError:""});
     }
     return isValid;
 }
@@ -432,10 +377,10 @@ class R41Reports extends Component {
     if(
       !this.isCourseValid() ||
       !this.isSectionValid() ||
-      !this.isAssignmentValid()
+      !this.isExamValid()
     )
     {return;}
-    this.getData(this.state.sectionId, this.state.assignmentId);
+    this.getData(this.state.sectionId, this.state.examId);
   }
   
   handleToggleTableFilter = () => {
@@ -457,7 +402,7 @@ class R41Reports extends Component {
       { name: "SRNo", title: "SR#" },
       { name: "nucleusId", title: "NucleusID" },
       { name: "studentName", title: "Student\xa0Name" },
-      { name: "assignmentSubmitted", title: "Submitted On" },
+      { name: "examSubmitted", title: "Submitted On" },
       { name: "obtainedMarks", title: "Obtained Marks" },
       { name: "totalMarks", title: "Total\xa0Marks" },
       { name: "remarks", title: "Remarks" }
@@ -496,7 +441,7 @@ class R41Reports extends Component {
                 </IconButton>
               </Tooltip> 
               */}
-              Teacher Assigmnent Summary Report
+              Teacher Exam Summary Report
             </Typography>
             <div style={{ float: "right" }}>
               {/* 
@@ -516,6 +461,7 @@ class R41Reports extends Component {
                   <FilterIcon fontSize="default" color="primary" />
                 </IconButton>
               </Tooltip>
+              {/*
               <Tooltip title="Export PDF">
                 {this.state.isDownloadPdf ?
                   <CircularProgress 
@@ -536,27 +482,7 @@ class R41Reports extends Component {
                   />
                 }
               </Tooltip>
-              &emsp;
-              <Tooltip title="Export ZIP">
-                {this.state.isDownloadZip ?
-                  <CircularProgress 
-                    size={14}
-                    style={{cursor: `${this.state.isDownloadZip ? 'wait' : 'pointer'}`}}
-                  />
-                  :
-                  <img 
-                    alt="" 
-                    src={ZipIcon} 
-                    onClick={() => this.downloadZipFile()} 
-                    style = {{
-                      height: 22, 
-                      width: 18,
-                      marginBottom: -7,
-                      cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`,
-                    }}
-                  />
-                }
-              </Tooltip> 
+              */}
             </div>
           </div>
           <Divider
@@ -639,23 +565,23 @@ class R41Reports extends Component {
             </Grid>
             <Grid item xs={12} md={4}>
               <TextField
-                id="assignmentId"
-                name="assignmentId"
+                id="examId"
+                name="examId"
                 variant="outlined"
-                label="Assignment"
+                label="Exam"
                 required
                 fullWidth
                 select
                 onChange={this.onHandleChange}
-                value={this.state.assignmentId}
-                error={!!this.state.assignmentIdError}
-                helperText={this.state.assignmentIdError ? this.state.assignmentIdError : " "}
+                value={this.state.examId}
+                error={!!this.state.examIdError}
+                helperText={this.state.examIdError ? this.state.examIdError : " "}
                 disabled={!this.state.sectionId}
               >
-                {this.state.assignmentsMenuItems && !this.state.isLoading ? 
-                  this.state.assignmentsMenuItems.map((dt, i) => (
+                {this.state.examsMenuItems && !this.state.isLoading ? 
+                  this.state.examsMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"assignmentsMenuItems"+dt.id}
+                      key={"examsMenuItems"+dt.id}
                       value={dt.id}
                     >
                       {dt.label}
@@ -688,9 +614,9 @@ class R41Reports extends Component {
               opacity: "0.3",
             }}
           />
-          {this.state.assignmentsData && !this.state.isLoading ? (
-            <R41ReportsTableComponent
-              data={this.state.assignmentsData}
+          {this.state.examsData && !this.state.isLoading ? (
+            <R206ReportsTableComponent
+              data={this.state.examsData}
               columns={columns}
               showFilter={this.state.showTableFilter}
             />
@@ -700,6 +626,9 @@ class R41Reports extends Component {
               justify="center" 
               alignItems="center"
             >
+              <Grid item xs={12}>
+                <br/>
+              </Grid>
               <CircularProgress />
             </Grid>
           )}
@@ -714,4 +643,4 @@ class R41Reports extends Component {
     );
   }
 }
-export default R41Reports;
+export default R206Reports;
