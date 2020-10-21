@@ -62,7 +62,7 @@ class R46Reports extends Component {
 
   loadAcademicSession = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C68CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -129,7 +129,7 @@ class R46Reports extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", AcademicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C68CommonAcademicsSessionsOfferedProgrammesGroupView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71CommonAcademicsSessionsOfferedProgrammesGroupView`;
     await fetch(url, {
       method: "POST",
       body: data,
