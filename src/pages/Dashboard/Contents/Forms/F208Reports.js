@@ -209,7 +209,7 @@ class F208Reports extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              Letter Grade Reports
+              Session Term Reports
             </Typography>
             <div style={{ float: "right" }}>
               <Tooltip title="Table Filter">

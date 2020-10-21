@@ -304,11 +304,11 @@ class DisplayAdmissionApplications extends Component {
                   <TableRow>
                     {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                     <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
                     <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
                     <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
                     {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                   </TableRow>
                 </TableHead>
