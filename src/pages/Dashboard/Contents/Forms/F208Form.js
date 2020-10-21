@@ -408,7 +408,7 @@ class F208Form extends Component {
 													<Card style={{height:55}}>
 														<CardContent>
 															<Typography variant="button" color="primary">
-																<center><b>Mid Term</b></center>
+																<center><b>1<small>st</small> Term</b></center>
 															</Typography>
 														</CardContent>
 													</Card>
@@ -460,7 +460,7 @@ class F208Form extends Component {
 													<Card style={{height:55}}>
 														<CardContent>
 															<Typography variant="button" color="primary">
-																<center><b>Final Term</b></center>
+																<center><b>2<small>nd</small> Term</b></center>
 															</Typography>
 														</CardContent>
 													</Card>
