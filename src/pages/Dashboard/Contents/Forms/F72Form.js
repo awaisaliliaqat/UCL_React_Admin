@@ -259,8 +259,8 @@ class F72Form extends Component {
   isUsersValid = () => {
     let userId = this.state.userId;
     let isValid = true;
-    if (userId.length == 0 ) {
-      this.setState({ userIdError: "Please select at least one user." });
+    if (Object.keys(userId).length == 0) {
+      this.setState({ userIdError: "Please select user." });
       document.getElementById("userId").focus();
       isValid = false;
     }else {
@@ -550,18 +550,18 @@ class F72Form extends Component {
                       />
                     ))
                   }
-                  renderOption={(option, {selected}) => (
-                    <Fragment>
-                      <Checkbox
-                        icon={icon}
-                        checkedIcon={checkedIcon}
-                        style={{ marginRight: 8 }}
-                        checked={selected}
-                        color="primary"
-                      />
-                      {option.label}
-                    </Fragment>
-                  )}
+                  // renderOption={(option, {selected}) => (
+                  //   <Fragment>
+                  //     <Checkbox
+                  //       icon={icon}
+                  //       checkedIcon={checkedIcon}
+                  //       style={{ marginRight: 8 }}
+                  //       checked={selected}
+                  //       color="primary"
+                  //     />
+                  //     {option.label}
+                  //   </Fragment>
+                  // )}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -638,7 +638,7 @@ class F72Form extends Component {
                   }
                   disableCloseOnSelect
                   disabled={!this.state.featureIds}
-                  getOptionLabel={(option) => typeof option.Label ? option.Label : ""}
+                  getOptionLabel={(option) => typeof option.Label ? option.Label : "" }
                   getOptionSelected={(option) => this.programmeGroupSelected(option)}
                   renderTags={(tagValue, getTagProps) =>
                     tagValue.map((option, index) => (

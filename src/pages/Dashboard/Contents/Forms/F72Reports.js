@@ -322,18 +322,18 @@ class F72Reports extends Component {
                   />
                 ))
               }
-              renderOption={(option, {selected}) => (
-                <Fragment>
-                  <Checkbox
-                    icon={icon}
-                    checkedIcon={checkedIcon}
-                    style={{ marginRight: 8 }}
-                    checked={selected}
-                    color="primary"
-                  />
-                  {option.label}
-                </Fragment>
-              )}
+              // renderOption={(option, {selected}) => (
+              //   <Fragment>
+              //     <Checkbox
+              //       icon={icon}
+              //       checkedIcon={checkedIcon}
+              //       style={{ marginRight: 8 }}
+              //       checked={selected}
+              //       color="primary"
+              //     />
+              //     {option.label}
+              //   </Fragment>
+              // )}
               renderInput={(params) => (
                 <TextField
                   {...params}
