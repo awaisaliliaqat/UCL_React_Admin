@@ -63,6 +63,7 @@ class R46Reports extends Component {
       programGroupsMenuItems: [],
       programGroupId: "",
       programGroupIdError: "",
+      effectiveDatesId: "",
       timetableData: [],
     };
   }
@@ -127,7 +128,7 @@ class R46Reports extends Component {
               "error"
             );
             console.log(error);
-          }
+   	    }
         }
       );
     this.setState({ isLoading: false });
