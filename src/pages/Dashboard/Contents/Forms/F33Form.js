@@ -340,7 +340,7 @@ class F33Form extends Component {
             className={classes.root}
             spacing={2}
           >
-            <Grid item sm={8} md={9}>
+            <Grid item sm={12} md={8} lg={9}>
               <Paper>
                 <Scheduler data={this.state.timeTableDataArray}>
                   <ViewState defaultCurrentDate={new Date()} />
@@ -358,13 +358,11 @@ class F33Form extends Component {
                 </Scheduler>
               </Paper>
             </Grid>
-            <Grid item sm={4} md={3}>
+            <Grid item sm={12} md={4} lg={3}>
               <F33FormInitials
                 data={this.state.upcomingClassesDataArray}
-
                 isLoading={this.state.isLoading}
                 onJoinClick={(e, data) => this.onJoinClick(e, data)}
-
               />
             </Grid>
           </Grid>
