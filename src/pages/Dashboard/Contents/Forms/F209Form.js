@@ -57,7 +57,7 @@ function TermRow (props) {
 			<TextField type="hidden" name="rubricId" defaultValue={id}/>
 			<Grid item xs={12} md={4}>
 				<TextField
-					id="noOfAssessment"
+					id={"noOfAssessment"+`${termId+id}`}
 					name="noOfAssessment"
 					type="number"
 					label="No Of Assessment"
@@ -71,19 +71,19 @@ function TermRow (props) {
 				/>
 			</Grid>
 			<Grid item xs={12} md={4}>
-			<TextField
-				id="gradePoint"
-				name="gradePoints"
-				label="Grade Point"
-				type="number"
-				required
-				fullWidth
-				variant="outlined"
-				onChange={onGradePointChange}
-				value={gradePoint}
-			// 	error={!!this.state.labelError}
-			// 	helperText={this.state.labelError}
-			/>
+				<TextField
+					id={"gradePoint"+`${termId+id}`}
+					name="gradePoints"
+					label="Grade Point"
+					type="number"
+					required
+					fullWidth
+					variant="outlined"
+					onChange={onGradePointChange}
+					value={gradePoint}
+				// 	error={!!this.state.labelError}
+				// 	helperText={this.state.labelError}
+				/>
 			</Grid>
 		</Fragment>
 	);
@@ -241,7 +241,7 @@ class F209Form extends Component {
 		let gradePointsLength = gradePoints.length || 0;
 
 		if(noOfAssessmentLength!=gradePointsLength){
-			this.handleOpenSnackbar("Missing values! Please try again later.","error");
+			this.handleOpenSnackbar("Missing values! Please try again after refreshing the page.","error");
 			return;
 		}
 
@@ -265,55 +265,55 @@ class F209Form extends Component {
 	}
 
 	onFormSubmit = async() => {
-		
+
 		let myForm = document.getElementById('myForm');
 		const data = new FormData(myForm);
 		this.setState({isLoading: true});
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C209CommonAcademicSessionsRubricsSave`;
 		await fetch(url, {
-				method: "POST", 
-				body: data, 
-				headers: new Headers({
-						Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
-				})
+			method: "POST", 
+			body: data, 
+			headers: new Headers({
+					Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
+			})
 		})
-				.then(res => {
-						if (!res.ok) {
-								throw res;
+		.then(res => {
+				if (!res.ok) {
+						throw res;
+				}
+				return res.json();
+		})
+		.then(
+				json => {
+						if (json.CODE === 1) {
+								//alert(json.USER_MESSAGE);
+								this.handleOpenSnackbar(json.USER_MESSAGE,"success");
+								this.loadRubrics(this.state.academicSessionId);
+								// setTimeout(()=>{
+								// 		if(this.state.recordId!=0){
+								// 				window.location="#/dashboard/F209Reports";
+								// 		}else{
+								// 				window.location.reload();
+								// 		}
+								// }, 2000);
+						} else {
+								//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+								this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 						}
-						return res.json();
-				})
-				.then(
-						json => {
-								if (json.CODE === 1) {
-										//alert(json.USER_MESSAGE);
-										this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-										this.loadRubrics(this.state.academicSessionId);
-										// setTimeout(()=>{
-										// 		if(this.state.recordId!=0){
-										// 				window.location="#/dashboard/F209Reports";
-										// 		}else{
-										// 				window.location.reload();
-										// 		}
-										// }, 2000);
-								} else {
-										//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
-										this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-								}
-								console.log(json);
-						},
-						error => {
-								if (error.status == 401) {
-										this.setState({
-												isLoginMenu: true,
-												isReload: false
-										})
-								} else {
-										console.log(error);
-										//alert("Failed to Save ! Please try Again later.");
-										this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
-								}
-						});
+						console.log(json);
+				},
+				error => {
+						if (error.status == 401) {
+								this.setState({
+										isLoginMenu: true,
+										isReload: false
+								})
+						} else {
+								console.log(error);
+								//alert("Failed to Save ! Please try Again later.");
+								this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+						}
+				});
 		this.setState({isLoading: false})
 	}
 
