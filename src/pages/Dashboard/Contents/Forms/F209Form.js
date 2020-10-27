@@ -113,11 +113,11 @@ class F209Form extends Component {
 	}
 
 	handleOpenSnackbar = (msg, severity) => {
-			this.setState({
-					isOpenSnackbar:true,
-					snackbarMessage:msg,
-					snackbarSeverity:severity
-			});
+		this.setState({
+			isOpenSnackbar:true,
+			snackbarMessage:msg,
+			snackbarSeverity:severity
+		});
 	};
 
 	handleCloseSnackbar = (event, reason) => {
@@ -172,9 +172,9 @@ class F209Form extends Component {
 		this.setState({ isLoading: false });
 	};
 
-	loadRubrics = async (sessionId) => {
+	loadRubrics = async (academicSessionId) => {
 		let data =  new FormData();
-		data.append("sessionId", sessionId);
+		data.append("academicSessionId", academicSessionId);
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C209CommonAcademicSessionsRubricsView`;
 		await fetch(url, {
@@ -220,7 +220,9 @@ class F209Form extends Component {
 		const errName = `${name}Error`;
 		let regex = "";
 		switch (name) {
-				case "":
+				case "academicSessionId":
+					this.setState({ rubricsMenuItems : [] });
+					this.loadRubrics(value);
 				break;
 		default:
 				break;
@@ -231,16 +233,39 @@ class F209Form extends Component {
 		});
 	}
 
-	clickOnFormSubmit=()=>{
-			this.onFormSubmit();
+	clickOnFormSubmit = () => {
+
+		let noOfAssessment = document.getElementsByName("noOfAssessment");
+		let noOfAssessmentLength = noOfAssessment.length || 0;
+		let gradePoints = document.getElementsByName("gradePoints");
+		let gradePointsLength = gradePoints.length || 0;
+
+		if(noOfAssessmentLength!=gradePointsLength){
+			this.handleOpenSnackbar("Missing values! Please try again later.","error");
+			return;
+		}
+
+		for(let i=0; i<noOfAssessmentLength; i++){
+			if(noOfAssessment[i].value.trim() == ""){
+					let eleId = noOfAssessment[i].id;
+					this.handleOpenSnackbar("Please enter all number of assessment.","error");
+					document.getElementById(eleId).focus();
+					return;
+			 }
+			if(gradePoints[i].value.trim() == ""){ 
+					let eleId = gradePoints[i].id;
+					this.handleOpenSnackbar("Please enter all grade point.","error");
+					document.getElementById(eleId).focus();
+					return;
+			 }
+		}
+
+		this.onFormSubmit();
+
 	}
 
-	onFormSubmit = async(e) => {
-		if(
-		// !this.isAcademicSessionValid() && 
-				false
-				//|| !this.isshortLabelValid()
-		){ return; }
+	onFormSubmit = async() => {
+		
 		let myForm = document.getElementById('myForm');
 		const data = new FormData(myForm);
 		this.setState({isLoading: true});
