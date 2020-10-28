@@ -364,7 +364,7 @@ class F209Form extends Component {
 									borderBottom: '1px solid rgb(58, 127, 187, 0.3)'
 								}} 
 							>
-								Pending
+								Gradebook Setup
 							</Typography>
 						</Grid>
 						<TextField type="hidden" name="recordId" value={this.state.recordId}/>
