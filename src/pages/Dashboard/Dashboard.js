@@ -97,6 +97,8 @@ import F69Reports from "./Contents/Forms/F69Reports";
 import F70Form from "./Contents/Forms/F70Form";
 import F70Reports from "./Contents/Forms/F70Reports";
 import R71Reports from "./Contents/Forms/R71Reports";
+import F72Form from "./Contents/Forms/F72Form";
+import F72Reports from "./Contents/Forms/F72Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentStatus from "./Contents/Decision/ChangeStudentStatus/ChangeStudentStatus";
 import SyncTimeTable from "./Contents/LMS/SyncTimeTable/SyncTimeTable";
@@ -118,6 +120,7 @@ import F207Form from "./Contents/Forms/F207Form";
 import F207Reports from "./Contents/Forms/F207Reports";
 import F208Form from "./Contents/Forms/F208Form";
 import F208Reports from "./Contents/Forms/F208Reports";
+import F209Form from "./Contents/Forms/F209Form";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 
 const drawerWidth = 283;
@@ -1134,6 +1137,36 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="F72Form"
+                exact
+                path="/dashboard/F72Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F72Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F72Form"
+                exact
+                path="/dashboard/F72Reports"
+                render={(props) => {
+                  return (
+                    <F72Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="assign-account-id"
                 exact
                 path="/dashboard/assign-account-id"
@@ -1544,6 +1577,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F208Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F209Form"
+                exact
+                path="/dashboard/F209Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F209Form
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

@@ -175,7 +175,7 @@ class DisplayAdmissionApplications extends Component {
     data.append("programmmeGroupId", programmeGroupId);
     data.append("fromDate", this.getDateInString(fromDate));
     data.append("toDate", this.getDateInString(toDate));
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C68TeachersProgrammeGroupAttandance`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71StudentsProgrammeGroupAttandance`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -315,9 +315,9 @@ class DisplayAdmissionApplications extends Component {
                 <TableBody>
                   {this.state.tableData.length > 0 ? (
                     this.state.tableData.map((row, index) => (
-                      <Fragment key={"row" + row.teacherId + index}>
+                      <Fragment key={"row" + row.studentId + index}>
                         <TableRow>
-                          <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.teacherLabel}</b></StyledTableCell>
+                          <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
                         </TableRow>
                         {row.teacherCourseData.map((row2, index2) => 
                           <TableRow key={"row" + row2.courseId + index2}>

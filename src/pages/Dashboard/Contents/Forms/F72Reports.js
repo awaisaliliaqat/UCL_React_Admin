@@ -1,16 +1,19 @@
 import React, { Component, Fragment } from "react";
-import { Divider, IconButton, Tooltip, CircularProgress, Grid} from "@material-ui/core";
+import {Divider, IconButton, Tooltip, CircularProgress, Grid, TextField, Chip, Checkbox} from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
-import F208ReportsTableComponent from "./F208ReportsTableComponent";
+import F72ReportsTableComponent from "./F72ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
 
-class F208Reports extends Component {
+class F72Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -19,19 +22,17 @@ class F208Reports extends Component {
       showSearchBar: false,
       isDownloadExcel: false,
       applicationStatusId: 1,
-      admissionData: [],
-      genderData: [],
-      degreeData: [],
-      studentName: "",
-      genderId: 0,
-      degreeId: 0,
-      applicationId: "",
       isLoginMenu: false,
       isReload: false,
       eventDate: null,
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
+      userMenuItems: [],
+      userId: "",
+      userIds: "",
+      userIdError: "",
+      tableData: [],
     };
   }
 
@@ -52,9 +53,9 @@ class F208Reports extends Component {
     });
   };
 
-  getData = async () => {
-    this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C208CommonAcademicsSessionsTermsView`;
+  loadUsers = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C72FormProgrammeGroupRightsAllocationAllUsersView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -70,16 +71,65 @@ class F208Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            this.setState({ userMenuItems: json.DATA });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadUsers", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  }
+
+  getData = async (userId) => {
+    let data = new FormData();
+    data.append("userId", userId);
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C72FormProgrammeGroupsRightsAllocationView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
             let data = json.DATA || [];
             let dataLength = data.length;
-            this.setState({admissionData: json.DATA || []});
-            for (var i=0; i<dataLength; i++) {
+            this.setState({tableData: data});
+            for (var i = 0; i<dataLength; i++) {
+              let programmeGroupArray = data[i].programmeGroups || [];
+              let programmeGroupArrayLength = programmeGroupArray.length;
+              let programmeGroupLabels = [];
+              for(var j=0; j<programmeGroupArrayLength; j++){
+                programmeGroupLabels.push(<Fragment key={"PG"+j}><span>{programmeGroupArray[j].Label}</span><br/></Fragment>);
+              }
+              data[i].programmeGroupLabels = programmeGroupLabels;
               json.DATA[i].action = (
                 <EditDeleteTableRecord
                   key={"Del"+data[i].id}
                   recordId={data[i].id}
                   DeleteData={this.DeleteData}
-                  onEditURL={`#/dashboard/F208Form/${data[i].academicsSessionId}`}
+                  onEditURL={`#/dashboard/F72Form/${data[i].userId+"&"+data[i].featureId}`}
                   handleOpenSnackbar={this.handleOpenSnackbar}
                 />
               );
@@ -103,13 +153,15 @@ class F208Reports extends Component {
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({
+      isLoading: false,
+    });
   };
 
   DeleteData = async (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C208CommonAcademicsSessionsTermsDelete`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C72FormProgrammeGroupsRightsAllocationDelete`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -127,7 +179,7 @@ class F208Reports extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.handleOpenSnackbar("Deleted", "success");
-            this.getData();
+            this.getData(this.state.userId.id);
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -164,18 +216,33 @@ class F208Reports extends Component {
     this.setState({ showSearchBar: !this.state.showSearchBar });
   };
 
+  handleSetUserId = (value) => {
+    this.setState({
+      userId: value,
+      userIdError: "",
+    });
+    if(value){
+      this.setState({tableData: []});
+      this.getData(value.id);
+    }else{
+      this.setState({tableData: []});
+    }
+  }
+
   componentDidMount() {
-    this.getData(this.state.applicationStatusId);
+    this.loadUsers();
   }
 
   render() {
+
+    const { classes } = this.props;
+    const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+    const checkedIcon = <CheckBoxIcon fontSize="small" />;
     
     const columns = [
       { name: "SRNo", title: "SR#" },
-      { name: "academicsSessionLabel", title: "Academics\xa0Session" },
-      { name: "termLabel", title: "Term" },
-      { name: "fromDateReport", title: "Start Date" },
-      { name: "toDateReport", title: "End Date" },
+      { name: "featureLabel", title: "Feature" },
+      { name: "programmeGroupLabels", title:"Programme Groups"},
       { name: "action", title: "Action" },
     ];
 
@@ -191,10 +258,11 @@ class F208Reports extends Component {
             padding: 20,
           }}
         >
-          <Grid
-            container
-            justify="space-between"
-            spacing={2}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
           >
             <Typography
               style={{
@@ -209,7 +277,7 @@ class F208Reports extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              Session Term Reports
+              User Feature Programme Group Reports
             </Typography>
             <div style={{ float: "right" }}>
               <Tooltip title="Table Filter">
@@ -221,25 +289,78 @@ class F208Reports extends Component {
                 </IconButton>
               </Tooltip>
             </div>
-          </Grid>
+          </div>
           <Divider
             style={{
               backgroundColor: "rgb(58, 127, 187)",
               opacity: "0.3",
             }}
           />
-          <br />
-          {this.state.admissionData ? (
-            <F208ReportsTableComponent
-              data={this.state.admissionData}
+          <br/>
+          <Grid item xs={12} md={12}>
+            <Autocomplete
+              //multiple
+              fullWidth
+              
+              id="userId"
+              options={this.state.userMenuItems}
+              value={this.state.userId}
+              onChange={(event, value) =>
+                this.handleSetUserId(value)
+              }
+              disabled={this.state.isEditMode}
+              //disableCloseOnSelect
+              getOptionLabel={(option) => typeof option.label === 'string' ? option.label : "" }
+              //getOptionSelected={(option) => this.userSelected(option)}
+              renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => (
+                  <Chip
+                    label={option.label}
+                    color="primary"
+                    variant="outlined"
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
+              // renderOption={(option, {selected}) => (
+              //   <Fragment>
+              //     <Checkbox
+              //       icon={icon}
+              //       checkedIcon={checkedIcon}
+              //       style={{ marginRight: 8 }}
+              //       checked={selected}
+              //       color="primary"
+              //     />
+              //     {option.label}
+              //   </Fragment>
+              // )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Users"
+                  placeholder="Search and Select"
+                  required
+                  error={!!this.state.userIdError}
+                  helperText={this.state.userIdError}
+                />
+              )}
+            />
+            <TextField type="hidden" name="userId" value={this.state.userIds}/>
+          </Grid>
+          {this.state.tableData && !this.state.isLoading ? 
+            <F72ReportsTableComponent
+              data={this.state.tableData}
               columns={columns}
               showFilter={this.state.showTableFilter}
             />
-          ) : (
+           : this.state.isLoading ?
             <Grid container justify="center" alignItems="center">
-              <CircularProgress />
+              <CircularProgress disableShrink={true} />
             </Grid>
-          )}
+            :
+            ""
+          }
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}
@@ -251,4 +372,4 @@ class F208Reports extends Component {
     );
   }
 }
-export default F208Reports;
+export default F72Reports;
