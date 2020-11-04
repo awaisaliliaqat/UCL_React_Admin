@@ -1,4 +1,4 @@
-import React, { Component, Fragment, useState } from 'react';
+import React, { Component, Fragment, useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { TextField, Grid, Button, CircularProgress, Divider, Typography, MenuItem} from '@material-ui/core';
@@ -20,31 +20,52 @@ function TermRow (props) {
 	let id = "";
 	let label = "";
 	let noOfAssessmentData = "";
-	let gradingPointsData = "";
+	let maxCreditsPerUnitData = "";
 
 	if(rowData){
 		id = rowData.rubricId;
 		label = rowData.rubricLabel;
 		noOfAssessmentData = rowData.noOfAssessment;
-		gradingPointsData = rowData.gradingPoints;
+		maxCreditsPerUnitData = rowData.maxCreditsPerUnit;
 	}
 	
 	let [noOfAssessment, setNoOfAssessment] = useState(noOfAssessmentData);
-	let [gradePoint, setGradePoint] = useState(gradingPointsData);
+	let [gradePoint, setGradePoint] = useState(maxCreditsPerUnitData);
+	let [maxCreditsAvailable, setMaxCreditsAvailable] = useState("");
 
 	const onNoOfAssessmentChange = (e) => {
 		let {name, value} = e.target;
+		let regex = "";
+		regex = new RegExp(/^\d*\.?\d*$/g);
+		if (value && !regex.test(value)) {
+				return;
+		}
 		setNoOfAssessment(value);
 	}
 
 	const onGradePointChange = (e) => {
 		let {name, value} = e.target;
+		let regex = "";
+		regex = new RegExp(/^\d*\.?\d*$/);
+		if (value && !regex.test(value)) {
+				return;
+		}
 		setGradePoint(value);
 	}
 
+	const gradePointAndAssessmentChange = (e) => {
+		let assessmentNo = parseInt(noOfAssessment) || 0;
+		let maxCreditsPerUnit =  parseInt(gradePoint) || 0;
+		setMaxCreditsAvailable(assessmentNo*maxCreditsPerUnit);
+	}
+
+	useEffect(() => {
+    gradePointAndAssessmentChange();
+  });
+
 	return (
 		<Fragment>
-			<Grid item xs={12} md={4}>
+			<Grid item xs={12} md={3}>
 				<Card style={{height:55}}>
 					<CardContent>
 						<Typography variant="body2" color="primary" style={{textAlign:"center", fontWeight:"bold"}}>
@@ -53,9 +74,9 @@ function TermRow (props) {
 					</CardContent>
 				</Card>
 			</Grid>
-			<TextField type="hidden" name="termId" defaultValue={termId}/>
+			<TextField type="hidden" name="sessionTermId" defaultValue={termId}/>
 			<TextField type="hidden" name="rubricId" defaultValue={id}/>
-			<Grid item xs={12} md={4}>
+			<Grid item xs={12} md={3}>
 				<TextField
 					id={"noOfAssessment"+`${termId+id}`}
 					name="noOfAssessment"
@@ -65,24 +86,34 @@ function TermRow (props) {
 					fullWidth
 					variant="outlined"
 					onChange={onNoOfAssessmentChange}
+					onKeyUp={gradePointAndAssessmentChange}
 					value={noOfAssessment}
-					// error={!!this.state.labelError}
-					// helperText={this.state.labelError}
 				/>
 			</Grid>
-			<Grid item xs={12} md={4}>
+			<Grid item xs={12} md={3}>
 				<TextField
-					id={"gradePoint"+`${termId+id}`}
-					name="gradePoints"
-					label="Grade Point"
+					id={"maxCreditsPerUnit"+`${termId+id}`}
+					name="maxCreditsPerUnit"
+					label="Max. Credits per Unit"
 					type="number"
 					required
 					fullWidth
 					variant="outlined"
 					onChange={onGradePointChange}
+					onKeyUp={gradePointAndAssessmentChange}
 					value={gradePoint}
-				// 	error={!!this.state.labelError}
-				// 	helperText={this.state.labelError}
+				/>
+			</Grid>
+			<Grid item xs={12} md={3}>
+				<TextField
+					id={"maxCreditsAvailable"+`${termId+id}`}
+					//name="maxCreditsAvailable"
+					label="Max. credits Available"
+					type="number"
+					fullWidth
+					variant="outlined"
+					readOnly
+					value={maxCreditsAvailable}
 				/>
 			</Grid>
 		</Fragment>
@@ -237,7 +268,7 @@ class F209Form extends Component {
 
 		let noOfAssessment = document.getElementsByName("noOfAssessment");
 		let noOfAssessmentLength = noOfAssessment.length || 0;
-		let gradePoints = document.getElementsByName("gradePoints");
+		let gradePoints = document.getElementsByName("maxCreditsPerUnit");
 		let gradePointsLength = gradePoints.length || 0;
 
 		if(noOfAssessmentLength!=gradePointsLength){
@@ -273,9 +304,7 @@ class F209Form extends Component {
 		await fetch(url, {
 			method: "POST", 
 			body: data, 
-			headers: new Headers({
-					Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
-			})
+			headers: new Headers({Authorization: "Bearer "+localStorage.getItem("uclAdminToken")})
 		})
 		.then(res => {
 				if (!res.ok) {

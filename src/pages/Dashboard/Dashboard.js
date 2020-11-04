@@ -110,6 +110,7 @@ import ClassSchedule from "./Contents/LMS/ClassSchedule/ClassSchedule";
 import AnnouncementForm from "./Contents/LMS/Announcement/AnnouncementForm";
 import AnnouncementReports from "./Contents/LMS/Announcement/AnnouncementReports";
 import F201Form from "./Contents/Forms/F201Form";
+import F201Reports from "./Contents/Forms/F201Reports";
 import F202Form from "./Contents/Forms/F202Form";
 import F203Form from "./Contents/Forms/F203Form";
 import F204Form from "./Contents/Forms/F204Form";
@@ -1427,6 +1428,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F201Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F204Form"
+                exact
+                path="/dashboard/F201Reports"
+                render={(props) => {
+                  return (
+                    <F201Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

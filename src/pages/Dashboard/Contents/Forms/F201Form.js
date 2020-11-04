@@ -876,7 +876,7 @@ class F201Form extends Component {
         </form>
         <BottomBar
           left_button_text="View"
-          left_button_hide={true}
+          left_button_hide={false}
           bottomLeftButtonAction={this.viewReport}
           right_button_text="Save"
           bottomRightButtonAction={this.clickOnFormSubmit}
