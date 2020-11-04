@@ -6,7 +6,7 @@ import {Column, FilteringState, GroupingState, IntegratedFiltering, IntegratedGr
 import {DragDropProvider, Grid, GroupingPanel, PagingPanel, Table, TableFilterRow, TableGroupRow, TableHeaderRow,
   TableSelection, Toolbar, VirtualTable, TableColumnResizing} from "@devexpress/dx-react-grid-material-ui";
 
-class F34ReportsTableComponent extends Component {
+class F201ReportsTableComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -32,8 +32,8 @@ class F34ReportsTableComponent extends Component {
         { columnName: "academicsSessionLabel", wordWrapEnabled: true },
         { columnName: "sessionTermLabel", wordWrapEnabled: true },
         { columnName: "sectionLabel", wordWrapEnabled: true },
-        { columnName: "noOfAssessment", width: 75, align:"center" },
-        { columnName: "action", width: 120 },
+        { columnName: "noOfAssessment", width: 100, align:"center" },
+        { columnName: "action", width: 100, align:"center"}
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
@@ -93,4 +93,4 @@ class F34ReportsTableComponent extends Component {
   }
 }
 
-export default F34ReportsTableComponent;
+export default F201ReportsTableComponent;

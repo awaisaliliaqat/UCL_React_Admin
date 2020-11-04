@@ -5,15 +5,15 @@ import ExcelIcon from "../../../../assets/Images/excel.png";
 import TablePanel from "../../../../components/ControlledTable/RerenderTable/TablePanel";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
-import F204ReportsTableComponent from "./F204ReportsTableComponent";
+import F201ReportsTableComponent from "./F201ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import EditDeleteTableRecord from "../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
+import EditDeleteTableComponent from "../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
-class F204Reports extends Component {
+class F201Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -93,12 +93,13 @@ class F204Reports extends Component {
               admissionData: json.DATA || [],
             });
             for (var i = 0; i < json.DATA.length; i++) {
+              let id = json.DATA[i].id || 0;
               json.DATA[i].action = (
-                <EditDeleteTableRecord
+                <EditDeleteTableComponent
                   recordId={json.DATA[i].id}
-                  DeleteData={this.DeleteData}
-                  onEditURL={`#/dashboard/F204Form/${json.DATA[i].id}`}
+                  editRecord = {()=>window.location.replace(`#/dashboard/F201Form/${id}`)}
                   handleOpenSnackbar={this.handleOpenSnackbar}
+                  hideDeleteAction={true}
                 />
               );
             }
@@ -251,7 +252,7 @@ class F204Reports extends Component {
       { name: "academicsSessionLabel", title: "Session" },
       { name: "sessionTermLabel", title: "Term" },
       { name: "sectionLabel", title: "Section" },
-      { name: "noOfAssessment", title: "Assessment" },
+      { name: "noOfAssessment", title: "Assessment#" },
       { name: "action", title: "Action" },
     ];
 
@@ -323,7 +324,7 @@ class F204Reports extends Component {
           />
           <br/>
           {this.state.admissionData ? (
-            <F204ReportsTableComponent
+            <F201ReportsTableComponent
               data={this.state.admissionData}
               columns={columns}
               showFilter={this.state.showTableFilter}
@@ -344,4 +345,4 @@ class F204Reports extends Component {
     );
   }
 }
-export default F204Reports;
+export default F201Reports;
