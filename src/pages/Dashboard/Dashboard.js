@@ -112,6 +112,7 @@ import AnnouncementReports from "./Contents/LMS/Announcement/AnnouncementReports
 import F201Form from "./Contents/Forms/F201Form";
 import F201Reports from "./Contents/Forms/F201Reports";
 import F202Form from "./Contents/Forms/F202Form";
+import F202Reports from "./Contents/Forms/F202Reports";
 import F203Form from "./Contents/Forms/F203Form";
 import F204Form from "./Contents/Forms/F204Form";
 import F204Reports from "./Contents/Forms/F204Reports";
@@ -1437,7 +1438,7 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="F204Form"
+                name="F201Form"
                 exact
                 path="/dashboard/F201Reports"
                 render={(props) => {
@@ -1458,6 +1459,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F202Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F202Form"
+                exact
+                path="/dashboard/F202Reports"
+                render={(props) => {
+                  return (
+                    <F202Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
