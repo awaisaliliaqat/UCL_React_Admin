@@ -114,6 +114,7 @@ import F201Reports from "./Contents/Forms/F201Reports";
 import F202Form from "./Contents/Forms/F202Form";
 import F202Reports from "./Contents/Forms/F202Reports";
 import F203Form from "./Contents/Forms/F203Form";
+import F203Reports from "./Contents/Forms/F203Reports";
 import F204Form from "./Contents/Forms/F204Form";
 import F204Reports from "./Contents/Forms/F204Reports";
 import F205Form from "./Contents/Forms/F205Form";
@@ -1489,6 +1490,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F203Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F203Form"
+                exact
+                path="/dashboard/F203Reports"
+                render={(props) => {
+                  return (
+                    <F203Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
