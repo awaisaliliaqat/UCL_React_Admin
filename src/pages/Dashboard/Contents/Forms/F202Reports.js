@@ -170,62 +170,6 @@ class F202Reports extends Component {
       );
   };
 
-  DownloadFile = (e, fileUrl, fileName=fileUrl) => {
-      e.preventDefault();
-      const data = new FormData();
-      data.append("fileName", fileUrl);
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonViewFile`;
-      fetch(url, {
-          method: "POST",
-          body:data,
-          headers: new Headers({
-              Authorization: "Bearer "+localStorage.getItem("uclAdminToken"),
-          }),
-      })
-      .then((res) => {
-          if (res.status === 200) {
-              return res.blob();
-          } else if (res.status === 401) {
-              this.setState({
-                isLoginMenu: true,
-                isReload: false
-              });
-              return {}
-          } else {
-              //alert('Operation Failed, Please try again later.');
-              this.handleOpenSnackbar("Operation Failed, Please try again later.","error");
-              return {}
-          }
-      })
-      .then((result) => {
-                    
-          if(result.type!="application/json"){
-            this.handleOpenSnackbar("Operation Failed, Please try again later.","error");
-          }
-          
-          var fileURL = window.URL.createObjectURL(result);
-          var tempLink = document.createElement("a");
-          tempLink.href = fileURL;
-          tempLink.setAttribute("download", fileName);
-          tempLink.click();
-
-          if (result.CODE === 1) {
-              //Code
-          } else if (result.CODE === 2) {
-              alert("SQL Error (" +result.CODE +"): " +result.USER_MESSAGE +"\n" +result.SYSTEM_MESSAGE);
-          } else if (result.CODE === 3) {
-              alert("Other Error ("+result.CODE+"): " +result.USER_MESSAGE +"\n" +result.SYSTEM_MESSAGE);
-          } else if (result.error === 1) {
-              alert(result.error_message);
-          } else if (result.success === 0 && result.redirect_url !== "") {
-              window.location = result.redirect_url;
-          }
-      })
-      .catch((error) => {
-          console.log(error);
-      });
-  };
-
   onHandleChange = (e) => {
     const { name, value } = e.target;
     this.setState({

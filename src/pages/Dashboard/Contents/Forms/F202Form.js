@@ -454,6 +454,7 @@ class F202Form extends Component {
 
   loadData = async (sectionId, id=0) => {
     const data = new FormData();
+    data.append("id", id);
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("termId", this.state.termId);
     data.append("sectionId", sectionId);
@@ -647,7 +648,7 @@ class F202Form extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             setTimeout(() => {
               if (this.state.recordId != 0) {
-                window.location = "#/dashboard/F202Form";
+                window.location = "#/dashboard/F202Reports";
               } else {
                 window.location.reload();
               }
