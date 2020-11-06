@@ -30,9 +30,9 @@ class R210Reports extends Component {
       programmeGroupId: "",
       programmeGroupLabel: "",
       programmeGroupIdError: "",
-      userMenuItems: [],
-      userId: "",
-      userIdError: ""
+      studentMenuItems: [],
+      studentObj: "",
+      studentObjError: ""
     };
   }
 
@@ -140,11 +140,15 @@ class R210Reports extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadUsers = async () => {
+  loadUsers = async (programmeGroupId) => {
+    let data = new FormData();
+    data.append("academicsSessionId", this.state.academicSessionId);
+    data.append("programmeGroupId", programmeGroupId);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/FormRightsAllocationAllUsersView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonStudentsView`;
     await fetch(url, {
       method: "POST",
+      body: data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -158,7 +162,7 @@ class R210Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ userMenuItems: json.DATA });
+            this.setState({ studentMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
@@ -181,39 +185,22 @@ class R210Reports extends Component {
 
   handleSetUserId = (value) => {
     this.setState({
-      userId: value,
-      userIdError: "",
+      studentObj: value,
+      studentObjError: "",
     });
-    let userIds = "";
-    if(value){
-      let users = value || {id:0, label:""};
-      userIds = users.id || 0;
-      this.setState({userIds:userIds});
-    }
   }
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
-    let regex = "";
     switch (name) {
       case "academicSessionId":
-        for (var i = 0; i < this.state.academicSessionIdMenuItems.length; i++) {
-          if (value == this.state.academicSessionIdMenuItems[i].Id) {
-            this.setState({academicSessionLabel: this.state.academicSessionIdMenuItems[i].Label});
-          }
-        }
         this.loadProgrammeGroups(value);
         break;
       case "programmeGroupId":
-        for (var i = 0; i < this.state.programmeGroupIdMenuItems.length; i++) {
-          if (value == this.state.programmeGroupIdMenuItems[i].Id) {
-            this.setState({programmeGroupLabel: this.state.programmeGroupIdMenuItems[i].Label});
-          }
-        }
-        break;
+        this.loadUsers(value);
+      break;
       default:
-        break;
     }
     this.setState({
       [name]: value,
@@ -222,14 +209,15 @@ class R210Reports extends Component {
   };
 
   handleGenerate = () => {
-    let programmeGroup = this.state.programmeGroupId;
-    window.open(`#/R210StudentProgressReport/${this.state.academicSessionId+"&" +this.state.programmeGroupId+"&"+this.state.programmeGroupLabel+"&"+this.state.academicSessionLabel}`,"_blank");
+    let academicSessionId = this.state.programmeGroupId;
+    let programmeGroupId = this.state.programmeGroupId;
+    let studentId = this.state.studentObj.id;
+    window.open(`#/R210StudentProgressReport/${academicSessionId+"&" +this.state.programmeGroupId+"&"+programmeGroupId+"&"+studentId}`,"_blank");
   };
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.loadAcademicSession();
-    this.loadUsers();
   }
 
   render() {
@@ -329,22 +317,22 @@ class R210Reports extends Component {
             <Grid item xs={12} md={6}>
               <Autocomplete
                 fullWidth
-                id="userId"
-                options={this.state.userMenuItems}
-                value={this.state.userId}
+                id="studentObj"
+                options={this.state.studentMenuItems}
+                value={this.state.studentObj}
                 onChange={(event, value) =>
                   this.handleSetUserId(value)
                 }
-                disabled={this.state.isEditMode}
-                getOptionLabel={(option) =>  typeof option.label === "String" ? option.label : ""}
+                disabled={!this.state.programmeGroupId}
+                getOptionLabel={(option) =>  typeof option.label === "string" ? option.label : ""}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     variant="outlined"
-                    label="Users"
+                    label="Students"
                     placeholder="Search and Select"
-                    error={!!this.state.userIdError}
-                    helperText={this.state.userIdError}
+                    error={!!this.state.studentObjError}
+                    helperText={this.state.studentObjError}
                   />
                 )}
               />
@@ -358,7 +346,7 @@ class R210Reports extends Component {
             bottomRightButtonAction={this.handleGenerate}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.programmeGroupId}
+            disableRightButton={!this.state.programmeGroupId || !this.state.studentObj}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
