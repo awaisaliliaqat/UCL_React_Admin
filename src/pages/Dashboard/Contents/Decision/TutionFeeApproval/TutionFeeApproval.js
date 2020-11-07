@@ -429,13 +429,8 @@ class RegistrationFeeApprovel extends Component {
     render() {
         const columns = [
             { name: "Nucleus Id", dataIndex: "studentId", sortable: false, customStyleHeader: { width: '10%', textAlign: 'center' } },
-            {
-                name: "Name", renderer: rowData => {
-                    return (
-                        <Fragment>{`${rowData.firstName} ${rowData.middleName} ${rowData.lastName}`}</Fragment>
-                    )
-                }, sortable: false, customStyleHeader: { width: '12%' }
-            },
+            { name: "Account Id", dataIndex: "accountId", sortable: false, customStyleHeader: { width: '10%', textAlign: 'center' } },
+            { name: "Name", renderer: rowData => { return ( <Fragment>{`${rowData.firstName} ${rowData.middleName} ${rowData.lastName}`}</Fragment> )}, sortable: false, customStyleHeader: { width: '12%' }},
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '13%' } },
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '20%', textAlign: 'center' } },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
@@ -473,12 +468,13 @@ class RegistrationFeeApprovel extends Component {
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
                             Tuition Fee Approval Dashboard
-            </Typography>
-                        {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
+                        </Typography>
+												{/* 
+												<img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
                             cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
-                        }}
-                        /> */}
+                        }}/> 
+												*/}
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',
