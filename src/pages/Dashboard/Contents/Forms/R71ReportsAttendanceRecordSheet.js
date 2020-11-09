@@ -51,6 +51,7 @@ const styles = (theme) => ({
     height: "100%",
     backgroundColor: "rgba(0,0,0,0.2)",
     zIndex: 2,
+    marginTop: -10
   },
   overlayContent: {
     display: "flex",

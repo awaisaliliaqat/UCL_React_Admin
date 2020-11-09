@@ -129,7 +129,8 @@ class R46Reports extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", AcademicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71CommonAcademicsSessionsOfferedProgrammesGroupView`;
+    //const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71CommonAcademicsSessionsOfferedProgrammesGroupView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71CommonAcademicsSessionsOfferedProgrammesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -331,7 +332,7 @@ class R46Reports extends Component {
                 id="programmeGroupId"
                 name="programmeGroupId"
                 variant="outlined"
-                label="Programme Group"
+                label="Programme"
                 onChange={this.onHandleChange}
                 value={this.state.programmeGroupId}
                 error={!!this.state.programmeGroupIdError}
