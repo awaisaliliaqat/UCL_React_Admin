@@ -1,4 +1,4 @@
-import React, { Component, Fragment, useState } from 'react';
+import React, { Component, Fragment, useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { TextField, Grid, Button, CircularProgress, Divider, Typography, MenuItem} from '@material-ui/core';
@@ -20,31 +20,52 @@ function TermRow (props) {
 	let id = "";
 	let label = "";
 	let noOfAssessmentData = "";
-	let gradingPointsData = "";
+	let maxCreditsPerUnitData = "";
 
 	if(rowData){
 		id = rowData.rubricId;
 		label = rowData.rubricLabel;
 		noOfAssessmentData = rowData.noOfAssessment;
-		gradingPointsData = rowData.gradingPoints;
+		maxCreditsPerUnitData = rowData.maxCreditsPerUnit;
 	}
 	
 	let [noOfAssessment, setNoOfAssessment] = useState(noOfAssessmentData);
-	let [gradePoint, setGradePoint] = useState(gradingPointsData);
+	let [gradePoint, setGradePoint] = useState(maxCreditsPerUnitData);
+	let [maxCreditsAvailable, setMaxCreditsAvailable] = useState("");
 
 	const onNoOfAssessmentChange = (e) => {
 		let {name, value} = e.target;
+		let regex = "";
+		regex = new RegExp(/^\d*\.?\d*$/g);
+		if (value && !regex.test(value)) {
+				return;
+		}
 		setNoOfAssessment(value);
 	}
 
 	const onGradePointChange = (e) => {
 		let {name, value} = e.target;
+		let regex = "";
+		regex = new RegExp(/^\d*\.?\d*$/);
+		if (value && !regex.test(value)) {
+				return;
+		}
 		setGradePoint(value);
 	}
 
+	const gradePointAndAssessmentChange = (e) => {
+		let assessmentNo = parseInt(noOfAssessment) || 0;
+		let maxCreditsPerUnit =  parseInt(gradePoint) || 0;
+		setMaxCreditsAvailable(assessmentNo*maxCreditsPerUnit);
+	}
+
+	useEffect(() => {
+    gradePointAndAssessmentChange();
+  });
+
 	return (
 		<Fragment>
-			<Grid item xs={12} md={4}>
+			<Grid item xs={12} md={3}>
 				<Card style={{height:55}}>
 					<CardContent>
 						<Typography variant="body2" color="primary" style={{textAlign:"center", fontWeight:"bold"}}>
@@ -53,11 +74,11 @@ function TermRow (props) {
 					</CardContent>
 				</Card>
 			</Grid>
-			<TextField type="hidden" name="termId" defaultValue={termId}/>
+			<TextField type="hidden" name="sessionTermId" defaultValue={termId}/>
 			<TextField type="hidden" name="rubricId" defaultValue={id}/>
-			<Grid item xs={12} md={4}>
+			<Grid item xs={12} md={3}>
 				<TextField
-					id="noOfAssessment"
+					id={"noOfAssessment"+`${termId+id}`}
 					name="noOfAssessment"
 					type="number"
 					label="No Of Assessment"
@@ -65,25 +86,35 @@ function TermRow (props) {
 					fullWidth
 					variant="outlined"
 					onChange={onNoOfAssessmentChange}
+					onKeyUp={gradePointAndAssessmentChange}
 					value={noOfAssessment}
-					// error={!!this.state.labelError}
-					// helperText={this.state.labelError}
 				/>
 			</Grid>
-			<Grid item xs={12} md={4}>
-			<TextField
-				id="gradePoint"
-				name="gradePoints"
-				label="Grade Point"
-				type="number"
-				required
-				fullWidth
-				variant="outlined"
-				onChange={onGradePointChange}
-				value={gradePoint}
-			// 	error={!!this.state.labelError}
-			// 	helperText={this.state.labelError}
-			/>
+			<Grid item xs={12} md={3}>
+				<TextField
+					id={"maxCreditsPerUnit"+`${termId+id}`}
+					name="maxCreditsPerUnit"
+					label="Max. Credits per Unit"
+					type="number"
+					required
+					fullWidth
+					variant="outlined"
+					onChange={onGradePointChange}
+					onKeyUp={gradePointAndAssessmentChange}
+					value={gradePoint}
+				/>
+			</Grid>
+			<Grid item xs={12} md={3}>
+				<TextField
+					id={"maxCreditsAvailable"+`${termId+id}`}
+					//name="maxCreditsAvailable"
+					label="Max. credits Available"
+					type="number"
+					fullWidth
+					variant="outlined"
+					readOnly
+					value={maxCreditsAvailable}
+				/>
 			</Grid>
 		</Fragment>
 	);
@@ -113,11 +144,11 @@ class F209Form extends Component {
 	}
 
 	handleOpenSnackbar = (msg, severity) => {
-			this.setState({
-					isOpenSnackbar:true,
-					snackbarMessage:msg,
-					snackbarSeverity:severity
-			});
+		this.setState({
+			isOpenSnackbar:true,
+			snackbarMessage:msg,
+			snackbarSeverity:severity
+		});
 	};
 
 	handleCloseSnackbar = (event, reason) => {
@@ -172,9 +203,9 @@ class F209Form extends Component {
 		this.setState({ isLoading: false });
 	};
 
-	loadRubrics = async (sessionId) => {
+	loadRubrics = async (academicSessionId) => {
 		let data =  new FormData();
-		data.append("sessionId", sessionId);
+		data.append("academicSessionId", academicSessionId);
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C209CommonAcademicSessionsRubricsView`;
 		await fetch(url, {
@@ -220,7 +251,9 @@ class F209Form extends Component {
 		const errName = `${name}Error`;
 		let regex = "";
 		switch (name) {
-				case "":
+				case "academicSessionId":
+					this.setState({ rubricsMenuItems : [] });
+					this.loadRubrics(value);
 				break;
 		default:
 				break;
@@ -231,64 +264,85 @@ class F209Form extends Component {
 		});
 	}
 
-	clickOnFormSubmit=()=>{
-			this.onFormSubmit();
+	clickOnFormSubmit = () => {
+
+		let noOfAssessment = document.getElementsByName("noOfAssessment");
+		let noOfAssessmentLength = noOfAssessment.length || 0;
+		let gradePoints = document.getElementsByName("maxCreditsPerUnit");
+		let gradePointsLength = gradePoints.length || 0;
+
+		if(noOfAssessmentLength!=gradePointsLength){
+			this.handleOpenSnackbar("Missing values! Please try again after refreshing the page.","error");
+			return;
+		}
+
+		for(let i=0; i<noOfAssessmentLength; i++){
+			if(noOfAssessment[i].value.trim() == ""){
+					let eleId = noOfAssessment[i].id;
+					this.handleOpenSnackbar("Please enter all number of assessment.","error");
+					document.getElementById(eleId).focus();
+					return;
+			 }
+			if(gradePoints[i].value.trim() == ""){ 
+					let eleId = gradePoints[i].id;
+					this.handleOpenSnackbar("Please enter all grade point.","error");
+					document.getElementById(eleId).focus();
+					return;
+			 }
+		}
+
+		this.onFormSubmit();
+
 	}
 
-	onFormSubmit = async(e) => {
-		if(
-		// !this.isAcademicSessionValid() && 
-				false
-				//|| !this.isshortLabelValid()
-		){ return; }
+	onFormSubmit = async() => {
+
 		let myForm = document.getElementById('myForm');
 		const data = new FormData(myForm);
 		this.setState({isLoading: true});
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C209CommonAcademicSessionsRubricsSave`;
 		await fetch(url, {
-				method: "POST", 
-				body: data, 
-				headers: new Headers({
-						Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
-				})
+			method: "POST", 
+			body: data, 
+			headers: new Headers({Authorization: "Bearer "+localStorage.getItem("uclAdminToken")})
 		})
-				.then(res => {
-						if (!res.ok) {
-								throw res;
+		.then(res => {
+				if (!res.ok) {
+						throw res;
+				}
+				return res.json();
+		})
+		.then(
+				json => {
+						if (json.CODE === 1) {
+								//alert(json.USER_MESSAGE);
+								this.handleOpenSnackbar(json.USER_MESSAGE,"success");
+								this.loadRubrics(this.state.academicSessionId);
+								// setTimeout(()=>{
+								// 		if(this.state.recordId!=0){
+								// 				window.location="#/dashboard/F209Reports";
+								// 		}else{
+								// 				window.location.reload();
+								// 		}
+								// }, 2000);
+						} else {
+								//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+								this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 						}
-						return res.json();
-				})
-				.then(
-						json => {
-								if (json.CODE === 1) {
-										//alert(json.USER_MESSAGE);
-										this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-										this.loadRubrics(this.state.academicSessionId);
-										// setTimeout(()=>{
-										// 		if(this.state.recordId!=0){
-										// 				window.location="#/dashboard/F209Reports";
-										// 		}else{
-										// 				window.location.reload();
-										// 		}
-										// }, 2000);
-								} else {
-										//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
-										this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-								}
-								console.log(json);
-						},
-						error => {
-								if (error.status == 401) {
-										this.setState({
-												isLoginMenu: true,
-												isReload: false
-										})
-								} else {
-										console.log(error);
-										//alert("Failed to Save ! Please try Again later.");
-										this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
-								}
-						});
+						console.log(json);
+				},
+				error => {
+						if (error.status == 401) {
+								this.setState({
+										isLoginMenu: true,
+										isReload: false
+								})
+						} else {
+								console.log(error);
+								//alert("Failed to Save ! Please try Again later.");
+								this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+						}
+				});
 		this.setState({isLoading: false})
 	}
 
@@ -339,7 +393,7 @@ class F209Form extends Component {
 									borderBottom: '1px solid rgb(58, 127, 187, 0.3)'
 								}} 
 							>
-								Pending
+								Gradebook Setup
 							</Typography>
 						</Grid>
 						<TextField type="hidden" name="recordId" value={this.state.recordId}/>
