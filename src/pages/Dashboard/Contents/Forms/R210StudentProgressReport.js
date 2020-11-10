@@ -14,6 +14,7 @@ import {
   TableRow,
   Paper,
 } from "@material-ui/core";
+import { color } from "highcharts";
 
 const styles = (theme) => ({
   mainDiv: {
@@ -60,32 +61,24 @@ const styles = (theme) => ({
     alignItems: "center",
     marginTop: "300px",
     color: "white",
-    fontSize: 48,
-  },
-  headerContainer: {
-    display: "flex",
-    alignItems: "center",
-  },
-  titleContainer: {
-    display: "black",
-    marginLeft: 20,
+    fontSize: 48
   },
   title: {
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: "bolder",
     fontFamily: "sans-serif",
     color: "#2f57a5",
     letterSpacing: 1,
   },
   subTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 600,
     color: "#2f57a5",
   },
   subTitle2: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 600,
-    color: "#2f57a5",
+    color: "#2f57a5"
   },
   flexColumn: {
     display: "flex",
@@ -149,34 +142,13 @@ class DisplayAdmissionApplications extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getDateInString = (todayDate = 0) => {
-    let today = new Date(parseInt(todayDate));
-    let dd = today.getDate();
-    let mm = today.getMonth() + 1;
-    let yyyy = today.getFullYear();
-    if (dd < 10) {
-      dd = "0" + dd;
-    }
-    if (mm < 10) {
-      mm = "0" + mm;
-    }
-    today = dd + "/" + mm + "/" + yyyy;
-    return today;
-  };
-
-  getData = async (
-    sessionId = 0,
-    programmeGroupId = 0,
-    fromDate = 0,
-    toDate = 0
-  ) => {
+  getData = async (sessionId=0, programmeGroupId=0, stuudentId=0) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", sessionId);
     data.append("programmmeGroupId", programmeGroupId);
-    data.append("fromDate", this.getDateInString(fromDate));
-    data.append("toDate", this.getDateInString(toDate));
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71StudentsProgrammeGroupAttandance`;
+    data.append("stuudentId", stuudentId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C68TeachersProgrammeGroupAttandance1`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -196,14 +168,7 @@ class DisplayAdmissionApplications extends Component {
             this.setState({ tableData: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
           }
           console.log("getData", json);
         },
@@ -215,10 +180,7 @@ class DisplayAdmissionApplications extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar(
-              "Failed to fetch, Please try again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
             console.log(error);
           }
         }
@@ -227,17 +189,9 @@ class DisplayAdmissionApplications extends Component {
   };
 
   componentDidMount() {
-    const { id = "0&0&0&0" } = this.props.match.params;
+    const { id = "0&0&0" } = this.props.match.params;
     let ids = id.split("&");
-    console.log(ids[0] + " - " + ids[1] + " - " + ids[2] + " - " + ids[3]);
-    this.getDateInString(ids[2]);
-    this.getData(ids[0], ids[1], ids[2], ids[3]);
-    this.setState({
-      fromDateLabel: this.getDateInString(ids[2]),
-      toDateLabel: this.getDateInString(ids[3]),
-      programmeGroupLabel: ids[4],
-      academicSessionLabel: ids[5],
-    });
+    this.getData(ids[0], ids[1], ids[2]);
   }
 
   render() {
@@ -257,37 +211,49 @@ class DisplayAdmissionApplications extends Component {
             </div>
           </div>
         )}
+        <IconButton
+          onClick={() => window.close()}
+          aria-label="close"
+          className={classes.closeButton}
+        >
+          <CloseIcon color="secondary" />
+        </IconButton>
         <div className={classes.mainDiv}>
-          <IconButton
-            onClick={() => window.close()}
-            aria-label="close"
-            className={classes.closeButton}
-          >
-            <CloseIcon color="secondary" />
-          </IconButton>
-          <div className={classes.headerContainer}>
-            <div className={classes.titleContainer}>
-              <span className={classes.title}>
-                University College Lahore&emsp;&emsp;&emsp;&emsp;
-                {sessionLabel}
-              </span>
+          <div style={{display: "inlineBlock"}}>
+            <div 
+              style={{
+                display: "inline-block"
+              }}
+            >
+              <span className={classes.title}>University College Lahore {sessionLabel}</span>
               <br />
-              <span className={classes.subTitle}>
-                Attendance Record &nbsp;&nbsp;
-                <small>
-                  {this.state.fromDateLabel + " - " + this.state.toDateLabel}
-                </small>
-                <br />
-                <small>
-                  {this.state.programmeGroupLabel +
-                    " - " +
-                    this.state.academicSessionLabel}
-                </small>
+              <span className={classes.subTitle}>Programme</span>
+              <br/>
+              <br/>
+              <span className={classes.subTitle}>Student</span>
+              <br/>
+            </div>
+            <div style={{display: "inline"}}>
+              <span
+                style={{
+                  fontSize: "1em",
+                  fontWeight:700,
+                  textAlign: "center",
+                  color: "#2f57a5",
+                  width: 160,
+                  padding: 5,
+                  border: "solid 2px #2f57a5",
+                  display: "block",
+                  float:"right",
+                  marginRight: 56
+                }}
+              >
+                Progress Report<br/>Academic Year {sessionLabel}<br/>2010-2014<br/>Upto<br/>00/00/0000
               </span>
             </div>
           </div>
           <div className={classes.flexColumn}>
-            <br />
+            <br/>
             <TableContainer component={Paper} style={{ overflowX: "inherit" }}>
               <Table
                 size="small"
@@ -296,31 +262,40 @@ class DisplayAdmissionApplications extends Component {
               >
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
-                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
+                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Attendance Record</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Assignment Graders</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Seminar Grades</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Subjective Eval Grades</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Exam Marks</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Credits</StyledTableCell>
+                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>Internal<br/>Transcript<br/>Grade</StyledTableCell>
                   </TableRow>
                   <TableRow>
                     {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                     <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
                     <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
                     <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
+                    <StyledTableCell align="center">Schedule</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
+                    <StyledTableCell align="center">Schedule</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
+                    <StyledTableCell align="center">Schedule</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
                     {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {this.state.tableData.length > 0 ? (
                     this.state.tableData.map((row, index) => (
-                      <Fragment key={"row" + row.studentId + index}>
+                      <Fragment key={"row" + row.teacherId + index}>
                         <TableRow>
-                          <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
+                          <StyledTableCell colSpan="14" style={{ backgroundColor: "#e1e3e8" }}><b>{row.teacherLabel}</b></StyledTableCell>
                         </TableRow>
-                        {row.teacherCourseData.map((row2, index2) => 
+                        {/* {row.teacherCourseData.map((row2, index2) => 
                           <TableRow key={"row" + row2.courseId + index2}>
                             <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
                             <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
@@ -331,12 +306,15 @@ class DisplayAdmissionApplications extends Component {
                             <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
                             <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
                           </TableRow>
-                        )}
+                        )} */}
+                        <TableRow>
+                          <StyledTableCell colSpan="14" style={{ backgroundColor: "#e1e3e8" }}><b>Footer</b></StyledTableCell>
+                        </TableRow>
                       </Fragment>
                     ))
                   ) : (
                     <TableRow>
-                      <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
+                      <StyledTableCell colSpan="14">&nbsp;</StyledTableCell>
                     </TableRow>
                   )}
                 </TableBody>

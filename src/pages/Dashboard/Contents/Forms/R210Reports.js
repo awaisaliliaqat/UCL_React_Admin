@@ -1,22 +1,14 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import {
-  Typography,
-  TextField,
-  MenuItem,
-  Divider,
-  CircularProgress,
-  Grid,
-} from "@material-ui/core";
+import {Typography, TextField, MenuItem, Divider, CircularProgress, Grid} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
-import { DatePicker } from "@material-ui/pickers";
 
 const styles = {};
 
-class R46Reports extends Component {
+class R210Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -38,10 +30,9 @@ class R46Reports extends Component {
       programmeGroupId: "",
       programmeGroupLabel: "",
       programmeGroupIdError: "",
-      fromDate: new Date(),
-      fromDateError: "",
-      toDate: new Date(),
-      toDateError: "",
+      studentMenuItems: [],
+      studentObj: "",
+      studentObjError: ""
     };
   }
 
@@ -62,7 +53,7 @@ class R46Reports extends Component {
 
   loadAcademicSession = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -78,32 +69,17 @@ class R46Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ academicSessionIdMenuItems: json.DATA });
-            console.log(json.DATA);
-            for (
-              var i = 0;
-              i < this.state.academicSessionIdMenuItems.length;
-              i++
-            ) {
-              if (this.state.academicSessionIdMenuItems[i].isActive == "1") {
-                var tempid = this.state.academicSessionIdMenuItems[i].ID;
-                this.loadProgrammeGroups(tempid);
-                this.state.academicSessionId = tempid;
-                this.setState({
-                  academicSessionLabel: this.state.academicSessionIdMenuItems[i]
-                    .Label,
-                });
-              }
+            let data = json.DATA || [];
+            let dataLength =  data.length || 0;
+            let res = data.find( (option) => option.isActive == 1);
+            if(res){
+              this.setState({academicSessionLabel:data.Label});
+              this.loadProgrammeGroups(res.ID);
+              this.setState({academicSessionId:res.ID});
             }
+            this.setState({ academicSessionIdMenuItems:data});
           } else {
-            this.handleOpenSnackbar(
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadAcademicSession", json);
         },
@@ -111,14 +87,11 @@ class R46Reports extends Component {
           if (error.status == 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: false,
+              isReload: true,
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -129,8 +102,7 @@ class R46Reports extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", AcademicSessionId);
-    //const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71CommonAcademicsSessionsOfferedProgrammesGroupView`;
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71CommonAcademicsSessionsOfferedProgrammesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonAcademicsSessionsOfferedProgrammesGroupView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -149,14 +121,7 @@ class R46Reports extends Component {
           if (json.CODE === 1) {
             this.setState({ programmeGroupIdMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadProgrammeGroups", json);
         },
@@ -164,57 +129,78 @@ class R46Reports extends Component {
           if (error.status == 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: false,
+              isReload: true,
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
     this.setState({ isLoading: false });
   };
 
-  handleChangeFromDate = (date) => {
-    this.setState({ fromDate: date });
+  loadUsers = async (programmeGroupId) => {
+    let data = new FormData();
+    data.append("academicsSessionId", this.state.academicSessionId);
+    data.append("programmeGroupId", programmeGroupId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonStudentsView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ studentMenuItems: json.DATA });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadUsers", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
   };
 
-  handleChangeToDate = (date) => {
-    this.setState({ toDate: date });
-  };
+  handleSetUserId = (value) => {
+    this.setState({
+      studentObj: value,
+      studentObjError: "",
+    });
+  }
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
-    let regex = "";
     switch (name) {
       case "academicSessionId":
-        for (var i = 0; i < this.state.academicSessionIdMenuItems.length; i++) {
-          if (value == this.state.academicSessionIdMenuItems[i].Id) {
-            this.setState({
-              academicSessionLabel: this.state.academicSessionIdMenuItems[i]
-                .Label,
-            });
-          }
-        }
         this.loadProgrammeGroups(value);
         break;
       case "programmeGroupId":
-        for (var i = 0; i < this.state.programmeGroupIdMenuItems.length; i++) {
-          if (value == this.state.programmeGroupIdMenuItems[i].Id) {
-            this.setState({
-              programmeGroupLabel: this.state.programmeGroupIdMenuItems[i]
-                .Label,
-            });
-          }
-        }
-
-        break;
+        this.loadUsers(value);
+      break;
       default:
-        break;
     }
     this.setState({
       [name]: value,
@@ -222,40 +208,11 @@ class R46Reports extends Component {
     });
   };
 
-  isCourseValid = () => {
-    let isValid = true;
-    if (!this.state.courseId) {
-      this.setState({ courseIdError: "Please select course." });
-      document.getElementById("courseId").focus();
-      isValid = false;
-    } else {
-      this.setState({ courseIdError: "" });
-    }
-    return isValid;
-  };
-
   handleGenerate = () => {
-    let fromDate = new Date(this.state.fromDate).getTime();
-    let toDate = new Date(this.state.toDate).getTime();
-    let programmeGroup = this.state.programmeGroupId;
-    console.log(fromDate + "-" + toDate);
-    window.open(
-      `#/R71ReportsAttendanceRecordSheet/${
-        this.state.academicSessionId +
-        "&" +
-        this.state.programmeGroupId +
-        "&" +
-        fromDate +
-        "&" +
-        toDate +
-        "&" +
-        this.state.programmeGroupLabel +
-        "&" +
-        this.state.academicSessionLabel
-      }`,
-      "_blank"
-    );
-    //window.open(`#/R68ReportsAttendanceRecordSheet/0`,"_blank");
+    let academicSessionId = this.state.programmeGroupId;
+    let programmeGroupId = this.state.programmeGroupId;
+    let studentId = this.state.studentObj.id;
+    window.open(`#/R210StudentProgressReport/${academicSessionId+"&" +this.state.programmeGroupId+"&"+programmeGroupId+"&"+studentId}`,"_blank");
   };
 
   componentDidMount() {
@@ -264,6 +221,7 @@ class R46Reports extends Component {
   }
 
   render() {
+
     const { classes } = this.props;
 
     return (
@@ -278,31 +236,29 @@ class R46Reports extends Component {
             padding: 20,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-            }}
+          <Grid 
+            container 
+            justify="space-between"
+            spacing={2}
           >
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                textTransform: "capitalize",
-              }}
-              variant="h5"
-            >
-              Attendance Record
-            </Typography>
-          </div>
-          <Divider
-            style={{
-              backgroundColor: "rgb(58, 127, 187)",
-              opacity: "0.3",
-            }}
-          />
-          <br />
-          <Grid container justify="center" alignItems="center" spacing={2}>
+            <Grid item xs={12}>
+              <Typography
+                style={{
+                  color: "#1d5f98",
+                  fontWeight: 600,
+                  textTransform: "capitalize",
+                }}
+                variant="h5"
+              >
+                Student Progress Report
+              </Typography>
+              <Divider
+                style={{
+                  backgroundColor: "rgb(58, 127, 187)",
+                  opacity: "0.3",
+                }}
+              />
+            </Grid>
             <Grid item xs={12} md={6}>
               <TextField
                 id="academicSessionId"
@@ -332,7 +288,7 @@ class R46Reports extends Component {
                 id="programmeGroupId"
                 name="programmeGroupId"
                 variant="outlined"
-                label="Programme"
+                label="Programme Group"
                 onChange={this.onHandleChange}
                 value={this.state.programmeGroupId}
                 error={!!this.state.programmeGroupIdError}
@@ -358,42 +314,27 @@ class R46Reports extends Component {
                 )}
               </TextField>
             </Grid>
-            <Grid item xs={6}>
-              <DatePicker
-                autoOk
-                name="fromDate"
-                id="fromDate"
-                label="From Date"
-                invalidDateMessage=""
-                placeholder=""
-                variant="inline"
-                inputVariant="outlined"
-                format="dd-MM-yyyy"
+            <Grid item xs={12} md={6}>
+              <Autocomplete
                 fullWidth
-                required
-                value={this.state.fromDate}
-                onChange={this.handleChangeFromDate}
-                error={!!this.state.fromDateError}
-                helperText={this.state.fromDateError}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <DatePicker
-                autoOk
-                name="toDate"
-                id="toDate"
-                label="From Date"
-                invalidDateMessage=""
-                placeholder=""
-                variant="inline"
-                inputVariant="outlined"
-                format="dd-MM-yyyy"
-                fullWidth
-                required
-                value={this.state.toDate}
-                onChange={this.handleChangeToDate}
-                error={!!this.state.toDateError}
-                helperText={this.state.toDateError}
+                id="studentObj"
+                options={this.state.studentMenuItems}
+                value={this.state.studentObj}
+                onChange={(event, value) =>
+                  this.handleSetUserId(value)
+                }
+                disabled={!this.state.programmeGroupId}
+                getOptionLabel={(option) =>  typeof option.label === "string" ? option.label : ""}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="Students"
+                    placeholder="Search and Select"
+                    error={!!this.state.studentObjError}
+                    helperText={this.state.studentObjError}
+                  />
+                )}
               />
             </Grid>
           </Grid>
@@ -405,7 +346,7 @@ class R46Reports extends Component {
             bottomRightButtonAction={this.handleGenerate}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.programmeGroupId}
+            disableRightButton={!this.state.programmeGroupId || !this.state.studentObj}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
@@ -418,4 +359,5 @@ class R46Reports extends Component {
     );
   }
 }
-export default withStyles(styles)(R46Reports);
+
+export default withStyles(styles)(R210Reports);
