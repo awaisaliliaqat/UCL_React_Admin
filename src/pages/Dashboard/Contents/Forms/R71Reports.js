@@ -34,10 +34,10 @@ class R46Reports extends Component {
       academicSessionId: "",
       academicSessionLabel: "",
       academicSessionIdError: "",
-      programmeGroupIdMenuItems: [],
-      programmeGroupId: "",
+      programmeIdMenuItems: [],
+      programmeId: "",
       programmeGroupLabel: "",
-      programmeGroupIdError: "",
+      programmeIdError: "",
       fromDate: new Date(),
       fromDateError: "",
       toDate: new Date(),
@@ -147,7 +147,7 @@ class R46Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ programmeGroupIdMenuItems: json.DATA });
+            this.setState({ programmeIdMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
               <span>
@@ -202,11 +202,11 @@ class R46Reports extends Component {
         }
         this.loadProgrammeGroups(value);
         break;
-      case "programmeGroupId":
-        for (var i = 0; i < this.state.programmeGroupIdMenuItems.length; i++) {
-          if (value == this.state.programmeGroupIdMenuItems[i].Id) {
+      case "programmeId":
+        for (var i = 0; i < this.state.programmeIdMenuItems.length; i++) {
+          if (value == this.state.programmeIdMenuItems[i].Id) {
             this.setState({
-              programmeGroupLabel: this.state.programmeGroupIdMenuItems[i]
+              programmeGroupLabel: this.state.programmeIdMenuItems[i]
                 .Label,
             });
           }
@@ -237,13 +237,13 @@ class R46Reports extends Component {
   handleGenerate = () => {
     let fromDate = new Date(this.state.fromDate).getTime();
     let toDate = new Date(this.state.toDate).getTime();
-    let programmeGroup = this.state.programmeGroupId;
+    let programmeGroup = this.state.programmeId;
     console.log(fromDate + "-" + toDate);
     window.open(
       `#/R71ReportsAttendanceRecordSheet/${
         this.state.academicSessionId +
         "&" +
-        this.state.programmeGroupId +
+        this.state.programmeId +
         "&" +
         fromDate +
         "&" +
@@ -329,23 +329,23 @@ class R46Reports extends Component {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                id="programmeGroupId"
-                name="programmeGroupId"
+                id="programmeId"
+                name="programmeId"
                 variant="outlined"
                 label="Programme"
                 onChange={this.onHandleChange}
-                value={this.state.programmeGroupId}
-                error={!!this.state.programmeGroupIdError}
-                helperText={this.state.programmeGroupIdError}
+                value={this.state.programmeId}
+                error={!!this.state.programmeIdError}
+                helperText={this.state.programmeIdError}
                 disabled={!this.state.academicSessionId}
                 required
                 fullWidth
                 select
               >
-                {this.state.programmeGroupIdMenuItems ? (
-                  this.state.programmeGroupIdMenuItems.map((dt, i) => (
+                {this.state.programmeIdMenuItems ? (
+                  this.state.programmeIdMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"programmeGroupIdMenuItems" + dt.Id}
+                      key={"programmeIdMenuItems" + dt.Id}
                       value={dt.Id}
                     >
                       {dt.Label}
@@ -405,7 +405,7 @@ class R46Reports extends Component {
             bottomRightButtonAction={this.handleGenerate}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.programmeGroupId}
+            disableRightButton={!this.state.programmeId}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
