@@ -166,14 +166,14 @@ class DisplayAdmissionApplications extends Component {
 
   getData = async (
     sessionId = 0,
-    programmeGroupId = 0,
+    programmeId = 0,
     fromDate = 0,
     toDate = 0
   ) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", sessionId);
-    data.append("programmmeGroupId", programmeGroupId);
+    data.append("programmeId", programmeId);
     data.append("fromDate", this.getDateInString(fromDate));
     data.append("toDate", this.getDateInString(toDate));
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C71StudentsProgrammeGroupAttandance`;
