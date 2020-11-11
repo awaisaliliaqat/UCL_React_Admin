@@ -198,8 +198,7 @@ class DisplayAdmissionApplications extends Component {
             let creditsCol = ["Poss", "Ach", "%Age"];
             tableHeaderData = tableHeaderData.concat(creditsCol);
             this.setState({tableHeaderData: tableHeaderData});
-            console.log("tableHeaderData", tableHeaderData);
-
+           
             let tableData = [];
             let data = json.DATA || [];
             let dataLength = data.length;
@@ -210,52 +209,39 @@ class DisplayAdmissionApplications extends Component {
                 academicSessionLabel: data[0].academicsSessionLabel,
                 uptoDate: this.getDateInString()
               });
-
               let coursesData = data[0].studentCoursesData || [];
               let coursesDataLength = coursesData.length;
               if(coursesDataLength){
                 for(let i=0; i<coursesDataLength; i++){
-                  
                   let tableDataRow = [];
-                  
                   tableDataRow.push(coursesData[i].courseLabel);  // col-1
-                  
                   let attendance = coursesData[i].attendance[0];
                   tableDataRow.push(attendance.deliveredLectures);  // col-2
                   tableDataRow.push(attendance.attendenedlectures);  // col-3
                   tableDataRow.push(attendance.attandancePercentage);  // col-4
                   tableDataRow.push(attendance.attandanceCredit);  // col-5
-
                   let assignment = coursesData[i].assignment;
-                  assignment.map((data, index)=>
+                  assignment.map((data, index) =>
                     data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.credit) // col-6 => col-14
                   );
-                  
                   let seminarEvaluation = coursesData[i].seminarEvaluation;
-                  seminarEvaluation.map((data, index)=>
+                  seminarEvaluation.map((data, index) =>
                     data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-15 => col-17
                   );
-
                   let subjectiveEvaluation = coursesData[i].subjectiveEvaluation;
-                  subjectiveEvaluation.map((data, index)=>
+                  subjectiveEvaluation.map((data, index) =>
                     data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-18 => col-22
                   );
-
                   let examsEvaluation = coursesData[i].examsEvaluation;
-                  examsEvaluation.map((data, index)=>
+                  examsEvaluation.map((data, index) =>
                     data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-23 => col-25
                   );
-
                   let credits = coursesData[i].credits;
-                 
                   tableDataRow.push(credits.poss); // col-26
                   tableDataRow.push(credits.achieved); // col-27
                   tableDataRow.push(credits.totalCredits); // col-28
-                 
                   tableData[i] = tableDataRow;
-                
                 }
-                
               }
               this.setState({tableData: tableData});
             }    
