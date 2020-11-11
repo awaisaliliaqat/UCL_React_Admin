@@ -59,9 +59,9 @@ const styles = (theme) => ({
     justifyContent: "center",
     flexDirection: "column",
     alignItems: "center",
-    marginTop: "300px",
     color: "white",
-    fontSize: 48
+    fontSize: 48,
+    margin: "auto"
   },
   title: {
     fontSize: 36,
@@ -85,7 +85,7 @@ const styles = (theme) => ({
     flexDirection: "column",
   },
   table: {
-    minWidth: 700,
+    minWidth: 700
   },
 });
 
@@ -95,10 +95,13 @@ const StyledTableCell = withStyles((theme) => ({
     color: theme.palette.common.white,
     fontWeight: 500,
     border: "1px solid white",
+    fontSize: 13,
+    padding: 5
   },
   body: {
-    fontSize: 14,
+    fontSize: 13,
     border: "1px solid rgb(29, 95, 152)",
+    padding: "5px 0px"
   },
 }))(TableCell);
 
@@ -234,13 +237,15 @@ class DisplayAdmissionApplications extends Component {
                   );
                   let examsEvaluation = coursesData[i].examsEvaluation;
                   examsEvaluation.map((data, index) =>
-                    data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-23 => col-25
+                    data.marks ? tableDataRow.push(data.marks) : tableDataRow.push(data.totalCredits) // col-23 => col-25
                   );
-                  let credits = coursesData[i].credits;
+                  let credits = coursesData[i].credits[0];
                   tableDataRow.push(credits.poss); // col-26
                   tableDataRow.push(credits.achieved); // col-27
                   tableDataRow.push(credits.totalCredits); // col-28
-                  tableData[i] = tableDataRow;
+                  let transcriptGrade = "F";
+                  tableDataRow.push(transcriptGrade); // col-29
+                  tableData[i] = tableDataRow; 
                 }
               }
               this.setState({tableData: tableData});
@@ -336,13 +341,14 @@ class DisplayAdmissionApplications extends Component {
             <TableContainer 
               component={Paper} 
               style={{ 
-                //overflowX: "scroll" 
+                overflowX: "inherit" 
               }}
             >
               <Table
                 size="small"
                 className={classes.table}
                 aria-label="customized table"
+                size="small"
               >
                 <TableHead>
                   <TableRow>
@@ -353,7 +359,7 @@ class DisplayAdmissionApplications extends Component {
                     <StyledTableCell align="center" colSpan="5">Subjective Eval Grades</StyledTableCell>
                     <StyledTableCell align="center" colSpan="3">Exam Marks</StyledTableCell>
                     <StyledTableCell align="center" colSpan="3">Credits</StyledTableCell>
-                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>Internal<br/>Transcript<br/>Grade</StyledTableCell>
+                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)", width:60 }}>Internal<br/>Transcript<br/>Grade</StyledTableCell>
                   </TableRow>
                   <TableRow>
                     {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
@@ -372,11 +378,11 @@ class DisplayAdmissionApplications extends Component {
                     </TableRow>
                     {this.state.tableData.length > 0 ? (
                       this.state.tableData.map((row, index) => (
-                        <TableRow key={"row"+index}>
+                        <StyledTableRow key={"row"+index}>
                         {row.map((cellData, callIndex) => (
                             <StyledTableCell key={"["+index+"]["+callIndex+"]"} align="center">{cellData}</StyledTableCell>
                         ))}
-                        </TableRow>
+                        </StyledTableRow>
                       ))
                     ):(
                     <TableRow>
@@ -387,7 +393,7 @@ class DisplayAdmissionApplications extends Component {
                 </TableBody>
               </Table>
             </TableContainer>
-            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            <br/><br/><br/><br/><br/><br/><br/><br/>
             <div>
               <div style={{width:550}}> <hr style={{backgroundColor:"#A9A9A9", height:5}} /></div>
               <span style={{fontSize:24, fontWeight:"600"}}>For an explanation of the report see overleaf</span>
