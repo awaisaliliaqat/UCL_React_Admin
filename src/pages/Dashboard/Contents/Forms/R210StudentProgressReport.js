@@ -377,13 +377,26 @@ class DisplayAdmissionApplications extends Component {
                       <StyledTableCell colSpan="29" style={{ backgroundColor: "#e1e3e8" }}>&nbsp;</StyledTableCell>
                     </TableRow>
                     {this.state.tableData.length > 0 ? (
-                      this.state.tableData.map((row, index) => (
+                      <Fragment>
+                      {this.state.tableData.map((row, index) => (
                         <StyledTableRow key={"row"+index}>
                         {row.map((cellData, callIndex) => (
                             <StyledTableCell key={"["+index+"]["+callIndex+"]"} align="center">{cellData}</StyledTableCell>
                         ))}
                         </StyledTableRow>
-                      ))
+                      ))}
+                      <TableRow>
+                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderBottom:"none"}}>Accumulated Credit:&emsp;</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none"}}>_ _</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none"}}>_ _</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none"}}>_ _</StyledTableCell>
+                        <StyledTableCell style={{borderLeft:"none", borderBottom:"none"}}></StyledTableCell>
+                      </TableRow>
+                      <TableRow>
+                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderTop:"none"}}>Result Classification:&emsp;</StyledTableCell>
+                        <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none"}}>&emsp;Fail</StyledTableCell>
+                      </TableRow>
+                      </Fragment>
                     ):(
                     <TableRow>
                       <StyledTableCell colSpan="29">&nbsp;</StyledTableCell>
