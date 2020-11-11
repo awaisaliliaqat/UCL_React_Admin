@@ -3,9 +3,8 @@ import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { numberFreeExp } from "../../../../utils/regularExpression";
 import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
-  Chip, Select, IconButton, Tooltip, Checkbox, Fab, Card, CardContent, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Paper} from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
+  Card, CardContent, Table, TableBody, TableCell,  TableContainer, TableHead, 
+  TableRow, Paper} from "@material-ui/core";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
@@ -125,7 +124,7 @@ function TableRowWithData(props) {
   );
 }
 
-class F201Form extends Component {
+class F202Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -153,6 +152,7 @@ class F201Form extends Component {
       totalNoOfAssessment: "",
       letterGradeMenuItems: [],
       tableData:[],
+      isEditMode: false
     };
   }
 
@@ -357,7 +357,6 @@ class F201Form extends Component {
       isLoading: true,
       isLoadingData: false
     });
-    this.setState({  });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
     data.append("termId", termId);
@@ -453,8 +452,9 @@ class F201Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadData = async (sectionId) => {
+  loadData = async (sectionId, id=0) => {
     const data = new FormData();
+    data.append("id", id);
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("termId", this.state.termId);
     data.append("sectionId", sectionId);
@@ -478,9 +478,21 @@ class F201Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             if (json.DATA.length) {
-              this.setState({tableData: json.DATA});
+              let data =  json.DATA[0] || [];
+              if(data && id!=0){
+                this.getTotalNoOfAssessment(data.academicSessionId, data.sessionTermId);
+                this.setState({
+                  academicSessionId: data.academicSessionId,
+                  termId: data.sessionTermId,
+                  sectionId: data.sectionId,
+                  assessmentNo: data.assessmentNo,
+                  tableData: data.evaluationDetail || []
+                });
+              } else{
+                this.setState({tableData: data.evaluationDetail || []});
+              }
             } else {
-              window.location = "#/dashboard/F201Form/0";
+              window.location = "#/dashboard/F202Form/0";
             }
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -618,7 +630,7 @@ class F201Form extends Component {
     let myForm = document.getElementById("myForm");
     let data = new FormData(myForm);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C202CommonAcademicsSessionsEvaluationsSave `;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C202CommonAcademicsSessionsEvaluationsSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -636,7 +648,7 @@ class F201Form extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             setTimeout(() => {
               if (this.state.recordId != 0) {
-                window.location = "#/dashboard/F201Form";
+                window.location = "#/dashboard/F202Reports";
               } else {
                 window.location.reload();
               }
@@ -662,7 +674,7 @@ class F201Form extends Component {
   };
 
   viewReport = () => {
-    window.location = "#/dashboard/F201Reports";
+    window.location = "#/dashboard/F202Reports";
   };
 
   componentDidMount() {
@@ -671,7 +683,8 @@ class F201Form extends Component {
     this.getLetterGrades();
     this.getSections();
     if (this.state.recordId != 0) {
-      this.loadData(this.state.recordId);
+      this.setState({isEditMode:true});
+      this.loadData(0,this.state.recordId);
     }
   }
 
@@ -679,7 +692,8 @@ class F201Form extends Component {
     if (this.props.match.params.recordId != nextProps.match.params.recordId) {
       if (nextProps.match.params.recordId != 0) {
         this.props.setDrawerOpen(false);
-        this.loadData(nextProps.match.params.recordId);
+        this.setState({isEditMode:true});
+        this.loadData(0,nextProps.match.params.recordId);
       } else {
         window.location.reload();
       }
@@ -733,13 +747,14 @@ class F201Form extends Component {
                   value={this.state.academicSessionId}
                   error={!!this.state.academicSessionIdError}
                   helperText={this.state.academicSessionIdError}
+                  disabled={this.state.isEditMode}
                   required
                   fullWidth
                   select
                 >
                   {this.state.academicSessionIdMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"academicSessionIdMenuItems" + dt.ID}
+                      key={"academicSessionIdMenuItems"+dt.ID}
                       value={dt.ID}
                     >
                       {dt.Label}
@@ -757,7 +772,7 @@ class F201Form extends Component {
                   value={this.state.termId}
                   error={!!this.state.termIdError}
                   helperText={this.state.termIdError}
-                  disabled={!this.state.academicSessionId}
+                  disabled={!this.state.academicSessionId || this.state.isEditMode}
                   required
                   fullWidth
                   select
@@ -788,7 +803,7 @@ class F201Form extends Component {
                   value={this.state.sectionId}
                   error={!!this.state.sectionIdError}
                   helperText={this.state.sectionIdError}
-                  disabled={!this.state.academicSessionId || !this.state.termId}
+                  disabled={!this.state.academicSessionId || !this.state.termId || this.state.isEditMode}
                   required
                   fullWidth
                   select
@@ -817,7 +832,8 @@ class F201Form extends Component {
                       color="primary" 
                       style={{
                         textAlign:"center", 
-                        fontWeight:"bold"
+                        fontWeight:"bold",
+                        color: this.state.isEditMode ? "gray" : "" 
                       }}
                     >
                       No. of Assessment&nbsp;:&nbsp;&nbsp;{this.state.assessmentNo?(this.state.assessmentNo):"_ "}/{this.state.totalNoOfAssessment?this.state.totalNoOfAssessment:"_"}
@@ -876,7 +892,7 @@ class F201Form extends Component {
         </form>
         <BottomBar
           left_button_text="View"
-          left_button_hide={true}
+          left_button_hide={false}
           bottomLeftButtonAction={this.viewReport}
           right_button_text="Save"
           bottomRightButtonAction={this.clickOnFormSubmit}
@@ -894,4 +910,4 @@ class F201Form extends Component {
     );
   }
 }
-export default withStyles(styles)(F201Form);
+export default withStyles(styles)(F202Form);
