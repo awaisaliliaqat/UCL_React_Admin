@@ -352,7 +352,7 @@ class DisplayAdmissionApplications extends Component {
               >
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
+                    <StyledTableCell align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
                     <StyledTableCell align="center" colSpan="4">Attendance Record</StyledTableCell>
                     <StyledTableCell align="center" colSpan="9">Assignment Graders</StyledTableCell>
                     <StyledTableCell align="center" colSpan="3">Seminar Grades</StyledTableCell>
@@ -386,15 +386,15 @@ class DisplayAdmissionApplications extends Component {
                         </StyledTableRow>
                       ))}
                       <TableRow>
-                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderBottom:"none"}}>Accumulated Credit:&emsp;</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none"}}>_ _</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none"}}>_ _</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none"}}>_ _</StyledTableCell>
-                        <StyledTableCell style={{borderLeft:"none", borderBottom:"none"}}></StyledTableCell>
+                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderBottom:"none", fontWeight:600}}>Accumulated Credit:&emsp;</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>_ _</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>_ _</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>_ _</StyledTableCell>
+                        <StyledTableCell style={{borderLeft:"none", borderBottom:"none", fontWeight:600}}></StyledTableCell>
                       </TableRow>
                       <TableRow>
-                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderTop:"none"}}>Result Classification:&emsp;</StyledTableCell>
-                        <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none"}}>&emsp;Fail</StyledTableCell>
+                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderTop:"none", fontWeight:600}}>Result Classification:&emsp;</StyledTableCell>
+                        <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none", fontWeight:600}}>&emsp;Fail</StyledTableCell>
                       </TableRow>
                       </Fragment>
                     ):(
