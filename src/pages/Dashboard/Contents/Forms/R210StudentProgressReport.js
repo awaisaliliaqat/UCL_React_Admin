@@ -243,7 +243,7 @@ class DisplayAdmissionApplications extends Component {
                   tableDataRow.push(credits.poss); // col-26
                   tableDataRow.push(credits.achieved); // col-27
                   tableDataRow.push(credits.totalCredits); // col-28
-                  let transcriptGrade = "F";
+                  let transcriptGrade = coursesData[i].internalGrade[0].grade;
                   tableDataRow.push(transcriptGrade); // col-29
                   tableData[i] = tableDataRow; 
                 }
