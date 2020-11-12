@@ -209,10 +209,10 @@ class R210Reports extends Component {
   };
 
   handleGenerate = () => {
-    let academicSessionId = this.state.programmeGroupId;
+    let academicSessionId = this.state.academicSessionId;
     let programmeGroupId = this.state.programmeGroupId;
     let studentId = this.state.studentObj.id;
-    window.open(`#/R210StudentProgressReport/${academicSessionId+"&" +this.state.programmeGroupId+"&"+programmeGroupId+"&"+studentId}`,"_blank");
+    window.open(`#/R210StudentProgressReport/${academicSessionId+"&" +this.state.programmeGroupId+"&"+studentId}`,"_blank");
   };
 
   componentDidMount() {
