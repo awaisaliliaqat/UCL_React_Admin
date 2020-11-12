@@ -394,7 +394,7 @@ class DisplayAdmissionApplications extends Component {
                       </TableRow>
                       <TableRow>
                         <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderTop:"none", fontWeight:600}}>Result Classification:&emsp;</StyledTableCell>
-                        <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none", fontWeight:600}}>&emsp;Fail</StyledTableCell>
+                        <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none", fontWeight:600}}>&emsp;_ _ _</StyledTableCell>
                       </TableRow>
                       </Fragment>
                     ):(
