@@ -30,6 +30,7 @@ class F202ReportsTableComponent extends Component {
       ],
       tableColumnExtensions: [
         { columnName: "academicsSessionLabel", wordWrapEnabled: true },
+        { columnName: "programmeGroupLabel", wordWrapEnabled: true },
         { columnName: "sessionTermLabel", wordWrapEnabled: true },
         { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "noOfAssessment", width: 100, align:"center" },
