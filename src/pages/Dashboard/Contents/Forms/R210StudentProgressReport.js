@@ -163,11 +163,12 @@ class DisplayAdmissionApplications extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getData = async (sessionId=0, programmeGroupId=0, studentId=0) => {
+  getData = async (sessionId=0, programmeId=0, sessionTermId=0, studentId=0) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", sessionId);
-    data.append("programmeGroupId", programmeGroupId);
+    data.append("programmeId", programmeId);
+    data.append("termId", sessionTermId);
     data.append("studentId", studentId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonStudentProgressReportView`;
     await fetch(url, {
@@ -273,9 +274,9 @@ class DisplayAdmissionApplications extends Component {
   };
 
   componentDidMount() {
-    const { id = "0&0&0" } = this.props.match.params;
+    const { id = "0&0&0&0" } = this.props.match.params;
     let ids = id.split("&");
-    this.getData(ids[0], ids[1], ids[2]);
+    this.getData(ids[0], ids[1], ids[2], ids[3]);
   }
 
   render() {
