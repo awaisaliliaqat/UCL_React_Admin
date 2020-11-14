@@ -127,7 +127,7 @@ class DisplayAdmissionApplications extends Component {
       tableHeaderData: [],
       tableData: [],
       academicSessionLabel: "____-____",
-      programmeGroupLabel: "",
+      programmeLabel: "",
       studentLabel: "",
       uptoDate: "__/__/____"
     };
@@ -209,7 +209,7 @@ class DisplayAdmissionApplications extends Component {
             if(dataLength){
               this.setState({
                 studentLabel: data[0].studentLabel,
-                programmeGroupLabel: data[0].programmeGroupLabel,
+                programmeLabel: data[0].programmeLabel,
                 academicSessionLabel: data[0].academicsSessionLabel,
                 uptoDate: this.getDateInString()
               });
@@ -312,7 +312,7 @@ class DisplayAdmissionApplications extends Component {
             >
               <span className={classes.title}>University College Lahore</span>
               <br />
-            <span className={classes.subTitle}>{this.state.programmeGroupLabel}</span>
+            <span className={classes.subTitle}>{this.state.programmeLabel}</span>
               <br/>
               <br/>
             <span className={classes.subTitle}>{this.state.studentLabel}</span>
