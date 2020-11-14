@@ -407,13 +407,15 @@ class DisplayAdmissionApplications extends Component {
                 </TableBody>
               </Table>
             </TableContainer>
+            {/* 
             <br/><br/><br/><br/><br/><br/><br/><br/>
             <div>
               <div style={{width:550}}> <hr style={{backgroundColor:"#A9A9A9", height:5}} /></div>
               <span style={{fontSize:24, fontWeight:"600"}}>For an explanation of the report see overleaf</span>
               <br/>
               <span><small>Date of printing&emsp;&emsp;&emsp;{this.getDateInString()}</small></span>
-            </div>
+            </div> 
+            */}
           </div>
           <div className={classes.bottomSpace}></div>
         </div>
