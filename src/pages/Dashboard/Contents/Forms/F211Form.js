@@ -110,7 +110,7 @@ function TableRowWithData(props) {
   );
 }
 
-class F203Form extends Component {
+class F211Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -163,7 +163,7 @@ class F203Form extends Component {
 
   getAcademicSessions = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -213,7 +213,7 @@ class F203Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSessionsOfferedProgrammesGroupView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsOfferedProgrammesGroupView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -255,7 +255,7 @@ class F203Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSessionsTermsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsTermsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -299,8 +299,8 @@ class F203Form extends Component {
     data.append("academicsSessionId", academicsSessionId);
     data.append("programmeGroupId", programmeGroupId);
     data.append("termId", termId);
-    data.append("rubricId", 4);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSessionsEvaluationsTotalNoOfAssessmentView`;
+    data.append("rubricId", 1);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsEvaluationsTotalNoOfAssessmentView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -346,7 +346,7 @@ class F203Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", AcademicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsTeacherSectionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsTeacherSectionsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -395,8 +395,8 @@ class F203Form extends Component {
     data.append("programmeGroupId", programmeGroupId);
     data.append("termId", termId);
     data.append("sectionId", sectionId);
-    data.append("examTypeId", 2);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSessionsEvaluationsMaxAssessmentNoView`;
+    data.append("assignmentTypeId", 2);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsEvaluationsMaxAssessmentNoView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -454,9 +454,9 @@ class F203Form extends Component {
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("termId", this.state.termId);
     data.append("sectionId", sectionId);
-    data.append("examTypeId", 2);
+    data.append("assignmentTypeId", 2);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonSectionsStudentsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonSectionsStudentsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -489,7 +489,7 @@ class F203Form extends Component {
                 this.setState({tableData: data.evaluationDetail || []});
               }
             } else {
-              window.location = "#/dashboard/F203Form/0";
+              window.location = "#/dashboard/F211Form/0";
             }
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -504,7 +504,7 @@ class F203Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.","error");
           }
         }
       );
@@ -650,7 +650,7 @@ class F203Form extends Component {
     let myForm = document.getElementById("myForm");
     let data = new FormData(myForm);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSessionsExamsEvaluationSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsAssignmentsEvaluationSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -668,7 +668,7 @@ class F203Form extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             setTimeout(() => {
               if (this.state.recordId != 0) {
-                window.location = "#/dashboard/F203Reports";
+                window.location = "#/dashboard/F211Reports";
               } else {
                 window.location.reload();
               }
@@ -694,7 +694,7 @@ class F203Form extends Component {
   };
 
   viewReport = () => {
-    window.location = "#/dashboard/F203Reports";
+    window.location = "#/dashboard/F211Reports";
   };
 
   componentDidMount() {
@@ -742,7 +742,7 @@ class F203Form extends Component {
                 fontSize: "1.5rem"
               }}
             >
-              Exams Evaluation
+              Assignments Evaluation
             </Typography>
             <Divider
               style={{
@@ -755,7 +755,7 @@ class F203Form extends Component {
               spacing={2}
             >
               <TextField type="hidden" name="assessmentNo" value={this.state.assessmentNo}/>
-              <TextField type="hidden" name="examTypeId" defaultValue={2}/>
+              <TextField type="hidden" name="assignmentTypeId" defaultValue={2}/>
               <Grid item xs={12} md={2}>
                 <TextField
                   id="academicSessionId"
@@ -958,4 +958,4 @@ class F203Form extends Component {
     );
   }
 }
-export default withStyles(styles)(F203Form);
+export default withStyles(styles)(F211Form);
