@@ -148,7 +148,7 @@ class R210Reports extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonAcademicsSessionsOfferedProgrammesGroupView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonAcademicsSessionsOfferedProgrammesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -355,8 +355,8 @@ class R210Reports extends Component {
                 {this.state.programmeIdMenuItems ? (
                   this.state.programmeIdMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"programmeIdMenuItems" + dt.Id}
-                      value={dt.Id}
+                      key={"programmeIdMenuItems" + dt.ID}
+                      value={dt.ID}
                     >
                       {dt.Label}
                     </MenuItem>
