@@ -5,7 +5,7 @@ import ExcelIcon from "../../../../assets/Images/excel.png";
 import TablePanel from "../../../../components/ControlledTable/RerenderTable/TablePanel";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
-import F203ReportsTableComponent from "./F203ReportsTableComponent";
+import F211ReportsTableComponent from "./F211ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
@@ -13,7 +13,7 @@ import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/Custom
 import EditDeleteTableComponent from "../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
-class F203Reports extends Component {
+class F211Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -73,7 +73,7 @@ class F203Reports extends Component {
 
   getData = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSessionsExamEvaluationsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsAssignmentEvaluationsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -97,7 +97,7 @@ class F203Reports extends Component {
               json.DATA[i].action = (
                 <EditDeleteTableComponent
                   recordId={json.DATA[i].id}
-                  editRecord = {()=>window.location.replace(`#/dashboard/F203Form/${id}`)}
+                  editRecord = {()=>window.location.replace(`#/dashboard/F211Form/${id}`)}
                   handleOpenSnackbar={this.handleOpenSnackbar}
                   hideDeleteAction={true}
                 />
@@ -130,7 +130,7 @@ class F203Reports extends Component {
   DeleteData = async (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C204CommonAcademicsExamsDelete`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C211CommonAcademicsAssignmentsDelete`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -232,25 +232,9 @@ class F203Reports extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              Exams Evaluation Report
+              Assignments Evaluation Report
             </Typography>
-            {/* 
-              <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
-                  height: 30, width: 32,
-                  cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
-               }}
-              /> 
-            */}
             <div style={{ float: "right" }}>
-              {/* <Hidden xsUp={true}> */}
-              {/* <Tooltip title="Search Bar">
-                    <IconButton
-                        onClick={this.handleToggleSearchBar}
-                    >
-                        <FilterIcon fontSize="default" color="primary"/>
-                    </IconButton>
-                </Tooltip> */}
-              {/* </Hidden> */}
               <Tooltip title="Table Filter">
                 <IconButton
                   style={{ marginLeft: "-10px" }}
@@ -269,7 +253,7 @@ class F203Reports extends Component {
           />
           <br/>
           {this.state.admissionData ? (
-            <F203ReportsTableComponent
+            <F211ReportsTableComponent
               data={this.state.admissionData}
               columns={columns}
               showFilter={this.state.showTableFilter}
@@ -290,4 +274,4 @@ class F203Reports extends Component {
     );
   }
 }
-export default F203Reports;
+export default F211Reports;
