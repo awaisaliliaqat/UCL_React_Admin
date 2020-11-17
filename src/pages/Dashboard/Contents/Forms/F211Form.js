@@ -421,7 +421,7 @@ class F211Form extends Component {
                 this.loadData(sectionId);
                 this.setState({isLoadingData: true});
               }else{
-                this.handleOpenSnackbar(<span>All Assessments complated.</span>,"error");
+                this.handleOpenSnackbar(<span>All assessments complete.</span>,"error");
               }
               this.setState({assessmentNo: data[0].maxAssessmentNo});
             }

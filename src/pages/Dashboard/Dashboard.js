@@ -127,6 +127,7 @@ import F209Form from "./Contents/Forms/F209Form";
 import R210Reports from "./Contents/Forms/R210Reports";
 import F211Form from "./Contents/Forms/F211Form";
 import F211Reports from "./Contents/Forms/F211Reports";
+import F212Form from "./Contents/Forms/F212Form";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 
 const drawerWidth = 283;
@@ -1695,6 +1696,21 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F212Form"
+                exact
+                path="/dashboard/F212Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F212Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />              
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"
