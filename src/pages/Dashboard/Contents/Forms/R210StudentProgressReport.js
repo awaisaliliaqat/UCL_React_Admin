@@ -129,7 +129,11 @@ class DisplayAdmissionApplications extends Component {
       academicSessionLabel: "____-____",
       programmeLabel: "",
       studentLabel: "",
-      uptoDate: "__/__/____"
+      uptoDate: "__/__/____",
+      totalPOS: "_ _",
+      totalAchieved: "_ _",
+      totalPercentage: "_ _",
+      resultClassification: "_ _ _"
     };
   }
 
@@ -211,7 +215,11 @@ class DisplayAdmissionApplications extends Component {
                 studentLabel: data[0].studentLabel,
                 programmeLabel: data[0].programmeLabel,
                 academicSessionLabel: data[0].academicsSessionLabel,
-                uptoDate: this.getDateInString()
+                uptoDate: this.getDateInString(),
+                totalPOS: data[0].totalPOS,
+                totalAchieved: data[0].totalAchieved,
+                totalPercentage: data[0].totalPercentage,
+                resultClassification:  data[0].resultClassification,
               });
               let coursesData = data[0].studentCoursesData || [];
               let coursesDataLength = coursesData.length;
@@ -388,14 +396,14 @@ class DisplayAdmissionApplications extends Component {
                       ))}
                       <TableRow>
                         <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderBottom:"none", fontWeight:600}}>Accumulated Credit:&emsp;</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>_ _</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>_ _</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>_ _</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>{this.state.totalPOS}</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>{this.state.totalAchieved}</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>{this.state.totalPercentage}</StyledTableCell>
                         <StyledTableCell style={{borderLeft:"none", borderBottom:"none", fontWeight:600}}></StyledTableCell>
                       </TableRow>
                       <TableRow>
                         <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderTop:"none", fontWeight:600}}>Result Classification:&emsp;</StyledTableCell>
-                        <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none", fontWeight:600}}>&emsp;_ _ _</StyledTableCell>
+                        <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none", fontWeight:600}}>&emsp;{this.state.resultClassification}</StyledTableCell>
                       </TableRow>
                       </Fragment>
                     ):(

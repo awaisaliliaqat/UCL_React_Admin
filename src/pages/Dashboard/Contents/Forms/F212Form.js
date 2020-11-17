@@ -1,5 +1,5 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
-import { withStyles } from "@material-ui/styles";
+import { withStyles, makeStyles } from "@material-ui/styles";
 import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Collapse} from "@material-ui/core";
@@ -8,13 +8,15 @@ import ExcelIcon from "../../../../assets/Images/excel.png";
 import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
-import F212FormTableComponent from "./F212FormTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import F212FormPopupComponent from "./F212FormPopupComponent";
+
+import InputBase from '@material-ui/core/InputBase';
+import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
 
 const styles = () => ({
   root: {
@@ -44,6 +46,27 @@ const styles = () => ({
     //minWidth: 750,
   }
 });
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+   //padding: '2px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    width: 120,
+    //backgroundColor: "transparent"
+  },
+  input: {
+    marginLeft: theme.spacing(1),
+    flex: 1,
+  },
+  iconButton: {
+    padding: 10,
+  },
+  divider: {
+    height: 28,
+    //margin: 4,
+  },
+}));
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -84,6 +107,8 @@ function TableRowWithData(props) {
       pathwayMenuItems=[], 
       ...rest
     } = props;
+
+    const classes = useStyles();
   
   return (
       <StyledTableRow key={rowData}>
@@ -208,6 +233,34 @@ function TableRowWithData(props) {
               ""
             }
           </TextField>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+          {/* <TextField
+            id={`${"UOLNo"+rowData.SRNo}`}
+            name="UOLNo"
+            label="UOL#"
+            required
+            fullWidth
+            variant="outlined"
+            size="small"
+            // onChange={this.onHandleChange}
+            // value={this.state.label}
+            // error={!!this.state.labelError}
+            // helperText={this.state.labelError}
+          /> */}
+          <Paper component="form" className={classes.root}>
+            <InputBase
+              className={classes.input}
+              placeholder="UOL#"
+              inputProps={{ 'aria-label': 'UOLNo' }}
+            />
+            <Divider className={classes.divider} orientation="vertical" />
+            <Tooltip title="Save UOL#">
+              <IconButton color="primary" className={classes.iconButton} aria-label="UOLNoSave">
+                <SaveOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+          </Paper>
         </StyledTableCell>
         <StyledTableCell align="center">
           {rowData.action}
@@ -937,6 +990,7 @@ class F212Form extends Component {
                       <StyledTableCell align="center" style={{minWidth:85}}>Renewal Status</StyledTableCell>
                       <StyledTableCell align="center" style={{minWidth:85}}>Exam Entry Status</StyledTableCell>
                       <StyledTableCell align="center" style={{minWidth:85}}>Pathway</StyledTableCell>
+                      <StyledTableCell align="center" style={{width:100}}>UOL#</StyledTableCell>
                       <StyledTableCell align="center" style={{borderRight:'1px solid rgb(29, 95, 152)', width:70}}>Action</StyledTableCell>
                     </TableRow>
                   </TableHead>
@@ -956,11 +1010,11 @@ class F212Form extends Component {
                   ) : 
                   this.state.isLoading ? 
                     <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={8}><center><CircularProgress disableShrink/></center></StyledTableCell>
+                      <StyledTableCell component="th" scope="row" colSpan={9}><center><CircularProgress disableShrink/></center></StyledTableCell>
                     </StyledTableRow>
                     :
                     <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={8}><center><b>No Data</b></center></StyledTableCell>
+                      <StyledTableCell component="th" scope="row" colSpan={9}><center><b>No Data</b></center></StyledTableCell>
                     </StyledTableRow>
                   }
                   </TableBody>
@@ -968,23 +1022,6 @@ class F212Form extends Component {
               </TableContainer>
             </Grid>
           </Grid>
-          {/* {this.state.tableData && !this.state.isLoading ? (
-            <F212FormTableComponent
-              data={this.state.tableData}
-              columns={columns}
-              showFilter={this.state.showTableFilter}
-            />
-          ) : (
-            <Grid 
-              container 
-              justify="center"
-            >
-              <Grid item xs={12} style={{textAlign:"center"}}>
-                <br/>
-                <CircularProgress disableShrink />
-              </Grid>
-            </Grid>
-          )} */}
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}
