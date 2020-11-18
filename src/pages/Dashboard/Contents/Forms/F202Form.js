@@ -357,11 +357,12 @@ class F202Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  getSections = async (AcademicSessionId) => {
+  getSections = async (academicsSessionId=0, programmeGroupId=0) => {
     this.setState({ isLoading: true });
     let data = new FormData();
-    data.append("academicsSessionId", AcademicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C202CommonAcademicsTeacherSectionsView`;
+    data.append("academicsSessionId", academicsSessionId);
+    data.append("programmeGroupId", programmeGroupId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C202CommonAcademicsSectionsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -483,7 +484,7 @@ class F202Form extends Component {
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getSections", json);
+          console.log("getLetterGrades", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -661,9 +662,11 @@ class F202Form extends Component {
           termId: "",
           totalNoOfAssessment:"",
           assessmentNo:"",
+          sectionMenuItems: [],
           sectionId:"",
           tableData:[]
         });
+        this.getSections(this.state.academicSessionId, value);
       break;
       case "termId":
         this.setState({
@@ -756,7 +759,6 @@ class F202Form extends Component {
     this.props.setDrawerOpen(false);
     this.getAcademicSessions();
     this.getLetterGrades();
-    this.getSections();
     if (this.state.recordId != 0) {
       this.setState({isEditMode:true});
       this.loadData(0,this.state.recordId);
