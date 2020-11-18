@@ -442,7 +442,7 @@ class ClassSchedule extends Component {
                                 style={{ textTransform: 'capitalize' }} 
                                 variant="outlined" 
                                 color="primary"
-                                disabled={rowData.isAllowedToReschedule}
+                                disabled={!!rowData.isAllowedToReschedule}
                             >
                                 Reschedule
                             </Button>
