@@ -434,12 +434,17 @@ class ClassSchedule extends Component {
             { name: "courseLabel", title: "Course Label" },
             { name: "classRoomLabel", title: "Class Room" },
             { name: "scheduledOn", title: "Class Schedule" },
-            {
-                name: "action", title: "Action", getCellValue: rowData => {
+            { name: "action", title: "Action", getCellValue: rowData => {
                     return (
                         <Fragment>
-                            <Button onClick={() => this.onReschuduleClick(rowData)}
-                                style={{ textTransform: 'capitalize' }} variant="outlined" color="primary">Reschedule
+                            <Button 
+                                onClick={() => this.onReschuduleClick(rowData)}
+                                style={{ textTransform: 'capitalize' }} 
+                                variant="outlined" 
+                                color="primary"
+                                disabled={!!rowData.isAllowedToReschedule}
+                            >
+                                Reschedule
                             </Button>
                         </Fragment>
                     )
