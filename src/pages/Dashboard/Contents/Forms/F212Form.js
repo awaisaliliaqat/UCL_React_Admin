@@ -4,17 +4,11 @@ import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Collapse} from "@material-ui/core";
 import {Typography, TextField, MenuItem} from "@material-ui/core";
-import ExcelIcon from "../../../../assets/Images/excel.png";
-import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
 import FilterIcon from "mdi-material-ui/FilterOutline";
-import SearchIcon from "mdi-material-ui/FileSearchOutline";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import F212FormPopupComponent from "./F212FormPopupComponent";
-
 import InputBase from '@material-ui/core/InputBase';
 import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
 
@@ -95,20 +89,22 @@ const StyledTableRow = withStyles((theme) => ({
 
 function TableRowWithData(props) {
 
-  console.log("props", props);
+  console.log("props", 1);
 
   const {
+      rowIndex,
       rowData={}, 
       onChange, 
       isLoading, 
       applicationStatusMenuItems=[], 
       renewalStatusMenuItems=[], 
       examEntryStatusMenuItems=[], 
-      pathwayMenuItems=[], 
+      pathwayMenuItems=[],
+      onFormSubmit,
       ...rest
     } = props;
 
-    const classes = useStyles();
+  const classes = useStyles();
   
   return (
       <StyledTableRow key={rowData}>
@@ -116,147 +112,136 @@ function TableRowWithData(props) {
           {rowData.SRNo}
         </StyledTableCell>
         <StyledTableCell align="center">
-          {rowData.nucluesId}
+          {rowData.studentId}
         </StyledTableCell>
         <StyledTableCell align="left">
-          {rowData.studentName}
-          <TextField type="hidden" name="studentId" defaultValue={rowData.id}/>
+          {rowData.displayName}
+          <TextField 
+            type="hidden" 
+            name="studentId"
+            defaultValue={rowData.id}
+            inputProps={{
+              id:"studentId"+rowIndex
+            }}
+          />
         </StyledTableCell>
         <StyledTableCell align="center">
           <TextField
-            id={"applicationStatus"+rowData.SRNo}
-            name="applicationStatus"
+            name="applicationStatusId"
             variant="outlined"
             label="Select"
-            // onChange={this.onHandleChange}
-            // value={this.state.schoolId}
-            // error={!!this.state.schoolIdError}
-            // helperText={this.state.schoolIdError ? this.state.schoolIdError : " "}
+            defaultValue={rowData.applicationStatusId}
+            onChange={()=>onFormSubmit(rowIndex)}
             required
             fullWidth
             select
             size="small"
+            inputProps={{
+              id:"applicationStatusId"+rowIndex
+            }}
           >
-            {applicationStatusMenuItems ? 
-              applicationStatusMenuItems.map((dt, i) => (
+            <MenuItem value={0}>Select</MenuItem>
+            {applicationStatusMenuItems.map((dt, i) => (
                 <MenuItem
-                  key={"schoolsMenuItems"+dt.id}
+                  key={"applicationStatusMenuItems"+dt.id}
                   value={dt.id}
                 >
                   {dt.label}
                 </MenuItem>
-              )):
-              ""
-            }
+            ))}
           </TextField>
         </StyledTableCell>
         <StyledTableCell align="center">
           <TextField
-            id={"renewalStatus"+rowData.SRNo}
-            name="renewalStatus"
+            name="renewalStatusId"
             variant="outlined"
             label="Select"
-            // onChange={this.onHandleChange}
-            // value={this.state.schoolId}
-            // error={!!this.state.schoolIdError}
-            // helperText={this.state.schoolIdError ? this.state.schoolIdError : " "}
+            defaultValue={rowData.renewalStatusId}
+            onChange={()=>onFormSubmit(rowIndex)}
             required
             fullWidth
             select
             size="small"
+            inputProps={{
+              id:"renewalStatusId"+rowIndex
+            }}
           >
-            {renewalStatusMenuItems ? 
-              renewalStatusMenuItems.map((dt, i) => (
+             <MenuItem value={0}>Select</MenuItem>
+            {renewalStatusMenuItems.map((dt, i) => (
                 <MenuItem
-                  key={"renewalStatusMenuItems"+dt.id}
+                  key={"renewalStatusId"+dt.id}
                   value={dt.id}
                 >
                   {dt.label}
                 </MenuItem>
-              )):
-              ""
-            }
+            ))}
           </TextField>
         </StyledTableCell>
         <StyledTableCell align="center">
           <TextField
-            id={"examEntryStatus"+rowData.SRNo}
-            name="examEntryStatus"
+            name="examEntryStatusId"
             variant="outlined"
             label="Select"
-            // onChange={this.onHandleChange}
-            // value={this.state.schoolId}
-            // error={!!this.state.schoolIdError}
-            // helperText={this.state.schoolIdError ? this.state.schoolIdError : " "}
+            defaultValue={rowData.examEntryStatusId}
+            onChange={()=>onFormSubmit(rowIndex)}
             required
             fullWidth
             select
             size="small"
+            inputProps={{
+              id: "examEntryStatusId"+rowIndex
+            }}
           >
-            {examEntryStatusMenuItems ? 
-              examEntryStatusMenuItems.map((dt, i) => (
+             <MenuItem value={0}>Select</MenuItem>
+            {examEntryStatusMenuItems.map((dt, i) => (
                 <MenuItem
                   key={"examEntryStatusMenuItems"+dt.id}
                   value={dt.id}
                 >
                   {dt.label}
                 </MenuItem>
-              )):
-              ""
-            }
+            ))}
           </TextField>
         </StyledTableCell>
         <StyledTableCell align="center">
           <TextField
-            id={"pathwayMenuItems"+rowData.SRNo}
-            name="pathwayMenuItems"
+            name="pathwayId"
             variant="outlined"
             label="Select"
-            // onChange={this.onHandleChange}
-            // value={this.state.schoolId}
-            // error={!!this.state.schoolIdError}
-            // helperText={this.state.schoolIdError ? this.state.schoolIdError : " "}
+            defaultValue={rowData.pathwayId}
+            onChange={()=>onFormSubmit(rowIndex)}
             required
             fullWidth
             select
             size="small"
+            inputProps={{
+              id: "pathwayId"+rowIndex
+            }}
           >
-            {pathwayMenuItems ? 
-              pathwayMenuItems.map((dt, i) => (
+            <MenuItem value={0}>Select</MenuItem>
+            {pathwayMenuItems.map((dt, i) => (
                 <MenuItem
                   key={"pathwayMenuItems"+dt.id}
                   value={dt.id}
                 >
                   {dt.label}
                 </MenuItem>
-              )):
-              ""
-            }
+            ))}
           </TextField>
         </StyledTableCell>
         <StyledTableCell align="center">
-          {/* <TextField
-            id={`${"UOLNo"+rowData.SRNo}`}
-            name="UOLNo"
-            label="UOL#"
-            required
-            fullWidth
-            variant="outlined"
-            size="small"
-            // onChange={this.onHandleChange}
-            // value={this.state.label}
-            // error={!!this.state.labelError}
-            // helperText={this.state.labelError}
-          /> */}
           <Paper component="form" className={classes.root}>
             <InputBase
+              id={`${"UOLNo"+rowIndex}`}
+              name="UOLNo"
+              defaultValue={rowData.uolNumber}
               className={classes.input}
               placeholder="UOL#"
               inputProps={{ 'aria-label': 'UOLNo' }}
             />
             <Divider className={classes.divider} orientation="vertical" />
             <Tooltip title="Save UOL#">
-              <IconButton color="primary" className={classes.iconButton} aria-label="UOLNoSave">
+              <IconButton color="primary" className={classes.iconButton} aria-label="UOLNoSave" onClick={()=>onFormSubmit(rowIndex)}>
                 <SaveOutlinedIcon />
               </IconButton>
             </Tooltip>
@@ -275,30 +260,33 @@ class F212Form extends Component {
     this.state = {
       isLoading: false,
       showTableFilter: true,
-      isDownloadPdf: false,
-      applicationStatusId: 1,
       isLoginMenu: false,
       isReload: false,
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
       tableData: [],
-      schoolsMenuItems: [],
-      schoolId: "",
-      schoolIdError: "",
+      academicSessionMenuItems: [],
+      academicSessionId: "",
+      academicSessionIdError: "",
       programmeGroupId: "",
       programmeGroupIdError: "",
       programmeGroupsMenuItems: [],
-      programId:"",
-      programIdError:"",
-      programmeGroupId:"",
       coursesMenuItems: [],
       courseId: "",
       courseIdError: "",
-      applicationStatusMenuItems: [{id:1, label:"Missing Documents"},{id:2, label:"Offer Letter Received"},{id:1, label:"Registration Fee Paid"}],
-      renewalStatusMenuItems: [{id:1, label:"Application"},{id:1, label:"Renewed"}],
-      examEntryStatusMenuItems: [{id:1, label:"Course Selection"}, {id:2, label:"Exam Entry Selection"}],
-      pathwayMenuItems: [{id:1, label:"New Enrollment"},{id:2, label:"Continuing Student"},{id:3, label:"Completing"}],
+      applicationStatusMenuItems: [],
+      applicationStatus: 0,
+      applicationStatusError: "",
+      renewalStatusMenuItems: [],
+      renewalStatus: 0,
+      renewalStatusError: "",
+      examEntryStatusMenuItems: [],
+      examEntryStatus: 0,
+      examEntryStatusError: "",
+      pathwayMenuItems: [],
+      pathway: 0,
+      pathwayError: ""
     };
   }
 
@@ -315,12 +303,14 @@ class F212Form extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getSchools = async () => {
-    this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonSchoolsView`;
+  loadAcademicSessions = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
-      headers: new Headers({Authorization:"Bearer "+localStorage.getItem("uclAdminToken")}),
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
     })
       .then((res) => {
         if (!res.ok) {
@@ -331,34 +321,39 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({schoolsMenuItems: json.DATA || []});
+            let array = json.DATA || [];
+            let arrayLength = array.length;
+            let res = array.find( (obj) => obj.isActive === 1 );
+            if(res){
+              this.setState({academicSessionId:res.ID});
+              this.loadProgrammeGroups(res.ID);
+            }
+            this.setState({ academicSessionMenuItems: array });
           } else {
-            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getCourses", json);
+          console.log("loadAcademicSessions", json);
         },
         (error) => {
-          if (error.status === 401) {
+          if (error.status == 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: true,
+              isReload: false,
             });
           } else {
-            //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
             console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
-  getProgramGroup = async (schoolId) => {
+  loadProgrammeGroups = async (academicsSessionId) => {
     this.setState({isLoading: true});
     let data = new FormData();
-    data.append("schoolId", schoolId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeGroupsView`;
+    data.append("academicsSessionId", academicsSessionId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsSessionsOfferedProgrammesGroupView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -380,7 +375,7 @@ class F212Form extends Component {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getSections", json);
+          console.log("loadSections", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -398,11 +393,12 @@ class F212Form extends Component {
     this.setState({isLoading: false});
   };
 
-  getCourse = async (programmeGroupId) => {
+  loadCourse = async (academicsSessionId, programmeGroupId) => {
     this.setState({isLoading: true});
     let data = new FormData();
+    data.append("academicsSessionId", academicsSessionId);
     data.append("programmeGroupId", programmeGroupId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeCoursesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsSessionsOfferedCoursesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -424,7 +420,171 @@ class F212Form extends Component {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getCourse", json);
+          console.log("loadCourse", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  loadApplicationStatus = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentApplicationStatusView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({applicationStatusMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadApplicationStatus", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  loadRenewalStatus = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentRenewalStatusView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({renewalStatusMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadRenewalStatus", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  loadExamEntryStatus = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentExamEntryStatusView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({examEntryStatusMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadExamEntryStatus", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  loadPathway = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentPathwayView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({pathwayMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadPathway", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -491,13 +651,17 @@ class F212Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  getData = async () => {
+  loadData = async () => {
     this.setState({isLoading: true});
     let data = new FormData();
-    data.append("schoolId", this.state.schoolId);
+    data.append("academicSessionId", this.state.academicSessionId);
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("courseId", this.state.courseId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsView`;
+    data.append("applicationStatusId", this.state.applicationStatus);
+    data.append("renewalStatusId", this.state.renewalStatus);
+    data.append("examEntryStatusId", this.state.examEntryStatus);
+    data.append("pathwayId", this.state.pathway);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonStudentsView`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -518,14 +682,15 @@ class F212Form extends Component {
             let dataLength = data.length || 0;
             for (let i=0; i<dataLength; i++) {
               data[i].action = (
-                <F212FormPopupComponent
-                  dialogTitle={data[i].nucleusId+" - "+data[i].studentName}
-                  studentId={data[i].id}
-                  preModuleMenuItems={this.state.preModuleMenuItems || []}
-                  preCourseMenuItems={this.state.preCourseMenuItems || []}
-                  clickOnFormSubmit={() => this.clickOnFormSubmit}
-                  handleOpenSnackbar={this.handleOpenSnackbar}
-                />
+                // <F212FormPopupComponent
+                //   dialogTitle={data[i].nucleusId+" - "+data[i].studentName}
+                //   studentId={data[i].id}
+                //   preModuleMenuItems={this.state.preModuleMenuItems || []}
+                //   preCourseMenuItems={this.state.preCourseMenuItems || []}
+                //   clickOnFormSubmit={() => this.clickOnFormSubmit}
+                //   handleOpenSnackbar={this.handleOpenSnackbar}
+                // />
+                ""
               );
             }
             this.setState({tableData: data || []});
@@ -533,7 +698,7 @@ class F212Form extends Component {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getData", json);
+          console.log("loadData", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -551,65 +716,19 @@ class F212Form extends Component {
     this.setState({isLoading: false});
   };
 
-  downloadPDFData = async () => {
-    if( !this.isSchoolValid() ) {return;}
-      if (this.state.isDownloadPdf === false) {
-          this.setState({isDownloadPdf: true})
-          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsPdfDownload?schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${this.state.courseId}`;
-          await fetch(url, {
-              method: "GET",
-              headers: new Headers({
-                  Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
-              })
-          })
-              .then(res => {
-                  if (res.status === 200) {
-                      return res.blob();
-                  }
-                  return false;
-              })
-              .then(
-                  json => {
-                    if(json){
-                      var csvURL = window.URL.createObjectURL(json);
-                      var tempLink = document.createElement("a");
-                      tempLink.setAttribute("download", `Students_List.pdf`);
-                      tempLink.href = csvURL;
-                      tempLink.click();
-                      console.log("downloadPDFData:", json);
-                    }
-                  },
-                  error => {
-                      if (error.status === 401) {
-                          this.setState({
-                              isLoginMenu: true,
-                              isReload: false
-                          })
-                      } else {
-                        this.handleOpenSnackbar("Failed to download, Please try again later.","error");
-                        //alert('Failed to fetch, Please try again later.');
-                        console.log(error);
-                      }
-                  });
-          this.setState({
-            isDownloadPdf: false
-          })
-      }
-  }
-
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
-    let regex = "";
     switch (name) {
-        case "schoolId":
-            this.setState({
-              programmeGroupId: "",
-              courseId:"",
-              coursesMenuItems:[],
-              tableData: []
-            });
-            this.getProgramGroup(value);
+        case "academicSessionId":
+          this.setState({
+            programmeGroupId: "",
+            programmeGroupsMenuItems: [],
+            courseId: "",
+            coursesMenuItems: [],
+            tableData:[]
+          });
+          this.loadProgrammeGroups(value);
         break;
         case "programmeGroupId":
             this.setState({
@@ -618,97 +737,106 @@ class F212Form extends Component {
               coursesMenuItems:[],
               tableData: []
             });
-            this.getCourse(value);
+            this.loadCourse(this.state.academicSessionId, value);
         break;
         case "courseId":
-          this.setState({tableData: []});
+          this.setState({
+            courseId: "",
+            tableData: []
+          });
         break;
-    default:
-        break;
+      default:
     }
+
     this.setState({
       [name]: value,
       [errName]: "",
     });
   };
 
-  isSchoolValid = () => {
-    let isValid = true;        
-    if (!this.state.schoolId) {
-        this.setState({schoolIdError:"Please select school."});
-        document.getElementById("schoolId").focus();
-        isValid = false;
+  isAcademicSessionValid = () => {
+    let isValid = true;
+    if (!this.state.academicSessionId) {
+      this.setState({
+        academicSessionIdError: "Please select Academic Session.",
+      });
+      document.getElementById("academicSessionId").focus();
+      isValid = false;
     } else {
-        this.setState({schoolIdError:""});
+      this.setState({ academicSessionIdError: "" });
     }
     return isValid;
-  }
+  };
 
-  isSectionValid = () => {
-    let isValid = true;        
+  isProgrammeGroupValid = () => {
+    let isValid = true;
     if (!this.state.programmeGroupId) {
-        this.setState({programmeGroupIdError:"Please select programme group."});
-        document.getElementById("programmeGroupId").focus();
+      this.setState({ programmeGroupIdError: "Please select programme group." });
+      document.getElementById("programmeGroupId").focus();
+      isValid = false;
+    } else {
+      this.setState({ programmeGroupIdError: "" });
+    }
+    return isValid;
+  };
+
+  isCourseValid = () => {
+    let isValid = true;        
+    if (!this.state.courseId) {
+        this.setState({courseIdError:"Please select course."});
+        document.getElementById("courseId").focus();
         isValid = false;
     } else {
-        this.setState({programmeGroupIdError:""});
+        this.setState({courseIdError:""});
     }
     return isValid;
   }
 
-  isAssignmentValid = () => {
-    let isValid = true;        
-    if (!this.state.programId) {
-        this.setState({programIdError:"Please select program."});
-        document.getElementById("programId").focus();
-        isValid = false;
-    } else {
-        this.setState({programIdError:""});
-    }
-    return isValid;
-}
-
+  
   handleGetData = () => {
     if(
-      !this.isSchoolValid()
-      //!this.isSectionValid() ||
-      //!this.isAssignmentValid()
-    )
-    {return;}
-    this.getData();
+      !this.isAcademicSessionValid()
+      || !this.isProgrammeGroupValid()
+      || !this.isCourseValid()
+    ){return;}
+    this.setState({tableData:[]});
+    this.loadData();
   }
   
   handleToggleTableFilter = () => {
     this.setState({ showTableFilter: !this.state.showTableFilter });
   };
 
-  clickOnFormSubmit = () => {
-    this.onFormSubmit();
+  clickOnFormSubmit = (rowIndex) => {
+    setTimeout( () => { this.onFormSubmit(rowIndex); }, 0);
   };
 
-  onFormSubmit = async (e) => {
+  onFormSubmit = async (rowIndex) => {
 
-    if (!this.isAcademicSessionValid() || !this.isProgrammeValid()) {
-      return;
-    }
+    if (
+      !this.isAcademicSessionValid() 
+      || !this.isProgrammeGroupValid()
+      || !this.isCourseValid()
+    ) { return; }
+    
+    let studentId = document.getElementById("studentId"+rowIndex).value;
+    let applicationStatusId = document.getElementById("applicationStatusId"+rowIndex).value;
+    let renewalStatusId = document.getElementById("renewalStatusId"+rowIndex).value;
+    let examEntryStatusId = document.getElementById("examEntryStatusId"+rowIndex).value;
+    let pathwayId = document.getElementById("pathwayId"+rowIndex).value;
+    let UOLNo = document.getElementById("UOLNo"+rowIndex).value;
 
-    let studentId = document.getElementById("studentId").value;
-    let moduleNumber = document.getElementsByName("moduleNumber");
-    let programmeCourseId = document.getElementsByName("programmeCourseId");
-    let marks = document.getElementsByName("marks");
-
-    let myForm = document.getElementById("myForm");
-    let data = new FormData(myForm);
+    let data = new FormData();
+    data.append("academicSessionId", this.state.academicSessionId);
     data.append("studentId", studentId);
-    if (moduleNumber != null) {
-      for (let i = 0; i < moduleNumber.length; i++) {
-        data.append("moduleNumber", moduleNumber[i].value);
-        data.append("programmeCourseId", programmeCourseId[i].value);
-        data.append("marks", marks[i].value);
-      }
-    }
+    data.append("applicationStatusId", applicationStatusId);
+    data.append("renewalStatusId", renewalStatusId);
+    data.append("examEntryStatusId", examEntryStatusId);
+    data.append("pathwayId", pathwayId);
+    data.append("uolNumber", UOLNo);
+    
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C30CommonAcademicsCoursesStudentsAchievementsSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -726,18 +854,15 @@ class F212Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-            setTimeout(() => {
-              if (this.state.recordId != 0) {
-                window.location = "#/dashboard/F09Reports";
-              } else {
-                window.location.reload();
-              }
-            }, 2000);
+            // setTimeout(() => {
+            //   if (this.state.recordId != 0) {
+            //     window.location = "#/dashboard/F09Reports";
+            //   } else {
+            //     window.location.reload();
+            //   }
+            // }, 2000);
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
           }
           console.log(json);
         },
@@ -749,10 +874,7 @@ class F212Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -761,7 +883,11 @@ class F212Form extends Component {
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.getSchools();
+    this.loadAcademicSessions();
+    this.loadApplicationStatus();
+    this.loadRenewalStatus();
+    this.loadExamEntryStatus();
+    this.loadPathway();
   }
 
   render() {
@@ -800,28 +926,6 @@ class F212Form extends Component {
                       <FilterIcon fontSize="default" color="primary" />
                     </IconButton>
                   </Tooltip>
-                  {/* 
-                  <Tooltip title="Export PDF">
-                    {this.state.isDownloadPdf ?
-                      <CircularProgress 
-                        size={14}
-                        style={{cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`}}
-                      />
-                      :
-                      <img 
-                        alt="" 
-                        src={PDFIcon} 
-                        onClick={() => this.downloadPDFData()} 
-                        style = {{
-                          height: 22, 
-                          width: 22,
-                          marginBottom: -7,
-                          cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`,
-                        }}
-                      />
-                    }
-                  </Tooltip>  
-                  */}
                 </span>
               </Typography>
               <Divider
@@ -841,34 +945,26 @@ class F212Form extends Component {
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={2}>
                     <TextField
-                      id="schoolId"
-                      name="schoolId"
+                      id="academicSessionId"
+                      name="academicSessionId"
                       variant="outlined"
                       label="Academic Session"
                       onChange={this.onHandleChange}
-                      value={this.state.schoolId}
-                      error={!!this.state.schoolIdError}
-                      helperText={this.state.schoolIdError ? this.state.schoolIdError : " "}
+                      value={this.state.academicSessionId}
+                      error={!!this.state.academicSessionIdError}
+                      helperText={this.state.academicSessionIdError}
                       required
                       fullWidth
                       select
                     >
-                      {this.state.schoolsMenuItems && !this.state.isLoading ? 
-                        this.state.schoolsMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"schoolsMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                      :
-                        <Grid 
-                          container 
-                          justify="center">
-                            <CircularProgress />
-                          </Grid>
-                      }
+                      {this.state.academicSessionMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"academicSessionMenuItems"+dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={4}>
@@ -879,19 +975,20 @@ class F212Form extends Component {
                       label="Program Group"
                       fullWidth
                       select
+                      required
                       onChange={this.onHandleChange}
                       value={this.state.programmeGroupId}
                       error={!!this.state.programmeGroupIdError}
-                      helperText={this.state.programmeGroupIdError ? this.state.programmeGroupIdError : " "}
-                      disabled={!this.state.schoolId}
+                      helperText={this.state.programmeGroupIdError}
+                      disabled={!this.state.academicSessionId}
                     >
                       {this.state.programmeGroupsMenuItems && !this.state.isLoading ? 
                         this.state.programmeGroupsMenuItems.map((dt, i) => (
                           <MenuItem
-                            key={"programmeGroupsMenuItems"+dt.id}
-                            value={dt.id}
+                            key={"programmeGroupsMenuItems"+dt.Id}
+                            value={dt.Id}
                           >
-                            {dt.label}
+                            {dt.Label}
                           </MenuItem>
                         ))
                       :
@@ -910,10 +1007,11 @@ class F212Form extends Component {
                       name="courseId"
                       variant="outlined"
                       label="Course"
+                      required
                       onChange={this.onHandleChange}
                       value={this.state.courseId}
                       error={!!this.state.courseIdError}
-                      helperText={this.state.courseIdError ? this.state.courseIdError : " "}
+                      helperText={this.state.courseIdError}
                       fullWidth
                       select
                     >
@@ -923,7 +1021,7 @@ class F212Form extends Component {
                             key={"coursesMenuItems"+dt.id}
                             value={dt.id}
                           >
-                            {dt.label}
+                            {dt.courseLabel}
                           </MenuItem>
                         ))
                       :
@@ -935,34 +1033,127 @@ class F212Form extends Component {
                       }
                     </TextField>
                   </Grid>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                       id="applicationStatus"
                       name="applicationStatus"
                       variant="outlined"
                       label="Application Status"
-                      // onChange={this.onHandleChange}
-                      // value={this.state.schoolId}
-                      // error={!!this.state.schoolIdError}
-                      // helperText={this.state.schoolIdError ? this.state.schoolIdError : " "}
-                      required
+                      onChange={this.onHandleChange}
+                      value={this.state.applicationStatus}
+                      error={!!this.state.applicationStatusError}
+                      helperText={this.state.applicationStatusError}
                       fullWidth
                       select
                       disabled={!this.state.courseId}
                     >
-                      <MenuItem value="1">Pending Submission</MenuItem>
-                      <MenuItem value="2">Pending Response</MenuItem>
-                      <MenuItem value="3">Pending Letter Acceptance</MenuItem>
-                      <MenuItem value="4">Pending Missing Document</MenuItem>
-                      <MenuItem value="5">Pending Registration Fee</MenuItem>
-                      <MenuItem value="6">Registered</MenuItem>
+                      <MenuItem value={0}>Any</MenuItem>
+                      {this.state.applicationStatusMenuItems ? 
+                        this.state.applicationStatusMenuItems.map((dt, i) => (
+                          <MenuItem
+                            key={"applicationStatusMenuItems"+dt.id}
+                            value={dt.id}
+                          >
+                            {dt.label}
+                          </MenuItem>
+                        ))
+                        :
+                        ""
+                      }
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      id="renewalStatus"
+                      name="renewalStatus"
+                      variant="outlined"
+                      label="Renewal Status"
+                      onChange={this.onHandleChange}
+                      value={this.state.renewalStatus}
+                      error={!!this.state.renewalStatusError}
+                      helperText={this.state.renewalStatusError}
+                      fullWidth
+                      select
+                      disabled={!this.state.courseId}
+                    >
+                      <MenuItem value={0}>Any</MenuItem>
+                      {this.state.renewalStatusMenuItems ? 
+                        this.state.renewalStatusMenuItems.map((dt, i) => (
+                          <MenuItem
+                            key={"renewalStatusMenuItems"+dt.id}
+                            value={dt.id}
+                          >
+                            {dt.label}
+                          </MenuItem>
+                        ))
+                        :
+                        ""
+                      }
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      id="examEntryStatus"
+                      name="examEntryStatus"
+                      variant="outlined"
+                      label="Exam Entry Status"
+                      onChange={this.onHandleChange}
+                      value={this.state.examEntryStatus}
+                      error={!!this.state.examEntryStatusError}
+                      helperText={this.state.examEntryStatusError}
+                      fullWidth
+                      select
+                      disabled={!this.state.courseId}
+                    >
+                      <MenuItem value={0}>Any</MenuItem>
+                      {this.state.examEntryStatusMenuItems ? 
+                        this.state.examEntryStatusMenuItems.map((dt, i) => (
+                          <MenuItem
+                            key={"examEntryStatusMenuItems"+dt.id}
+                            value={dt.id}
+                          >
+                            {dt.label}
+                          </MenuItem>
+                        ))
+                        :
+                        ""
+                      }
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      id="pathway"
+                      name="pathway"
+                      variant="outlined"
+                      label="Pathway"
+                      onChange={this.onHandleChange}
+                      value={this.state.pathway}
+                      error={!!this.state.pathwayError}
+                      helperText={this.state.pathwayError}
+                      fullWidth
+                      select
+                      disabled={!this.state.courseId}
+                    >
+                      <MenuItem value={0}>Any</MenuItem>
+                      {this.state.pathwayMenuItems ? 
+                        this.state.pathwayMenuItems.map((dt, i) => (
+                          <MenuItem
+                            key={"pathwayMenuItems"+dt.id}
+                            value={dt.id}
+                          >
+                            {dt.label}
+                          </MenuItem>
+                        ))
+                        :
+                        ""
+                      }
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={1}>
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={this.state.isLoading || !this.state.schoolId}
+                      disabled={this.state.isLoading || !this.state.courseId}
                       onClick={() => this.handleGetData()}
                       style={{width:"100%", height:54, marginBottom:24}}
                     > 
@@ -1000,11 +1191,13 @@ class F212Form extends Component {
                       <TableRowWithData
                         key={"SED"+row+index}
                         rowData={row}
+                        rowIndex={index}
                         applicationStatusMenuItems={this.state.applicationStatusMenuItems}
                         renewalStatusMenuItems={this.state.renewalStatusMenuItems}
                         examEntryStatusMenuItems={this.state.examEntryStatusMenuItems}
                         pathwayMenuItems={this.state.pathwayMenuItems}
                         isLoading={this.state.isLoading}
+                        onFormSubmit={this.clickOnFormSubmit}
                       />
                     ))
                   ) : 
