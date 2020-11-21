@@ -7,6 +7,7 @@ import {Typography, TextField, MenuItem} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
 import FilterIcon from "mdi-material-ui/FilterOutline";
+import FilterListOutlinedIcon from '@material-ui/icons/FilterListOutlined';
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import F212FormChangeStatusPopup from "./F212FormChangeStatusPopup";
 import F212FormPopupComponent from "./F212FormPopupComponent";
@@ -49,6 +50,7 @@ class F212Form extends Component {
     super(props);
     this.state = {
       isLoading: false,
+      showSearchFilter: true,
       showTableFilter: true,
       isLoginMenu: false,
       isReload: false,
@@ -176,7 +178,7 @@ class F212Form extends Component {
         if (!res.ok) {
           throw res;
         }
-        return res.json();
+        return res.json(); 
       })
       .then(
         (json) => {
@@ -779,6 +781,10 @@ class F212Form extends Component {
     this.setState({ showTableFilter: !this.state.showTableFilter });
   };
 
+  handleToggleSearchFilter = () => {
+    this.setState({ showSearchFilter: !this.state.showSearchFilter });
+  };
+
   f212FormPopupOpen = () => {
     this.setState({f212FormPopupIsOpen: true});
   }
@@ -1101,6 +1107,14 @@ class F212Form extends Component {
                     marginBottom: -6,
                     marginTop: -12
                 }}>
+                  <Tooltip title="Search Filter">
+                    <IconButton 
+                      onClick={this.handleToggleSearchFilter} 
+                      style={{padding:5,marginTop:10}}
+                    >
+                      <FilterListOutlinedIcon fontSize="default" color="primary" />
+                    </IconButton>
+                  </Tooltip>
                   <Tooltip title="Table Filter">
                     <IconButton 
                       onClick={this.handleToggleTableFilter} 
@@ -1121,7 +1135,7 @@ class F212Form extends Component {
             </Grid>
             <Grid item xs={12}>
               <Collapse 
-                in={this.state.showTableFilter} 
+                in={this.state.showSearchFilter} 
                 timeout="auto" 
                 unmountOnExit
               >
