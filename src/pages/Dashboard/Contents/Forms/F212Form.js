@@ -798,7 +798,8 @@ class F212Form extends Component {
       f212FormPopupData: {
         studentId: data.studentId, 
         studentNucleusId: data.studentNucleusId,
-        studentName: data.studentName
+        studentName: data.studentName,
+        academicSessionId: this.state.academicSessionId
       }
     });
     this.f212FormPopupOpen();
@@ -989,6 +990,7 @@ class F212Form extends Component {
     let marks = document.getElementsByName("marks");
 
     let data = new FormData();
+    data.append("id", 0);
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("programmeId", this.state.programmeId);
     data.append("studentId", studentId);
@@ -1023,13 +1025,14 @@ class F212Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-            setTimeout(() => {
-              if (this.state.recordId != 0) {
-                window.location = "#/dashboard/F09Reports";
-              } else {
-                window.location.reload();
-              }
-            }, 2000);
+            this.f212FormPopupClose();
+            // setTimeout(() => {
+            //   if (this.state.recordId != 0) {
+            //     window.location = "#/dashboard/F09Reports";
+            //   } else {
+            //     window.location.reload();
+            //   }
+            // }, 2000);
           } else {
             this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
           }
@@ -1086,6 +1089,7 @@ class F212Form extends Component {
             <F212FormPopupComponent
               isOpen={this.state.f212FormPopupIsOpen}
               data={this.state.f212FormPopupData}
+              academicSessionMenuItems={this.state.academicSessionMenuItems}
               preModuleMenuItems={this.state.preModuleMenuItems}
               preCourseMenuItems={this.state.preCourseMenuItems}
               onFormSubmit ={() => this.onStudentAchievementFormSubmit}

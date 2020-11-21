@@ -132,6 +132,9 @@ class F212FormPopupComponent extends Component {
       snackbarMessage: "",
       snackbarSeverity: "",
       popupBoxOpen: false,
+      academicSessionMenuItems: [],
+      academicSessionId: "",
+      academicSessionIdError: "",
       preMarks: "",
       preMarksError: "",
       preModuleMenuItems: [],
@@ -361,7 +364,9 @@ class F212FormPopupComponent extends Component {
         ) { 
           this.setState({
             preCourseMenuItems: this.props.preCourseMenuItems || [],
-            preModuleMenuItems: this.props.preModuleMenuItems || []
+            preModuleMenuItems: this.props.preModuleMenuItems || [],
+            academicSessionId: this.props.data.academicSessionId || "",
+            academicSessionMenuItems: this.props.academicSessionMenuItems || []
           });
           this.loadData(this.props.data.studentId);
       }
@@ -424,6 +429,31 @@ class F212FormPopupComponent extends Component {
                   name="studentId"
                   value={data.studentId}
                 />
+                <Grid item xs={12} md={2}>
+                  <TextField
+                    id="academicSessionId"
+                    name="academicSessionId"
+                    variant="outlined"
+                    label="Academic Session"
+                    onChange={this.onHandleChange}
+                    value={this.state.academicSessionId}
+                    error={!!this.state.academicSessionIdError}
+                    helperText={this.state.academicSessionIdError}
+                    required
+                    fullWidth
+                    select
+                    helperText={this.state.academicSessionIdError ? this.state.academicSessionIdError : " "}
+                  >
+                    {this.state.academicSessionMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"academicSessionMenuItems2"+dt.ID}
+                        value={dt.ID}
+                      >
+                        {dt.Label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>  
                 <Grid item xs={12} md={3}>
                   <TextField
                     id="preModuleId"
@@ -446,7 +476,7 @@ class F212FormPopupComponent extends Component {
                     }
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={5}>
+                <Grid item xs={12} md={4}>
                   <Autocomplete
                     //multiple
                     fullWidth
@@ -500,7 +530,7 @@ class F212FormPopupComponent extends Component {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={2}>
                   <TextField
                     id="preMarks"
                     name="preMarks"
