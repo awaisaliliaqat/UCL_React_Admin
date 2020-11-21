@@ -65,14 +65,7 @@ const styles = (theme) => ({
 });
 
 function CourseRow(props) {
-  const {
-    rowIndex,
-    rowData,
-    onDelete,
-    moduleMenuItems,
-    courseMenuItems,
-    ...rest
-  } = props;
+  const {rowIndex, rowData,  onDelete,   moduleMenuItems,   courseMenuItems,  ...rest} = props;
 
   const [coursesInputValue, setCoursesInputValue] = useState("");
 
@@ -128,7 +121,7 @@ function CourseRow(props) {
   );
 }
 
-class F30FormPopupComponent extends Component {
+class F212FormPopupComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -154,7 +147,7 @@ class F30FormPopupComponent extends Component {
     const data = new FormData();
     data.append("studentId", studentId);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C30CommonAcademicsCoursesStudentsAchievementsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsCoursesStudentsAchievementsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -194,10 +187,7 @@ class F30FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.props.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -211,12 +201,12 @@ class F30FormPopupComponent extends Component {
 
   handleClose = () => {
     this.setState({
-      popupBoxOpen: false,
       preModuleId: "",
       preCourses: {},
       preMarks: "",
       courseRowDataArray: [],
     });
+    this.props.f212FormPopupClose();
   };
 
   isPreModuleValid = () => {
@@ -230,24 +220,6 @@ class F30FormPopupComponent extends Component {
     }
     return isValid;
   };
-
-  // isPreCoursesValid = () => {
-  //   let isValid = true;
-  //   if (this.state.preCourses.length < 1) {
-  //     this.setState({ preCoursesError: "Please select course." });
-  //     document.getElementById("preCourses").focus();
-  //     isValid = false;
-  //   } else if (this.state.preCourses.length > 2) {
-  //     this.setState({
-  //       preCoursesError: "One full or two half couses can be selected",
-  //     });
-  //     document.getElementById("preCourses").focus();
-  //     isValid = false;
-  //   } else {
-  //     this.setState({ preCoursesError: "" });
-  //   }
-  //   return isValid;
-  // };
 
   isPreCoursesValid = () => {
     let isValid = true;
@@ -374,13 +346,26 @@ class F30FormPopupComponent extends Component {
   };
 
   componentDidMount() {
-    //console.log("F30PopUp: ", this.props);
-    this.setState({
-      preCourseMenuItems: this.props.preCourseMenuItems,
-      preModuleMenuItems: this.props.preModuleMenuItems,
-    });
-    if (this.state.recordId != 0) {
-      this.loadData(this.state.recordId);
+    this.setState({popupBoxOpen: this.props.isOpen}); 
+  }
+
+  componentDidUpdate(prevProps){
+    // Typical usage (don't forget to compare props):
+    if (this.props.isOpen !== prevProps.isOpen) {
+
+      this.setState({popupBoxOpen: this.props.isOpen});
+
+      if ( 
+          this.props.data.studentId!=0 
+          && this.props.data.studentId!="" 
+          && this.props.isOpen===true
+        ) { 
+          this.setState({
+            preCourseMenuItems: this.props.preCourseMenuItems || [],
+            preModuleMenuItems: this.props.preModuleMenuItems || []
+          });
+          this.loadData(this.props.data.studentId);
+      }
     }
   }
 
@@ -388,31 +373,14 @@ class F30FormPopupComponent extends Component {
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
-    const { classes } = this.props;
+    const { classes, data } = this.props;
+
+    console.log("Prpps=>", this.props)
 
     return (
       <Fragment>
-        <IconButton
-          color="primary"
-          aria-label="Add"
-          component="span"
-          onClick={this.handleClickOpen}
-          variant="outlined"
-          style={{padding:5}}
-        >
-          <Tooltip title="Add Achievements">
-            <Fab 
-              color="primary" 
-              aria-label="add" 
-              size="small"
-            >
-              <AddIcon fontSize="small"/>
-            </Fab>
-          </Tooltip>
-        </IconButton>
         <Dialog
           fullScreen={true}
-          //maxWidth="md"
           open={this.state.popupBoxOpen}
           onClose={this.handleClose}
           aria-labelledby="responsive-dialog-title"
@@ -441,7 +409,7 @@ class F30FormPopupComponent extends Component {
                 fontSize: 20,
               }}
             >
-              {this.props.dialogTitle}
+              {data.studentNucleusId+" - "+data.studentName}
             </Typography>
           </DialogTitle>
           <DialogContent>
@@ -457,7 +425,7 @@ class F30FormPopupComponent extends Component {
                   type="hidden"
                   id="studentId"
                   name="studentId"
-                  value={this.props.studentId}
+                  value={data.studentId}
                 />
                 <Grid item xs={12} md={3}>
                   <TextField
@@ -468,26 +436,17 @@ class F30FormPopupComponent extends Component {
                     onChange={this.onHandleChange}
                     value={this.state.preModuleId}
                     error={!!this.state.preModuleIdError}
-                    helperText={
-                      this.state.preModuleIdError
-                        ? this.state.preModuleIdError
-                        : " "
-                    }
+                    helperText={this.state.preModuleIdError ? this.state.preModuleIdError : " "}
                     required
                     fullWidth
                     select
                   >
-                    {this.state.preModuleMenuItems ? (
-                      this.state.preModuleMenuItems.map((dt, i) => (
+                    {this.state.preModuleMenuItems.map((dt, i) => (
                         <MenuItem key={"PCGID" + dt.ID} value={dt.ID}>
                           {dt.Label}
                         </MenuItem>
                       ))
-                    ) : (
-                      <MenuItem>
-                        <CircularProgress size={24} />
-                      </MenuItem>
-                    )}
+                    }
                   </TextField>
                 </Grid>
                 <Grid item xs={12} md={5}>
@@ -634,7 +593,7 @@ class F30FormPopupComponent extends Component {
               Close
             </Button>
             <Button
-              onClick={this.props.clickOnFormSubmit()}
+              onClick={this.props.onFormSubmit()}
               color="primary"
               autoFocus
             >
@@ -646,4 +605,4 @@ class F30FormPopupComponent extends Component {
     );
   }
 }
-export default withStyles(styles)(F30FormPopupComponent);
+export default withStyles(styles)(F212FormPopupComponent);
