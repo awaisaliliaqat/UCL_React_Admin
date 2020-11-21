@@ -61,7 +61,6 @@ class F212FormTableComponent extends Component {
     // Typical usage (don't forget to compare props):
     if (this.props.rows !== prevProps.rows) {
       this.setState({rows:this.props.rows});
-      console.log("rowsrows", this.props.rows);
     }
   }
 

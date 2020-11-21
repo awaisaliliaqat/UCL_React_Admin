@@ -496,10 +496,7 @@ class F212Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -989,8 +986,6 @@ class F212Form extends Component {
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("programmeId", this.state.programmeId);
     data.append("studentId", studentId);
-    
-    console.log("moduleNumber", moduleNumber);
 
     if (moduleNumber.length>0) {
       for (let i = 0; i < moduleNumber.length; i++) {

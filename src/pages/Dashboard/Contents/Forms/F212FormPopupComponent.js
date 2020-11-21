@@ -313,7 +313,7 @@ class F212FormPopupComponent extends Component {
       preCourses: {},
       preMarks: "",
     });
-    console.log("courseRowDataObject", courseRowDataObject);
+
   };
 
   handeDeleteCourseRow = (index) => {
@@ -338,7 +338,6 @@ class F212FormPopupComponent extends Component {
   // };
 
   handleSetPreCourses = (value) => {
-    console.log("value", value);
     this.setState({
       preCourses: value,
       preCoursesError: "",
@@ -374,8 +373,6 @@ class F212FormPopupComponent extends Component {
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
     const { classes, data } = this.props;
-
-    console.log("Prpps=>", this.props)
 
     return (
       <Fragment>
