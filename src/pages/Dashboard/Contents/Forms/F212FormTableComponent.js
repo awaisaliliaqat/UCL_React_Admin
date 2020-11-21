@@ -17,8 +17,8 @@ class F212FormTableComponent extends Component {
         { name: "examEntryStatusLabel", title: "Exam\xa0Entry\xa0Status" },
         { name: "pathwayLabel", title: "Pathway" },
         { name: "uolNumber", title: "UOL#" },
-        { name: "changeStatusAction", title: "Change"},
-        { name: "action", title: "Action"}
+        { name: "changeStatusAction", title: <span>Enrolment<br/>Status</span>},
+        { name: "action", title: <span>Student<br/>Achievements</span>}
       ],
       rows: [],
       formatColumns: [],
@@ -46,7 +46,7 @@ class F212FormTableComponent extends Component {
         { columnName: "pathwayLabel", wordWrapEnabled: true },
         { columnName: "uolNumber", width: 100 },
         { columnName: "changeStatusAction", width: 100, align:"center"},
-        { columnName: "action", width: 100, align:"center"},
+        { columnName: "action", width: 120, align:"center"},
       ],
       defaultColumnWidths: [],
       defaultFilters: [],

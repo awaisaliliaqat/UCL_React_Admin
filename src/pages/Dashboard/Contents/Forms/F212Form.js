@@ -599,7 +599,7 @@ class F212Form extends Component {
                   component="span"
                   style={{padding:5}}
                 >
-                  <Tooltip title="Add Achievements">
+                  <Tooltip title="Add / Change">
                     <Fab 
                       color="primary" 
                       aria-label="add" 
@@ -631,7 +631,7 @@ class F212Form extends Component {
                   component="span"
                   style={{padding:5}}
                 >
-                  <Tooltip title="Add Achievements">
+                  <Tooltip title="Add / Change">
                     <Fab 
                       color="primary" 
                       aria-label="add" 
@@ -914,7 +914,7 @@ class F212Form extends Component {
             component="span"
             style={{padding:5}}
           >
-            <Tooltip title="Add Achievements">
+            <Tooltip title="Add / Change">
               <Fab 
                 color="primary" 
                 aria-label="add" 
