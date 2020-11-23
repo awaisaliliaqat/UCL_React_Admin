@@ -146,9 +146,10 @@ class F212FormPopupComponent extends Component {
     };
   }
 
-  loadData = async (studentId) => {
+  loadData = async (academicSessionId=0, studentId=0) => {
     const data = new FormData();
     data.append("studentId", studentId);
+    data.append("academicSessionId", academicSessionId);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsCoursesStudentsAchievementsView`;
     await fetch(url, {
@@ -198,7 +199,6 @@ class F212FormPopupComponent extends Component {
   };
 
   handleClickOpen = () => {
-    this.loadData(this.props.studentId);
     this.setState({ popupBoxOpen: true });
   };
 
@@ -328,17 +328,21 @@ class F212FormPopupComponent extends Component {
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
+    switch (name) {
+      case "academicSessionId":
+        this.setState({
+          courseId: "",
+          tableData:[]
+        });
+        this.loadData(value, this.props.data.studentId);
+      break;
+      default:
+    }
     this.setState({
       [name]: value,
       [errName]: "",
     });
   };
-
-  // isCourseSelected = (option) => {
-  //   return this.state.preCourses.some(
-  //     (selectedOption) => selectedOption.ID == option.ID
-  //   );
-  // };
 
   handleSetPreCourses = (value) => {
     this.setState({
@@ -368,7 +372,7 @@ class F212FormPopupComponent extends Component {
             academicSessionId: this.props.data.academicSessionId || "",
             academicSessionMenuItems: this.props.academicSessionMenuItems || []
           });
-          this.loadData(this.props.data.studentId);
+          this.loadData(this.props.data.academicSessionId, this.props.data.studentId);
       }
     }
   }
@@ -377,7 +381,7 @@ class F212FormPopupComponent extends Component {
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
-    const { classes, data } = this.props;
+    const { classes, data, isLoading } = this.props;
 
     return (
       <Fragment>
@@ -443,6 +447,9 @@ class F212FormPopupComponent extends Component {
                     fullWidth
                     select
                     helperText={this.state.academicSessionIdError ? this.state.academicSessionIdError : " "}
+                    inputProps={{
+                      id:"academicSessionIdSA"
+                    }}
                   >
                     {this.state.academicSessionMenuItems.map((dt, i) => (
                       <MenuItem
@@ -616,15 +623,20 @@ class F212FormPopupComponent extends Component {
             }}
           />
           <DialogActions>
-            <Button autoFocus onClick={this.handleClose} color="secondary">
+            <Button 
+              autoFocus 
+              onClick={this.handleClose} 
+              color="secondary"
+            >
               Close
             </Button>
             <Button
               onClick={this.props.onFormSubmit()}
               color="primary"
               autoFocus
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? <CircularProgress style={{color:'#174A84'}} size={24}/> : "Save"}
             </Button>
           </DialogActions>
         </Dialog>

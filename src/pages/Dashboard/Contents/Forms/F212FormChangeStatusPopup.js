@@ -64,6 +64,7 @@ class F212FormChangeStatusPopup extends Component {
       renewalStatusMenuItems=[], 
       examEntryStatusMenuItems=[],
       pathwayMenuItems=[],
+      isLoading,
       onFormSubmit
     } = this.props;
 
@@ -235,11 +236,12 @@ class F212FormChangeStatusPopup extends Component {
               Close
             </Button>
             <Button
-              onClick={this.props.onFormSubmit()}
+              onClick={onFormSubmit()}
               color="primary"
+              disabled={isLoading}
               autoFocus
             >
-              Save
+              {isLoading ? <CircularProgress style={{color:'#174A84'}} size={24}/> : "Save"}
             </Button>
           </DialogActions>
         </Dialog>

@@ -877,9 +877,9 @@ class F212Form extends Component {
     data.append("pathwayId", pathwayId);
     data.append("uolNumber", UOLNo);
     
-    let abc1 = [...this.state.tableData];
+    let tableData = [...this.state.tableData];
     
-    let aaa = abc1.map((row, index) => { 
+    let tableDataNewInstance = tableData.map((row, index) => { 
       
       let row10 = { ...row };
       
@@ -931,13 +931,14 @@ class F212Form extends Component {
       
       return ( 
         row.id == studentId ? { ...row10 } : row 
-      )} 
-
-    );
-
-    this.setState({tableData: aaa });
+      )
+    }); // tableData.map ends
   
-    this.setState({ isLoading: true });
+    this.setState({ 
+      tableData: tableDataNewInstance,
+      isLoading: true 
+    });
+
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentSave`;
     await fetch(url, {
       method: "POST",
@@ -982,8 +983,10 @@ class F212Form extends Component {
     if (
         !this.isAcademicSessionValid() 
         || !this.isProgrammeValid()
-      ) { return; }
+    ) { return; }
 
+    
+    let academicSessionId = document.getElementById("academicSessionIdSA").value;
     let studentId = document.getElementById("studentId").value;
     let moduleNumber = document.getElementsByName("moduleNumber");
     let programmeCourseId = document.getElementsByName("programmeCourseId");
@@ -991,7 +994,7 @@ class F212Form extends Component {
 
     let data = new FormData();
     data.append("id", 0);
-    data.append("academicSessionId", this.state.academicSessionId);
+    data.append("academicSessionId", academicSessionId);
     data.append("programmeId", this.state.programmeId);
     data.append("studentId", studentId);
 
@@ -1026,13 +1029,6 @@ class F212Form extends Component {
           if (json.CODE === 1) {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             this.f212FormPopupClose();
-            // setTimeout(() => {
-            //   if (this.state.recordId != 0) {
-            //     window.location = "#/dashboard/F09Reports";
-            //   } else {
-            //     window.location.reload();
-            //   }
-            // }, 2000);
           } else {
             this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
           }
@@ -1082,6 +1078,7 @@ class F212Form extends Component {
               renewalStatusMenuItems={this.state.renewalStatusMenuItems} 
               examEntryStatusMenuItems={this.state.examEntryStatusMenuItems} 
               pathwayMenuItems={this.state.pathwayMenuItems}
+              isLoading={this.state.isLoading}
               onFormSubmit={() => this.onChangeStatusFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}
               handleClose={this.f212FormChangeStatusPopupClose}
@@ -1092,6 +1089,7 @@ class F212Form extends Component {
               academicSessionMenuItems={this.state.academicSessionMenuItems}
               preModuleMenuItems={this.state.preModuleMenuItems}
               preCourseMenuItems={this.state.preCourseMenuItems}
+              isLoading={this.state.isLoading}
               onFormSubmit ={() => this.onStudentAchievementFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}
               f212FormPopupClose={this.f212FormPopupClose}
