@@ -998,15 +998,14 @@ class F212Form extends Component {
     data.append("programmeId", this.state.programmeId);
     data.append("studentId", studentId);
 
-    if (moduleNumber.length>0) {
-      for (let i = 0; i < moduleNumber.length; i++) {
+    let recordLength = moduleNumber.length || 0;
+
+    if (recordLength>0) {
+      for (let i=0; i<recordLength; i++) {
         data.append("moduleNumber", moduleNumber[i].value);
         data.append("programmeCourseId", programmeCourseId[i].value);
         data.append("marks", marks[i].value);
       }
-    }else{
-      this.handleOpenSnackbar("Please add at least one achievement.","error");
-      return;
     }
     
     this.setState({ isLoading: true });
