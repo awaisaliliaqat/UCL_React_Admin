@@ -3,8 +3,8 @@ import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { numberFreeExp } from "../../../../utils/regularExpression";
 import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
-  Chip, Select, IconButton, Tooltip, Checkbox, Fab, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Paper, Card, CardContent} from "@material-ui/core";
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+  Card, CardContent} from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
@@ -65,14 +65,14 @@ const styles = () => ({
 
 function TableRowWithData(props) {
 
-  const {rowIndex, rowData={}, onChange, letterGradeMenuItems, isLoading, ...rest} = props;
-  let preletterGradeId = rowData.letterGradeId || "";
-  const [letterGradeId, setLetterGradeId] = useState(preletterGradeId);
-  const [letterGradeIdError, setLetterGradeIdError] = useState("");
+  const {rowIndex, rowData={}, onChange, isLoading, ...rest} = props;
+  let preMarks = rowData.marks || "";
+  const [marks, setMarks] = useState(preMarks);
+  const [marksError, setMarksError] = useState("");
   
-  const handleChangeLetterGrade = (e) => {
+  const handleChangeMarks = (e) => {
     const { name, value } = e.target;
-    setLetterGradeId(value);
+    setMarks(value);
   }
 
   useEffect(() => {});
@@ -88,44 +88,29 @@ function TableRowWithData(props) {
         </StyledTableCell>
         <StyledTableCell align="center">
             <TextField
-              id={"letterGradeId"+rowIndex}
-              name="letterGradeId"
+              id={"marks"+rowIndex}
+              name="marks"
               variant="outlined"
-              label="Letter Grade"
-              onChange={(e)=>handleChangeLetterGrade(e)}
-              value={letterGradeId}
-              error={!!letterGradeIdError}
-              helperText={letterGradeIdError}
+              label="Marks"
+              type="number"
+              onChange={(e)=>handleChangeMarks(e)}
+              value={marks}
+              error={!!marksError}
+              helperText={marksError}
               disabled={isLoading}
               required
               fullWidth
-              select
               size="small"
               inputProps={{
-                id:"letterGradeId"+rowIndex
+                id:"marks"+rowIndex,
               }}
-            >
-              {letterGradeMenuItems ? (
-                letterGradeMenuItems.map((dt, i) => (
-                  <MenuItem
-                    key={"letterGradeMenuItems"+dt.id+rowIndex}
-                    value={dt.id}
-                  >
-                    {dt.label}
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem>
-                  <CircularProgress size={24} />
-                </MenuItem>
-              )}
-            </TextField>
+            />
         </StyledTableCell>
       </StyledTableRow>
   );
 }
 
-class F201Form extends Component {
+class F211Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -143,10 +128,10 @@ class F201Form extends Component {
       academicSessionIdMenuItems: [],
       academicSessionId: "",
       academicSessionIdError: "",
-      sectionMenuItems: [],
       programmeGroupIdMenuItems: [],
       programmeGroupId: "",
       programmeGroupIdError: "",
+      sectionMenuItems: [],
       sectionId: "",
       sectionIdError: "",
       termId: "",
@@ -154,7 +139,6 @@ class F201Form extends Component {
       termMenuItems: [],
       assessmentNo: "",
       totalNoOfAssessment: "",
-      letterGradeMenuItems: [],
       tableData:[],
       isEditMode: false
     };
@@ -179,7 +163,7 @@ class F201Form extends Component {
 
   getAcademicSessions = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -214,7 +198,7 @@ class F201Form extends Component {
           if (error.status == 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: true,
+              isReload: false,
             });
           } else {
             console.log(error);
@@ -229,7 +213,7 @@ class F201Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsSessionsOfferedProgrammesGroupView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsOfferedProgrammesGroupView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -271,7 +255,7 @@ class F201Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsSessionsTermsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsTermsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -298,7 +282,7 @@ class F201Form extends Component {
           if (error.status == 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: true,
+              isReload: false,
             });
           } else {
             console.log(error);
@@ -315,8 +299,8 @@ class F201Form extends Component {
     data.append("academicsSessionId", academicsSessionId);
     data.append("programmeGroupId", programmeGroupId);
     data.append("termId", termId);
-    data.append("rubricId", 2);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsSessionsEvaluationsTotalNoOfAssessmentView`;
+    data.append("rubricId", 1);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsEvaluationsTotalNoOfAssessmentView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -363,7 +347,7 @@ class F201Form extends Component {
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
     data.append("programmeGroupId", programmeGroupId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsSectionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSectionsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -390,7 +374,7 @@ class F201Form extends Component {
           if (error.status == 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: true,
+              isReload: false,
             });
           } else {
             console.log(error);
@@ -412,8 +396,8 @@ class F201Form extends Component {
     data.append("programmeGroupId", programmeGroupId);
     data.append("termId", termId);
     data.append("sectionId", sectionId);
-    data.append("evaluationTypeId", 1);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsSessionsEvaluationsMaxAssessmentNoView`;
+    data.append("assignmentTypeId", 2);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsEvaluationsMaxAssessmentNoView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -464,45 +448,6 @@ class F201Form extends Component {
       }
   };
 
-  getLetterGrades = async () => {
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsLetterGradesView`;
-    await fetch(url, {
-      method: "POST",
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({ letterGradeMenuItems: json.DATA });
-          } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-          }
-          console.log("getLetterGrades", json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
   loadData = async (sectionId, id=0) => {
     const data = new FormData();
     data.append("id", id);
@@ -510,13 +455,15 @@ class F201Form extends Component {
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("termId", this.state.termId);
     data.append("sectionId", sectionId);
-    data.append("evaluationTypeId", 1);
+    data.append("assignmentTypeId", 2);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonSectionsStudentsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonSectionsStudentsView`;
     await fetch(url, {
       method: "POST",
       body: data,
-      headers: new Headers({Authorization: "Bearer "+localStorage.getItem("uclAdminToken")}),
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
     })
       .then((res) => {
         if (!res.ok) {
@@ -543,7 +490,7 @@ class F201Form extends Component {
                 this.setState({tableData: data.evaluationDetail || []});
               }
             } else {
-              window.location = "#/dashboard/F201Form/0";
+              window.location = "#/dashboard/F211Form/0";
             }
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -554,11 +501,11 @@ class F201Form extends Component {
           if (error.status == 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: true,
+              isReload: false,
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.","error");
           }
         }
       );
@@ -590,7 +537,7 @@ class F201Form extends Component {
     }
     return isValid;
   };
-  
+
   isTermValid = () => {
     let isValid = true;
     if (!this.state.termId) {
@@ -618,19 +565,19 @@ class F201Form extends Component {
   isTableDataValid = () => {
     let isValid = true;
     let studentIds = document.getElementsByName("studentId");
-    let letterGradeIds = document.getElementsByName("letterGradeId");
+    let marks = document.getElementsByName("marks");
     let recordCount  = studentIds.length || 0;
     if(!recordCount){
       isValid = false;
       this.handleOpenSnackbar("No data exist.","error");
     }else{
       for(let i=0; i<recordCount; i++){
-        let eleValue = letterGradeIds[i].value;
-        let eleId = letterGradeIds[i].id;
-        if(eleValue==null || eleValue==0 || eleValue=="0" || eleValue==""){
+        let eleValue = marks[i].value;
+        let eleId = marks[i].id;
+        if(eleValue==null || eleValue==""){
           isValid = false;
           document.getElementById(eleId).focus();
-          this.handleOpenSnackbar("Please select grades for all students.","error");
+          this.handleOpenSnackbar("Please enter marks for all students.","error");
           break;
         }
       }
@@ -645,8 +592,6 @@ class F201Form extends Component {
     switch (name) {
       case "academicSessionId":
         this.setState({
-          programmeGroupIdMenuItems: [],
-					programmeGroupId: "",
           termId:"",
           termMenuItems:[],
           assessmentNo:"",
@@ -708,7 +653,7 @@ class F201Form extends Component {
     let myForm = document.getElementById("myForm");
     let data = new FormData(myForm);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsSessionsEvaluationsSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsAssignmentsEvaluationSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -726,7 +671,7 @@ class F201Form extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             setTimeout(() => {
               if (this.state.recordId != 0) {
-                window.location = "#/dashboard/F201Reports";
+                window.location = "#/dashboard/F211Reports";
               } else {
                 window.location.reload();
               }
@@ -752,13 +697,12 @@ class F201Form extends Component {
   };
 
   viewReport = () => {
-    window.location = "#/dashboard/F201Reports";
+    window.location = "#/dashboard/F211Reports";
   };
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.getAcademicSessions();
-    this.getLetterGrades();
     if (this.state.recordId != 0) {
       this.setState({isEditMode:true});
       this.loadData(0,this.state.recordId);
@@ -800,7 +744,7 @@ class F201Form extends Component {
                 fontSize: "1.5rem"
               }}
             >
-              Subjective Evaluation
+              Assignments Evaluation
             </Typography>
             <Divider
               style={{
@@ -813,7 +757,7 @@ class F201Form extends Component {
               spacing={2}
             >
               <TextField type="hidden" name="assessmentNo" value={this.state.assessmentNo}/>
-              <TextField type="hidden" name="evaluationTypeId" defaultValue={1}/>
+              <TextField type="hidden" name="assignmentTypeId" defaultValue={2}/>
               <Grid item xs={12} md={2}>
                 <TextField
                   id="academicSessionId"
@@ -963,7 +907,7 @@ class F201Form extends Component {
                     <TableRow>
                       <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)', width:"10%"}}>SR#</StyledTableCell>
                       <StyledTableCell align="center">Student</StyledTableCell>
-                      <StyledTableCell align="center" style={{borderRight:'1px solid rgb(29, 95, 152)', minWidth:120, width:"20%"}}>Letter Grade</StyledTableCell>
+                      <StyledTableCell align="center" style={{borderRight:'1px solid rgb(29, 95, 152)', minWidth:120, width:"20%"}}>Marks</StyledTableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -973,8 +917,6 @@ class F201Form extends Component {
                         key={"CRDA"+row+index}
                         rowIndex={index}
                         rowData={row}
-                        onChange={(index) => this.handeDeleteCourseRow(index)}
-                        letterGradeMenuItems={this.state.letterGradeMenuItems}
                         isLoading={this.state.isLoading}
                       />
                     ))
@@ -1018,4 +960,4 @@ class F201Form extends Component {
     );
   }
 }
-export default withStyles(styles)(F201Form);
+export default withStyles(styles)(F211Form);

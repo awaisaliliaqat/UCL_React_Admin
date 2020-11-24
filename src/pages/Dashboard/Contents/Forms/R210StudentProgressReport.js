@@ -127,9 +127,13 @@ class DisplayAdmissionApplications extends Component {
       tableHeaderData: [],
       tableData: [],
       academicSessionLabel: "____-____",
-      programmeGroupLabel: "",
+      programmeLabel: "",
       studentLabel: "",
-      uptoDate: "__/__/____"
+      uptoDate: "__/__/____",
+      totalPOS: "_ _",
+      totalAchieved: "_ _",
+      totalPercentage: "_ _",
+      resultClassification: "_ _ _"
     };
   }
 
@@ -163,11 +167,12 @@ class DisplayAdmissionApplications extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getData = async (sessionId=0, programmeGroupId=0, studentId=0) => {
+  getData = async (sessionId=0, programmeId=0, sessionTermId=0, studentId=0) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", sessionId);
-    data.append("programmeGroupId", programmeGroupId);
+    data.append("programmeId", programmeId);
+    data.append("termId", sessionTermId);
     data.append("studentId", studentId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonStudentProgressReportView`;
     await fetch(url, {
@@ -208,9 +213,13 @@ class DisplayAdmissionApplications extends Component {
             if(dataLength){
               this.setState({
                 studentLabel: data[0].studentLabel,
-                programmeGroupLabel: data[0].programmeGroupLabel,
+                programmeLabel: data[0].programmeLabel,
                 academicSessionLabel: data[0].academicsSessionLabel,
-                uptoDate: this.getDateInString()
+                uptoDate: this.getDateInString(),
+                totalPOS: data[0].totalPOS,
+                totalAchieved: data[0].totalAchieved,
+                totalPercentage: data[0].totalPercentage,
+                resultClassification:  data[0].resultClassification,
               });
               let coursesData = data[0].studentCoursesData || [];
               let coursesDataLength = coursesData.length;
@@ -243,7 +252,7 @@ class DisplayAdmissionApplications extends Component {
                   tableDataRow.push(credits.poss); // col-26
                   tableDataRow.push(credits.achieved); // col-27
                   tableDataRow.push(credits.totalCredits); // col-28
-                  let transcriptGrade = "F";
+                  let transcriptGrade = coursesData[i].internalGrade[0].grade;
                   tableDataRow.push(transcriptGrade); // col-29
                   tableData[i] = tableDataRow; 
                 }
@@ -273,9 +282,9 @@ class DisplayAdmissionApplications extends Component {
   };
 
   componentDidMount() {
-    const { id = "0&0&0" } = this.props.match.params;
+    const { id = "0&0&0&0" } = this.props.match.params;
     let ids = id.split("&");
-    this.getData(ids[0], ids[1], ids[2]);
+    this.getData(ids[0], ids[1], ids[2], ids[3]);
   }
 
   render() {
@@ -311,7 +320,7 @@ class DisplayAdmissionApplications extends Component {
             >
               <span className={classes.title}>University College Lahore</span>
               <br />
-            <span className={classes.subTitle}>{this.state.programmeGroupLabel}</span>
+            <span className={classes.subTitle}>{this.state.programmeLabel}</span>
               <br/>
               <br/>
             <span className={classes.subTitle}>{this.state.studentLabel}</span>
@@ -352,7 +361,7 @@ class DisplayAdmissionApplications extends Component {
               >
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
+                    <StyledTableCell align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
                     <StyledTableCell align="center" colSpan="4">Attendance Record</StyledTableCell>
                     <StyledTableCell align="center" colSpan="9">Assignment Graders</StyledTableCell>
                     <StyledTableCell align="center" colSpan="3">Seminar Grades</StyledTableCell>
@@ -386,15 +395,15 @@ class DisplayAdmissionApplications extends Component {
                         </StyledTableRow>
                       ))}
                       <TableRow>
-                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderBottom:"none"}}>Accumulated Credit:&emsp;</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none"}}>_ _</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none"}}>_ _</StyledTableCell>
-                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none"}}>_ _</StyledTableCell>
-                        <StyledTableCell style={{borderLeft:"none", borderBottom:"none"}}></StyledTableCell>
+                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderBottom:"none", fontWeight:600}}>Accumulated Credit:&emsp;</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>{this.state.totalPOS}</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>{this.state.totalAchieved}</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>{this.state.totalPercentage}</StyledTableCell>
+                        <StyledTableCell style={{borderLeft:"none", borderBottom:"none", fontWeight:600}}></StyledTableCell>
                       </TableRow>
                       <TableRow>
-                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderTop:"none"}}>Result Classification:&emsp;</StyledTableCell>
-                        <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none"}}>&emsp;Fail</StyledTableCell>
+                        <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderTop:"none", fontWeight:600}}>Result Classification:&emsp;</StyledTableCell>
+                        <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none", fontWeight:600}}>&emsp;{this.state.resultClassification}</StyledTableCell>
                       </TableRow>
                       </Fragment>
                     ):(
@@ -406,13 +415,15 @@ class DisplayAdmissionApplications extends Component {
                 </TableBody>
               </Table>
             </TableContainer>
+            {/* 
             <br/><br/><br/><br/><br/><br/><br/><br/>
             <div>
               <div style={{width:550}}> <hr style={{backgroundColor:"#A9A9A9", height:5}} /></div>
               <span style={{fontSize:24, fontWeight:"600"}}>For an explanation of the report see overleaf</span>
               <br/>
               <span><small>Date of printing&emsp;&emsp;&emsp;{this.getDateInString()}</small></span>
-            </div>
+            </div> 
+            */}
           </div>
           <div className={classes.bottomSpace}></div>
         </div>

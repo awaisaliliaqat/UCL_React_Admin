@@ -6,7 +6,7 @@ import {Column, FilteringState, GroupingState, IntegratedFiltering, IntegratedGr
 import {DragDropProvider, Grid, GroupingPanel, PagingPanel, Table, TableFilterRow, TableGroupRow, TableHeaderRow,
   TableSelection, Toolbar, VirtualTable, TableColumnResizing} from "@devexpress/dx-react-grid-material-ui";
 
-class F202ReportsTableComponent extends Component {
+class F211ReportsTableComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -94,4 +94,4 @@ class F202ReportsTableComponent extends Component {
   }
 }
 
-export default F202ReportsTableComponent;
+export default F211ReportsTableComponent;
