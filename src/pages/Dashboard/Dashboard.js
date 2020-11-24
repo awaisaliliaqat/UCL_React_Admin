@@ -128,6 +128,7 @@ import R210Reports from "./Contents/Forms/R210Reports";
 import F211Form from "./Contents/Forms/F211Form";
 import F211Reports from "./Contents/Forms/F211Reports";
 import F212Form from "./Contents/Forms/F212Form";
+import R213Reports from "./Contents/Forms/R213Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 
 const drawerWidth = 283;
@@ -1710,7 +1711,22 @@ const Dashboard = (props) => {
                     />
                   );
                 }}
-              />              
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R213Reports"
+                exact
+                path="/dashboard/R213Reports"
+                render={(props) => {
+                  return (
+                    <R213Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"
