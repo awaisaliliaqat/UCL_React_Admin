@@ -296,7 +296,7 @@ class R213Reports extends Component {
                 id="programmeId"
                 name="programmeId"
                 variant="outlined"
-                label="Programme Group"
+                label="Programme"
                 onChange={this.onHandleChange}
                 value={this.state.programmeId}
                 error={!!this.state.programmeIdError}
