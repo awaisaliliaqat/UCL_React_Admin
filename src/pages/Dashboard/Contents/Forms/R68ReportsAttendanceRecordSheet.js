@@ -51,6 +51,7 @@ const styles = (theme) => ({
     height: "100%",
     backgroundColor: "rgba(0,0,0,0.2)",
     zIndex: 2,
+    marginTop:-10
   },
   overlayContent: {
     display: "flex",
@@ -59,7 +60,7 @@ const styles = (theme) => ({
     alignItems: "center",
     marginTop: "300px",
     color: "white",
-    fontSize: 48,
+    fontSize: 48
   },
   headerContainer: {
     display: "flex",
@@ -323,7 +324,7 @@ class DisplayAdmissionApplications extends Component {
                         
                           row2.isCourse === 1 ?
                             <TableRow>
-                              <StyledTableCell colSpan="8" style={{ backgroundColor: "#C0C0C0", color:"#FFF" }}>&emsp;{row2.courseLabel}</StyledTableCell>
+                              <StyledTableCell colSpan="8" style={{ backgroundColor: "#b7bcc8", color:"#FFF" }}>&emsp;{row2.courseLabel}</StyledTableCell>
                             </TableRow>
                             :
                             <TableRow key={"row" + row2.courseId + index2}>
