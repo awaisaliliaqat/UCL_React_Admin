@@ -67,7 +67,8 @@ const ClassScheduleFilter = props => {
                         variant="inline"
                         inputVariant="outlined"
                         format="dd-MMM-yyyy"
-                        disablePast
+                        minDate="2020-01-01"
+                        //disablePast
                         fullWidth
                         value={values.classDate}
                         InputProps={{

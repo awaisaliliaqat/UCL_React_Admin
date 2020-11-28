@@ -342,11 +342,12 @@ class F203Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  getSections = async (AcademicSessionId) => {
+  getSections = async (academicsSessionId=0, programmeGroupId=0) => {
     this.setState({ isLoading: true });
     let data = new FormData();
-    data.append("academicsSessionId", AcademicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsTeacherSectionsView`;
+    data.append("academicsSessionId", academicsSessionId);
+    data.append("programmeGroupId", programmeGroupId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSectionsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -421,7 +422,7 @@ class F203Form extends Component {
                 this.loadData(sectionId);
                 this.setState({isLoadingData: true});
               }else{
-                this.handleOpenSnackbar(<span>All Assessments complated.</span>,"error");
+                this.handleOpenSnackbar(<span>All assessments complete.</span>,"error");
               }
               this.setState({assessmentNo: data[0].maxAssessmentNo});
             }
@@ -606,9 +607,11 @@ class F203Form extends Component {
           termId: "",
           totalNoOfAssessment:"",
           assessmentNo:"",
+          sectionMenuItems: [],
           sectionId:"",
           tableData:[]
         });
+        this.getSections(this.state.academicSessionId, value);
       break;
       case "termId":
         this.setState({
@@ -700,7 +703,6 @@ class F203Form extends Component {
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.getAcademicSessions();
-    this.getSections();
     if (this.state.recordId != 0) {
       this.setState({isEditMode:true});
       this.loadData(0,this.state.recordId);

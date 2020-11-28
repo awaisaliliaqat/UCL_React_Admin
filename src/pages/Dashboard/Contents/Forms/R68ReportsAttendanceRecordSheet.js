@@ -51,6 +51,7 @@ const styles = (theme) => ({
     height: "100%",
     backgroundColor: "rgba(0,0,0,0.2)",
     zIndex: 2,
+    marginTop:-10
   },
   overlayContent: {
     display: "flex",
@@ -59,7 +60,7 @@ const styles = (theme) => ({
     alignItems: "center",
     marginTop: "300px",
     color: "white",
-    fontSize: 48,
+    fontSize: 48
   },
   headerContainer: {
     display: "flex",
@@ -320,16 +321,22 @@ class DisplayAdmissionApplications extends Component {
                           <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.teacherLabel}</b></StyledTableCell>
                         </TableRow>
                         {row.teacherCourseData.map((row2, index2) => 
-                          <TableRow key={"row" + row2.courseId + index2}>
-                            <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                            <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
-                          </TableRow>
+                        
+                          row2.isCourse === 1 ?
+                            <TableRow>
+                              <StyledTableCell colSpan="8" style={{ backgroundColor: "#b7bcc8", color:"#FFF" }}>&emsp;{row2.courseLabel}</StyledTableCell>
+                            </TableRow>
+                            :
+                            <TableRow key={"row" + row2.courseId + index2}>
+                              <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>&emsp;&emsp;{ row2.courseLabel}</StyledTableCell>
+                              <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
+                              <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
+                              <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                              <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                              <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                              <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                              <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
+                            </TableRow>
                         )}
                       </Fragment>
                     ))
