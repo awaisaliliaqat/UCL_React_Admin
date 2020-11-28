@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Paper, Divider, CircularProgress, Grid, Button, Checkbox} from "@material-ui/core";
+  TableHead, TableRow, Paper, Divider, CircularProgress, Grid, Button, Checkbox,
+  FormGroup, FormControlLabel, FormControl} from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
@@ -70,6 +71,7 @@ class R46Reports extends Component {
       startTimes: [],
       startTime: "",
       startTimeError: "",
+      isTeacherOnly: false
     };
   }
 
@@ -230,16 +232,14 @@ class R46Reports extends Component {
   };
 
   getData = async (sectionId,classDate,startTime) => {
-
-
-
-    console.log("startTime"+startTime);
-
-    this.setState({isLoading: true});
     let data = new FormData();
     data.append("sectionId", sectionId);
     data.append("startTime", startTime);
     data.append("classDate", classDate);
+    this.setState({
+      isLoading: true,
+      isTeacherOnly: false
+    });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C62CommonStudentsView`;
     await fetch(url, {
       method: "POST",
@@ -307,7 +307,9 @@ class R46Reports extends Component {
               tableData:[],
               preDate:this.getTodaysDate(),
               sectionId:{},
-              courseId:""
+              courseId:"",
+              startTime:"",
+              startTimes:[]
             });
             setTimeout(() => {
                 //window.location.reload();
@@ -386,6 +388,14 @@ class R46Reports extends Component {
       [errName]: "",
     });
   };
+
+  handleChangeCheckbox = (e) => {
+    const { name, checked } = e.target;
+    this.setState({[name]: checked});
+    if(checked){
+      this.setState({tableData:[]});
+    }
+  }
 
   isCourseValid = () => {
     let isValid = true;        
@@ -533,7 +543,7 @@ class R46Reports extends Component {
                   variant="outlined"
                   onChange={this.onHandleChange}
                   value={this.state.startTime}
-                  error={this.state.startTimeError}
+                  error={!!this.state.startTimeError}
                   select
                 >
                   {this.state.startTimes.map((item) => (
@@ -571,9 +581,20 @@ class R46Reports extends Component {
             <Grid item xs={12}>
               <form id="myForm">
                 <TextField type="hidden" name="classDate" value={this.getDateInString(this.state.preDate)}/>
-               
                 <TextField type="hidden" name="sectionId" value={this.state.sectionId.id}/>
                 <TextField type="hidden" name="startTime" value={this.state.startTime}/>
+                <FormControl component="fieldset">
+                  <FormGroup aria-label="position" row>
+                    <FormControlLabel
+                      name="isTeacherOnly"
+                      value="1"
+                      control={<Checkbox color="primary" checked={this.state.isTeacherOnly} onChange={this.handleChangeCheckbox} name="isTeacherOnly" />}
+                      label="Teacher Only"
+                      labelPlacement="end"
+                      disabled={!this.state.startTime}
+                    />
+                  </FormGroup>
+                </FormControl>
                 <TableContainer component={Paper} style={{overflowX:"inherit"}}>
                   <Table size="small" className={classes.table} aria-label="customized table">
                       <TableHead>
@@ -628,7 +649,7 @@ class R46Reports extends Component {
             bottomRightButtonAction={this.onFormSubmit}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.tableData.length}
+            disableRightButton={!this.state.tableData.length && !this.state.isTeacherOnly}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
