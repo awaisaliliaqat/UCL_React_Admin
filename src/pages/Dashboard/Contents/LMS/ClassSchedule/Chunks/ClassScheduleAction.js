@@ -32,7 +32,9 @@ function isEmpty(obj) {
 }
 
 const ClassScheduleAction = props => {
+    
     const { values, handleClose, open, onSaveClick, handleDateChange, onHandleChange, onAutoCompleteChange } = props;
+    
     const classes = useStyles();
 
     return (
@@ -66,7 +68,8 @@ const ClassScheduleAction = props => {
                                 format="dd-MM-yyyy"
                                 fullWidth
                                 name="scheduleDate"
-                                minDate={new Date().setDate(new Date().getDate() + 1)}
+                                //minDate={new Date().setDate(new Date().getDate() + 1)}
+                                minDate={values.scheduleDate || new Date().setDate(new Date().getDate() + 1)}
                                 value={values.scheduleDate}
                                 error={values.scheduleDateError}
                                 onChange={(date) => handleDateChange(date, "scheduleDate")}
