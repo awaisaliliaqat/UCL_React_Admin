@@ -34,6 +34,7 @@ class F212FormTableComponent extends Component {
       pageSizes: [5, 10, 25],
       defaultSorting: [],
       sortingStateColumnExtensions: [
+        { columnName: "changeStatusAction", sortingEnabled: false },
         { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
