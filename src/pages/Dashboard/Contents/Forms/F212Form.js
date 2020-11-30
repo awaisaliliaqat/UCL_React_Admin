@@ -70,6 +70,9 @@ class F212Form extends Component {
       coursesMenuItems: [],
       courseId: "",
       courseIdError: "",
+      applicationFilterStatusMenuItems: [],
+      applicationFilterStatus: 0,
+      applicationFilterStatusError: "",
       applicationStatusMenuItems: [],
       applicationStatus: 0,
       applicationStatusError: "",
@@ -278,6 +281,47 @@ class F212Form extends Component {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log("loadCourse", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+  loadFilterApplicationStatus = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentApplicationStatusFilterView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({applicationFilterStatusMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadApplicationStatus", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -1253,18 +1297,18 @@ class F212Form extends Component {
                       variant="outlined"
                       label="Application Status"
                       onChange={this.onHandleChange}
-                      value={this.state.applicationStatus}
-                      error={!!this.state.applicationStatusError}
-                      helperText={this.state.applicationStatusError}
+                      value={this.state.applicationFilterStatus}
+                      error={!!this.state.applicationFilterStatusError}
+                      helperText={this.state.applicationFilterStatusError}
                       fullWidth
                       select
                       disabled={!this.state.programmeGroupId}
                     >
                       <MenuItem value={0}>Any</MenuItem>
-                      {this.state.applicationStatusMenuItems ? 
-                        this.state.applicationStatusMenuItems.map((dt, i) => (
+                      {this.state.applicationFilterStatusMenuItems ? 
+                        this.state.applicationFilterStatusMenuItems.map((dt, i) => (
                           <MenuItem
-                            key={"applicationStatusMenuItems"+dt.id}
+                            key={"applicationFilterStatusMenuItems"+dt.id}
                             value={dt.id}
                           >
                             {dt.label}
