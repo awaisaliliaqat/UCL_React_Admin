@@ -1305,7 +1305,6 @@ class F212Form extends Component {
                       select
                       disabled={!this.state.programmeGroupId}
                     >
-                      <MenuItem value={0}>Any</MenuItem>
                       {this.state.applicationStatusFilterMenuItems ? 
                         this.state.applicationStatusFilterMenuItems.map((dt, i) => (
                           <MenuItem
