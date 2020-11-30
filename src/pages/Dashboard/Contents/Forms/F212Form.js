@@ -70,9 +70,9 @@ class F212Form extends Component {
       coursesMenuItems: [],
       courseId: "",
       courseIdError: "",
-      applicationFilterStatusMenuItems: [],
-      applicationFilterStatus: 0,
-      applicationFilterStatusError: "",
+      applicationStatusFilterMenuItems: [],
+      applicationStatusFilterId: 0,
+      applicationStatusFilterIdError: "",
       applicationStatusMenuItems: [],
       applicationStatus: 0,
       applicationStatusError: "",
@@ -298,7 +298,7 @@ class F212Form extends Component {
     this.setState({isLoading: false});
   };
 
-  loadFilterApplicationStatus = async () => {
+  loadApplicationStatusFilter = async () => {
     this.setState({isLoading: true});
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentApplicationStatusFilterView`;
     await fetch(url, {
@@ -316,12 +316,12 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({applicationFilterStatusMenuItems: json.DATA || []});
+            this.setState({applicationStatusFilterMenuItems: json.DATA || []});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("loadApplicationStatus", json);
+          console.log("loadApplicationStatusFilter", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -602,7 +602,7 @@ class F212Form extends Component {
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("programmeId", this.state.programmeId);
     data.append("courseId", this.state.courseId);
-    data.append("applicationStatusId", this.state.applicationStatus);
+    data.append("applicationStatusFilterId", this.state.applicationStatusFilterId);
     data.append("renewalStatusId", this.state.renewalStatus);
     data.append("examEntryStatusId", this.state.examEntryStatus);
     data.append("pathwayId", this.state.pathway);
@@ -1095,6 +1095,7 @@ class F212Form extends Component {
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.loadAcademicSessions();
+    this.loadApplicationStatusFilter();
     this.loadApplicationStatus();
     this.loadRenewalStatus();
     this.loadExamEntryStatus();
@@ -1292,23 +1293,23 @@ class F212Form extends Component {
                   </Grid>
                   <Grid item xs={12} md={3}>
                     <TextField
-                      id="applicationStatus"
-                      name="applicationStatus"
+                      id="applicationStatusFilterId"
+                      name="applicationStatusFilterId"
                       variant="outlined"
                       label="Application Status"
                       onChange={this.onHandleChange}
-                      value={this.state.applicationFilterStatus}
-                      error={!!this.state.applicationFilterStatusError}
-                      helperText={this.state.applicationFilterStatusError}
+                      value={this.state.applicationStatusFilterId}
+                      error={!!this.state.applicationStatusFilterIdError}
+                      helperText={this.state.applicationStatusFilterIdError}
                       fullWidth
                       select
                       disabled={!this.state.programmeGroupId}
                     >
                       <MenuItem value={0}>Any</MenuItem>
-                      {this.state.applicationFilterStatusMenuItems ? 
-                        this.state.applicationFilterStatusMenuItems.map((dt, i) => (
+                      {this.state.applicationStatusFilterMenuItems ? 
+                        this.state.applicationStatusFilterMenuItems.map((dt, i) => (
                           <MenuItem
-                            key={"applicationFilterStatusMenuItems"+dt.id}
+                            key={"applicationStatusFilterMenuItems"+dt.id}
                             value={dt.id}
                           >
                             {dt.label}
