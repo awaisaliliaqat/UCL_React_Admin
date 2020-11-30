@@ -71,7 +71,7 @@ class F212Form extends Component {
       courseId: "",
       courseIdError: "",
       applicationStatusFilterMenuItems: [],
-      applicationStatusFilterId: 0,
+      applicationStatusFilterId: 1,
       applicationStatusFilterIdError: "",
       applicationStatusMenuItems: [],
       applicationStatus: 0,
