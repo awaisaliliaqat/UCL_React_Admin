@@ -44,7 +44,7 @@ class F212FormTableComponent extends Component {
         { columnName: "renewalStatusLabel", wordWrapEnabled: true },
         { columnName: "examEntryStatusLabel", wordWrapEnabled: true },
         { columnName: "pathwayLabel", wordWrapEnabled: true },
-        { columnName: "uolNumber", width: 100 },
+        { columnName: "uolNumber", width: 110, wordWrapEnabled: true },
         { columnName: "changeStatusAction", width: 90, align:"center"},
         { columnName: "action", width: 110, align:"center"},
       ],
