@@ -26,10 +26,9 @@ class R213Reports extends Component {
       academicSessionId: "",
       academicSessionLabel: "",
       academicSessionIdError: "",
-      programmeGroupIdMenuItems: [],
-      programmeGroupId: "",
-      programmeGroupLabel: "",
-      programmeGroupIdError: ""
+      programmeIdMenuItems: [],
+      programmeId: "",
+      programmeIdError: ""
     };
   }
 
@@ -72,7 +71,7 @@ class R213Reports extends Component {
             let res = data.find((obj) => obj.isActive === 1);
             if(res){
               this.setState({academicSessionId: res.ID});
-              this.loadProgrammeGroups(res.ID);
+              this.loadProgrammes(res.ID);
             }
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
@@ -94,7 +93,7 @@ class R213Reports extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadProgrammeGroups = async (AcademicSessionId) => {
+  loadProgrammes = async (AcademicSessionId) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", AcademicSessionId);
@@ -115,11 +114,11 @@ class R213Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ programmeGroupIdMenuItems: json.DATA });
+            this.setState({ programmeIdMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("loadProgrammeGroups", json);
+          console.log("loadProgrammes", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -142,7 +141,7 @@ class R213Reports extends Component {
     let regex = "";
     switch (name) {
       case "academicSessionId":
-        this.loadProgrammeGroups(value);
+        this.loadProgrammes(value);
       break;
       default:
     }
@@ -164,14 +163,14 @@ class R213Reports extends Component {
     return isValid;
   };
 
-  isProgrammeGroupValid = () => {
+  isProgrammeValid = () => {
     let isValid = true;
-    if (!this.state.programmeGroupId) {
-      this.setState({ programmeGroupIdError: "Please select programme group." });
-      document.getElementById("programmeGroupId").focus();
+    if (!this.state.programmeId) {
+      this.setState({ programmeIdError: "Please select programme." });
+      document.getElementById("programmeId").focus();
       isValid = false;
     } else {
-      this.setState({ programmeGroupIdError: "" });
+      this.setState({ programmeIdError: "" });
     }
     return isValid;
   };
@@ -179,13 +178,13 @@ class R213Reports extends Component {
   downloadZipFile = async () => {
     if(
       !this.isAcademicSessionValid() ||
-      !this.isProgrammeGroupValid() 
+      !this.isProgrammeValid() 
     ) {return;}
     this.setState({isLoading: true});
     let fileLabel = "Print_Envelope_Subject.zip";
     let data = new FormData();
     data.append("academicSessionId", this.state.academicSessionId);
-    data.append("programmeGroupId", this.state.programmeGroupId);
+    data.append("programmeId", this.state.programmeId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C213CommonAcademicsStudentsPdfDownload`;
     await fetch(url, {
       method: "POST",
@@ -294,23 +293,23 @@ class R213Reports extends Component {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                id="programmeGroupId"
-                name="programmeGroupId"
+                id="programmeId"
+                name="programmeId"
                 variant="outlined"
-                label="Programme Group"
+                label="Programme"
                 onChange={this.onHandleChange}
-                value={this.state.programmeGroupId}
-                error={!!this.state.programmeGroupIdError}
-                helperText={this.state.programmeGroupIdError}
+                value={this.state.programmeId}
+                error={!!this.state.programmeIdError}
+                helperText={this.state.programmeIdError}
                 disabled={!this.state.academicSessionId}
                 required
                 fullWidth
                 select
               >
-                {this.state.programmeGroupIdMenuItems ? (
-                  this.state.programmeGroupIdMenuItems.map((dt, i) => (
+                {this.state.programmeIdMenuItems ? (
+                  this.state.programmeIdMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"programmeGroupIdMenuItems"+dt.ID}
+                      key={"programmeIdMenuItems"+dt.ID}
                       value={dt.ID}
                     >
                       {dt.Label}
@@ -332,7 +331,7 @@ class R213Reports extends Component {
             bottomRightButtonAction={this.downloadZipFile}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.programmeGroupId || this.state.isLoading}
+            disableRightButton={!this.state.programmeId || this.state.isLoading}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
