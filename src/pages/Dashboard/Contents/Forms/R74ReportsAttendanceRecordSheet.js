@@ -130,7 +130,7 @@ class R74ReportsAttendanceRecordSheet extends Component {
       toDateLabel: "",
       tableData: [],
       academicSessionLabel: "",
-      programmeGroupLabel: "",
+      sectionLabel: "",
     };
   }
 
@@ -171,7 +171,7 @@ class R74ReportsAttendanceRecordSheet extends Component {
     data.append("sectionId", sectionId);
     data.append("fromDate", this.getDateInString(fromDate));
     data.append("toDate", this.getDateInString(toDate));
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C74CommonTeacherSectionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C74StudentsSectionAttandance`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -224,12 +224,14 @@ class R74ReportsAttendanceRecordSheet extends Component {
   componentDidMount() {
     const { id = "0&0&0&0" } = this.props.match.params;
     let ids = id.split("&");
-    console.log(ids[0] + " - " + ids[1] + " - " + ids[2] + " - " + ids[3]);
+    console.log(ids[0] + " - " + ids[1] + " - " + ids[2] + " - " + ids[3]+"-"+ids[4]);
     this.getDateInString(ids[2]);
     this.getData(ids[0], ids[1], ids[2], ids[3]);
     this.setState({
       fromDateLabel: this.getDateInString(ids[2]),
-      toDateLabel: this.getDateInString(ids[3])
+      toDateLabel: this.getDateInString(ids[3]),
+      sectionLabel: ids[4],
+      academicSessionLabel: ids[5],
     });
   }
 
@@ -272,9 +274,9 @@ class R74ReportsAttendanceRecordSheet extends Component {
                 </small>
                 <br />
                 <small>
-                  {this.state.programmeGroupLabel +
+                  {this.state.academicSessionLabel +
                     " - " +
-                    this.state.academicSessionLabel}
+                    this.state.sectionLabel}
                 </small>
               </span>
             </div>
@@ -288,21 +290,19 @@ class R74ReportsAttendanceRecordSheet extends Component {
                 aria-label="customized table"
               >
                 <TableHead>
-                  <TableRow>
+                  {/* <TableRow>
                     <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
                     <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
                     <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
                     <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
                     <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
-                  </TableRow>
+                  </TableRow> */}
                   <TableRow>
                     {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>STUDENTS</StyledTableCell>
                     <StyledTableCell align="center">Schedule</StyledTableCell>
                     <StyledTableCell align="center">Attended</StyledTableCell>
-                    <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
-                    <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
                     {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                   </TableRow>
                 </TableHead>
@@ -311,25 +311,32 @@ class R74ReportsAttendanceRecordSheet extends Component {
                     this.state.tableData.map((row, index) => (
                       <Fragment key={"row" + row.studentId + index}>
                         <TableRow>
-                          <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
+                          <StyledTableCell align="left" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
+                          <StyledTableCell align="center">{row.scheduled}</StyledTableCell>
+                          <StyledTableCell align="center">{row.attandance}</StyledTableCell>
+                          <StyledTableCell align="center">{row.attandancePercentage}</StyledTableCell>
+                          
                         </TableRow>
-                        {row.teacherCourseData.map((row2, index2) => 
-                          <TableRow key={"row" + row2.courseId + index2}>
-                            <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                            <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
-                          </TableRow>
-                        )}
+                        {/* {row.teacherCourseData.map((row2, index2) => 
+                         <TableRow>
+                            <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
+                         </TableRow>
+                          // <TableRow key={"row" + row2.courseId + index2}>
+                          //   <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
+                          //   <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
+                          //   <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
+                          //   <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                          //   <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                          //   <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                          //   <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                          //   <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
+                          // </TableRow>
+                        )} */}
                       </Fragment>
                     ))
                   ) : (
                     <TableRow>
-                      <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
+                      <StyledTableCell colSpan="3">&nbsp;</StyledTableCell>
                     </TableRow>
                   )}
                 </TableBody>

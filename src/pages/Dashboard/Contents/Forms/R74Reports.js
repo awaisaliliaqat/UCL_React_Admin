@@ -28,7 +28,7 @@ class R74Reports extends Component {
       academicSessionIdError: "",
       sectionIdMenuItems: [],
       sectionId: "",
-      programmeGroupLabel: "",
+      sectionLabel: "",
       sectionIdError: "",
       fromDate: new Date(),
       fromDateError: "",
@@ -186,6 +186,9 @@ class R74Reports extends Component {
         this.loadSections(value);
         break;
       case "sectionId":
+        this.setState({
+         sectionLabel: name
+        });
         break;
       default:
         break;
@@ -199,7 +202,7 @@ class R74Reports extends Component {
   isCourseValid = () => {
     let isValid = true;
     if (!this.state.sectionId) {
-      this.setState({ sectionIdError: "Please select course." });
+      this.setState({ sectionIdError: "Please select section." });
       document.getElementById("sectionId").focus();
       isValid = false;
     } else {
@@ -212,8 +215,9 @@ class R74Reports extends Component {
     let fromDate = new Date(this.state.fromDate).getTime();
     let toDate = new Date(this.state.toDate).getTime();
     let programmeGroup = this.state.sectionId;
+    
     console.log(fromDate + "-" + toDate);
-    window.open(`#/R74ReportsAttendanceRecordSheet/${this.state.academicSessionId+"&"+this.state.sectionId+"&"+fromDate+"&"+toDate+"&"+this.state.programmeGroupLabel+"&"+this.state.academicSessionLabel}`,"_blank");
+    window.open(`#/R74ReportsAttendanceRecordSheet/${this.state.academicSessionId+"&"+this.state.sectionId+"&"+fromDate+"&"+toDate+"&"+this.state.sectionLabel+"&"+this.state.academicSessionLabel}`,"_blank");
   };
 
   componentDidMount() {
