@@ -183,15 +183,19 @@ class R74Reports extends Component {
     let regex = "";
     switch (name) {
       case "academicSessionId":
+        let res1 = this.state.academicSessionIdMenuItems.find((obj) => obj.ID === value );
+        if(res1){
+          this.setState({academicSessionLabel: res2.Label});
+        }
         this.loadSections(value);
-        break;
+       break;
       case "sectionId":
-        this.setState({
-         sectionLabel: name
-        });
-        break;
+        let res2 = this.state.sectionIdMenuItems.find((obj) => obj.Id === value );
+        if(res2){
+          this.setState({sectionLabel: res2.Label});
+        }
+       break;
       default:
-        break;
     }
     this.setState({
       [name]: value,
