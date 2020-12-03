@@ -143,7 +143,7 @@ class F212FormChangeStatusPopup extends Component {
                   <TextField
                     name="renewalStatusId"
                     variant="outlined"
-                    label="Select"
+                    label="Renewal Status"
                     defaultValue={data.renewalStatusId || ""}
                     fullWidth
                     select
@@ -165,7 +165,7 @@ class F212FormChangeStatusPopup extends Component {
                   <TextField
                     name="examEntryStatusId"
                     variant="outlined"
-                    label="Select"
+                    label="Exam Entry Status"
                     defaultValue={data.examEntryStatusId || ""}
                     fullWidth
                     select
@@ -187,7 +187,7 @@ class F212FormChangeStatusPopup extends Component {
                   <TextField
                     name="pathwayId"
                     variant="outlined"
-                    label="Select"
+                    label="Pathway"
                     defaultValue={data.pathwayId || ""}
                     fullWidth
                     select
