@@ -185,7 +185,11 @@ class R74Reports extends Component {
       case "academicSessionId":
         let res1 = this.state.academicSessionIdMenuItems.find((obj) => obj.ID === value );
         if(res1){
-          this.setState({academicSessionLabel: res2.Label});
+          this.setState({
+            academicSessionLabel: res1.Label,
+            sectionId: "",
+            sectionIdMenuItems: []
+          });
         }
         this.loadSections(value);
        break;
