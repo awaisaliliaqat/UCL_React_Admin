@@ -311,27 +311,11 @@ class R74ReportsAttendanceRecordSheet extends Component {
                     this.state.tableData.map((row, index) => (
                       <Fragment key={"row" + row.studentId + index}>
                         <TableRow>
-                          <StyledTableCell align="left" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
+                          <StyledTableCell align="left" style={{ borderLeft: "1px solid rgb(47, 87, 165)", backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
                           <StyledTableCell align="center">{row.scheduled}</StyledTableCell>
                           <StyledTableCell align="center">{row.attandance}</StyledTableCell>
-                          <StyledTableCell align="center">{row.attandancePercentage}</StyledTableCell>
-                          
+                          <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row.attandancePercentage}</StyledTableCell>
                         </TableRow>
-                        {/* {row.teacherCourseData.map((row2, index2) => 
-                         <TableRow>
-                            <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
-                         </TableRow>
-                          // <TableRow key={"row" + row2.courseId + index2}>
-                          //   <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
-                          //   <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
-                          //   <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
-                          //   <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                          //   <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                          //   <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                          //   <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                          //   <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
-                          // </TableRow>
-                        )} */}
                       </Fragment>
                     ))
                   ) : (
