@@ -79,7 +79,7 @@ class R74Reports extends Component {
             ) {
               if (this.state.academicSessionIdMenuItems[i].isActive == "1") {
                 var tempid = this.state.academicSessionIdMenuItems[i].ID;
-                this.loadProgrammeGroups(tempid);
+                this.loadSections(tempid);
                 this.state.academicSessionId = tempid;
                 this.setState({
                   academicSessionLabel: this.state.academicSessionIdMenuItems[i]
@@ -117,7 +117,7 @@ class R74Reports extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadProgrammeGroups = async (AcademicSessionId) => {
+  loadSections = async (AcademicSessionId) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", AcademicSessionId);
@@ -149,7 +149,7 @@ class R74Reports extends Component {
               "error"
             );
           }
-          console.log("loadProgrammeGroups", json);
+          console.log("loadSections", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -183,26 +183,9 @@ class R74Reports extends Component {
     let regex = "";
     switch (name) {
       case "academicSessionId":
-        for (var i = 0; i < this.state.academicSessionIdMenuItems.length; i++) {
-          if (value == this.state.academicSessionIdMenuItems[i].Id) {
-            this.setState({
-              academicSessionLabel: this.state.academicSessionIdMenuItems[i]
-                .Label,
-            });
-          }
-        }
-        this.loadProgrammeGroups(value);
+        this.loadSections(value);
         break;
       case "sectionId":
-        for (var i = 0; i < this.state.sectionIdMenuItems.length; i++) {
-          if (value == this.state.sectionIdMenuItems[i].Id) {
-            this.setState({
-              programmeGroupLabel: this.state.sectionIdMenuItems[i]
-                .Label,
-            });
-          }
-        }
-
         break;
       default:
         break;
@@ -307,7 +290,7 @@ class R74Reports extends Component {
                 id="sectionId"
                 name="sectionId"
                 variant="outlined"
-                label="Programme"
+                label="Section"
                 onChange={this.onHandleChange}
                 value={this.state.sectionId}
                 error={!!this.state.sectionIdError}
