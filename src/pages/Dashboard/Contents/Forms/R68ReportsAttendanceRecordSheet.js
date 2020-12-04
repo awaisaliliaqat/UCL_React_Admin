@@ -296,6 +296,22 @@ class DisplayAdmissionApplications extends Component {
               >
                 <TableHead>
                   <TableRow>
+<<<<<<< HEAD
+                    <StyledTableCell
+                      style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}
+                    >
+                      Course
+                    </StyledTableCell>
+                    <StyledTableCell align="center">Lectures</StyledTableCell>
+                    <StyledTableCell align="center">Tutorials</StyledTableCell>
+                    <StyledTableCell
+                      align="center"
+                      colSpan="1"
+                      style={{ borderRight: "1px solid rgb(47, 87, 165)" }}
+                    >
+                      Total
+                    </StyledTableCell>
+=======
                     <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
                     <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
                     <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
@@ -311,6 +327,7 @@ class DisplayAdmissionApplications extends Component {
                     <StyledTableCell align="center">Schedule</StyledTableCell>
                     <StyledTableCell align="center">Delivered</StyledTableCell>
                     {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+>>>>>>> edeb9aab527ca748770e32bec6a190543894dcae
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -318,6 +335,41 @@ class DisplayAdmissionApplications extends Component {
                     this.state.tableData.map((row, index) => (
                       <Fragment key={"row" + row.teacherId + index}>
                         <TableRow>
+<<<<<<< HEAD
+                          <StyledTableCell
+                            colSpan="4"
+                            style={{ backgroundColor: "#e1e3e8" }}
+                          >
+                            <b>{row.teacherLabel}</b>
+                          </StyledTableCell>
+                        </TableRow>
+                        {row.teacherCourseData.map((row2, index2) => (
+                          <TableRow key={"row" + row2.courseId + index2}>
+                            <StyledTableCell
+                              style={{
+                                borderLeft: "1px solid rgb(47, 87, 165)",
+                              }}
+                            >
+                              {row2.courseLabel}
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                              {row2.attandanceCountLectures}
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                              {row2.attandanceCountTutorials}
+                            </StyledTableCell>
+                            <StyledTableCell
+                              align="center"
+                              style={{
+                                borderRight: "1px solid rgb(47, 87, 165)",
+                              }}
+                            >
+                              {row2.attandanceCountLectures +
+                                row2.attandanceCountTutorials}
+                            </StyledTableCell>
+                          </TableRow>
+                        ))}
+=======
                           <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.teacherLabel}</b></StyledTableCell>
                         </TableRow>
                         {row.teacherCourseData.map((row2, index2) => 
@@ -338,11 +390,16 @@ class DisplayAdmissionApplications extends Component {
                               <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
                             </TableRow>
                         )}
+>>>>>>> edeb9aab527ca748770e32bec6a190543894dcae
                       </Fragment>
                     ))
                   ) : (
                     <TableRow>
+<<<<<<< HEAD
+                      <StyledTableCell colSpan="9"></StyledTableCell>
+=======
                       <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
+>>>>>>> edeb9aab527ca748770e32bec6a190543894dcae
                     </TableRow>
                   )}
                 </TableBody>
