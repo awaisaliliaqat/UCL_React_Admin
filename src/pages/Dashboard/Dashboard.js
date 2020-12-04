@@ -100,6 +100,7 @@ import R71Reports from "./Contents/Forms/R71Reports";
 import F72Form from "./Contents/Forms/F72Form";
 import F72Reports from "./Contents/Forms/F72Reports";
 import R73Reports from "./Contents/Forms/R73Reports";
+import R74Reports from "./Contents/Forms/R74Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentStatus from "./Contents/Decision/ChangeStudentStatus/ChangeStudentStatus";
 import SyncTimeTable from "./Contents/LMS/SyncTimeTable/SyncTimeTable";
@@ -1182,6 +1183,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R73Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R74Reports"
+                exact
+                path="/dashboard/R74Reports"
+                render={(props) => {
+                  return (
+                    <R74Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

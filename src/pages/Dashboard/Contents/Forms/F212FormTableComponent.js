@@ -34,6 +34,7 @@ class F212FormTableComponent extends Component {
       pageSizes: [5, 10, 25],
       defaultSorting: [],
       sortingStateColumnExtensions: [
+        { columnName: "changeStatusAction", sortingEnabled: false },
         { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
@@ -44,7 +45,7 @@ class F212FormTableComponent extends Component {
         { columnName: "renewalStatusLabel", wordWrapEnabled: true },
         { columnName: "examEntryStatusLabel", wordWrapEnabled: true },
         { columnName: "pathwayLabel", wordWrapEnabled: true },
-        { columnName: "uolNumber", width: 100 },
+        { columnName: "uolNumber", width: 110, wordWrapEnabled: true },
         { columnName: "changeStatusAction", width: 90, align:"center"},
         { columnName: "action", width: 110, align:"center"},
       ],
@@ -77,6 +78,10 @@ class F212FormTableComponent extends Component {
       pageSizes
     } = this.state;
 
+    // const rowComponent = ({ tableRow, ...restProps }) => {
+    //   return <Table.Row {...restProps} style={{ backgroundColor: "LightBlue" }} />;
+    // };
+
     return (
       <Paper>
         <Grid 
@@ -102,6 +107,7 @@ class F212FormTableComponent extends Component {
             columnExtensions={tableColumnExtensions} 
           />
           <TableHeaderRow
+            //rowComponent={rowComponent}
             showSortingControls={true}
             titleComponent={(props) =>
               props.children!="Action" ?

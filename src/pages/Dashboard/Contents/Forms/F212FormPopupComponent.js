@@ -4,13 +4,15 @@ import { numberFreeExp, numberExp } from "../../../../utils/regularExpression";
 import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography, Button,
   IconButton, Tooltip, Fab, Dialog, DialogActions, DialogContent, DialogContentText,
   DialogTitle, useMediaQuery, Chip, Checkbox,Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Paper} from "@material-ui/core";
+  TableHead, TableRow, Paper, Collapse} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import clsx from 'clsx';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -61,8 +63,86 @@ const styles = (theme) => ({
   },
   table: {
     minWidth: 750,
+  },
+  expand: {
+    transform: 'rotate(-90deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {duration: theme.transitions.duration.shortest})
+  },
+  expandOpen: {
+    transform: 'rotate(0deg)',
   }
 });
+
+function AcademicSessionStudentAchievements(props){
+
+  const { classes, data, isOpen } = props;
+
+  const [state, setState] = useState({"expanded": isOpen });
+  
+  const handleExpandClick = () => {
+    setState({expanded:!state.expanded});
+  }
+
+  return (
+    <Grid item xs={12} >
+      <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"#4caf50"}}>
+        <IconButton
+          className={clsx(classes.expand, {[classes.expandOpen]: state.expanded,})}
+          onClick={handleExpandClick}
+          aria-expanded={state.expanded}
+          aria-label="show more"
+        >
+          <ExpandMoreIcon color="primary" style={{color:"#4caf50"}}/>
+        </IconButton>
+        {data.sessionLabel}
+        <Divider
+          style={{
+            backgroundColor: "#4caf50", //"rgb(58, 127, 187)",
+            opacity: "0.3",
+            marginLeft: 50,
+            marginTop: -10
+          }}
+        />
+      </Typography>
+      <Collapse in={state.expanded} timeout="auto" unmountOnExit>
+        <div style={{paddingLeft:50}}>
+          <TableContainer component={Paper}>
+            <Table className={classes.table} size="small" aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Module</StyledTableCell>
+                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Courses</StyledTableCell>
+                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Marks</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                  {data.achivementDetail.length > 0 ?
+                    data.achivementDetail.map((dt, i) => (
+                      <StyledTableRow key={"row"+data.sessionLabel+i}>
+                        <StyledTableCell component="th" scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.moduleNumber}</StyledTableCell>
+                        <StyledTableCell scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.coursesObject.Label}</StyledTableCell>
+                        <StyledTableCell scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.marks}</StyledTableCell>
+                      </StyledTableRow>
+                    ))
+                  :
+                  this.state.isLoading ?
+                    <StyledTableRow>
+                      <StyledTableCell component="th" scope="row" colSpan={3}><center><CircularProgress/></center></StyledTableCell>
+                    </StyledTableRow>
+                    :
+                    <StyledTableRow>
+                      <StyledTableCell component="th" scope="row" colSpan={3}><center><b>No Data</b></center></StyledTableCell>
+                    </StyledTableRow>
+                  }
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      </Collapse>
+    </Grid>
+  );
+}
 
 function CourseRow(props) {
   const {rowIndex, rowData,  onDelete,   moduleMenuItems,   courseMenuItems,  ...rest} = props;
@@ -143,8 +223,52 @@ class F212FormPopupComponent extends Component {
       preCourseMenuItems: [],
       preCourses: {},
       courseRowDataArray: [],
+      sessionAchievementsData: []
     };
   }
+
+  loadAllSessionAchievementsData = async (studentId=0) => {
+    const data = new FormData();
+    data.append("studentId", studentId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsCoursesStudentsALLAchievementsView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let sessionAchievementsData = json.DATA || [];
+            this.setState({ sessionAchievementsData: sessionAchievementsData });
+          } else {
+            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
+          }
+          console.log("loadData", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
 
   loadData = async (academicSessionId=0, studentId=0) => {
     const data = new FormData();
@@ -372,6 +496,7 @@ class F212FormPopupComponent extends Component {
             academicSessionId: this.props.data.academicSessionId || "",
             academicSessionMenuItems: this.props.academicSessionMenuItems || []
           });
+          this.loadAllSessionAchievementsData(this.props.data.studentId);
           this.loadData(this.props.data.academicSessionId, this.props.data.studentId);
       }
     }
@@ -418,7 +543,7 @@ class F212FormPopupComponent extends Component {
               {data.studentNucleusId+" - "+data.studentName}
             </Typography>
           </DialogTitle>
-          <DialogContent>
+          <DialogContent style={{marginTop:-30}}>
             {/* <DialogContentText> */}
               <Grid
                 container
@@ -427,6 +552,17 @@ class F212FormPopupComponent extends Component {
                 alignItems="center"
                 spacing={2}
               >
+                {this.state.sessionAchievementsData.map( (data, index) =>
+                  <AcademicSessionStudentAchievements 
+                    key={"sessionAchievementsData"+index}
+                    classes={classes}
+                    data={data}
+                    isOpen={ this.props.data.academicSessionId===data.sessionId ? true : false}
+                  />
+                )}
+                <Grid item xs={12}>
+                  
+                </Grid>
                 <TextField
                   type="hidden"
                   id="studentId"
