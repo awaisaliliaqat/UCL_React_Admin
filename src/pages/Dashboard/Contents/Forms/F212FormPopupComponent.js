@@ -76,9 +76,9 @@ const styles = (theme) => ({
 
 function AcademicSessionStudentAchievements(props){
 
-  const { classes, data } = props;
+  const { classes, data, isOpen } = props;
 
-  const [state, setState] = useState({"expanded": false});
+  const [state, setState] = useState({"expanded": isOpen });
   
   const handleExpandClick = () => {
     setState({expanded:!state.expanded});
@@ -557,6 +557,7 @@ class F212FormPopupComponent extends Component {
                     key={"sessionAchievementsData"+index}
                     classes={classes}
                     data={data}
+                    isOpen={ this.props.data.academicSessionId===data.sessionId ? true : false}
                   />
                 )}
                 <Grid item xs={12}>

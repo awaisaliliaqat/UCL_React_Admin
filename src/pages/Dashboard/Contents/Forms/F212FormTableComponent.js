@@ -78,6 +78,10 @@ class F212FormTableComponent extends Component {
       pageSizes
     } = this.state;
 
+    // const rowComponent = ({ tableRow, ...restProps }) => {
+    //   return <Table.Row {...restProps} style={{ backgroundColor: "LightBlue" }} />;
+    // };
+
     return (
       <Paper>
         <Grid 
@@ -103,6 +107,7 @@ class F212FormTableComponent extends Component {
             columnExtensions={tableColumnExtensions} 
           />
           <TableHeaderRow
+            //rowComponent={rowComponent}
             showSortingControls={true}
             titleComponent={(props) =>
               props.children!="Action" ?
