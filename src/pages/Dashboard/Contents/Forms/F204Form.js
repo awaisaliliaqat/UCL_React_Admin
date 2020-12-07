@@ -795,7 +795,7 @@ class F204Form extends Component {
                         label="End Date"
                         invalidDateMessage=""
                         disablePast
-                        minDate={this.getTomorrowDate()}
+                        //minDate={this.getTomorrowDate()}
                         placeholder=""
                         variant="inline"
                         inputVariant="outlined"
