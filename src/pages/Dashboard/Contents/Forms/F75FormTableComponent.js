@@ -11,6 +11,10 @@ class F75FormTableComponent extends Component {
       columns: [
         { name: "SRNo", title: "SR#" },
         { name: "email", title: "Email" },
+        { name: "guardianTitle", title: "Title" },
+        { name: "guardianName", title: "Name" },
+        { name: "guardianRelationWithStudent", title: "Relation" },
+        { name: "guardianMobileNo", title: "Mobile" },        
         { name: "action", title: "Action"}
       ],
       rows: [],
@@ -27,18 +31,20 @@ class F75FormTableComponent extends Component {
       pageSizes: [5, 10, 25],
       defaultSorting: [],
       sortingStateColumnExtensions: [
-        { columnName: "changeStatusAction", sortingEnabled: false },
         { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
         { columnName: "email", wordWrapEnabled: true},
+        { columnName: "guardianTitle", wordWrapEnabled: true },
+        { columnName: "guardianName", wordWrapEnabled: true },
+        { columnName: "guardianRelationWithStudent", width:120 },
+        { columnName: "guardianMobileNo", width:120 },
         { columnName: "action", width: 110, align:"center"},
       ],
       defaultColumnWidths: [],
       defaultFilters: [],
       filteringStateColumnExtensions: [
-        { columnName: "changeStatusAction", filteringEnabled: false },
         { columnName: "action", filteringEnabled: false },
       ]
     };
