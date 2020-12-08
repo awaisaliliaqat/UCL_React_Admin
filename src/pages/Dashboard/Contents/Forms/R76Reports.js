@@ -305,7 +305,7 @@ class R76Reports extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              Exams Reports
+              Exams Report
             </Typography>
             {/* 
               <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
