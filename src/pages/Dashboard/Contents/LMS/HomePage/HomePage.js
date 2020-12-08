@@ -4,9 +4,10 @@ import { Grid, Typography, Button } from "@material-ui/core";
 import Profile from "./Chunks/Profile";
 import VirtulaClasses from "./Chunks/VirtulaClasses";
 import MessageCenter from "./Chunks/MessageCenter";
-import GradeBook from "./Chunks/GradeBook";
+//import GradeBook from "./Chunks/GradeBook";
+import Exams from "./Chunks/Exams";
 import Attendances from "./Chunks/Attendances";
-import Quiz from "./Chunks/Quiz";
+//import Quiz from "./Chunks/Quiz";
 import GradedDiscussion from "./Chunks/GradedDiscussion";
 import Assignements from "./Chunks/Assignements";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
@@ -687,7 +688,7 @@ class HomePage extends Component {
                 />
               </Grid>
               <Grid item xs={4}>
-                <GradeBook />
+                <Exams />
               </Grid>
               <Grid item xs={4}>
                 <MessageCenter
