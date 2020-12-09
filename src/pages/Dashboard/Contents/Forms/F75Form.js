@@ -59,9 +59,8 @@ class F75Form extends Component {
       tableData: [],
       f75FormPopupIsOpen: false,
       f75FormPopupData: {
-        studentId: "", 
-        studentNucleusId: "", 
-        studentName: ""
+        accountId: "", 
+        studentDetail: ""
       }
     };
   }
@@ -102,31 +101,74 @@ class F75Form extends Component {
 
             for (let i=0; i<dataLength; i++) {
 
+              let studentDetail = data[i].studentDetail;
+              
+              data[i].childrans = ( 
+                studentDetail.map((data, index) => 
+                  index!=0 ? 
+                    <Fragment 
+                      key={"studentDetail"+data.studentId+index}
+                    >
+                      <br/>
+                      {data.student}
+                    </Fragment> 
+                    : 
+                    data.student
+              ));
+
               let f75FormPopupData = {
-                studentId: data[i].id,
-                studentNucleusId: data[i].studentId,
-                studentName: data[i].displayName
+                accountId:data[i].email,
+                studentDetail: data[i].studentDetail
               };
 
+              let recordId = data[i].id;
+              
               data[i].action = (
-                <IconButton
-                  color="primary"
-                  aria-label="Add"
-                  onClick={()=>this.f75FormPopupSetData(f75FormPopupData)}
-                  variant="outlined"
-                  component="span"
-                  style={{padding:5}}
-                >
-                  <Tooltip title="Add / Change">
-                    <Fab 
-                      color="primary" 
-                      aria-label="add" 
-                      size="small"
-                    >
-                      <AddIcon fontSize="small"/>
-                    </Fab>
-                  </Tooltip>
-                </IconButton>
+                <Fragment>
+                  <Button 
+                    variant="contained" 
+                    size="small"
+                    color="primary" 
+                    onClick={()=>this.changeApprovalStatus(i, recordId, 1)}
+                    style={{
+                      backgroundColor: "#4caf50",
+                      marginBottom:8,
+                      width:75
+                    }}
+                  >
+                    Approve
+                  </Button>
+                  <br/>
+                  <Button 
+                    variant="contained" 
+                    size="small" 
+                    color="secondary"
+                    onClick={()=>this.changeApprovalStatus(i ,recordId, 2)}
+                    style={{
+                      width:75
+                    }}
+                  >
+                    Reject
+                  </Button>
+                </Fragment>
+                // <IconButton
+                //   color="primary"
+                //   aria-label="Add"
+                //   onClick={()=>this.f75FormPopupSetData(f75FormPopupData)}
+                //   variant="outlined"
+                //   component="span"
+                //   style={{padding:5}}
+                // >
+                //   <Tooltip title="Add / Change">
+                //     <Fab 
+                //       color="primary" 
+                //       aria-label="add" 
+                //       size="small"
+                //     >
+                //       <AddIcon fontSize="small"/>
+                //     </Fab>
+                //   </Tooltip>
+                // </IconButton>
               );
 
             }
@@ -182,14 +224,58 @@ class F75Form extends Component {
   f75FormPopupSetData = (data) => {
     this.setState({
       f75FormPopupData: {
-        studentId: data.studentId, 
-        studentNucleusId: data.studentNucleusId,
-        studentName: data.studentName,
-        academicSessionId: this.state.academicSessionId
+        accountId: data.accountId, 
+        studentDetail: data.studentDetail
       }
     });
     this.f75FormPopupOpen();
   }
+
+  changeApprovalStatus = async(rowIndex, id=0, statusId=0) => {
+    let data = new FormData();
+    data.append("id", id);
+    data.append("statusId", statusId);
+    this.setState({ isLoading: true  });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C75GuardianRegisterationChangeApprovalStatus`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+    .then((res) => {
+      if (!res.ok) {
+        throw res;
+      }
+      return res.json();
+    })
+    .then(
+      (json) => {
+        if (json.CODE === 1) {
+          let tableData = [...this.state.tableData];
+          tableData.splice(rowIndex, 1);
+          this.setState({ tableData: tableData });
+          this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+        } else {
+          this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
+        }
+        console.log(json);
+      },
+      (error) => {
+        if (error.status == 401) {
+          this.setState({
+            isLoginMenu: true,
+            isReload: false,
+          });
+        } else {
+          console.log(error);
+          this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+        }
+      }
+    );
+  this.setState({ isLoading: false });
+};
 
   onChangeStatusFormSubmit = async () => {
 
@@ -431,9 +517,6 @@ class F75Form extends Component {
             <F75FormPopupComponent
               isOpen={this.state.f75FormPopupIsOpen}
               data={this.state.f75FormPopupData}
-              academicSessionMenuItems={this.state.academicSessionMenuItems}
-              preModuleMenuItems={this.state.preModuleMenuItems}
-              preCourseMenuItems={this.state.preCourseMenuItems}
               isLoading={this.state.isLoading}
               onFormSubmit ={() => this.onStudentAchievementFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}

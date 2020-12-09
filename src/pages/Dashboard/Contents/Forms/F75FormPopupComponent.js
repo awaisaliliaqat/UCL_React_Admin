@@ -13,6 +13,7 @@ import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { format } from "date-fns";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -74,78 +75,10 @@ const styles = (theme) => ({
   }
 });
 
-function AcademicSessionStudentAchievements(props){
-
-  const { classes, data, isOpen } = props;
-
-  const [state, setState] = useState({"expanded": isOpen });
-  
-  const handleExpandClick = () => {
-    setState({expanded:!state.expanded});
-  }
-
-  return (
-    <Grid item xs={12} >
-      <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"#4caf50"}}>
-        <IconButton
-          className={clsx(classes.expand, {[classes.expandOpen]: state.expanded,})}
-          onClick={handleExpandClick}
-          aria-expanded={state.expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon color="primary" style={{color:"#4caf50"}}/>
-        </IconButton>
-        {data.sessionLabel}
-        <Divider
-          style={{
-            backgroundColor: "#4caf50", //"rgb(58, 127, 187)",
-            opacity: "0.3",
-            marginLeft: 50,
-            marginTop: -10
-          }}
-        />
-      </Typography>
-      <Collapse in={state.expanded} timeout="auto" unmountOnExit>
-        <div style={{paddingLeft:50}}>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} size="small" aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Module</StyledTableCell>
-                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Courses</StyledTableCell>
-                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Marks</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                  {data.achivementDetail.length > 0 ?
-                    data.achivementDetail.map((dt, i) => (
-                      <StyledTableRow key={"row"+data.sessionLabel+i}>
-                        <StyledTableCell component="th" scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.moduleNumber}</StyledTableCell>
-                        <StyledTableCell scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.coursesObject.Label}</StyledTableCell>
-                        <StyledTableCell scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.marks}</StyledTableCell>
-                      </StyledTableRow>
-                    ))
-                  :
-                  this.state.isLoading ?
-                    <StyledTableRow>
-                      <StyledTableCell component="th" scope="row" colSpan={3}><center><CircularProgress/></center></StyledTableCell>
-                    </StyledTableRow>
-                    :
-                    <StyledTableRow>
-                      <StyledTableCell component="th" scope="row" colSpan={3}><center><b>No Data</b></center></StyledTableCell>
-                    </StyledTableRow>
-                  }
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
-      </Collapse>
-    </Grid>
-  );
-}
 
 function CourseRow(props) {
-  const {rowIndex, rowData,  onDelete,   moduleMenuItems,   courseMenuItems,  ...rest} = props;
+
+  const {rowIndex, rowData,  onDelete,   moduleMenuItems=[],   courseMenuItems=[],  ...rest} = props;
 
   const [coursesInputValue, setCoursesInputValue] = useState("");
 
@@ -159,7 +92,7 @@ function CourseRow(props) {
   };
 
   useEffect(() => {
-    handleCourse(rowData.preCourses);
+    //handleCourse(rowData.preCourses);
   });
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -168,16 +101,12 @@ function CourseRow(props) {
   return (
       <StyledTableRow key={rowData}>
         <StyledTableCell component="th" scope="row" align="center">
-          {rowData.preModuleId}
-          <TextField type="hidden" name="moduleNumber" value={rowData.preModuleId}/>
+          {rowData.student}
+          <TextField type="hidden" name="studentId" value={rowData.studentId}/>
         </StyledTableCell>
         <StyledTableCell align="center">
-          {rowData.preCourses.Label}
-          <TextField type="hidden" name="programmeCourseId" value={coursesInputValue}/>
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          {rowData.preMarks}
-          <TextField type="hidden" name="marks" value={rowData.preMarks} />
+          {format(rowData.dateOfBirth,'MM/dd/yyyy')}
+          <TextField type="hidden" name="dateOfBirth" value={rowData.preMarks} />
         </StyledTableCell>
         <StyledTableCell align="center">
             <Tooltip title="Delete">
@@ -222,105 +151,10 @@ class F75FormPopupComponent extends Component {
       preModuleIdError: "",
       preCourseMenuItems: [],
       preCourses: {},
-      courseRowDataArray: [],
+      tableData: [],
       sessionAchievementsData: []
     };
   }
-
-  loadAllSessionAchievementsData = async (studentId=0) => {
-    const data = new FormData();
-    data.append("studentId", studentId);
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsCoursesStudentsALLAchievementsView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            let sessionAchievementsData = json.DATA || [];
-            this.setState({ sessionAchievementsData: sessionAchievementsData });
-          } else {
-            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
-          }
-          console.log("loadData", json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  loadData = async (academicSessionId=0, studentId=0) => {
-    const data = new FormData();
-    data.append("studentId", studentId);
-    data.append("academicSessionId", academicSessionId);
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsCoursesStudentsAchievementsView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            let courseRowDataArray = [];
-            for (let i = 0; i < json.DATA.length; i++) {
-              let courseRowDataObject = {
-                preModuleId: json.DATA[i].moduleNumber,
-                preCourses: json.DATA[i].coursesObject,
-                preMarks: json.DATA[i].marks,
-              };
-              courseRowDataArray.push(courseRowDataObject);
-            }
-            this.setState({ courseRowDataArray: courseRowDataArray });
-          } else {
-            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
-          }
-          console.log("loadData", json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
 
   handleClickOpen = () => {
     this.setState({ popupBoxOpen: true });
@@ -331,7 +165,7 @@ class F75FormPopupComponent extends Component {
       preModuleId: "",
       preCourses: {},
       preMarks: "",
-      courseRowDataArray: [],
+      tableData: [],
     });
     this.props.f75FormPopupClose();
   };
@@ -412,7 +246,7 @@ class F75FormPopupComponent extends Component {
       return;
     }
 
-    let courseRowDataArray = this.state.courseRowDataArray;
+    let tableData = this.state.tableData;
     let preModuleId = this.state.preModuleId;
     let preCourses = this.state.preCourses;
     let preMarks = this.state.preMarks;
@@ -432,10 +266,10 @@ class F75FormPopupComponent extends Component {
       preMarks: preMarks,
     };
 
-    courseRowDataArray.push(courseRowDataObject);
+    tableData.push(courseRowDataObject);
 
     this.setState({
-      courseRowDataArray: courseRowDataArray,
+      tableData: tableData,
       preModuleId: "",
       preCourses: {},
       preMarks: "",
@@ -444,9 +278,9 @@ class F75FormPopupComponent extends Component {
   };
 
   handeDeleteCourseRow = (index) => {
-    let courseRowDataArray = this.state.courseRowDataArray;
-    courseRowDataArray.splice(index, 1);
-    this.setState({ courseRowDataArray: courseRowDataArray });
+    let tableData = this.state.tableData;
+    tableData.splice(index, 1);
+    this.setState({ tableData: tableData });
   };
 
   onHandleChange = (e) => {
@@ -491,13 +325,11 @@ class F75FormPopupComponent extends Component {
           && this.props.isOpen===true
         ) { 
           this.setState({
-            preCourseMenuItems: this.props.preCourseMenuItems || [],
+            tableData: this.props.data.studentDetail || [],
             preModuleMenuItems: this.props.preModuleMenuItems || [],
             academicSessionId: this.props.data.academicSessionId || "",
             academicSessionMenuItems: this.props.academicSessionMenuItems || []
           });
-          this.loadAllSessionAchievementsData(this.props.data.studentId);
-          this.loadData(this.props.data.academicSessionId, this.props.data.studentId);
       }
     }
   }
@@ -540,7 +372,7 @@ class F75FormPopupComponent extends Component {
                 fontSize: 20,
               }}
             >
-              {data.studentNucleusId+" - "+data.studentName}
+              {data.accountId}
             </Typography>
           </DialogTitle>
           <DialogContent style={{marginTop:-30}}>
@@ -552,17 +384,6 @@ class F75FormPopupComponent extends Component {
                 alignItems="center"
                 spacing={2}
               >
-                {this.state.sessionAchievementsData.map( (data, index) =>
-                  <AcademicSessionStudentAchievements 
-                    key={"sessionAchievementsData"+index}
-                    classes={classes}
-                    data={data}
-                    isOpen={ this.props.data.academicSessionId===data.sessionId ? true : false}
-                  />
-                )}
-                <Grid item xs={12}>
-                  
-                </Grid>
                 <TextField
                   type="hidden"
                   id="studentId"
@@ -627,32 +448,7 @@ class F75FormPopupComponent extends Component {
                     options={this.state.preCourseMenuItems}
                     value={this.state.preCourses}
                     onChange={(event, value) => this.handleSetPreCourses(value)}
-                    //disableCloseOnSelect
                     getOptionLabel={(option) => typeof option.Label === 'string' ? option.Label : ""}
-                    // renderTags={(tagValue, getTagProps) =>
-                    //   tagValue.map((option, index) => (
-                    //     <Chip
-                    //       label={option.Label}
-                    //       color="primary"
-                    //       variant="outlined"
-                    //       {...getTagProps({ index })}
-                    //     />
-                    //   ))
-                    // }
-                    // renderOption={(option,{selected}) => (
-                    //   <Fragment>
-                    //     <Checkbox
-                    //       icon={icon}
-                    //       checkedIcon={checkedIcon}
-                    //       style={{ marginRight: 8 }}
-                    //       checked={selected
-                    //         //this.isCourseSelected(option)
-                    //       }
-                    //       color="primary"
-                    //     />
-                    //     {option.Label}
-                    //   </Fragment>
-                    // )}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -660,15 +456,7 @@ class F75FormPopupComponent extends Component {
                         label="Courses"
                         placeholder="Search and Select"
                         error={!!this.state.preCoursesError}
-                        helperText={
-                          this.state.preCoursesError ? (
-                            this.state.preCoursesError
-                          ) : (
-                            <Typography color="primary" variant="caption">
-                              Max selection of courses should be two.
-                            </Typography>
-                          )
-                        }
+                        helperText={this.state.preCoursesError ? (this.state.preCoursesError) : ""}
                       />
                     )}
                   />
@@ -717,22 +505,22 @@ class F75FormPopupComponent extends Component {
                   <Table className={classes.table} size="small" aria-label="customized table">
                     <TableHead>
                       <TableRow>
-                        <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
-                        <StyledTableCell align="center">Courses</StyledTableCell>
-                        <StyledTableCell align="center">Marks</StyledTableCell>
+                        <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Student</StyledTableCell>
+                        {/* <StyledTableCell align="center">Courses</StyledTableCell> */}
+                        <StyledTableCell align="center">Date Of Birth</StyledTableCell>
                         <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)', minWidth:100}}>Action</StyledTableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                        {this.state.courseRowDataArray.length > 0 ?
-                          this.state.courseRowDataArray.map((dt, i) => (
+                        {this.state.tableData.length > 0 ?
+                          this.state.tableData.map((dt, i) => (
                             <CourseRow
-                              key={"SMC"+i}
+                              key={"students"+i}
                               rowIndex={i}
                               rowData={dt}
                               onDelete={(i) => this.handeDeleteCourseRow(i)}
-                              moduleMenuItems={this.state.preModuleMenuItems}
-                              courseMenuItems={this.preCourses}
+                              //moduleMenuItems={this.state.preModuleMenuItems}
+                              //courseMenuItems={this.preCourses}
                             />
                           ))
                         :

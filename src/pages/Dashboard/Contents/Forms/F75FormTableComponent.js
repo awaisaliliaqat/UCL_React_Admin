@@ -10,11 +10,12 @@ class F75FormTableComponent extends Component {
     this.state = {
       columns: [
         { name: "SRNo", title: "SR#" },
-        { name: "email", title: "Email" },
-        { name: "guardianTitle", title: "Title" },
-        { name: "guardianName", title: "Name" },
-        { name: "guardianRelationWithStudent", title: "Relation" },
-        { name: "guardianMobileNo", title: "Mobile" },        
+        { name: "email", title: "Account ID" },
+        { name: "guardianName", title: "Guardian Name" },
+        { name: "guardianRelationWithStudent", title: <span>Guardian<br/>Relationship</span> },
+        { name: "guardianMobileNo", title: "Mobile#" },
+        { name: "guardianEmail", title: "Guardian Email" },
+        { name: "childrans", title: "Guardian Of" },
         { name: "action", title: "Action"}
       ],
       rows: [],
@@ -31,6 +32,7 @@ class F75FormTableComponent extends Component {
       pageSizes: [5, 10, 25],
       defaultSorting: [],
       sortingStateColumnExtensions: [
+        { columnName: "childrans", sortingEnabled:false },
         { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
@@ -38,13 +40,16 @@ class F75FormTableComponent extends Component {
         { columnName: "email", wordWrapEnabled: true},
         { columnName: "guardianTitle", wordWrapEnabled: true },
         { columnName: "guardianName", wordWrapEnabled: true },
-        { columnName: "guardianRelationWithStudent", width:120 },
-        { columnName: "guardianMobileNo", width:120 },
-        { columnName: "action", width: 110, align:"center"},
+        { columnName: "guardianRelationWithStudent", width:100, align:"center" },
+        { columnName: "guardianMobileNo", width:120, align:"center" },
+        { columnName: "guardianMobileNo", width:120, align:"center" },
+        { columnName: "childrans", wordWrapEnabled:true },
+        { columnName: "action", width: 120, align:"center"},
       ],
       defaultColumnWidths: [],
       defaultFilters: [],
       filteringStateColumnExtensions: [
+        { columnName: "childrans", filteringEnabled:false },
         { columnName: "action", filteringEnabled: false },
       ]
     };
