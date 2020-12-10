@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types';
-import { Paper } from "@material-ui/core";
+import { Paper, TableBody } from "@material-ui/core";
 import {FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
 import {Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
 
@@ -22,12 +22,14 @@ class F75FormTableComponent extends Component {
       formatColumns: [],
       currencyColumns: [],
       availableFilterOperations: [
+        "contains",
         "equal",
         "notEqual",
         "greaterThan",
         "greaterThanOrEqual",
         "lessThan",
         "lessThanOrEqual",
+        "like"
       ],
       pageSizes: [5, 10, 25],
       defaultSorting: [],
@@ -41,8 +43,7 @@ class F75FormTableComponent extends Component {
         { columnName: "guardianTitle", wordWrapEnabled: true },
         { columnName: "guardianName", wordWrapEnabled: true },
         { columnName: "guardianRelationWithStudent", width:100, align:"center" },
-        { columnName: "guardianMobileNo", width:120, align:"center" },
-        { columnName: "guardianMobileNo", width:120, align:"center" },
+        { columnName: "guardianMobileNo", width:130, align:"center" },
         { columnName: "childrans", wordWrapEnabled:true },
         { columnName: "action", width: 120, align:"center"},
       ],
@@ -79,6 +80,10 @@ class F75FormTableComponent extends Component {
     //   return <Table.Row {...restProps} style={{ backgroundColor: "LightBlue" }} />;
     // };
 
+    const cellComponent = ({ cellProps, ...restProps }) => {
+      return <Table.Cell {...restProps} style={{ wordBreak: "break-word" }} />;
+    };
+
     return (
       <Paper>
         <Grid 
@@ -102,6 +107,7 @@ class F75FormTableComponent extends Component {
           <IntegratedPaging />
           <Table 
             columnExtensions={tableColumnExtensions} 
+            cellComponent={cellComponent}
           />
           <TableHeaderRow
             //rowComponent={rowComponent}
@@ -113,6 +119,9 @@ class F75FormTableComponent extends Component {
               <b>&emsp;{props.children}</b>
             }
           />
+           <TableBody  
+              cellComponent={cellComponent}
+           />
           {this.props.showFilter && <TableFilterRow showFilterSelector={true} />}
           <PagingPanel pageSizes={pageSizes} />
         </Grid>
