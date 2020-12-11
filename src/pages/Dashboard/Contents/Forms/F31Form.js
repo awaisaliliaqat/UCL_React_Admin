@@ -47,6 +47,7 @@ class F31Form extends Component {
       isLoading: false,
       isReload: false,
       isOpenSnackbar: false,
+      showTableFilter: true,
       snackbarMessage: "",
       snackbarSeverity: "",
       academicSessionIdMenuItems: [],
@@ -57,7 +58,6 @@ class F31Form extends Component {
       programmeGroupIdError: "",
       preDaysMenuItems: [], //["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       preTimeStartMenuItems: [],
-      showTableFilter: false,
       CourseListArray: [],
       CourseListArrayBack: "",
       roomsData: [],
@@ -219,10 +219,7 @@ class F31Form extends Component {
           if (json.CODE === 1) {
             this.setState({ roomsData: json.DATA || [] });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
         },
         (error) => {
@@ -233,10 +230,7 @@ class F31Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -266,9 +260,7 @@ class F31Form extends Component {
           if (json.CODE === 1) {
             this.setState({ programmeGroupIdMenuItems: json.DATA });
           } else {
-
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-
           }
           console.log("loadProgrammeGroups", json);
         },
@@ -458,9 +450,7 @@ class F31Form extends Component {
             }
             this.setState({ CourseListArray: json.DATA || [] });
           } else {
-
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-
           }
           console.log("loadCourses", json);
         },
@@ -591,10 +581,7 @@ class F31Form extends Component {
               // }
             }, 2000);
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log(json);
         },
@@ -606,10 +593,7 @@ class F31Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -634,13 +618,13 @@ class F31Form extends Component {
         if(data.SRNo == dt.SRNo) {
           CourseListArrayBack.action = (
             <Fragment>
-                <Fab 
-                  size="small"
-                  disabled={true}
-                >
-                  <VisibilityOutlinedIcon />
-                </Fab>
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <Fab 
+                size="small"
+                disabled={true}
+              >
+                <VisibilityOutlinedIcon />
+              </Fab>
+              <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
               <F31FormPopupComponent
                 sectionId={CourseListArrayBack.ID}
                 preTimeStartMenuItems={this.state.preTimeStartMenuItems}
@@ -703,10 +687,8 @@ class F31Form extends Component {
     .then(
       (json) => {
         if (json.CODE === 1) {
+          this.rowloading(0, data);
           this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-          setTimeout(() => {
-            this.rowloading(0, data);
-          }, 2000);
         } else {
           this.loadCourses(this.state.academicSessionId, this.state.programmeGroupId);
           this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -869,17 +851,15 @@ class F31Form extends Component {
                   getDataByStatus={(status) => this.getData(status)}
                   onHandleChange={(e) => this.onHandleChange(e)}
                 />
-
               : 
                 <br />
               }
-              {this.state.CourseListArray.length > 0 ? 
-
+              {this.state.CourseListArray && !this.state.isLoading ? 
                 <F31FormTableComponent
                   rows={this.state.CourseListArray}
                   showFilter={this.state.showTableFilter}
                 />
-               : this.state.isLoading ?
+               : 
                 <Grid
                   container
                   justify="center"
@@ -888,23 +868,21 @@ class F31Form extends Component {
                 >
                   <CircularProgress />
                 </Grid>
-
-                : 
-                ""
               }
-
             </Grid>
           </Grid>
         </form>
-        {/* <BottomBar
-                    left_button_text="View"
-                    left_button_hide={true}
-                    bottomLeftButtonAction={this.viewReport}
-                    right_button_text="Save"
-                    bottomRightButtonAction={this.clickOnFormSubmit}
-                    loading={this.state.isLoading}
-                    isDrawerOpen={ this.props.isDrawerOpen }
-                /> */}
+        {/* 
+        <BottomBar
+            left_button_text="View"
+            left_button_hide={true}
+            bottomLeftButtonAction={this.viewReport}
+            right_button_text="Save"
+            bottomRightButtonAction={this.clickOnFormSubmit}
+            loading={this.state.isLoading}
+            isDrawerOpen={ this.props.isDrawerOpen }
+        /> 
+        */}
         <CustomizedSnackbar
           isOpen={this.state.isOpenSnackbar}
           message={this.state.snackbarMessage}
