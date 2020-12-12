@@ -53,7 +53,7 @@ class F31FormTableComponent extends Component {
         { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "teacherName", wordWrapEnabled: true },
         { columnName: "activeDate", width: 120 },
-        { columnName: "action", width: 150, align: "center" },
+        { columnName: "action", width: 210, align: "center" },
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",

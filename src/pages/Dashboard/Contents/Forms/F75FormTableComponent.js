@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types';
-import { Paper } from "@material-ui/core";
+import { Paper, TableBody } from "@material-ui/core";
 import {FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
 import {Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
 
@@ -10,27 +10,31 @@ class F75FormTableComponent extends Component {
     this.state = {
       columns: [
         { name: "SRNo", title: "SR#" },
-        { name: "email", title: "Email" },
-        { name: "guardianTitle", title: "Title" },
-        { name: "guardianName", title: "Name" },
-        { name: "guardianRelationWithStudent", title: "Relation" },
-        { name: "guardianMobileNo", title: "Mobile" },        
+        { name: "email", title: "Account ID" },
+        { name: "guardianName", title: "Guardian Name" },
+        { name: "guardianRelationWithStudent", title: <span>Guardian<br/>Relationship</span> },
+        { name: "guardianMobileNo", title: "Mobile#" },
+        { name: "guardianEmail", title: "Guardian Email" },
+        { name: "childrans", title: "Guardian Of" },
         { name: "action", title: "Action"}
       ],
       rows: [],
       formatColumns: [],
       currencyColumns: [],
       availableFilterOperations: [
+        "contains",
         "equal",
         "notEqual",
         "greaterThan",
         "greaterThanOrEqual",
         "lessThan",
         "lessThanOrEqual",
+        "like"
       ],
       pageSizes: [5, 10, 25],
       defaultSorting: [],
       sortingStateColumnExtensions: [
+        { columnName: "childrans", sortingEnabled:false },
         { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
@@ -38,13 +42,15 @@ class F75FormTableComponent extends Component {
         { columnName: "email", wordWrapEnabled: true},
         { columnName: "guardianTitle", wordWrapEnabled: true },
         { columnName: "guardianName", wordWrapEnabled: true },
-        { columnName: "guardianRelationWithStudent", width:120 },
-        { columnName: "guardianMobileNo", width:120 },
-        { columnName: "action", width: 110, align:"center"},
+        { columnName: "guardianRelationWithStudent", width:100, align:"center" },
+        { columnName: "guardianMobileNo", width:130, align:"center" },
+        { columnName: "childrans", wordWrapEnabled:true },
+        { columnName: "action", width: 120, align:"center"},
       ],
       defaultColumnWidths: [],
       defaultFilters: [],
       filteringStateColumnExtensions: [
+        { columnName: "childrans", filteringEnabled:false },
         { columnName: "action", filteringEnabled: false },
       ]
     };
@@ -74,6 +80,10 @@ class F75FormTableComponent extends Component {
     //   return <Table.Row {...restProps} style={{ backgroundColor: "LightBlue" }} />;
     // };
 
+    const cellComponent = ({ cellProps, ...restProps }) => {
+      return <Table.Cell {...restProps} style={{ wordBreak: "break-word" }} />;
+    };
+
     return (
       <Paper>
         <Grid 
@@ -97,6 +107,7 @@ class F75FormTableComponent extends Component {
           <IntegratedPaging />
           <Table 
             columnExtensions={tableColumnExtensions} 
+            cellComponent={cellComponent}
           />
           <TableHeaderRow
             //rowComponent={rowComponent}
@@ -108,6 +119,9 @@ class F75FormTableComponent extends Component {
               <b>&emsp;{props.children}</b>
             }
           />
+           <TableBody  
+              cellComponent={cellComponent}
+           />
           {this.props.showFilter && <TableFilterRow showFilterSelector={true} />}
           <PagingPanel pageSizes={pageSizes} />
         </Grid>

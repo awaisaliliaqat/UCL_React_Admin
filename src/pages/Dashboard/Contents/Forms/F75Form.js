@@ -59,9 +59,8 @@ class F75Form extends Component {
       tableData: [],
       f75FormPopupIsOpen: false,
       f75FormPopupData: {
-        studentId: "", 
-        studentNucleusId: "", 
-        studentName: ""
+        accountId: "", 
+        studentDetail: ""
       }
     };
   }
@@ -102,31 +101,74 @@ class F75Form extends Component {
 
             for (let i=0; i<dataLength; i++) {
 
+              let studentDetail = data[i].studentDetail;
+              
+              data[i].childrans = ( 
+                studentDetail.map((data, index) => 
+                  index!=0 ? 
+                    <Fragment 
+                      key={"studentDetail"+data.studentId+index}
+                    >
+                      <br/>
+                      {data.student}
+                    </Fragment> 
+                    : 
+                    data.student
+              ));
+
               let f75FormPopupData = {
-                studentId: data[i].id,
-                studentNucleusId: data[i].studentId,
-                studentName: data[i].displayName
+                accountId:data[i].email,
+                studentDetail: data[i].studentDetail
               };
 
+              let recordId = data[i].id;
+              
               data[i].action = (
-                <IconButton
-                  color="primary"
-                  aria-label="Add"
-                  onClick={()=>this.f75FormPopupSetData(f75FormPopupData)}
-                  variant="outlined"
-                  component="span"
-                  style={{padding:5}}
-                >
-                  <Tooltip title="Add / Change">
-                    <Fab 
-                      color="primary" 
-                      aria-label="add" 
-                      size="small"
-                    >
-                      <AddIcon fontSize="small"/>
-                    </Fab>
-                  </Tooltip>
-                </IconButton>
+                <Fragment>
+                  <Button 
+                    variant="contained" 
+                    size="small"
+                    color="primary" 
+                    onClick={()=>this.changeApprovalStatus(i, recordId, 1)}
+                    style={{
+                      backgroundColor: "#4caf50",
+                      marginBottom:8,
+                      width:75
+                    }}
+                  >
+                    Approve
+                  </Button>
+                  <br/>
+                  <Button 
+                    variant="contained" 
+                    size="small" 
+                    color="secondary"
+                    onClick={()=>this.changeApprovalStatus(i ,recordId, 2)}
+                    style={{
+                      width:75
+                    }}
+                  >
+                    Reject
+                  </Button>
+                </Fragment>
+                // <IconButton
+                //   color="primary"
+                //   aria-label="Add"
+                //   onClick={()=>this.f75FormPopupSetData(f75FormPopupData)}
+                //   variant="outlined"
+                //   component="span"
+                //   style={{padding:5}}
+                // >
+                //   <Tooltip title="Add / Change">
+                //     <Fab 
+                //       color="primary" 
+                //       aria-label="add" 
+                //       size="small"
+                //     >
+                //       <AddIcon fontSize="small"/>
+                //     </Fab>
+                //   </Tooltip>
+                // </IconButton>
               );
 
             }
@@ -182,126 +224,19 @@ class F75Form extends Component {
   f75FormPopupSetData = (data) => {
     this.setState({
       f75FormPopupData: {
-        studentId: data.studentId, 
-        studentNucleusId: data.studentNucleusId,
-        studentName: data.studentName,
-        academicSessionId: this.state.academicSessionId
+        accountId: data.accountId, 
+        studentDetail: data.studentDetail
       }
     });
     this.f75FormPopupOpen();
   }
 
-  onChangeStatusFormSubmit = async () => {
-
-    if (
-      !this.isAcademicSessionValid() 
-      || !this.isProgrammeGroupValid()
-      || !this.isProgrammeValid()
-    ) { return; }
-
-    let studentId = document.getElementById("studentId").value;
-    let applicationStatusId = document.getElementById("applicationStatusId").value;
-    let renewalStatusId = document.getElementById("renewalStatusId").value;
-    let examEntryStatusId = document.getElementById("examEntryStatusId").value;
-    let pathwayId = document.getElementById("pathwayId").value;
-    let UOLNo = document.getElementById("UOLNo").value;
-
-    let applicationStatusLabel = ""; 
-    let asObj = this.state.applicationStatusMenuItems.find( (obj) => obj.id == applicationStatusId);
-    if(asObj){
-      applicationStatusLabel = asObj.label;
-    }
-
-    let renewalStatusLabel = ""; 
-    let rsObj = this.state.renewalStatusMenuItems.find( (obj) => obj.id == renewalStatusId);
-    if(rsObj){
-      renewalStatusLabel = rsObj.label;
-    }
-    
-    let examEntryStatusLabel = ""; 
-    let eesObj = this.state.examEntryStatusMenuItems.find( (obj) => obj.id == examEntryStatusId);
-    if(eesObj){
-      examEntryStatusLabel = eesObj.label;
-    }
-    
-    let pathwayLabel = ""; 
-    let pwObj = this.state.pathwayMenuItems.find( (obj) => obj.id == pathwayId);
-    if(pwObj){
-      pathwayLabel = pwObj.label;
-    }
-
+  changeApprovalStatus = async(rowIndex, id=0, statusId=0) => {
     let data = new FormData();
-    data.append("academicSessionId", this.state.academicSessionId);
-    data.append("studentId", studentId);
-    data.append("applicationStatusId", applicationStatusId);
-    data.append("renewalStatusId", renewalStatusId);
-    data.append("examEntryStatusId", examEntryStatusId);
-    data.append("pathwayId", pathwayId);
-    data.append("uolNumber", UOLNo);
-    
-    let tableData = [...this.state.tableData];
-    
-    let tableDataNewInstance = tableData.map((row, index) => { 
-      
-      let row10 = { ...row };
-      
-      if(row.id == studentId){
-        
-        row10.applicationStatusId = applicationStatusId;
-        row10.applicationStatusLabel = applicationStatusLabel;
-        row10.renewalStatusId = renewalStatusId;
-        row10.renewalStatusLabel = renewalStatusLabel;
-        row10.examEntryStatusId = examEntryStatusId;
-        row10.examEntryStatusLabel = examEntryStatusLabel;
-        row10.pathwayId = pathwayId;
-        row10.pathwayLabel = pathwayLabel;
-        row10.uolNumber = UOLNo;
-
-        let f75FormChangeStatusPopupData = {
-          studentId: row.id,
-          studentNucleusId: row.studentId,
-          studentName: row.displayName,
-          applicationStatusId: applicationStatusId,
-          renewalStatusId: renewalStatusId,
-          examEntryStatusId: examEntryStatusId,
-          pathwayId: pathwayId,
-          uolNumber: UOLNo
-        };
-
-        row10.changeStatusAction = (
-          <IconButton
-            color="primary"
-            aria-label="Add"
-            onClick={()=>this.f75FormChangeStatusPopupSetData(f75FormChangeStatusPopupData)}
-            variant="outlined"
-            component="span"
-            style={{padding:5}}
-          >
-            <Tooltip title="Add / Change">
-              <Fab 
-                color="primary" 
-                aria-label="add" 
-                size="small"
-              >
-                <AddIcon fontSize="small"/>
-              </Fab>
-            </Tooltip>
-          </IconButton>
-        );
-
-      }
-      
-      return ( 
-        row.id == studentId ? { ...row10 } : row 
-      )
-    }); // tableData.map ends
-  
-    this.setState({ 
-      tableData: tableDataNewInstance,
-      isLoading: true 
-    });
-
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentSave`;
+    data.append("id", id);
+    data.append("statusId", statusId);
+    this.setState({ isLoading: true  });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C75GuardianRegisterationChangeApprovalStatus`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -309,104 +244,35 @@ class F75Form extends Component {
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
     })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-            this.f75FormChangeStatusPopupClose();
-          } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  onStudentAchievementFormSubmit = async (e) => {
-
-    if (
-        !this.isAcademicSessionValid() 
-        || !this.isProgrammeValid()
-    ) { return; }
-
-    
-    let academicSessionId = document.getElementById("academicSessionIdSA").value;
-    let studentId = document.getElementById("studentId").value;
-    let moduleNumber = document.getElementsByName("moduleNumber");
-    let programmeCourseId = document.getElementsByName("programmeCourseId");
-    let marks = document.getElementsByName("marks");
-
-    let data = new FormData();
-    data.append("id", 0);
-    data.append("academicSessionId", academicSessionId);
-    data.append("programmeId", this.state.programmeId);
-    data.append("studentId", studentId);
-
-    let recordLength = moduleNumber.length || 0;
-
-    if (recordLength>0) {
-      for (let i=0; i<recordLength; i++) {
-        data.append("moduleNumber", moduleNumber[i].value);
-        data.append("programmeCourseId", programmeCourseId[i].value);
-        data.append("marks", marks[i].value);
+    .then((res) => {
+      if (!res.ok) {
+        throw res;
       }
-    }
-    
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsCoursesStudentsAchievementsSave`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
+      return res.json();
     })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
+    .then((json) => {
+        if (json.CODE === 1) {
+          let tableData = [...this.state.tableData];
+          tableData.splice(rowIndex, 1);
+          this.setState({ tableData: tableData });
+          this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+        } else {
+          this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
         }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-            this.f75FormPopupClose();
-          } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
-          }
+        console.log(json);
+      },
+      (error) => {
+        if (error.status == 401) {
+          this.setState({
+            isLoginMenu: true,
+            isReload: false,
+          });
+        } else {
+          console.log(error);
+          this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
         }
-      );
+      }
+    );
     this.setState({ isLoading: false });
   };
 
@@ -431,9 +297,6 @@ class F75Form extends Component {
             <F75FormPopupComponent
               isOpen={this.state.f75FormPopupIsOpen}
               data={this.state.f75FormPopupData}
-              academicSessionMenuItems={this.state.academicSessionMenuItems}
-              preModuleMenuItems={this.state.preModuleMenuItems}
-              preCourseMenuItems={this.state.preCourseMenuItems}
               isLoading={this.state.isLoading}
               onFormSubmit ={() => this.onStudentAchievementFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}
