@@ -10,6 +10,8 @@ import F31FormTableComponent from "./F31FormTableComponent";
 import F31FormPopupComponent from "./F31FormPopupComponent";
 import AddIcon from "@material-ui/icons/Add";
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
+import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 const styles = () => ({
   root: {
@@ -45,6 +47,7 @@ class F31Form extends Component {
       isLoading: false,
       isReload: false,
       isOpenSnackbar: false,
+      showTableFilter: true,
       snackbarMessage: "",
       snackbarSeverity: "",
       academicSessionIdMenuItems: [],
@@ -55,8 +58,8 @@ class F31Form extends Component {
       programmeGroupIdError: "",
       preDaysMenuItems: [], //["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       preTimeStartMenuItems: [],
-      showTableFilter: false,
       CourseListArray: [],
+      CourseListArrayBack: "",
       roomsData: [],
     };
   }
@@ -216,10 +219,7 @@ class F31Form extends Component {
           if (json.CODE === 1) {
             this.setState({ roomsData: json.DATA || [] });
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
         },
         (error) => {
@@ -230,10 +230,7 @@ class F31Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -263,9 +260,7 @@ class F31Form extends Component {
           if (json.CODE === 1) {
             this.setState({ programmeGroupIdMenuItems: json.DATA });
           } else {
-
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-
           }
           console.log("loadProgrammeGroups", json);
         },
@@ -283,6 +278,7 @@ class F31Form extends Component {
       );
     this.setState({ isLoading: false });
   };
+
   loadDaysOfWeek = async () => {
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonDaysOfWeekView`;
     await fetch(url, {
@@ -321,6 +317,7 @@ class F31Form extends Component {
         }
       );
   };
+
   loadCourses = async (academicsSessionId, programmeGroupId) => {
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
@@ -344,6 +341,7 @@ class F31Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             for (var i = 0; i < json.DATA.length; i++) {
+              let rowData = json.DATA[i];
               let teacherName = json.DATA[i].teacherName;
               let activeDate = json.DATA[i].activeDate;
               json.DATA[i].action = (
@@ -371,7 +369,6 @@ class F31Form extends Component {
                     />
                   :
                   <Fragment>
-                    <span>&emsp;</span>
                     <Fab 
                       size="small"
                       disabled={true}
@@ -400,8 +397,33 @@ class F31Form extends Component {
                     effectiveDatesArray={json.DATA[i].effectiveDatesArray || []}
                     isLoading={this.state.isLoading}
                   />
+                  {activeDate ?
+                    <IconButton
+                      color=""
+                      aria-label="Remove"
+                      component="span"
+                      onClick={()=>this.onRemoveTimetable(rowData)}
+                      variant="outlined"
+                    >
+                      <Tooltip title="Remove Timetable">
+                        <Fab color="secondary" aria-label="add" size="small">
+                          <CloseOutlinedIcon />
+                        </Fab>
+                      </Tooltip>
+                    </IconButton>
+                  :
+                    <Fragment>
+                      <span>&emsp;</span>
+                      <Fab 
+                        size="small"
+                        disabled={true}
+                      >
+                        <CloseOutlinedIcon />
+                      </Fab>
+                    </Fragment>
+                  }
                 </Fragment>
-                :
+                : 
                 <Fragment>
                   <Fab 
                     size="small"
@@ -416,15 +438,19 @@ class F31Form extends Component {
                   >
                     <AddIcon />
                   </Fab>
+                  <span>&emsp;&nbsp;&nbsp;&nbsp;</span>
+                  <Fab 
+                    size="small"
+                    disabled={true}
+                  >
+                    <CloseOutlinedIcon />
+                  </Fab>
                 </Fragment>
-
               );
             }
-            this.setState({ CourseListArray: json.DATA || [], });
+            this.setState({ CourseListArray: json.DATA || [] });
           } else {
-
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-
           }
           console.log("loadCourses", json);
         },
@@ -555,10 +581,7 @@ class F31Form extends Component {
               // }
             }, 2000);
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
           console.log(json);
         },
@@ -570,14 +593,121 @@ class F31Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
     this.setState({ isLoading: false });
+  };
+
+  rowloading = (isLoading, data) => {
+
+    let courseListArray = [...this.state.CourseListArray];
+    
+    if(isLoading) {
+      this.setState({CourseListArrayBack: {...data} });
+      let skeleton = (<Typography><Skeleton /></Typography>);
+      let loading = (<Typography><CircularProgress size={24}/></Typography>);
+      let newObj = {"SRNo": data.SRNo, "courseLabel": skeleton, "sectionTypeLabel": skeleton, "sectionLabel": skeleton, "teacherName": skeleton, "activeDate": skeleton, "action": loading }
+      let newCourseListArray = courseListArray.map((dt, i)=> data.SRNo == dt.SRNo ? {...newObj} : dt );
+      this.setState({CourseListArray: newCourseListArray});
+    } else {
+
+      let CourseListArrayBack = {...this.state.CourseListArrayBack};
+      let newCourseListArray = courseListArray.map((dt, i) => {
+        if(data.SRNo == dt.SRNo) {
+          CourseListArrayBack.action = (
+            <Fragment>
+              <Fab 
+                size="small"
+                disabled={true}
+              >
+                <VisibilityOutlinedIcon />
+              </Fab>
+              <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <F31FormPopupComponent
+                sectionId={CourseListArrayBack.ID}
+                preTimeStartMenuItems={this.state.preTimeStartMenuItems}
+                preDaysMenuItems={this.state.preDaysMenuItems}
+                clickOnFormSubmit={this.clickOnFormSubmit}
+                courseLabel={CourseListArrayBack.courseLabel}
+                sectionTypeLabel={CourseListArrayBack.sectionTypeLabel}
+                sectionLabel={CourseListArrayBack.sectionLabel}
+                teacherName={CourseListArrayBack.teacherName}
+                teacherId={CourseListArrayBack.teacherId}
+                activeDate={CourseListArrayBack.activeDate}
+                activeDateInNumber={CourseListArrayBack.activeDateInNumber}
+                handleOpenSnackbar={this.handleOpenSnackbar}
+                values={this.state}
+                onAutoCompleteChange={this.onAutoCompleteChange}
+                isReadOnly={false}
+                effectiveDatesArray={CourseListArrayBack.effectiveDatesArray || []}
+                isLoading={this.state.isLoading}
+              />
+              <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <Fab 
+                size="small"
+                disabled={true}
+              >
+                <CloseOutlinedIcon />
+              </Fab>
+            </Fragment>
+          );
+        }  
+        return data.SRNo == dt.SRNo ? CourseListArrayBack : dt ;
+      });
+
+      this.setState({
+        CourseListArray: newCourseListArray,
+        CourseListArrayBack: ""
+      });
+
+    }
+
+  }
+
+  onRemoveTimetable = async (data) => {
+    this.rowloading(1, data);
+    let formData = new FormData();
+    formData.append("sectionId", data.sectionId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsScheduleDeactivate`;
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+    .then((res) => {
+      if (!res.ok) {
+        throw res;
+      }
+      return res.json();
+    })
+    .then(
+      (json) => {
+        if (json.CODE === 1) {
+          this.rowloading(0, data);
+          this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+        } else {
+          this.loadCourses(this.state.academicSessionId, this.state.programmeGroupId);
+          this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+        }
+        console.log(json);
+      },
+      (error) => {
+        if (error.status == 401) {
+          this.setState({
+            isLoginMenu: true,
+            isReload: false,
+          });
+        } else {
+          console.log(error);
+          this.loadCourses(this.state.academicSessionId, this.state.programmeGroupId);
+          this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+        }
+      }
+    );
   };
 
   componentDidMount() {
@@ -721,17 +851,15 @@ class F31Form extends Component {
                   getDataByStatus={(status) => this.getData(status)}
                   onHandleChange={(e) => this.onHandleChange(e)}
                 />
-
               : 
                 <br />
               }
-              {this.state.CourseListArray.length > 0 ? 
-
+              {this.state.CourseListArray && !this.state.isLoading ? 
                 <F31FormTableComponent
                   rows={this.state.CourseListArray}
                   showFilter={this.state.showTableFilter}
                 />
-               : this.state.isLoading ?
+               : 
                 <Grid
                   container
                   justify="center"
@@ -740,23 +868,21 @@ class F31Form extends Component {
                 >
                   <CircularProgress />
                 </Grid>
-
-                : 
-                ""
               }
-
             </Grid>
           </Grid>
         </form>
-        {/* <BottomBar
-                    left_button_text="View"
-                    left_button_hide={true}
-                    bottomLeftButtonAction={this.viewReport}
-                    right_button_text="Save"
-                    bottomRightButtonAction={this.clickOnFormSubmit}
-                    loading={this.state.isLoading}
-                    isDrawerOpen={ this.props.isDrawerOpen }
-                /> */}
+        {/* 
+        <BottomBar
+            left_button_text="View"
+            left_button_hide={true}
+            bottomLeftButtonAction={this.viewReport}
+            right_button_text="Save"
+            bottomRightButtonAction={this.clickOnFormSubmit}
+            loading={this.state.isLoading}
+            isDrawerOpen={ this.props.isDrawerOpen }
+        /> 
+        */}
         <CustomizedSnackbar
           isOpen={this.state.isOpenSnackbar}
           message={this.state.snackbarMessage}
