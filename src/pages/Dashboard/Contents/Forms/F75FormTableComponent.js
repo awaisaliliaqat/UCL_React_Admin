@@ -16,6 +16,9 @@ class F75FormTableComponent extends Component {
         { name: "guardianMobileNo", title: "Mobile#" },
         { name: "guardianEmail", title: "Guardian Email" },
         { name: "childrans", title: "Guardian Of" },
+        { name: "approvalStatusLabel", title: "Status" },
+        { name: "approvedBy", title: "Approved By" },
+        { name: "approvedOn", title: "Approved On" },
         { name: "action", title: "Action"}
       ],
       rows: [],
@@ -42,9 +45,13 @@ class F75FormTableComponent extends Component {
         { columnName: "email", wordWrapEnabled: true},
         { columnName: "guardianTitle", wordWrapEnabled: true },
         { columnName: "guardianName", wordWrapEnabled: true },
-        { columnName: "guardianRelationWithStudent", width:100, align:"center" },
+        { columnName: "guardianRelationWithStudent", width:100 },
         { columnName: "guardianMobileNo", width:130, align:"center" },
+        { columnName: "guardianEmail", wordWrapEnabled: true },
         { columnName: "childrans", wordWrapEnabled:true },
+        { columnName: "approvalStatusLabel", width:100 },
+        { columnName: "approvedBy", wordWrapEnabled:true },
+        { columnName: "approvedOn", width:100 },
         { columnName: "action", width: 120, align:"center"},
       ],
       defaultColumnWidths: [],
@@ -77,7 +84,11 @@ class F75FormTableComponent extends Component {
     } = this.state;
 
     // const rowComponent = ({ tableRow, ...restProps }) => {
-    //   return <Table.Row {...restProps} style={{ backgroundColor: "LightBlue" }} />;
+    //   return <Table.Row {...restProps} style={{ backgroundColor: "#1d5f98", color:"#FFF" }} />;
+    // };
+
+    // const headerCellComponent = ({ cellProps, ...restProps }) => {
+    //   return <Table.Cell {...restProps} style={{ color: "#FFF" }} />;
     // };
 
     const cellComponent = ({ cellProps, ...restProps }) => {
@@ -110,6 +121,7 @@ class F75FormTableComponent extends Component {
             cellComponent={cellComponent}
           />
           <TableHeaderRow
+            //cellComponent={headerCellComponent}
             //rowComponent={rowComponent}
             showSortingControls={true}
             titleComponent={(props) =>

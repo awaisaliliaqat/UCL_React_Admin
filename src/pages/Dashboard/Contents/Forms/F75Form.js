@@ -122,8 +122,12 @@ class F75Form extends Component {
               };
 
               let recordId = data[i].id;
-              
+              let approvalStatus = data[i].approvalStatus;
+
+              data[i].approvalStatusLabel = approvalStatus ? (approvalStatus==1 ? "Approved":"Rejected" ): "Pending" ;
+
               data[i].action = (
+                !approvalStatus ?
                 <Fragment>
                   <Button 
                     variant="contained" 
@@ -151,6 +155,8 @@ class F75Form extends Component {
                     Reject
                   </Button>
                 </Fragment>
+                :
+                ""
                 // <IconButton
                 //   color="primary"
                 //   aria-label="Add"
@@ -252,10 +258,11 @@ class F75Form extends Component {
     })
     .then((json) => {
         if (json.CODE === 1) {
-          let tableData = [...this.state.tableData];
-          tableData.splice(rowIndex, 1);
-          this.setState({ tableData: tableData });
+          // let tableData = [...this.state.tableData];
+          // tableData.splice(rowIndex, 1);
+          // this.setState({ tableData: tableData });
           this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+          this.loadData();
         } else {
           this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
         }
