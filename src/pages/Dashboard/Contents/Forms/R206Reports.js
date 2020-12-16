@@ -12,8 +12,9 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import ZipIcon from "../../../../assets/Images/zip_export_icon.png";
 
-function isEmpty(obj) {
+function isEmpty(obj) { 
   if (obj == null) return true;
   if (obj.length > 0) return false;
   if (obj.length === 0) return true;
@@ -32,6 +33,7 @@ class R206Reports extends Component {
       showTableFilter: false,
       showSearchBar: false,
       isDownloadPdf: false,
+      isDownloadZip: false,
       applicationStatusId: 1,
       isLoginMenu: false,
       isReload: false,
@@ -292,6 +294,60 @@ class R206Reports extends Component {
       }
   }
 
+  downloadZipFile = async () => {
+    if(
+      !this.isCourseValid() ||
+      !this.isSectionValid() ||
+      !this.isExamValid()
+    )
+    {return;}
+    if (this.state.isDownloadZip === false) {
+      this.setState({isDownloadZip: true});
+      let fileLabel = "Section_Exams.zip";
+      let sectionObj = this.state.sectionsMenuItems.find(obj => obj.id === this.state.sectionId);
+      if(sectionObj){ fileLabel = `${sectionObj.label.replace(" ","_")}_Exams.zip`}
+      let data = new FormData();
+      data.append("sectionId", this.state.sectionId);
+      data.append("examId", this.state.examId);
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C206CommonAcademicsExamsSummaryCompressDownload`;
+      await fetch(url, {
+          method: "POST",
+          body: data,
+          headers: new Headers({
+              Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+          })
+      })
+      .then(res => {
+          if (res.status === 200) {
+              return res.blob();
+          }
+          return false;
+      })
+      .then(json => {
+          if (json) {
+              var csvURL = window.URL.createObjectURL(json);
+              var tempLink = document.createElement("a");
+              tempLink.setAttribute("download", fileLabel);
+              tempLink.href = csvURL;
+              tempLink.click();
+              console.log(json);
+          }
+      },
+      error => {
+          if (error.status === 401) {
+              this.setState({
+                  isLoginMenu: true,
+                  isReload: false
+              })
+          } else {
+              alert('Failed to fetch, Please try again later.');
+              console.log(error);
+          }
+      });
+      this.setState({isDownloadZip: false});
+    }
+  }
+
   getSectionIdFromCourseId = (courseId) => {
     let coursesMenuItems = this.state.coursesMenuItems;
     let res = coursesMenuItems.find((dt) => dt.id === courseId);
@@ -461,28 +517,26 @@ class R206Reports extends Component {
                   <FilterIcon fontSize="default" color="primary" />
                 </IconButton>
               </Tooltip>
-              {/*
-              <Tooltip title="Export PDF">
-                {this.state.isDownloadPdf ?
+              <Tooltip title="Export ZIP">
+                {this.state.isDownloadZip ?
                   <CircularProgress 
                     size={14}
-                    style={{cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`}}
+                    style={{cursor: `${this.state.isDownloadZip ? 'wait' : 'pointer'}`}}
                   />
                   :
                   <img 
                     alt="" 
-                    src={PDFIcon} 
-                    onClick={() => this.downloadPDFData()} 
+                    src={ZipIcon} 
+                    onClick={() => this.downloadZipFile()} 
                     style = {{
                       height: 22, 
-                      width: 22,
+                      width: 18,
                       marginBottom: -7,
                       cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`,
                     }}
                   />
                 }
-              </Tooltip>
-              */}
+              </Tooltip> 
             </div>
           </div>
           <Divider
