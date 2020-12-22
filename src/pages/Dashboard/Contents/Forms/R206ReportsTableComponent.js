@@ -73,12 +73,14 @@ class R206ReportsTableComponent extends Component {
       defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
+        { columnName: "answerSheet", sortingEnabled: false },
         { columnName: "fileDownload", sortingEnabled: false },
       ],
       tableColumnExtensions: [
         { columnName: "SRNo", width: 100 },
         { columnName: "nucleusId", width: 100 },
         { columnName: "studentName", wordWrapEnabled: true },
+        { columnName: "answerSheet", width: 100, align:"center" },
         { columnName: "examSubmitted", width: 100 },
         { columnName: "obtainedMarks", width: 150 },
         { columnName: "remarks", wordWrapEnabled: true},
@@ -88,6 +90,7 @@ class R206ReportsTableComponent extends Component {
       defaultFilters: [],
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
+        { columnName: "answerSheet", filteringEnabled: false },
         { columnName: "fileDownload", filteringEnabled: false },
       ],
     };
