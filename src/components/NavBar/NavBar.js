@@ -217,7 +217,7 @@ const NavBar = props => {
                             {logo && <img alt="" src={logo} width={50} />}
                         </IconButton>
                         <Typography className={classes.title} variant="subtitle1" noWrap>
-                            {"University College Lahore"}
+                            {"Universal College Lahore"}
                         </Typography>
                     </div>
                     {isAuthorize && (

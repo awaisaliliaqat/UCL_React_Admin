@@ -341,7 +341,7 @@ const Dashboard = (props) => {
               style={{ fontSize: 12, color: "white" }}
               align="center"
             >
-              Copyright © {new Date().getFullYear()}. University College Lahore
+              Copyright © {new Date().getFullYear()}. Universal College Lahore
               <br></br>(UCL), Pakistan - All Rights Reserved
             </Typography>
           </div>

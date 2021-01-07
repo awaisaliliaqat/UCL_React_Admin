@@ -251,6 +251,12 @@ class R218Reports extends Component {
         this.loadSection(value);
         break;
       case "sectionId":
+        this.setState({
+          termId:"",
+          termMenuItems:[],
+          studentObj: "",
+          studentMenuItems:[]
+        });
         this.loadUsers(value);
       break;
       default:

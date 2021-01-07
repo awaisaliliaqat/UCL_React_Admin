@@ -318,7 +318,7 @@ class DisplayAdmissionApplications extends Component {
                 display: "inline-block"
               }}
             >
-              <span className={classes.title}>University College Lahore</span>
+              <span className={classes.title}>Universal College Lahore</span>
               <br />
             <span className={classes.subTitle}>{this.state.programmeLabel}</span>
               <br/>

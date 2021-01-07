@@ -340,7 +340,7 @@ class DisplayAdmissionApplications extends Component {
                     <div className={classes.headerContainer}>
                         <img alt="" src={Logo} width={100} />
                         <div className={classes.titleContainer}>
-                            <span className={classes.title}>University College Lahore</span>
+                            <span className={classes.title}>Universal College Lahore</span>
                             <span className={classes.subTitle}>(a project of UCL pvt Ltd)</span>
                         </div>
                     </div>
@@ -1771,7 +1771,7 @@ class DisplayAdmissionApplications extends Component {
                             I confirm that the information contained in this form is accurate
                             and complete to the best of my knowledge and that the submission
                             of inaccurate information can be considered sufficient cause for
-                            terminating my enrollment at University College Lahore (UCL).
+                            terminating my enrollment at Universal College Lahore (UCL).
                             </div>
                             <div style={{
                                 paddingBottom: 10,
@@ -1824,9 +1824,9 @@ class DisplayAdmissionApplications extends Component {
                                 fontSize: 16
                             }}><strong style={{ paddingRight: 10 }}>8.</strong>
                             We (the applicant and the parents including the guardians as the case may be) give
-                            our unconditional consent to the University College Lahore to use any of the pictures
+                            our unconditional consent to the Universal College Lahore to use any of the pictures
                              of the student taken during college events/functions for marketing purposes
-                             In regard to the above, this serves to confirm that University College Lahore
+                             In regard to the above, this serves to confirm that Universal College Lahore
                              is indemnified by the parent/guardian and the student or any other party representing the student.
                             </div>
                         </div>

@@ -191,7 +191,7 @@ const Login = () => {
           <Grid item xs={false} sm={5} md={6} justify="space-between"   elevation={6} square style={{ textAlign:'center',marginLeft:'2%',marginTop:'9%' }}>
            
             <Typography variant="h2" style={{ textAlign:'left',color:'white',textShadow:'1px 1px 2px black' }} component="h2" gutterBottom>
-              WELCOME TO NUCLEUS <br/> THE UNIVERSITY COLLEGE LAHORE PORTAL
+              WELCOME TO NUCLEUS <br/> THE UNIVERSAL COLLEGE LAHORE PORTAL
            </Typography>
             
 

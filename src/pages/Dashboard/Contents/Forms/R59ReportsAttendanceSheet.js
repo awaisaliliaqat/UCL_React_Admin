@@ -210,7 +210,7 @@ class DisplayAdmissionApplications extends Component {
                     </IconButton>
                     <div className={classes.headerContainer}>
                       <div className={classes.titleContainer}>
-                        <span className={classes.title}>University College Lahore&emsp;&emsp;&emsp;&emsp;{sessionLabel}</span>
+                        <span className={classes.title}>Universal College Lahore&emsp;&emsp;&emsp;&emsp;{sessionLabel}</span>
                         <br/>
                         <span className={classes.subTitle}>Attandance Sheet for the Month of&nbsp;&nbsp;{monthName}</span>
                         <br/>
