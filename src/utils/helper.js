@@ -61,7 +61,7 @@ export default function GetRequirementsDetails(num) {
                     <ul>
                         <li>be aged 18 or above by the 1st of November in the year of registration;</li>
                         <li>have done O-Level/Intermediate/High School Diploma/IB or equivalent;</li>
-                        <li>pass the UoL entrance test and clear the interview with the University College Lahore Admissions Panel.</li>
+                        <li>pass the UoL entrance test and clear the interview with the Universal College Lahore Admissions Panel.</li>
                     </ul>
                 </li>
             </ul>

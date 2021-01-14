@@ -113,7 +113,7 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-class DisplayAdmissionApplications extends Component {
+class R218StudentProgressReport extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -167,14 +167,14 @@ class DisplayAdmissionApplications extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getData = async (sessionId=0, programmeId=0, sessionTermId=0, studentId=0) => {
+  getData = async (sessionId=0, sectionId=0, sessionTermId=0, studentId=0) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", sessionId);
-    data.append("programmeId", programmeId);
+    data.append("sectionId", sectionId);
     data.append("termId", sessionTermId);
     data.append("studentId", studentId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonStudentProgressReportView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C218CommonStudentProgressReportView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -432,8 +432,8 @@ class DisplayAdmissionApplications extends Component {
   }
 }
 
-DisplayAdmissionApplications.propTypes = {
+R218StudentProgressReport.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DisplayAdmissionApplications);
+export default withStyles(styles)(R218StudentProgressReport);
