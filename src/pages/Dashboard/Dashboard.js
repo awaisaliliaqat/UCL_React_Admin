@@ -133,6 +133,7 @@ import F211Form from "./Contents/Forms/F211Form";
 import F211Reports from "./Contents/Forms/F211Reports";
 import F212Form from "./Contents/Forms/F212Form";
 import R213Reports from "./Contents/Forms/R213Reports";
+import R218Reports from "./Contents/Forms/R218Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 
 const drawerWidth = 283;
@@ -340,7 +341,7 @@ const Dashboard = (props) => {
               style={{ fontSize: 12, color: "white" }}
               align="center"
             >
-              Copyright © {new Date().getFullYear()}. University College Lahore
+              Copyright © {new Date().getFullYear()}. Universal College Lahore
               <br></br>(UCL), Pakistan - All Rights Reserved
             </Typography>
           </div>
@@ -1784,6 +1785,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R213Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R218Reports"
+                exact
+                path="/dashboard/R218Reports"
+                render={(props) => {
+                  return (
+                    <R218Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

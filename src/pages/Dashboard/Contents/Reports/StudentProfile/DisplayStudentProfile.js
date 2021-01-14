@@ -252,7 +252,7 @@ class DisplayAdmissionApplications extends Component {
                     <div className={classes.headerContainer}>
                         <img alt="" src={Logo} width={100} />
                         <div className={classes.titleContainer}>
-                            <span className={classes.title}>University College Lahore</span>
+                            <span className={classes.title}>Universal College Lahore</span>
                             <span className={classes.subTitle}>(a project of UCL pvt Ltd)</span>
                         </div>
                     </div>

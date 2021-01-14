@@ -263,7 +263,7 @@ class R74ReportsAttendanceRecordSheet extends Component {
           <div className={classes.headerContainer}>
             <div className={classes.titleContainer}>
               <span className={classes.title}>
-                University College Lahore&emsp;&emsp;&emsp;&emsp;
+                Universal College Lahore&emsp;&emsp;&emsp;&emsp;
                 {sessionLabel}
               </span>
               <br />
