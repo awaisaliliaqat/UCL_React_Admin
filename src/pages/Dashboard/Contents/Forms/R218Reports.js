@@ -257,7 +257,7 @@ class R218Reports extends Component {
           studentObj: "",
           studentMenuItems:[]
         });
-        this.loadUsers(value);
+        //this.loadUsers(value);
       break;
       default:
     }
@@ -272,16 +272,8 @@ class R218Reports extends Component {
     let sectionId = this.state.sectionId;
     let sessionTermId = this.state.sessionTermId;
     let studentId = this.state.studentObj.id;
-    window.open(`#/R218StudentProgressReport/
-    ${
-      academicSessionId
-      +"&"+
-      sectionId
-      +"&"+
-      sessionTermId
-      +"&"+
-      studentId
-    }`,"_blank");
+    //window.open(`#/R218StudentProgressReport/${academicSessionId+"&"+sectionId+"&"+sessionTermId+"&"+studentId}`,"_blank");
+    window.open(`#/R218StudentProgressReport/${academicSessionId+"&"+sectionId+"&"+sessionTermId}`,"_blank");
   };
 
   componentDidMount() {
@@ -409,7 +401,7 @@ class R218Reports extends Component {
               </TextField>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Autocomplete
+              {/* <Autocomplete
                 fullWidth
                 id="studentObj"
                 options={this.state.studentMenuItems}
@@ -429,7 +421,7 @@ class R218Reports extends Component {
                     helperText={this.state.studentObjError}
                   />
                 )}
-              />
+              /> */}
             </Grid>
           </Grid>
           <BottomBar
@@ -440,7 +432,7 @@ class R218Reports extends Component {
             bottomRightButtonAction={this.handleGenerate}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.studentObj}
+            disableRightButton={!this.state.sessionTermId}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
