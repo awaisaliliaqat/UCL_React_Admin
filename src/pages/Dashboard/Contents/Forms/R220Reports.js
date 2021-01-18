@@ -29,10 +29,10 @@ class R218Reports extends Component {
       sessionTermMenuItems: [],
       sessionTermId: "",
       sessionTermIdError: "",
-      sectionIdMenuItems: [],
-      sectionId: "",
+      programmeIdMenuItems: [],
+      programmeId: "",
       programmeGroupLabel: "",
-      sectionIdError: "",
+      programmeIdError: "",
       studentMenuItems: [],
       studentObj: "",
       studentObjError: ""
@@ -77,7 +77,7 @@ class R218Reports extends Component {
             let res = data.find( (option) => option.isActive == 1);
             if(res){
               this.setState({academicSessionLabel:data.Label});
-              this.loadSection(res.ID);
+              this.loadProgrammes(res.ID);
               this.loadTerms(res.ID);
               this.setState({academicSessionId:res.ID});
             }
@@ -144,11 +144,11 @@ class R218Reports extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadSection = async (academicSessionId) => {
+  loadProgrammes = async (academicSessionId) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C220CommonAcademicsSectionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C220CommonAcademicsSessionsOfferedProgrammesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -165,11 +165,11 @@ class R218Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ sectionIdMenuItems: json.DATA });
+            this.setState({ programmeIdMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("loadSection", json);
+          console.log("loadProgrammes", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -186,10 +186,10 @@ class R218Reports extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadUsers = async (sectionId) => {
+  loadUsers = async (programmeId) => {
     let data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
-    data.append("sectionId", sectionId);
+    data.append("programmeId", programmeId);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C220CommonStudentsView`;
     await fetch(url, {
@@ -242,15 +242,15 @@ class R218Reports extends Component {
     switch (name) {
       case "academicSessionId":
         this.setState({
-          sectionIdMenuItems: [],
-          sectionId:"",
+          programmeIdMenuItems: [],
+          programmeId:"",
           termId:"",
           termMenuItems:[],
         });
         this.loadTerms(value);
-        this.loadSection(value);
+        this.loadProgrammes(value);
         break;
-      case "sectionId":
+      case "programmeId":
         this.setState({
           termId:"",
           termMenuItems:[],
@@ -269,11 +269,11 @@ class R218Reports extends Component {
 
   handleGenerate = () => {
     let academicSessionId = this.state.academicSessionId;
-    let sectionId = this.state.sectionId;
+    let programmeId = this.state.programmeId;
     let sessionTermId = this.state.sessionTermId;
     let studentId = this.state.studentObj.id;
-    //window.open(`#/R218StudentProgressReport/${academicSessionId+"&"+sectionId+"&"+sessionTermId+"&"+studentId}`,"_blank");
-    window.open(`#/R218StudentProgressReport/${academicSessionId+"&"+sectionId+"&"+sessionTermId}`,"_blank");
+    //window.open(`#/R218StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId}`,"_blank");
+    window.open(`#/R220StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId}`,"_blank");
   };
 
   componentDidMount() {
@@ -320,7 +320,7 @@ class R218Reports extends Component {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 id="academicSessionId"
                 name="academicSessionId"
@@ -344,25 +344,25 @@ class R218Reports extends Component {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
-                id="sectionId"
-                name="sectionId"
+                id="programmeId"
+                name="programmeId"
                 variant="outlined"
-                label="Section"
+                label="Programme"
                 onChange={this.onHandleChange}
-                value={this.state.sectionId}
-                error={!!this.state.sectionIdError}
-                helperText={this.state.sectionIdError}
+                value={this.state.programmeId}
+                error={!!this.state.programmeIdError}
+                helperText={this.state.programmeIdError}
                 disabled={!this.state.academicSessionId}
                 required
                 fullWidth
                 select
               >
-                {this.state.sectionIdMenuItems ? (
-                  this.state.sectionIdMenuItems.map((dt, i) => (
+                {this.state.programmeIdMenuItems ? (
+                  this.state.programmeIdMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"sectionIdMenuItems" + dt.ID}
+                      key={"programmeIdMenuItems" + dt.ID}
                       value={dt.ID}
                     >
                       {dt.Label}
@@ -375,7 +375,7 @@ class R218Reports extends Component {
                 )}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 id="sessionTermId"
                 name="sessionTermId"
@@ -385,7 +385,7 @@ class R218Reports extends Component {
                 value={this.state.sessionTermId}
                 error={!!this.state.sessionTermIdError}
                 helperText={this.state.sessionTermIdError}
-                disabled={!this.state.academicSessionId || !this.state.sectionId}
+                disabled={!this.state.academicSessionId || !this.state.programmeId}
                 required
                 fullWidth
                 select
@@ -409,7 +409,7 @@ class R218Reports extends Component {
                 onChange={(event, value) =>
                   this.handleSetUserId(value)
                 }
-                disabled={!this.state.sectionId}
+                disabled={!this.state.programmeId}
                 getOptionLabel={(option) =>  typeof option.label === "string" ? option.label : ""}
                 renderInput={(params) => (
                   <TextField

@@ -169,13 +169,13 @@ class R218StudentProgressReport extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getData = async (sessionId=0, sectionId=0, sessionTermId=0) => {
+  getData = async (sessionId=0, programmeId=0, sessionTermId=0) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", sessionId);
-    data.append("sectionId", sectionId);
+    data.append("programmeId", programmeId);
     data.append("termId", sessionTermId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C218CommonStudentProgressReportView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C220CommonStudentProgressReportView`;
     await fetch(url, {
       method: "POST",
       body: data,
