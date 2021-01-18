@@ -133,7 +133,8 @@ class DisplayAdmissionApplications extends Component {
       totalPOS: "_ _",
       totalAchieved: "_ _",
       totalPercentage: "_ _",
-      resultClassification: "_ _ _"
+      resultClassification: "_ _ _",
+      endDate:""
     };
   }
 
@@ -284,6 +285,7 @@ class DisplayAdmissionApplications extends Component {
   componentDidMount() {
     const { id = "0&0&0&0" } = this.props.match.params;
     let ids = id.split("&");
+    this.setState({endDate:ids[4]});
     this.getData(ids[0], ids[1], ids[2], ids[3]);
   }
 
@@ -341,7 +343,7 @@ class DisplayAdmissionApplications extends Component {
                   marginRight: 56
                 }}
               >
-                Progress Report<br/>Academic Year<br/>{this.state.academicSessionLabel}<br/>Upto<br/>{this.state.uptoDate}
+                Progress Report<br/>Academic Year<br/>{this.state.academicSessionLabel}<br/>Upto<br/>{this.state.endDate}
               </span>
             </div>
           </div>
