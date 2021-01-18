@@ -35,7 +35,8 @@ class R218Reports extends Component {
       programmeIdError: "",
       studentMenuItems: [],
       studentObj: "",
-      studentObjError: ""
+      studentObjError: "",
+      endDate: ""
     };
   }
 
@@ -259,6 +260,13 @@ class R218Reports extends Component {
         });
         //this.loadUsers(value);
       break;
+      case "sessionTermId":
+        let termMenuItems = this.state.sessionTermMenuItems;
+        let res = termMenuItems.find((obj) => obj.id === value);
+        if(res){
+          this.setState({endDate:res.endDate});
+        }
+      break;
       default:
     }
     this.setState({
@@ -273,7 +281,7 @@ class R218Reports extends Component {
     let sessionTermId = this.state.sessionTermId;
     let studentId = this.state.studentObj.id;
     //window.open(`#/R218StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId}`,"_blank");
-    window.open(`#/R220StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId}`,"_blank");
+    window.open(`#/R220StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+this.state.endDate}`,"_blank");
   };
 
   componentDidMount() {

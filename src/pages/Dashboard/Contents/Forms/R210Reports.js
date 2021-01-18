@@ -35,7 +35,8 @@ class R210Reports extends Component {
       programmeIdError: "",
       studentMenuItems: [],
       studentObj: "",
-      studentObjError: ""
+      studentObjError: "",
+      endData: ""
     };
   }
 
@@ -253,6 +254,13 @@ class R210Reports extends Component {
       case "programmeId":
         this.loadUsers(value);
       break;
+      case "sessionTermId":
+        let termMenuItems = this.state.sessionTermMenuItems;
+        let res = termMenuItems.find((obj) => obj.id === value);
+        if(res){
+          this.setState({endDate:res.endDate});
+        }
+      break;
       default:
     }
     this.setState({
@@ -266,7 +274,7 @@ class R210Reports extends Component {
     let programmeId = this.state.programmeId;
     let sessionTermId = this.state.sessionTermId;
     let studentId = this.state.studentObj.id;
-    window.open(`#/R210StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId}`,"_blank");
+    window.open(`#/R210StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId+"&"+this.state.endDate}`,"_blank");
   };
 
   componentDidMount() {

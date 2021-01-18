@@ -135,7 +135,8 @@ class R218StudentProgressReport extends Component {
       totalAchieved: "_ _",
       totalPercentage: "_ _",
       resultClassification: "_ _ _",
-      allStudentData:[]
+      allStudentData:[],
+      endDate:""
     };
   }
 
@@ -301,6 +302,7 @@ class R218StudentProgressReport extends Component {
   componentDidMount() {
     const { id = "0&0&0" } = this.props.match.params;
     let ids = id.split("&");
+    this.setState({endDate:ids[3]});
     this.getData(ids[0], ids[1], ids[2]);
   }
 
@@ -360,7 +362,7 @@ class R218StudentProgressReport extends Component {
                       marginRight: 56
                     }}
                   >
-                    Progress Report<br/>Academic Year<br/>{this.state.academicSessionLabel}<br/>Upto<br/>{this.state.uptoDate}
+                    Progress Report<br/>Academic Year<br/>{this.state.academicSessionLabel}<br/>Upto<br/>{this.state.endDate}
                   </span>
                 </div>
               </div>
