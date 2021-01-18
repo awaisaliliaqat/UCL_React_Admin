@@ -8,7 +8,7 @@ import BottomBar from "../../../../components/BottomBar/BottomBar";
 
 const styles = {};
 
-class R210Reports extends Component {
+class R218Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -36,7 +36,7 @@ class R210Reports extends Component {
       studentMenuItems: [],
       studentObj: "",
       studentObjError: "",
-      endData: ""
+      endDate: ""
     };
   }
 
@@ -57,7 +57,7 @@ class R210Reports extends Component {
 
   loadAcademicSession = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C220CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -107,7 +107,7 @@ class R210Reports extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonAcademicsSessionsTermsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C220CommonAcademicsSessionsTermsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -149,7 +149,7 @@ class R210Reports extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonAcademicsSessionsOfferedProgrammesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C220CommonAcademicsSessionsOfferedProgrammesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -192,7 +192,7 @@ class R210Reports extends Component {
     data.append("academicsSessionId", this.state.academicSessionId);
     data.append("programmeId", programmeId);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonStudentsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C220CommonStudentsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -252,7 +252,13 @@ class R210Reports extends Component {
         this.loadProgrammes(value);
         break;
       case "programmeId":
-        this.loadUsers(value);
+        this.setState({
+          termId:"",
+          termMenuItems:[],
+          studentObj: "",
+          studentMenuItems:[]
+        });
+        //this.loadUsers(value);
       break;
       case "sessionTermId":
         let termMenuItems = this.state.sessionTermMenuItems;
@@ -274,7 +280,8 @@ class R210Reports extends Component {
     let programmeId = this.state.programmeId;
     let sessionTermId = this.state.sessionTermId;
     let studentId = this.state.studentObj.id;
-    window.open(`#/R210StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId+"&"+this.state.endDate}`,"_blank");
+    //window.open(`#/R218StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId}`,"_blank");
+    window.open(`#/R220StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+this.state.endDate}`,"_blank");
   };
 
   componentDidMount() {
@@ -312,7 +319,7 @@ class R210Reports extends Component {
                 }}
                 variant="h5"
               >
-                Student Progress Report
+                Students Progress Report
               </Typography>
               <Divider
                 style={{
@@ -321,7 +328,7 @@ class R210Reports extends Component {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 id="academicSessionId"
                 name="academicSessionId"
@@ -345,7 +352,7 @@ class R210Reports extends Component {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 id="programmeId"
                 name="programmeId"
@@ -376,7 +383,7 @@ class R210Reports extends Component {
                 )}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 id="sessionTermId"
                 name="sessionTermId"
@@ -402,7 +409,7 @@ class R210Reports extends Component {
               </TextField>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Autocomplete
+              {/* <Autocomplete
                 fullWidth
                 id="studentObj"
                 options={this.state.studentMenuItems}
@@ -422,7 +429,7 @@ class R210Reports extends Component {
                     helperText={this.state.studentObjError}
                   />
                 )}
-              />
+              /> */}
             </Grid>
           </Grid>
           <BottomBar
@@ -433,7 +440,7 @@ class R210Reports extends Component {
             bottomRightButtonAction={this.handleGenerate}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.studentObj}
+            disableRightButton={!this.state.sessionTermId}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
@@ -447,4 +454,4 @@ class R210Reports extends Component {
   }
 }
 
-export default withStyles(styles)(R210Reports);
+export default withStyles(styles)(R218Reports);

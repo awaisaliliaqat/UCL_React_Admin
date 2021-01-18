@@ -18,6 +18,7 @@ import R71ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R
 import R74ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R74ReportsAttendanceRecordSheet';
 import R210StudentProgressReport from '../pages/Dashboard/Contents/Forms/R210StudentProgressReport';
 import R218StudentProgressReport from '../pages/Dashboard/Contents/Forms/R218StudentProgressReport';
+import R220StudentProgressReport from '../pages/Dashboard/Contents/Forms/R220StudentProgressReport';
 
 const CheckLogin = () => {
   const uclAdminToken = localStorage.getItem("uclAdminToken");
@@ -46,6 +47,7 @@ const AppRoute = () => {
             <PrivateRoutes exact path="/R74ReportsAttendanceRecordSheet/:id" component={R74ReportsAttendanceRecordSheet} />
             <PrivateRoutes exact path="/R210StudentProgressReport/:id" component={R210StudentProgressReport} />
             <PrivateRoutes exact path="/R218StudentProgressReport/:id" component={R218StudentProgressReport} />
+            <PrivateRoutes exact path="/R220StudentProgressReport/:id" component={R220StudentProgressReport} />
             <PrivateRoutes exact path="*" component={Dashboard} />
           </Switch>
         </Suspense>
