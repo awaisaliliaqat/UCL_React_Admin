@@ -311,7 +311,7 @@ class R218Reports extends Component {
                 }}
                 variant="h5"
               >
-                Students Progress Report Course Wise
+                Students Progress Report
               </Typography>
               <Divider
                 style={{
