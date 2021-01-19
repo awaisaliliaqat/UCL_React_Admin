@@ -259,7 +259,7 @@ class EditStudentInformation extends Component {
 
     componentDidMount() {
         this.getProgrammeGroups();
-        //this.getData();
+        // this.getData();
     }
 
     render() {
