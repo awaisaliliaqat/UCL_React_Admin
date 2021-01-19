@@ -611,14 +611,16 @@ getCitiesData = async (id, type, value='') => {
 
   setData = (data = {}) => {
 
+    
+
     const dob = data.dateOfBirthWithoutConversion ? new Date(data.dateOfBirthWithoutConversion) : new Date();
     const permanentCountriesObject = this.state.countriesData.find(item => item.ID === data.permanentAddressCountryId);
-
+    console.log("Data Re "+this.state.countriesData)
     if(permanentCountriesObject){
       this.getProvinceData(permanentCountriesObject.ID, "permanent", data.permanentAddressProvinceId);
       this.getCitiesData(data.permanentAddressProvinceId, "permanent", data.permanentAddressCityId);
     }else{
-      window.location.reload();
+      // window.location.reload();
     }
 
     this.setState({
@@ -683,7 +685,7 @@ getCitiesData = async (id, type, value='') => {
           if (error.status == 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: true,
+              isReload: false,
             });
           } else {
             this.handleOpenSnackbar("Faild to load Aplication Data", "error");
