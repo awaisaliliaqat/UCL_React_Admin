@@ -615,7 +615,6 @@ getCitiesData = async (id, type, value='') => {
 
     const dob = data.dateOfBirthWithoutConversion ? new Date(data.dateOfBirthWithoutConversion) : new Date();
     const permanentCountriesObject = this.state.countriesData.find(item => item.ID === data.permanentAddressCountryId);
-    console.log("Data Re "+this.state.countriesData)
     if(permanentCountriesObject){
       this.getProvinceData(permanentCountriesObject.ID, "permanent", data.permanentAddressProvinceId);
       this.getCitiesData(data.permanentAddressProvinceId, "permanent", data.permanentAddressCityId);
