@@ -134,6 +134,8 @@ import F211Reports from "./Contents/Forms/F211Reports";
 import F212Form from "./Contents/Forms/F212Form";
 import R213Reports from "./Contents/Forms/R213Reports";
 import R218Reports from "./Contents/Forms/R218Reports";
+import F219Form from "./Contents/Forms/F219Form";
+import F219Reports from "./Contents/Forms/F219Reports";
 import R220Reports from "./Contents/Forms/R220Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 
@@ -1217,6 +1219,36 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F75Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F219Form"
+                exact
+                path="/dashboard/F219Reports"
+                render={(props) => {
+                  return (
+                    <F219Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F219Form"
+                exact
+                path="/dashboard/F219Reports"
+                render={(props) => {
+                  return (
+                    <F219Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
