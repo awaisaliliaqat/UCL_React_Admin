@@ -1230,6 +1230,21 @@ const Dashboard = (props) => {
                 setValue={(value) => handleValueChange(value)}
                 name="F219Form"
                 exact
+                path="/dashboard/F219Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F219Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F219Form"
+                exact
                 path="/dashboard/F219Reports"
                 render={(props) => {
                   return (
