@@ -136,9 +136,9 @@ import F211Form from "./Contents/Forms/F211Form";
 import F211Reports from "./Contents/Forms/F211Reports";
 import F212Form from "./Contents/Forms/F212Form";
 import R213Reports from "./Contents/Forms/R213Reports";
-import R216Report from "./Contents/Forms/R216Report";
-import R216ReportFilter from "./Contents/Forms/R216ReportFilter";
-import R217Report from "./Contents/Forms/R217Report";
+import R216Reports from "./Contents/Forms/R216Reports";
+import R217FeedbackReports from "./Contents/Forms/R217FeedbackReports";
+import R217Reports from "./Contents/Forms/R217Reports";
 import ManualClassEntry from "./Contents/Forms/ManualClassEntry";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 
@@ -683,12 +683,12 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="R216Report"
+                name="R216Reports"
                 exact
-                path="/dashboard/R216Report/:recordId"
+                path="/dashboard/R216Reports/:recordId"
                 render={(props) => {
                   return (
-                    <R216Report
+                    <R216Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -698,12 +698,12 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="R216ReportFilter"
+                name="R217FeedbackReports"
                 exact
-                path="/dashboard/R216ReportFilter/:recordId"
+                path="/dashboard/R217FeedbackReports/:recordId"
                 render={(props) => {
                   return (
-                    <R216ReportFilter
+                    <R217FeedbackReports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -713,12 +713,12 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="R217Report"
+                name="R217Reports"
                 exact
-                path="/dashboard/R217Report/:recordId"
+                path="/dashboard/R217Reports/:recordId"
                 render={(props) => {
                   return (
-                    <R217Report
+                    <R217Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

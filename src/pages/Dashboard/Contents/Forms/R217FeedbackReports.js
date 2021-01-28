@@ -448,7 +448,7 @@ class R217FeedbackReports extends Component {
       handleGenerate = (data) => {
         // console.log(data);
         window.open(
-          `#/R216Report/${
+          `#/R216Reports/${
             data.teacherId +
             "&" +
             data.teacherLabel +
