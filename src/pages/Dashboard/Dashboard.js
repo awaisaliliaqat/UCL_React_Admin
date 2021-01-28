@@ -133,9 +133,9 @@ import F211Form from "./Contents/Forms/F211Form";
 import F211Reports from "./Contents/Forms/F211Reports";
 import F212Form from "./Contents/Forms/F212Form";
 import R213Reports from "./Contents/Forms/R213Reports";
-import R216Report from "./Contents/Forms/R216Report";
+import R216Reports from "./Contents/Forms/R216Reports";
 import R217FeedbackReports from "./Contents/Forms/R217FeedbackReports";
-import R217Report from "./Contents/Forms/R217Report";
+import R217Reports from "./Contents/Forms/R217Reports";
 import R218Reports from "./Contents/Forms/R218Reports";
 import F219Form from "./Contents/Forms/F219Form";
 import F219Reports from "./Contents/Forms/F219Reports";
@@ -1276,12 +1276,12 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="R216Report"
+                name="R216Reports"
                 exact
-                path="/dashboard/R216Report/:recordId"
+                path="/dashboard/R216Reports/:recordId"
                 render={(props) => {
                   return (
-                    <R216Report
+                    <R216Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -1291,7 +1291,7 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name=""
+                name="R217FeedbackReports"
                 exact
                 path="/dashboard/R217FeedbackReports/:recordId"
                 render={(props) => {
@@ -1306,12 +1306,12 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="R217Report"
+                name="R217Reports"
                 exact
-                path="/dashboard/R217Report/:recordId"
+                path="/dashboard/R217Reports"
                 render={(props) => {
                   return (
-                    <R217Report
+                    <R217Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
