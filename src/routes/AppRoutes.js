@@ -17,6 +17,8 @@ import R68ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R
 import R71ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R71ReportsAttendanceRecordSheet';
 import R74ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R74ReportsAttendanceRecordSheet';
 import R210StudentProgressReport from '../pages/Dashboard/Contents/Forms/R210StudentProgressReport';
+import R217FeedbackReports from '../pages/Dashboard/Contents/Forms/R217FeedbackReports';
+import R216Report from '../pages/Dashboard/Contents/Forms/R216Report';
 import R218StudentProgressReport from '../pages/Dashboard/Contents/Forms/R218StudentProgressReport';
 import R220StudentProgressReport from '../pages/Dashboard/Contents/Forms/R220StudentProgressReport';
 
@@ -46,6 +48,8 @@ const AppRoute = () => {
             <PrivateRoutes exact path="/R71ReportsAttendanceRecordSheet/:id" component={R71ReportsAttendanceRecordSheet} />
             <PrivateRoutes exact path="/R74ReportsAttendanceRecordSheet/:id" component={R74ReportsAttendanceRecordSheet} />
             <PrivateRoutes exact path="/R210StudentProgressReport/:id" component={R210StudentProgressReport} />
+            <PrivateRoutes exact path="/R216Report/:id" component={R216Report} />
+            <PrivateRoutes exact path="/R217FeedbackReports/:id" component={R217FeedbackReports} />
             <PrivateRoutes exact path="/R218StudentProgressReport/:id" component={R218StudentProgressReport} />
             <PrivateRoutes exact path="/R220StudentProgressReport/:id" component={R220StudentProgressReport} />
             <PrivateRoutes exact path="*" component={Dashboard} />
