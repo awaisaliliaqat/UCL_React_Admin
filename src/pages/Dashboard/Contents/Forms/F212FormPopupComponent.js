@@ -13,6 +13,7 @@ import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CardMedia from '@material-ui/core/CardMedia';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -233,10 +234,62 @@ class F212FormPopupComponent extends Component {
       courseRowDataArray: [],
       sessionAchievementsData: [],
       preSelectedCourseIMenutems:[],
-      preSelectedCourseIMenutemsDefault:[]
+      preSelectedCourseIMenutemsDefault:[],
+      studentInfo: ""
     };
   }
 
+
+
+  
+  getStudentDetail = async (studentId=0) => {
+    this.setState({ isLoading: true });
+    let data = new FormData();
+    data.append("studentId", studentId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonStudentsDetailView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ studentId: json.DATA || [] });
+            let studentInfo = json.DATA[0]|| "";
+              this.setState({studentInfo:studentInfo});
+              // console.log("Student Info"+this.state.studentId);
+              // console.log("Props"+this.props);
+          } else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log("getStudentDetail", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
   loadAllSessionAchievementsData = async (studentId=0) => {
     const data = new FormData();
     data.append("studentId", studentId);
@@ -583,6 +636,7 @@ class F212FormPopupComponent extends Component {
   componentDidUpdate(prevProps){
     // Typical usage (don't forget to compare props):
     if (this.props.isOpen !== prevProps.isOpen) {
+      this.getStudentDetail(this.props.data.studentId);
       this.setState({popupBoxOpen: this.props.isOpen});
       if ( 
           this.props.data.studentId!=0 
@@ -632,7 +686,7 @@ class F212FormPopupComponent extends Component {
             >
               <CloseOutlinedIcon color="secondary" />
             </IconButton>
-            <Typography
+            {/* <Typography
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
@@ -641,7 +695,115 @@ class F212FormPopupComponent extends Component {
               }}
             >
               {data.studentNucleusId+" - "+data.studentName}
+            </Typography> */}
+            <Grid container
+                justify="flex-start"
+                alignItems="center"
+                spacing={2}
+                style={{borderBottom: "1px solid rgb(58, 127, 187, 0.3)"}}
+                >
+                  <Grid item xs={3}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20
+              }}
+            >
+              {"Student ID: "+data.studentNucleusId}
             </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Student Name: "+data.studentName}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Gender: "+ this.state.studentInfo.gender}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"CNIC: "+ this.state.studentInfo.cnic}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Mobile Number: "+ this.state.studentInfo.mobileNo}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Email: "+this.state.studentInfo.email}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Blood Group: "+ this.state.studentInfo.bloodGroup}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Degree: "+ this.state.studentInfo.degree}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                  <CardMedia
+                className={classes.image}
+                style={{
+                  backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonImageView?fileName=${this.state.studentInfo.imageName})`,
+                  height: 150,
+                  width: 140,
+                  border: "1px solid rgb(58, 127, 187, 0.3)",
+                  margin: 10,
+                  float: "right"
+                  }}
+                  title="Student Profile"
+                  />
+                  </Grid>
+            </Grid>
           </DialogTitle>
           <DialogContent style={{marginTop:-30}}>
             {/* <DialogContentText> */}
