@@ -1,9 +1,13 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography, Button,
   IconButton, Dialog, DialogActions, DialogContent, DialogContentText,
-  DialogTitle, useMediaQuery} from "@material-ui/core";
+  DialogTitle, useMediaQuery, Chip, Checkbox} from "@material-ui/core";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
+import CardMedia from '@material-ui/core/CardMedia';
 
 const styles = (theme) => ({
   
@@ -20,6 +24,17 @@ class F212FormChangeStatusPopup extends Component {
       snackbarMessage: "",
       snackbarSeverity: "",
       popupBoxOpen: false,
+      studentId: "",
+      studentInfo: "",
+      slectedAcademicSessionId: "",
+      slectedprogrammeId: "",
+      programmeSelectedCourses: "",
+      courseIds: "",
+      courseMenuItems: [],
+      courseCreditId: [],
+      courseCreditIds: "",
+      courseCreditIdError: "",
+      course: "",
     };
   }
 
@@ -29,6 +44,13 @@ class F212FormChangeStatusPopup extends Component {
 
   handleClose = () => {
     this.props.handleClose();
+  };
+  handleOpenSnackbar = (msg, severity) => {
+    this.setState({
+      isOpenSnackbar: true,
+      snackbarMessage: msg,
+      snackbarSeverity: severity,
+    });
   };
 
   onHandleChange = (e) => {
@@ -40,24 +62,164 @@ class F212FormChangeStatusPopup extends Component {
     });
   };
 
-  componentDidMount() {
+  getStudentDetail = async (studentId=0) => {
+    this.setState({ isLoading: true });
+    let data = new FormData();
+    data.append("studentId", studentId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonStudentsDetailView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ studentId: json.DATA || [] });
+            let studentInfo = json.DATA[0]|| "";
+              this.setState({studentInfo:studentInfo});
+              // console.log("Student Info"+this.state.studentId);
+              // console.log("Props"+this.props);
+          } else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log("getStudentDetail", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+  loadProgrammeCoursesSelction = async (slectedAcademicSessionId, slectedprogrammeId, courseCreditId) => {
+    let data = new FormData();
+    data.append("academicsSessionId", slectedAcademicSessionId);
+    data.append("programmeId", slectedprogrammeId);
+    data.append("courseIds", courseCreditId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonProgrammeCoursesSelectionView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({ courseMenuItems: json.DATA || []});
+             }else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log("loadProgrammeCoursesSelction", json);
+          
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+  
+  // isCourseValid = () => {
+  //   let courseCreditId = this.state.courseCreditId;
+  //   let isValid = true;
+  //   if (courseCreditId.length == 0 ) {
+  //     this.setState({ courseCreditIdError: "Please select at least one feature." });
+  //     document.getElementById("courseIds").focus();
+  //     isValid = false;
+  //   }else {
+  //     this.setState({ courseCreditIdError: "" });
+  //   }
+  //   return isValid;
+  // };
+
+
+  courseSelected = (option) => {
+    return this.state.courseCreditId.some((selectedOption) => selectedOption.ID == option.ID);
+  };
+
+  handleSetcourseCreditId = (value) => {
+    console.log(value);
     this.setState({
-      popupBoxOpen: this.props.isOpen
+      courseCreditId: value,
+      courseCreditIdError: "",
     });
+
+    let courseCreditIds = "";
+    if(value){
+      let course = value || []; 
+      let arrLength = value.length || 0;
+      for(let i=0; i<arrLength; i++){
+        if(i==0){
+          courseCreditIds = course[i].ID;
+        }else{
+          courseCreditIds+= ","+course[i].ID;
+        }    
+      }
+      this.setState({courseCreditIds:courseCreditIds});
+    }
+
+  };
+
+  componentDidMount() {
+    this.setState({popupBoxOpen: this.props.isOpen});
   }
 
   componentDidUpdate(prevProps){
     // Typical usage (don't forget to compare props):
     if (this.props.isOpen !== prevProps.isOpen) {
-      this.setState({
-        popupBoxOpen: this.props.isOpen
-      });
+      this.getStudentDetail(this.props.data.studentId);
+      this.loadProgrammeCoursesSelction(this.props.slectedAcademicSessionId, this.props.slectedprogrammeId, this.props.courseIds);
+      this.setState({popupBoxOpen: this.props.isOpen});
+      // console.log("Props");
+      // console.log(this.props.data);
     }
+
   }
 
   render() {
 
     const { 
+      
       classes, 
       data, 
       applicationStatusMenuItems=[], 
@@ -67,11 +229,12 @@ class F212FormChangeStatusPopup extends Component {
       isLoading,
       onFormSubmit
     } = this.props;
+    const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+    const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
     return (
         <Dialog
-          fullScreen={false}
-          maxWidth="md"
+          fullScreen={true}
           open={this.state.popupBoxOpen}
           onClose={this.handleClose}
           aria-labelledby="responsive-dialog-title"
@@ -92,16 +255,118 @@ class F212FormChangeStatusPopup extends Component {
             >
               <CloseOutlinedIcon color="secondary" />
             </IconButton>
+            {/* <div className={classes.image} 
+            >
+             </div> */}
+             
+            <Grid container
+                justify="flex-start"
+                alignItems="center"
+                spacing={2}
+                style={{borderBottom: "1px solid rgb(58, 127, 187, 0.3)"}}
+                >
+                  <Grid item xs={3}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20
+              }}
+            >
+              {"Student ID: "+data.studentNucleusId}
+            </Typography>
             <Typography
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                borderBottom: "1px solid rgb(58, 127, 187, 0.3)",
                 fontSize: 20,
               }}
             >
-              {data.studentNucleusId+" - "+data.studentName}
+              {"Student Name: "+data.studentName}
             </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Gender: "+ this.state.studentInfo.gender}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"CNIC: "+ this.state.studentInfo.cnic}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Mobile Number: "+ this.state.studentInfo.mobileNo}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Email: "+ this.state.studentInfo.email}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Blood Group: "+ this.state.studentInfo.bloodGroup}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 20,
+              }}
+            >
+              {"Degree: "+ this.state.studentInfo.degree}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                  <CardMedia
+                className={classes.image}
+                style={{
+                  backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonImageView?fileName=${this.state.studentInfo.imageName})`,
+                  height: 150,
+                  width: 140,
+                  border: "1px solid rgb(58, 127, 187, 0.3)",
+                  margin: 10,
+                  float: "right"
+                  }}
+                  title="Student Profile"
+                  />
+                  </Grid>
+            </Grid>
           </DialogTitle>
           <DialogContent>
             <form id="changeStatusForm" name="changeStatusForm">
@@ -117,7 +382,7 @@ class F212FormChangeStatusPopup extends Component {
                   name="studentId"
                   defaultValue={data.studentId}
                 />
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                   <TextField
                     name="applicationStatusId"
                     variant="outlined"
@@ -139,7 +404,7 @@ class F212FormChangeStatusPopup extends Component {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                   <TextField
                     name="renewalStatusId"
                     variant="outlined"
@@ -161,7 +426,7 @@ class F212FormChangeStatusPopup extends Component {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                   <TextField
                     name="examEntryStatusId"
                     variant="outlined"
@@ -183,7 +448,7 @@ class F212FormChangeStatusPopup extends Component {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                   <TextField
                     name="pathwayId"
                     variant="outlined"
@@ -205,7 +470,7 @@ class F212FormChangeStatusPopup extends Component {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6}>
                   <TextField
                     id="UOLNo"
                     name="UOLNo"
@@ -214,6 +479,55 @@ class F212FormChangeStatusPopup extends Component {
                     defaultValue={data.uolNumber || ""}
                     fullWidth
                   />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                <Autocomplete
+                style={{marginTop: 20}}
+                  multiple
+                  fullWidth
+                  id="courseIds"
+                  options={this.state.courseMenuItems}
+                  value={this.state.courseCreditId}
+                  onChange={(event, value) =>
+                    this.handleSetcourseCreditId(value)
+                  }
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.Label}
+                  getOptionSelected={(option) => this.courseSelected(option)}
+                  renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                      <Chip
+                        label={option.Label}
+                        color="primary"
+                        variant="outlined"
+                        {...getTagProps({ index })}
+                      />
+                    ))
+                  }
+                  renderOption={(option, {selected}) => (
+                    <Fragment>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                        color="primary"
+                      />
+                      {option.Label}
+                    </Fragment>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Selected Courses"
+                      placeholder="Search and Select"
+                      error={!!this.state.courseCreditIdError}
+                      helperText={this.state.courseCreditIdError}
+                    />
+                  )}
+                />
+                <TextField type="hidden" name="courseCreditId" value={this.state.courseCreditId}/>
                 </Grid>
                 <Grid item xs={12}>
                   <br />

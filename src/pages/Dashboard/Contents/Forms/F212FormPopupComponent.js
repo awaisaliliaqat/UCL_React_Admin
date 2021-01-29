@@ -416,7 +416,6 @@ class F212FormPopupComponent extends Component {
     let preModuleId = this.state.preModuleId;
     let preCourses = this.state.preCourses;
     let preMarks = this.state.preMarks;
-
     // let moduleNumber = document.getElementsByName("moduleNumber");
     // for (let i = 0; i < moduleNumber.length; i++) {
     //   if (moduleNumber[i].value == preModuleId) {
@@ -425,7 +424,6 @@ class F212FormPopupComponent extends Component {
     //     return;
     //   }
     // }
-
     let courseRowDataObject = {
       preModuleId: preModuleId,
       preCourses: preCourses,
@@ -597,7 +595,7 @@ class F212FormPopupComponent extends Component {
                     ))}
                   </TextField>
                 </Grid>  
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={2}>
                   <TextField
                     id="preModuleId"
                     name="preModuleId"
@@ -619,7 +617,7 @@ class F212FormPopupComponent extends Component {
                     }
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                   <Autocomplete
                     //multiple
                     fullWidth
@@ -678,6 +676,23 @@ class F212FormPopupComponent extends Component {
                     id="preMarks"
                     name="preMarks"
                     label="Marks"
+                    type="number"
+                    required
+                    fullWidth
+                    variant="outlined"
+                    onChange={this.onHandleChange}
+                    value={this.state.preMarks}
+                    error={!!this.state.preMarksError}
+                    helperText={
+                      this.state.preMarksError ? this.state.preMarksError : " "
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <TextField
+                    id="resetMarks"
+                    name="resetMarks"
+                    label="Reset Marks"
                     type="number"
                     required
                     fullWidth
