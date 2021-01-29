@@ -69,6 +69,7 @@ class F212Form extends Component {
       programmeMenuItems: [],
       coursesMenuItems: [],
       courseId: "",
+      courseIds: "",
       courseIdError: "",
       applicationStatusFilterMenuItems: [],
       applicationStatusFilterId: 0,
@@ -86,6 +87,7 @@ class F212Form extends Component {
       pathway: 0,
       pathwayError: "",
       preCourseMenuItems: [],
+      preCourseSelectionItems: [],
       f212FormPopupIsOpen: false,
       f212FormPopupData: {
         studentId: "", 
@@ -595,6 +597,9 @@ class F212Form extends Component {
     this.setState({ isLoading: false });
   };
 
+
+  
+
   loadData = async () => {
     this.setState({isLoading: true});
     let data = new FormData();
@@ -663,7 +668,8 @@ class F212Form extends Component {
                 renewalStatusId: data[i].renewalStatusId,
                 examEntryStatusId: data[i].examEntryStatusId,
                 pathwayId: data[i].pathwayId,
-                uolNumber: data[i].uolNumber
+                uolNumber: data[i].uolNumber,
+                courseIds: data[i].courseIds
               };
 
               data[i].changeStatusAction = (
@@ -739,10 +745,15 @@ class F212Form extends Component {
           this.setState({
             programmeId: "",
             preCourseMenuItems: [],
+            preCourseSelectionItems:[],
             tableData: []
           });
           this.loadModules(this.state.academicSessionId, value);
           this.loadProgrammeCourses(this.state.academicSessionId, value);
+          // this.loadProgrammeCoursesSelction(this.state.academicSessionId, value);
+
+
+          
         break;
         case "courseId":
           this.setState({
@@ -797,17 +808,18 @@ class F212Form extends Component {
     return isValid;
   };
 
-  isCourseValid = () => {
-    let isValid = true;        
-    if (!this.state.courseId) {
-        this.setState({courseIdError:"Please select course."});
-        document.getElementById("courseId").focus();
-        isValid = false;
-    } else {
-        this.setState({courseIdError:""});
-    }
-    return isValid;
-  }
+  // isCourseValid = () => {
+  //   let isValid = true;        
+  //   if (!this.state.courseId) {
+  //       this.setState({courseIdError:"Please select course."});
+  //       document.getElementById("courseId");
+  //       // .focus()
+  //       isValid = false;
+  //   } else {
+  //       this.setState({courseIdError:""});
+  //   }
+  //   return isValid;
+  // }
 
   
   handleGetData = () => {
@@ -815,7 +827,7 @@ class F212Form extends Component {
       !this.isAcademicSessionValid()
       || !this.isProgrammeGroupValid()
       || !this.isProgrammeValid
-      //|| !this.isCourseValid()
+      // || !this.isCourseValid()
     ){return;}
     this.setState({tableData:[]});
     this.loadData();
@@ -843,7 +855,8 @@ class F212Form extends Component {
         studentId: data.studentId, 
         studentNucleusId: data.studentNucleusId,
         studentName: data.studentName,
-        academicSessionId: this.state.academicSessionId
+        academicSessionId: this.state.academicSessionId,
+        courseIds: data.courseIds
       }
     });
     this.f212FormPopupOpen();
@@ -867,7 +880,8 @@ class F212Form extends Component {
         renewalStatusId: data.renewalStatusId,
         examEntryStatusId: data.examEntryStatusId,
         pathwayId: data.pathwayId,
-        uolNumber: data.uolNumber
+        uolNumber: data.uolNumber,
+        courseIds: data.courseIds
       }
     });
     this.f212FormChangeStatusPopupOpen();
@@ -879,6 +893,7 @@ class F212Form extends Component {
       !this.isAcademicSessionValid() 
       || !this.isProgrammeGroupValid()
       || !this.isProgrammeValid()
+      // || !this.isCourseValid()
     ) { return; }
 
     let studentId = document.getElementById("studentId").value;
@@ -887,7 +902,7 @@ class F212Form extends Component {
     let examEntryStatusId = document.getElementById("examEntryStatusId").value;
     let pathwayId = document.getElementById("pathwayId").value;
     let UOLNo = document.getElementById("UOLNo").value;
-
+    let courseIds = document.getElementById("courseIds").value;
     let applicationStatusLabel = ""; 
     let asObj = this.state.applicationStatusMenuItems.find( (obj) => obj.id == applicationStatusId);
     if(asObj){
@@ -920,6 +935,7 @@ class F212Form extends Component {
     data.append("examEntryStatusId", examEntryStatusId);
     data.append("pathwayId", pathwayId);
     data.append("uolNumber", UOLNo);
+    data.append("courseIds", courseIds);
     
     let tableData = [...this.state.tableData];
     
@@ -947,7 +963,8 @@ class F212Form extends Component {
           renewalStatusId: renewalStatusId,
           examEntryStatusId: examEntryStatusId,
           pathwayId: pathwayId,
-          uolNumber: UOLNo
+          uolNumber: UOLNo,
+          courseIds : courseIds
         };
 
         row10.changeStatusAction = (
@@ -1126,6 +1143,10 @@ class F212Form extends Component {
               onFormSubmit={() => this.onChangeStatusFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}
               handleClose={this.f212FormChangeStatusPopupClose}
+              preCourseSelectionItems={this.state.preCourseSelectionItems
+              }
+              slectedAcademicSessionId={this.state.academicSessionId}
+              slectedprogrammeId={this.state.programmeId}
             />
             <F212FormPopupComponent
               isOpen={this.state.f212FormPopupIsOpen}
@@ -1133,6 +1154,7 @@ class F212Form extends Component {
               academicSessionMenuItems={this.state.academicSessionMenuItems}
               preModuleMenuItems={this.state.preModuleMenuItems}
               preCourseMenuItems={this.state.preCourseMenuItems}
+              
               isLoading={this.state.isLoading}
               onFormSubmit ={() => this.onStudentAchievementFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}
