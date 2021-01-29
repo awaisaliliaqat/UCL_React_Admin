@@ -114,7 +114,7 @@ function AcademicSessionStudentAchievements(props){
                 <TableRow>
                   <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Module</StyledTableCell>
                   <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Courses</StyledTableCell>
-                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Marks</StyledTableCell>
+                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Original Marks</StyledTableCell>
                   <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Reset Marks</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -939,7 +939,7 @@ class F212FormPopupComponent extends Component {
                   <TextField
                     id="preMarks"
                     name="preMarks"
-                    label="Marks"
+                    label="Original Marks"
                     type="number"
                     required
                     fullWidth
@@ -958,7 +958,6 @@ class F212FormPopupComponent extends Component {
                     name="preResetMarks"
                     label="Reset Marks"
                     type="number"
-                    required
                     fullWidth
                     variant="outlined"
                     onChange={this.onHandleChange}
@@ -1011,7 +1010,7 @@ class F212FormPopupComponent extends Component {
                       <TableRow>
                         <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
                         <StyledTableCell align="center">Courses</StyledTableCell>
-                        <StyledTableCell align="center">Marks</StyledTableCell>
+                        <StyledTableCell align="center">Original Marks</StyledTableCell>
                         <StyledTableCell align="center">Reset Marks</StyledTableCell>
                         <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)', minWidth:100}}>Action</StyledTableCell>
                       </TableRow>
