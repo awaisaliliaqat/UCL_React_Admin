@@ -1052,6 +1052,7 @@ class F212Form extends Component {
     let moduleNumber = document.getElementsByName("moduleNumber");
     let programmeCourseId = document.getElementsByName("programmeCourseId");
     let marks = document.getElementsByName("marks");
+    let resetMarks = document.getElementsByName("resetMarks");
 
     let data = new FormData();
     data.append("id", 0);
@@ -1066,6 +1067,7 @@ class F212Form extends Component {
         data.append("moduleNumber", moduleNumber[i].value);
         data.append("programmeCourseId", programmeCourseId[i].value);
         data.append("marks", marks[i].value);
+        data.append("resetMarks", resetMarks[i].value);
       }
     }
     
@@ -1143,8 +1145,7 @@ class F212Form extends Component {
               onFormSubmit={() => this.onChangeStatusFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}
               handleClose={this.f212FormChangeStatusPopupClose}
-              preCourseSelectionItems={this.state.preCourseSelectionItems
-              }
+              preCourseSelectionItems={this.state.preCourseSelectionItems}
               slectedAcademicSessionId={this.state.academicSessionId}
               slectedprogrammeId={this.state.programmeId}
             />
@@ -1154,7 +1155,6 @@ class F212Form extends Component {
               academicSessionMenuItems={this.state.academicSessionMenuItems}
               preModuleMenuItems={this.state.preModuleMenuItems}
               preCourseMenuItems={this.state.preCourseMenuItems}
-              
               isLoading={this.state.isLoading}
               onFormSubmit ={() => this.onStudentAchievementFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}

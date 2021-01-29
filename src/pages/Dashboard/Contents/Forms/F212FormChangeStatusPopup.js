@@ -183,7 +183,7 @@ class F212FormChangeStatusPopup extends Component {
       courseCreditId: value,
       courseCreditIdError: "",
     });
-
+    
     let courseCreditIds = "";
     if(value){
       let course = value || []; 
@@ -197,7 +197,7 @@ class F212FormChangeStatusPopup extends Component {
       }
       this.setState({courseCreditIds:courseCreditIds});
     }
-
+    console.log(value);
   };
 
   componentDidMount() {
@@ -482,10 +482,10 @@ class F212FormChangeStatusPopup extends Component {
                 </Grid>
                 <Grid item xs={12} md={6}>
                 <Autocomplete
-                style={{marginTop: 20}}
+                  style={{marginTop: 20}}
                   multiple
                   fullWidth
-                  id="courseIds"
+                  //id="courseIds"
                   options={this.state.courseMenuItems}
                   value={this.state.courseCreditId}
                   onChange={(event, value) =>
@@ -527,7 +527,7 @@ class F212FormChangeStatusPopup extends Component {
                     />
                   )}
                 />
-                <TextField type="hidden" name="courseCreditId" value={this.state.courseCreditId}/>
+                <TextField type="hidden" id="courseIds" name="courseIds" value={this.state.courseCreditIds}/>
                 </Grid>
                 <Grid item xs={12}>
                   <br />
