@@ -255,9 +255,15 @@ class F212FormChangeStatusPopup extends Component {
             >
               <CloseOutlinedIcon color="secondary" />
             </IconButton>
-            {/* <div className={classes.image} 
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: "bold"
+              }}
+              variant= "h4"
             >
-             </div> */}
+              Enrollment Status
+            </Typography>
              
             <Grid container
                 justify="flex-start"
@@ -357,8 +363,7 @@ class F212FormChangeStatusPopup extends Component {
                 className={classes.image}
                 style={{
                   backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonImageView?fileName=${this.state.studentInfo.imageName})`,
-                  height: 150,
-                  width: 140,
+                  height: 160,
                   border: "1px solid rgb(58, 127, 187, 0.3)",
                   margin: 10,
                   float: "right"
@@ -382,7 +387,7 @@ class F212FormChangeStatusPopup extends Component {
                   name="studentId"
                   defaultValue={data.studentId}
                 />
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={4}>
                   <TextField
                     name="applicationStatusId"
                     variant="outlined"
@@ -404,7 +409,7 @@ class F212FormChangeStatusPopup extends Component {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={4}>
                   <TextField
                     name="renewalStatusId"
                     variant="outlined"
@@ -426,29 +431,8 @@ class F212FormChangeStatusPopup extends Component {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                  <TextField
-                    name="examEntryStatusId"
-                    variant="outlined"
-                    label="Exam Entry Status"
-                    defaultValue={data.examEntryStatusId || ""}
-                    fullWidth
-                    select
-                    inputProps={{
-                      id:"examEntryStatusId"
-                    }}
-                  >
-                    {examEntryStatusMenuItems.map((dt, i) => (
-                        <MenuItem
-                          key={"examEntryStatusMenuItems"+dt.id}
-                          value={dt.id}
-                        >
-                          {dt.label}
-                        </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} md={3}>
+                
+                <Grid item xs={12} md={4}>
                   <TextField
                     name="pathwayId"
                     variant="outlined"
@@ -471,21 +455,36 @@ class F212FormChangeStatusPopup extends Component {
                   </TextField>
                 </Grid>
                 <Grid item xs={12} md={6}>
+                {/* <Grid item xs={12} md={3}> */}
                   <TextField
-                    id="UOLNo"
-                    name="UOLNo"
+                    name="examEntryStatusId"
                     variant="outlined"
-                    label="UOL#"
-                    defaultValue={data.uolNumber || ""}
+                    label="Exam Entry Status"
+                    defaultValue={data.examEntryStatusId || ""}
                     fullWidth
-                  />
+                    select
+                    inputProps={{
+                      id:"examEntryStatusId"
+                    }}
+                  >
+                    {examEntryStatusMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"examEntryStatusMenuItems"+dt.id}
+                          value={dt.id}
+                        >
+                          {dt.label}
+                        </MenuItem>
+                    ))}
+                  </TextField>
                 </Grid>
+                 
+                {/* </Grid> */}
                 <Grid item xs={12} md={6}>
                 <Autocomplete
                   style={{marginTop: 20}}
                   multiple
                   fullWidth
-                  //id="courseIds"
+                  disabled={!data.examEntryStatusId}
                   options={this.state.courseMenuItems}
                   value={this.state.courseCreditId}
                   onChange={(event, value) =>
@@ -527,7 +526,22 @@ class F212FormChangeStatusPopup extends Component {
                     />
                   )}
                 />
-                <TextField type="hidden" id="courseIds" name="courseIds" value={this.state.courseCreditIds}/>
+                <TextField
+                type="hidden"
+                 id="courseIds"
+                  name="courseIds"
+                   value={this.state.courseCreditIds}
+                   />
+                </Grid>
+                <Grid item md={6}>
+                   <TextField
+                    id="UOLNo"
+                    name="UOLNo"
+                    variant="outlined"
+                    label="UOL#"
+                    defaultValue={data.uolNumber || ""}
+                    fullWidth
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <br />
