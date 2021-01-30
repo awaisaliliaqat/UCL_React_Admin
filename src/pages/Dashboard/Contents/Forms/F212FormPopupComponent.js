@@ -686,16 +686,15 @@ class F212FormPopupComponent extends Component {
             >
               <CloseOutlinedIcon color="secondary" />
             </IconButton>
-            {/* <Typography
+            <Typography
               style={{
                 color: "#1d5f98",
-                fontWeight: 600,
-                borderBottom: "1px solid rgb(58, 127, 187, 0.3)",
-                fontSize: 20,
+                fontWeight: "bold"
               }}
+              variant= "h4"
             >
-              {data.studentNucleusId+" - "+data.studentName}
-            </Typography> */}
+              Student Achievements
+            </Typography>
             <Grid container
                 justify="flex-start"
                 alignItems="center"
@@ -794,8 +793,7 @@ class F212FormPopupComponent extends Component {
                 className={classes.image}
                 style={{
                   backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonImageView?fileName=${this.state.studentInfo.imageName})`,
-                  height: 150,
-                  width: 140,
+                  height: 160,
                   border: "1px solid rgb(58, 127, 187, 0.3)",
                   margin: 10,
                   float: "right"
@@ -805,7 +803,7 @@ class F212FormPopupComponent extends Component {
                   </Grid>
             </Grid>
           </DialogTitle>
-          <DialogContent style={{marginTop:-30}}>
+          <DialogContent >
             {/* <DialogContentText> */}
               <Grid
                 container
