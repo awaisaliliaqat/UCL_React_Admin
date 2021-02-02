@@ -168,6 +168,7 @@ class DisplayAdmissionApplications extends Component {
             isLoading: false,
             isLoginMenu: false,
             isReload: false,
+            tableData: []
         }
     }
 
@@ -175,7 +176,62 @@ class DisplayAdmissionApplications extends Component {
         // eslint-disable-next-line react/prop-types
         const { id = 0 } = this.props.match.params
         this.getAddmissionForm(id);
+        this.studentAttendanceData(id);
     }
+    studentAttendanceData = async (id) => {
+        this.setState({ isLoading: true });
+        let data = new FormData();
+        data.append("studentId", id);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonStudentsAttendanceView`;
+        await fetch(url, {
+          method: "POST",
+          body: data,
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+          }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+          })
+          .then(
+            (json) => {
+              if (json.CODE === 1) {
+                this.setState({ tableData: json.DATA || [] });
+                console.log(this.state.tableData);
+              } else {
+                //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+                this.handleOpenSnackbar(
+                  <span>
+                    {json.SYSTEM_MESSAGE}
+                    <br />
+                    {json.USER_MESSAGE}
+                  </span>,
+                  "error"
+                );
+              }
+              console.log("getData", json);
+            },
+            (error) => {
+              if (error.status === 401) {
+                this.setState({
+                  isLoginMenu: true,
+                  isReload: true,
+                });
+              } else {
+                //alert('Failed to fetch, Please try again later.');
+                this.handleOpenSnackbar(
+                  "Failed to fetch, Please try again later.",
+                  "error"
+                );
+                console.log(error);
+              }
+            }
+          );
+        this.setState({ isLoading: false });
+      };
 
     getAddmissionForm = async id => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48AdmissionsProspectApplicationSubmittedApplicationsStudentProfileView?studentId=${id}`;
@@ -230,7 +286,7 @@ class DisplayAdmissionApplications extends Component {
     render() {
         const { classes } = this.props;
         const { data } = this.state;
-        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[] } = data;
+        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[] } = data;
         return (
             <Fragment>
                 {this.state.isLoading &&
@@ -1077,6 +1133,85 @@ class DisplayAdmissionApplications extends Component {
                                 :
                                 ""
                                 }
+                            </div>
+                        </Fragment>
+
+
+                        <Fragment>
+                            <div className={classes.valuesContainer}>
+                                <span 
+                                    style={{
+                                        fontSize: 'larger'
+                                    }}
+                                >
+                                    Student Attendance Summary
+                                </span>
+                            </div>
+                            <div style={{
+                                marginLeft: '3%',
+                                marginRight: '3%',
+                                marginTop: '2%',
+                                marginBottom: '1%',
+                                display: 'flex'
+                            }}>
+                                {studentAttendance.length > 0 ?
+                                <TableContainer component={Paper} style={{ overflowX: "inherit" }}>
+              <Table
+                size="small"
+                className={classes.table}
+                aria-label="customized table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
+                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
+                  </TableRow>
+                  <TableRow>
+                    {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+                    <StyledTableCell align="center">Schedule</StyledTableCell>
+                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    <StyledTableCell align="center">Schedule</StyledTableCell>
+                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    <StyledTableCell align="center">Schedule</StyledTableCell>
+                    <StyledTableCell align="center">Attended</StyledTableCell>
+                    {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {studentAttendance.length > 0 ? (
+                    studentAttendance.map((row, index) => (
+                      <Fragment key={"row" + row.studentId + index}>
+                        {/* <TableRow>
+                          <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
+                        </TableRow> */}
+                        {row.teacherCourseData.map((row2, index2) => 
+                          <TableRow key={"row" + row2.courseId + index2}>
+                            <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
+                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
+                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
+                            <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                            <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                            <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
+                          </TableRow>
+                        )}
+                      </Fragment>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+                                 :
+                                  ""
+                                  }
                             </div>
                         </Fragment>
 
