@@ -7,7 +7,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@material-ui/core';
-
+// import StudentProgressReport from '../../../../Dashboard/Contents/Reports/StudentProfile/Chunks/StudentProgressReport';
+import StudentProgressReport from './Chunks/StudentProgressReport';
 const styles = (theme) => ({
     closeButton: {
         top: theme.spacing(1),
@@ -168,7 +169,14 @@ class DisplayAdmissionApplications extends Component {
             isLoading: false,
             isLoginMenu: false,
             isReload: false,
-            tableData: []
+            tableData: [],
+            totalPOS: "_ _",
+            totalAchieved: "_ _",
+            totalPercentage: "_ _",
+            resultClassification: "_ _ _",
+            studentProgressReport: [],
+            tableHeaderData: [],
+            tableData: [],
         }
     }
 
@@ -253,6 +261,10 @@ class DisplayAdmissionApplications extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
+                        let studentProgressReport = json.DATA[0].studentProgressReport || [];
+                        this.setState({studentProgressReport: studentProgressReport});
+                        console.log("studentProgressReport");
+                        console.log(studentProgressReport);
                         if (json.DATA) {
                             if (json.DATA.length > 0) {
                                 this.setState({
@@ -260,6 +272,76 @@ class DisplayAdmissionApplications extends Component {
                                 });
                             }
                         }
+                        //Start
+// let tableHeaderData = [];
+// let attendanceRecordCol = ["Del", "Att", "%Att", "Credits"];
+// tableHeaderData = tableHeaderData.concat(attendanceRecordCol);
+// let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
+// tableHeaderData = tableHeaderData.concat(assignmentGraders);
+// let seminarGrades = ["1", "2", "Credits"];
+// tableHeaderData = tableHeaderData.concat(seminarGrades);
+// let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
+// tableHeaderData = tableHeaderData.concat(subjectiveEvalGradesCol);
+// let examMarksCol = ["1", "2", "Credits"];
+// tableHeaderData = tableHeaderData.concat(examMarksCol);
+// let creditsCol = ["Poss", "Ach", "%Age"];
+// tableHeaderData = tableHeaderData.concat(creditsCol);
+// this.setState({tableHeaderData: tableHeaderData});
+
+// let tableData = [];
+// let data = json.DATA[0].studentProgressReport || [];
+// let dataLength = data.length;
+// if(dataLength){
+//   this.setState({
+//     studentLabel: data[0].studentLabel,
+//     programmeLabel: data[0].programmeLabel,
+//     academicSessionLabel: data[0].academicsSessionLabel,
+//     // uptoDate: this.getDateInString(),
+//     totalPOS: data[0].totalPOS,
+//     totalAchieved: data[0].totalAchieved,
+//     totalPercentage: data[0].totalPercentage,
+//     resultClassification:  data[0].resultClassification,
+//   });
+//   let coursesData = data[0].studentCoursesData || [];
+//   let coursesDataLength = coursesData.length;
+//   if(coursesDataLength){
+//     for(let i=0; i<coursesDataLength; i++){
+//       let tableDataRow = [];
+//       tableDataRow.push(coursesData[i].courseLabel);  // col-1
+//       let attendance = coursesData[i].attendance[0];
+//       tableDataRow.push(attendance.deliveredLectures);  // col-2
+//       tableDataRow.push(attendance.attendenedlectures);  // col-3
+//       tableDataRow.push(attendance.attandancePercentage);  // col-4
+//       tableDataRow.push(attendance.attandanceCredit);  // col-5
+//       let assignment = coursesData[i].assignment;
+//       assignment.map((data, index) =>
+//         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.credit) // col-6 => col-14
+//       );
+//       let seminarEvaluation = coursesData[i].seminarEvaluation;
+//       seminarEvaluation.map((data, index) =>
+//         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-15 => col-17
+//       );
+//       let subjectiveEvaluation = coursesData[i].subjectiveEvaluation;
+//       subjectiveEvaluation.map((data, index) =>
+//         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-18 => col-22
+//       );
+//       let examsEvaluation = coursesData[i].examsEvaluation;
+//       examsEvaluation.map((data, index) =>
+//         data.marks ? tableDataRow.push(data.marks) : tableDataRow.push(data.totalCredits) // col-23 => col-25
+//       );
+//       let credits = coursesData[i].credits[0];
+//       tableDataRow.push(credits.poss); // col-26
+//       tableDataRow.push(credits.achieved); // col-27
+//       tableDataRow.push(credits.totalCredits); // col-28
+//       let transcriptGrade = coursesData[i].internalGrade[0].grade;
+//       tableDataRow.push(transcriptGrade); // col-29
+//       tableData[i] = tableDataRow; 
+//     }
+//   }
+//   this.setState({tableData: tableData});
+// }          
+//End
+
                     } else {
                         alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
                     }
@@ -286,6 +368,7 @@ class DisplayAdmissionApplications extends Component {
     render() {
         const { classes } = this.props;
         const { data } = this.state;
+        const { studentProgressReport } = data;
         const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[] } = data;
         return (
             <Fragment>
@@ -1213,6 +1296,60 @@ class DisplayAdmissionApplications extends Component {
                                   ""
                                   }
                             </div>
+                        </Fragment>
+
+
+
+                        <Fragment>
+                            <div className={classes.valuesContainer}>
+                                <span 
+                                    style={{
+                                        fontSize: 'larger'
+                                    }}
+                                >
+                                    Student Progress Report
+                                </span>
+                            </div>
+                                <StudentProgressReport studentProgressReport={this.state.studentProgressReport}/>
+                           
+                        </Fragment>
+                        <Fragment>
+                            <div className={classes.valuesContainer}>
+                                <span 
+                                    style={{
+                                        fontSize: 'larger'
+                                    }}
+                                >
+                                    UOL Marks
+                                </span>
+                            </div>
+                            <TableContainer component={Paper} style={{ overflowX: "inherit" }}>
+              <Table
+                size="small"
+                className={classes.table}
+                aria-label="customized table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
+                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                <TableRow>
+                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
+                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+                           
                         </Fragment>
 
                     </div>
