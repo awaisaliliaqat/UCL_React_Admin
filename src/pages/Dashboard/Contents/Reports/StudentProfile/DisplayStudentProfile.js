@@ -175,6 +175,7 @@ class DisplayAdmissionApplications extends Component {
             totalPercentage: "_ _",
             resultClassification: "_ _ _",
             studentProgressReport: [],
+            uolEnrollmentMarks: [],
             tableHeaderData: [],
             tableData: [],
         }
@@ -264,7 +265,10 @@ class DisplayAdmissionApplications extends Component {
                         let studentProgressReport = json.DATA[0].studentProgressReport || [];
                         this.setState({studentProgressReport: studentProgressReport});
                         console.log("studentProgressReport");
-                        console.log(studentProgressReport);
+                        let uolEnrollmentMarks = json.DATA[0].uolEnrollmentMarks || [];
+                        this.setState({uolEnrollmentMarks: uolEnrollmentMarks});
+                        console.log("uolEnrollmentMarks");
+                        console.log(uolEnrollmentMarks);
                         if (json.DATA) {
                             if (json.DATA.length > 0) {
                                 this.setState({
@@ -369,7 +373,7 @@ class DisplayAdmissionApplications extends Component {
         const { classes } = this.props;
         const { data } = this.state;
         const { studentProgressReport } = data;
-        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[] } = data;
+        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[] } = data;
         return (
             <Fragment>
                 {this.state.isLoading &&
@@ -1310,7 +1314,10 @@ class DisplayAdmissionApplications extends Component {
                                     Student Progress Report
                                 </span>
                             </div>
+                            
                                 <StudentProgressReport studentProgressReport={this.state.studentProgressReport}/>
+                            
+                                
                            
                         </Fragment>
                         <Fragment>
@@ -1323,32 +1330,39 @@ class DisplayAdmissionApplications extends Component {
                                     UOL Marks
                                 </span>
                             </div>
-                            <TableContainer component={Paper} style={{ overflowX: "inherit" }}>
-              <Table
-                size="small"
-                className={classes.table}
-                aria-label="customized table"
-              >
-                <TableHead>
-                  <TableRow>
-                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
-                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+                            <div
+                            style={{
+                            marginLeft: '3%',
+                            marginRight: '3%',
+                            marginTop: '2%',
+                            marginBottom: '1%',
+                            display: 'flex'}}
+                            >
+
+                            
+                            <TableContainer component={Paper}>
+            <Table className={classes.table} size="small" aria-label="customized table">
+              <TableHead>
                 <TableRow>
-                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
-                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)", borderRight: "1px solid rgb(47, 87, 165)" }} align="center">Module</StyledTableCell>
+                  <StyledTableCell align="center">Courses</StyledTableCell>
+                  <StyledTableCell align="center">Original Marks</StyledTableCell>
+                  <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>Reset Marks</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                  {this.state.uolEnrollmentMarks.map((dt, i) => (
+                      <StyledTableRow key={"row"+data.sessionLabel+i}>
+                        <StyledTableCell component="th" scope="row" align="center">{dt.moduleNumber}</StyledTableCell>
+                        <StyledTableCell scope="row" align="center" >{dt.coursesObject.Label}</StyledTableCell>
+                        <StyledTableCell scope="row" align="center" >{dt.marks}</StyledTableCell>
+                        <StyledTableCell scope="row" align="center" >{dt.resetMarks}</StyledTableCell>
+                      </StyledTableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          </div>
                            
                         </Fragment>
 
