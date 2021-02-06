@@ -136,7 +136,8 @@ class R218StudentProgressReport extends Component {
       totalPercentage: "_ _",
       resultClassification: "_ _ _",
       allStudentData:[],
-      endDate:""
+      endDate:"",
+      totalStudents:[]
     };
   }
 
@@ -210,6 +211,8 @@ class R218StudentProgressReport extends Component {
             this.setState({tableHeaderData: tableHeaderData});
            
             let data = json.DATA || [];
+            let totalStudents = data.length;
+            this.setState({totalStudents: totalStudents});
             let dataLength = data.length;
             if(dataLength){
               this.setState({
@@ -343,9 +346,13 @@ class R218StudentProgressReport extends Component {
                   <br />
                 <span className={classes.subTitle}>{this.state.programmeLabel}</span>
                   <br/>
+                  <span className={classes.subTitle}>Total Students: {this.state.totalStudents}</span>
                   <br/>
-                <span className={classes.subTitle}>{this.state.studentLabel}</span>
                   <br/>
+                  <span className={classes.subTitle}>{this.state.studentLabel}</span>
+                </div>
+                <div>
+                
                 </div>
                 <div style={{display: "inline"}}>
                   <span

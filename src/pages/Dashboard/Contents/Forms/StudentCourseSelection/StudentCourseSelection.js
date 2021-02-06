@@ -33,7 +33,8 @@ class StudentCourseSelection extends Component {
       regStatusId: 1,
       studentId: "",
       studentName: "",
-      isDownloadExcel: false
+      isDownloadExcel: false,
+      totalStudents: []
     };
   }
 
@@ -319,6 +320,8 @@ class StudentCourseSelection extends Component {
             this.setState({
               admissionData: json.DATA || [],
             });
+            let totalStudents = this.state.admissionData.length;
+            this.setState({totalStudents: totalStudents});
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
           }
@@ -664,10 +667,33 @@ class StudentCourseSelection extends Component {
               Student Course Selection
             </Typography>
             <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
-              height: 30, width: 32,
-              cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
-            }}
+                      height: 30, width: 32,
+                      cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
+                    }}
             />
+            
+          </div>
+          <div>
+          {this.state.totalStudents>1? 
+              <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                textTransform: "capitalize",
+                textAlign: "left",
+                display: "inline"
+                    }}
+                   variant="h6"
+               >
+                   Total Students: {this.state.totalStudents}
+                   
+               </Typography>
+               :
+               ""
+               }
+
+          
+
           </div>
           <Divider
             style={{

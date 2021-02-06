@@ -40,6 +40,7 @@ class R66Reports extends Component {
       coursesMenuItems: [],
       courseId: "",
       courseIdError: "",
+      totalStudents:[]
     };
   }
 
@@ -207,6 +208,8 @@ class R66Reports extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({tableData: json.DATA || []});
+            let totalStudents = this.state.tableData.length;
+            this.setState({totalStudents: totalStudents});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -416,7 +419,9 @@ class R66Reports extends Component {
               </Tooltip> 
               */}
               Students List
+              <br/>
             </Typography>
+            
             <div style={{ float: "right" }}>
               {/* 
               <Tooltip title="Search Bar">
@@ -427,6 +432,7 @@ class R66Reports extends Component {
                   </IconButton>
               </Tooltip> 
               */}
+              
               <Tooltip title="Table Filter">
                 <IconButton
                   style={{ marginLeft: "-10px" }}
@@ -582,12 +588,28 @@ class R66Reports extends Component {
               </Button>
             </Grid>
           </Grid>
+          {this.state.totalStudents>1? 
+                         <Typography
+                           style={{
+                              color: "#1d5f98",
+                              fontWeight: 600,
+                              textTransform: "capitalize",
+                              textAlign: "left"
+                                  }}
+                              variant="subtitle1"
+                          >
+                              Total Students: {this.state.totalStudents}
+                          </Typography>
+                          :
+                          ""
+                          }
           <Divider
             style={{
               backgroundColor: "rgb(58, 127, 187)",
               opacity: "0.3",
             }}
           />
+          
           {this.state.tableData && !this.state.isLoading ? (
             <R66ReportsTableComponent
               data={this.state.tableData}
