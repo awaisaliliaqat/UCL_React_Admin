@@ -16,6 +16,7 @@ class EditStudentInformation extends Component {
       isLoginMenu: false,
       isReload: false,
       eventDate: null,
+      totalStudents:[]
     };
   }
 
@@ -51,6 +52,8 @@ class EditStudentInformation extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ admissionData: json.DATA || [] });
+            let totalStudents = this.state.admissionData.length;
+            this.setState({totalStudents: totalStudents});
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
           }
@@ -180,6 +183,21 @@ class EditStudentInformation extends Component {
             >
               Student Profile
             </Typography>
+            {this.state.totalStudents>1? 
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                textTransform: "capitalize",
+                textAlign: "right"
+              }}
+              variant="h6"
+            >
+              Total Students: {this.state.totalStudents}
+            </Typography>
+            :
+            ""
+            }
           </div>
           <Divider
             style={{
