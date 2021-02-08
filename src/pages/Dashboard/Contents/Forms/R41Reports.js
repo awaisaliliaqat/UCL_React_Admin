@@ -682,6 +682,21 @@ class R41Reports extends Component {
               </Button>
             </Grid>
           </Grid>
+          {this.state.totalStudents>0? 
+                         <Typography
+                           style={{
+                              color: "#1d5f98",
+                              fontWeight: 600,
+                              textTransform: "capitalize",
+                              textAlign: "right"
+                                  }}
+                              variant="subtitle2"
+                          >
+                              Total Students: {this.state.totalStudents}
+                          </Typography>
+                          :
+                          ""
+                          }
           <Divider
             style={{
               backgroundColor: "rgb(58, 127, 187)",
