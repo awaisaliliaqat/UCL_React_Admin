@@ -77,6 +77,7 @@ class F30Form extends Component {
       courseRowDataArray: [],
       showTableFilter: false,
       studentListArray: [],
+      totalStudents: []
     };
   }
 
@@ -342,6 +343,8 @@ class F30Form extends Component {
               );
             }
             this.setState({ studentListArray: json.DATA[0].students || [] });
+            let totalStudents = this.state.studentListArray.length;
+            this.setState({totalStudents: totalStudents});
           } else {
             this.handleOpenSnackbar(
               json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
@@ -628,6 +631,21 @@ class F30Form extends Component {
                 </TextField>
               </Grid>
               <Grid item xs={12}>
+              {this.state.totalStudents>1? 
+                         <Typography
+                           style={{
+                              color: "#1d5f98",
+                              fontWeight: 600,
+                              textTransform: "capitalize",
+                              textAlign: "left"
+                                  }}
+                              variant="subtitle1"
+                          >
+                              Total Students: {this.state.totalStudents}
+                          </Typography>
+                          :
+                          ""
+                          }
                 <Divider
                   style={{
                     backgroundColor: "rgb(58, 127, 187)",

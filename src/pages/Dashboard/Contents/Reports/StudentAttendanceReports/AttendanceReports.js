@@ -337,7 +337,7 @@ class AttendanceReports extends Component {
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
                             Attendance Reports
-                            {this.state.totalStudents>1? 
+                            {/* {this.state.totalStudents>1? 
                          <Typography
                            style={{
                               color: "#1d5f98",
@@ -351,7 +351,7 @@ class AttendanceReports extends Component {
                           </Typography>
                           :
                           ""
-                          }
+                          } */}
             </Typography>
             
                         <div style={{ float: "right" }}>
