@@ -35,6 +35,9 @@ class F212FormChangeStatusPopup extends Component {
       courseCreditIds: "",
       courseCreditIdError: "",
       course: "",
+      courseCompletionStatusId: "",
+      endYearAchievementId: "",
+      examEntryStatusIdValue: ''
     };
   }
 
@@ -44,6 +47,9 @@ class F212FormChangeStatusPopup extends Component {
 
   handleClose = () => {
     this.props.handleClose();
+  };
+  handleDropDown = (event) => {
+    this.setState({examEntryStatusIdValue: event.target.value});
   };
   handleOpenSnackbar = (msg, severity) => {
     this.setState({
@@ -110,11 +116,11 @@ class F212FormChangeStatusPopup extends Component {
       );
     this.setState({ isLoading: false });
   };
-  loadProgrammeCoursesSelction = async (slectedAcademicSessionId, slectedprogrammeId, courseCreditId) => {
+  loadProgrammeCoursesSelction = async (slectedAcademicSessionId=0, programmeGroupId=0, studentId=0) => {
     let data = new FormData();
     data.append("academicsSessionId", slectedAcademicSessionId);
-    data.append("programmeId", slectedprogrammeId);
-    data.append("courseIds", courseCreditId);
+    data.append("programmeGroupId", programmeGroupId);
+    data.append("studentId", studentId);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonProgrammeCoursesSelectionView`;
     await fetch(url, {
@@ -183,7 +189,6 @@ class F212FormChangeStatusPopup extends Component {
       courseCreditId: value,
       courseCreditIdError: "",
     });
-    
     let courseCreditIds = "";
     if(value){
       let course = value || []; 
@@ -208,7 +213,7 @@ class F212FormChangeStatusPopup extends Component {
     // Typical usage (don't forget to compare props):
     if (this.props.isOpen !== prevProps.isOpen) {
       this.getStudentDetail(this.props.data.studentId);
-      this.loadProgrammeCoursesSelction(this.props.slectedAcademicSessionId, this.props.slectedprogrammeId, this.props.courseIds);
+      this.loadProgrammeCoursesSelction(this.props.slectedAcademicSessionId, this.props.data.programmeGroupId, this.props.data.studentId);
       this.setState({popupBoxOpen: this.props.isOpen});
       // console.log("Props");
       // console.log(this.props.data);
@@ -223,7 +228,9 @@ class F212FormChangeStatusPopup extends Component {
       classes, 
       data, 
       applicationStatusMenuItems=[], 
-      renewalStatusMenuItems=[], 
+      renewalStatusMenuItems=[],
+      courseCompletionStatusMenuItems=[],
+      endYearAchievementMenuItems=[], 
       examEntryStatusMenuItems=[],
       pathwayMenuItems=[],
       isLoading,
@@ -260,7 +267,7 @@ class F212FormChangeStatusPopup extends Component {
                 color: "#1d5f98",
                 fontWeight: "bold"
               }}
-              variant= "h4"
+              variant= "h5"
             >
               Enrollment Status
             </Typography>
@@ -276,7 +283,7 @@ class F212FormChangeStatusPopup extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20
+                fontSize: 18
               }}
             >
               {"Student ID: "+data.studentNucleusId}
@@ -285,7 +292,7 @@ class F212FormChangeStatusPopup extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Student Name: "+data.studentName}
@@ -294,7 +301,7 @@ class F212FormChangeStatusPopup extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
@@ -305,7 +312,7 @@ class F212FormChangeStatusPopup extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Gender: "+ this.state.studentInfo.gender}
@@ -314,7 +321,7 @@ class F212FormChangeStatusPopup extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"CNIC: "+ this.state.studentInfo.cnic}
@@ -323,7 +330,7 @@ class F212FormChangeStatusPopup extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Mobile Number: "+ this.state.studentInfo.mobileNo}
@@ -334,7 +341,7 @@ class F212FormChangeStatusPopup extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Email: "+ this.state.studentInfo.email}
@@ -343,7 +350,7 @@ class F212FormChangeStatusPopup extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Blood Group: "+ this.state.studentInfo.bloodGroup}
@@ -352,7 +359,7 @@ class F212FormChangeStatusPopup extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Degree: "+ this.state.studentInfo.degree}
@@ -363,6 +370,7 @@ class F212FormChangeStatusPopup extends Component {
                 className={classes.image}
                 style={{
                   backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonImageView?fileName=${this.state.studentInfo.imageName})`,
+                  width: 140,
                   height: 160,
                   border: "1px solid rgb(58, 127, 187, 0.3)",
                   margin: 10,
@@ -454,13 +462,66 @@ class F212FormChangeStatusPopup extends Component {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                {/* <Grid item xs={12} md={3}> */}
+                {/* Start */}
+                <Grid item xs={6} md={6}>
+                    
+                  <TextField
+                    name="courseCompletionStatusId"
+                    variant="outlined"
+                    label="Course Completion Status"
+                    defaultValue={data.courseCompletionStatusId || ""}
+                    fullWidth
+                    select
+                    inputProps={{
+                      id:"courseCompletionStatusId"
+                    }}
+                  >
+                    {courseCompletionStatusMenuItems.map((dt, i) => (
+                    
+                        <MenuItem
+                          key={"courseCompletionStatusMenuItems"+dt.id}
+                          value={dt.id}
+                        >
+                          {dt.label}
+                        </MenuItem>
+                    ))}
+                  </TextField>
+                  
+                </Grid>
+                <Grid item xs={6} md={6}>
+                    
+                  <TextField
+                    name="endYearAchievementId"
+                    variant="outlined"
+                    label="Year End Achievement"
+                    defaultValue={data.endYearAchievementId || ""}
+                    fullWidth
+                    select
+                    inputProps={{
+                      id:"endYearAchievementId"
+                    }}
+                  >
+                    {endYearAchievementMenuItems.map((dt, i) => (
+                    
+                        <MenuItem
+                          key={"endYearAchievementMenuItems"+dt.id}
+                          value={dt.id}
+                        >
+                          {dt.label}
+                        </MenuItem>
+                    ))}
+                  </TextField>
+                  
+                </Grid>
+                {/* End */}
+                    <Grid item xs={6} md={3}>
+                    
                   <TextField
                     name="examEntryStatusId"
                     variant="outlined"
                     label="Exam Entry Status"
                     defaultValue={data.examEntryStatusId || ""}
+                    onChange={this.handleDropDown}
                     fullWidth
                     select
                     inputProps={{
@@ -468,6 +529,7 @@ class F212FormChangeStatusPopup extends Component {
                     }}
                   >
                     {examEntryStatusMenuItems.map((dt, i) => (
+                    
                         <MenuItem
                           key={"examEntryStatusMenuItems"+dt.id}
                           value={dt.id}
@@ -476,15 +538,43 @@ class F212FormChangeStatusPopup extends Component {
                         </MenuItem>
                     ))}
                   </TextField>
+                  
                 </Grid>
-                 
+                {  this.state.examEntryStatusIdValue==2 ||data.examEntryStatusId==2?
+                <Grid item md={2}>
+                <TextField
+                    id="candidateNo"
+                    name="candidateNo"
+                    variant="outlined"
+                    label="Candidate No"
+                    defaultValue={data.candidateNo || ""}
+                    fullWidth
+                  />
+                </Grid>
+                :
+                ""
+                 }
+                
                 {/* </Grid> */}
-                <Grid item xs={12} md={6}>
+                <Grid md={1}>
+                <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 14,
+                textAlign: "center"
+              }}
+            >
+              {"Registered In: "+ this.state.courseMenuItems.length}
+            </Typography>
+
+                </Grid>
+                <Grid item xs={6} md={3}>
                 <Autocomplete
                   style={{marginTop: 20}}
                   multiple
                   fullWidth
-                  disabled={!data.examEntryStatusId}
+                  // disabled={!data.examEntryStatusId}
                   options={this.state.courseMenuItems}
                   value={this.state.courseCreditId}
                   onChange={(event, value) =>
@@ -533,7 +623,7 @@ class F212FormChangeStatusPopup extends Component {
                    value={this.state.courseCreditIds}
                    />
                 </Grid>
-                <Grid item md={6}>
+                <Grid item md={3}>
                    <TextField
                     id="UOLNo"
                     name="UOLNo"
@@ -543,6 +633,7 @@ class F212FormChangeStatusPopup extends Component {
                     fullWidth
                   />
                 </Grid>
+                
                 <Grid item xs={12}>
                   <br />
                 </Grid>

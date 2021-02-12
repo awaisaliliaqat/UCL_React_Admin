@@ -358,11 +358,12 @@ class F201Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  getSections = async (academicsSessionId=0, programmeGroupId=0) => {
+  getSections = async (academicsSessionId=0, programmeGroupId=0, termId=0) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
     data.append("programmeGroupId", programmeGroupId);
+    data.append("termId", termId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsSectionsView`;
     await fetch(url, {
       method: "POST",
@@ -530,7 +531,9 @@ class F201Form extends Component {
             if (json.DATA.length) {
               let data =  json.DATA[0] || [];
               if(data && id!=0){
+                
                 this.getTotalNoOfAssessment(data.academicSessionId, data.programmeGroupId, data.sessionTermId);
+                // this.getSections(data.academicSessionId, data.programmeGroupId, data.sessionTermId);
                 this.setState({
                   academicSessionId: data.academicSessionId,
                   programmeGroupId : data.programmeGroupId,
@@ -642,6 +645,7 @@ class F201Form extends Component {
     const { name, value } = e.target;
     const errName = `${name}Error`;
     let regex = "";
+    
     switch (name) {
       case "academicSessionId":
         this.setState({
@@ -666,7 +670,6 @@ class F201Form extends Component {
           sectionId:"",
           tableData:[]
         });
-        this.getSections(this.state.academicSessionId, value);
       break;
       case "termId":
         this.setState({
@@ -674,8 +677,11 @@ class F201Form extends Component {
           assessmentNo:"",
           sectionId:"",
           tableData:[]
+          
         });
-        this.getTotalNoOfAssessment(this.state.academicSessionId, this.state.programmeGroupId, value);
+        
+        this.getSections(this.state.academicSessionId, this.state.programmeGroupId, value );
+         this.getTotalNoOfAssessment(this.state.academicSessionId, this.state.programmeGroupId, value);
       break;
       case "sectionId":
         this.setState({

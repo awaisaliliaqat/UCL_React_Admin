@@ -115,7 +115,7 @@ function AcademicSessionStudentAchievements(props){
                   <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Module</StyledTableCell>
                   <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Courses</StyledTableCell>
                   <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Original Marks</StyledTableCell>
-                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Reset Marks</StyledTableCell>
+                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Resit Marks</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -269,12 +269,8 @@ class F212FormPopupComponent extends Component {
               // console.log("Student Info"+this.state.studentId);
               // console.log("Props"+this.props);
           } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
-              "error"
-            );
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
-          console.log("getStudentDetail", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -283,7 +279,6 @@ class F212FormPopupComponent extends Component {
               isReload: false,
             });
           } else {
-            console.log(error);
             this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
@@ -314,7 +309,7 @@ class F212FormPopupComponent extends Component {
             let sessionAchievementsData = json.DATA || [];
             this.setState({ sessionAchievementsData: sessionAchievementsData });
           } else {
-            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
           }
           console.log("loadData", json);
         },
@@ -326,7 +321,7 @@ class F212FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -361,7 +356,7 @@ class F212FormPopupComponent extends Component {
               preSelectedCourseIMenutemsDefault: data
              });
           } else {
-            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
           }
           console.log("loadPreSelectedCourses", json);
         },
@@ -373,7 +368,7 @@ class F212FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -414,7 +409,7 @@ class F212FormPopupComponent extends Component {
             }
             this.setState({ courseRowDataArray: courseRowDataArray });
           } else {
-            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
           }
           console.log("loadData", json);
         },
@@ -426,7 +421,7 @@ class F212FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -435,6 +430,13 @@ class F212FormPopupComponent extends Component {
 
   handleClickOpen = () => {
     this.setState({ popupBoxOpen: true });
+  };
+  handleOpenSnackbar = (msg, severity) => {
+    this.setState({
+      isOpenSnackbar: true,
+      snackbarMessage: msg,
+      snackbarSeverity: severity,
+    });
   };
 
   handleClose = () => {
@@ -691,7 +693,7 @@ class F212FormPopupComponent extends Component {
                 color: "#1d5f98",
                 fontWeight: "bold"
               }}
-              variant= "h4"
+              variant= "h5"
             >
               Student Achievements
             </Typography>
@@ -706,7 +708,7 @@ class F212FormPopupComponent extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20
+                fontSize: 18
               }}
             >
               {"Student ID: "+data.studentNucleusId}
@@ -715,7 +717,7 @@ class F212FormPopupComponent extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Student Name: "+data.studentName}
@@ -724,7 +726,7 @@ class F212FormPopupComponent extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
@@ -735,7 +737,7 @@ class F212FormPopupComponent extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Gender: "+ this.state.studentInfo.gender}
@@ -744,7 +746,7 @@ class F212FormPopupComponent extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"CNIC: "+ this.state.studentInfo.cnic}
@@ -753,7 +755,7 @@ class F212FormPopupComponent extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Mobile Number: "+ this.state.studentInfo.mobileNo}
@@ -764,7 +766,7 @@ class F212FormPopupComponent extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Email: "+this.state.studentInfo.email}
@@ -773,7 +775,7 @@ class F212FormPopupComponent extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Blood Group: "+ this.state.studentInfo.bloodGroup}
@@ -782,7 +784,7 @@ class F212FormPopupComponent extends Component {
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               {"Degree: "+ this.state.studentInfo.degree}
@@ -794,6 +796,7 @@ class F212FormPopupComponent extends Component {
                 style={{
                   backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonImageView?fileName=${this.state.studentInfo.imageName})`,
                   height: 160,
+                  width: 140,
                   border: "1px solid rgb(58, 127, 187, 0.3)",
                   margin: 10,
                   float: "right"
@@ -801,6 +804,16 @@ class F212FormPopupComponent extends Component {
                   title="Student Profile"
                   />
                   </Grid>
+                  
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              No. of Subjects Studied at UCL
+            </Typography>
             </Grid>
           </DialogTitle>
           <DialogContent >
@@ -954,7 +967,7 @@ class F212FormPopupComponent extends Component {
                   <TextField
                     id="preResetMarks"
                     name="preResetMarks"
-                    label="Reset Marks"
+                    label="Resit Marks"
                     type="number"
                     fullWidth
                     variant="outlined"
@@ -1009,7 +1022,7 @@ class F212FormPopupComponent extends Component {
                         <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
                         <StyledTableCell align="center">Courses</StyledTableCell>
                         <StyledTableCell align="center">Original Marks</StyledTableCell>
-                        <StyledTableCell align="center">Reset Marks</StyledTableCell>
+                        <StyledTableCell align="center">Resit Marks</StyledTableCell>
                         <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)', minWidth:100}}>Action</StyledTableCell>
                       </TableRow>
                     </TableHead>
