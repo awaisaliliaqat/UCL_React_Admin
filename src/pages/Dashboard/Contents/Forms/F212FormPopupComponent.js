@@ -285,6 +285,54 @@ class F212FormPopupComponent extends Component {
       );
     this.setState({ isLoading: false });
   };
+  loadProgrammeCoursesSelction = async (academicSessionId=0, programmeGroupId=0, studentId=0) => {
+    let data = new FormData();
+    data.append("academicsSessionId", 16);
+    data.append("programmeGroupId", programmeGroupId);
+    data.append("studentId", studentId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonProgrammeCoursesSelectionView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({ preCourseMenuItems: json.DATA || []});
+             }else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log("loadProgrammeCoursesSelction", json);
+          
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
   loadAllSessionAchievementsData = async (studentId=0) => {
     const data = new FormData();
     data.append("studentId", studentId);
@@ -639,6 +687,7 @@ class F212FormPopupComponent extends Component {
     // Typical usage (don't forget to compare props):
     if (this.props.isOpen !== prevProps.isOpen) {
       this.getStudentDetail(this.props.data.studentId);
+      
       this.setState({popupBoxOpen: this.props.isOpen});
       if ( 
           this.props.data.studentId!=0 
@@ -651,6 +700,7 @@ class F212FormPopupComponent extends Component {
             academicSessionId: this.props.data.academicSessionId || "",
             academicSessionMenuItems: this.props.academicSessionMenuItems || []
           });
+          this.loadProgrammeCoursesSelction(this.props.data.academicSessionId, this.props.data.programmeGroupId, this.props.data.studentId);
           this.loadAllSessionAchievementsData(this.props.data.studentId);
           this.loadPreSelectedCourses(this.props.data.academicSessionId, this.props.data.studentId);
           this.loadData(this.props.data.academicSessionId, this.props.data.studentId);
