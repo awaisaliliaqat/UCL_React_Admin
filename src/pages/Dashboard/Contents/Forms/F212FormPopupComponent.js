@@ -708,6 +708,7 @@ class F212FormPopupComponent extends Component {
     }
   }
 
+  
   render() {
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
