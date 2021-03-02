@@ -882,24 +882,29 @@ class F212Form extends Component {
 
   isProgrammeGroupValid = () => {
     let isValid = true;
-    if (!this.state.programmeGroupId) {
-      this.setState({ programmeGroupIdError: "Please select programme group." });
-      document.getElementById("programmeGroupId").focus();
-      isValid = false;
-    } else {
-      this.setState({ programmeGroupIdError: "" });
+    if(this.state.academicSessionId<20){
+      if (!this.state.programmeGroupId) {
+        this.setState({ programmeGroupIdError: "Please select programme group." });
+        document.getElementById("programmeGroupId").focus();
+        isValid = false;
+      } else {
+        this.setState({ programmeGroupIdError: "" });
+      }
     }
+  
     return isValid;
   };
 
   isProgrammeValid = () => {
     let isValid = true;
-    if (!this.state.programmeId) {
-      this.setState({ programmeIdError: "Please select programme." });
-      document.getElementById("programmeId").focus();
-      isValid = false;
-    } else {
-      this.setState({ programmeIdError: "" });
+    if(this.state.academicSessionId<20){
+      if (!this.state.programmeId) {
+        this.setState({ programmeIdError: "Please select programme." });
+        document.getElementById("programmeId").focus();
+        isValid = false;
+      } else {
+        this.setState({ programmeIdError: "" });
+      }
     }
     return isValid;
   };
@@ -1626,7 +1631,7 @@ class F212Form extends Component {
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={this.state.isLoading || !this.state.programmeId}
+                      disabled={this.state.isLoading || (!this.state.programmeId && this.state.academicSessionId<20)}
                       onClick={() => this.handleGetData()}
                       style={{width:"100%", height:54, marginBottom:24}}
                     > 
