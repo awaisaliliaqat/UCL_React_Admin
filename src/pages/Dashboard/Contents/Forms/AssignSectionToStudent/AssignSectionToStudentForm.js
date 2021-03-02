@@ -56,7 +56,8 @@ class AssignSectionToStudentForm extends Component {
             isOpenSnackbar: false,
             snackbarMessage: "",
             snackbarSeverity: "",
-            isDownloadExcel: false
+            isDownloadExcel: false,
+            totalStudents:[]
         }
     }
 
@@ -264,6 +265,8 @@ class AssignSectionToStudentForm extends Component {
                         this.setState({
                             studentsData: data,
                         });
+                        let totalStudents = this.state.studentsData.length;
+                        this.setState({totalStudents: totalStudents});
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
                     }
@@ -761,6 +764,23 @@ class AssignSectionToStudentForm extends Component {
                             justifyContent: 'flex-end'
                         }}
                     >
+                        <Grid item xs={4}>
+                        {this.state.totalStudents>1? 
+                         <Typography
+                           style={{
+                              color: "#1d5f98",
+                              fontWeight: 600,
+                              textTransform: "capitalize",
+                              textAlign: "left"
+                                  }}
+                              variant="h6"
+                          >
+                              Total Students: {this.state.totalStudents}
+                          </Typography>
+                          :
+                          ""
+                          }
+                        </Grid>
                         <Grid item xs={4}>
                             <TextField
                                 id="assigneLectureSectionId"

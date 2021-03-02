@@ -131,6 +131,7 @@ class DisplayAdmissionApplications extends Component {
       tableData: [],
       academicSessionLabel: "",
       programmeGroupLabel: "",
+      totalStudents: []
     };
   }
 
@@ -194,6 +195,8 @@ class DisplayAdmissionApplications extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ tableData: json.DATA || [] });
+            let totalStudents = this.state.tableData.length;
+                        this.setState({totalStudents: totalStudents});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(
@@ -283,6 +286,14 @@ class DisplayAdmissionApplications extends Component {
                     " - " +
                     this.state.academicSessionLabel}
                 </small>
+                <br />
+                {this.state.totalStudents>1? 
+                             <small>
+                              Total Students: {this.state.totalStudents}
+                              </small>
+                          :
+                          ""
+                          }
               </span>
             </div>
           </div>

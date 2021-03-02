@@ -34,7 +34,8 @@ class ChangeStudentStatus extends Component {
       snackbarMessage: "",
       snackbarSeverity: "",
       programmeGroupId:"",
-      programmeGroupsMenuItems:[]
+      programmeGroupsMenuItems:[],
+      totalStudents: []
     };
   }
 
@@ -124,6 +125,8 @@ class ChangeStudentStatus extends Component {
             //   studentData[i].firstName = fName+" "+lName;
             // }
             this.setState({studentData: json.DATA || []});
+            let totalStudents = this.state.studentData.length;
+            this.setState({totalStudents: totalStudents});
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
@@ -329,7 +332,9 @@ class ChangeStudentStatus extends Component {
                   <FilterIcon fontSize="default" color="primary" />
                 </IconButton>
               </Tooltip>
+              
             </div>
+            
           </div>
           <Divider
             style={{
@@ -337,6 +342,7 @@ class ChangeStudentStatus extends Component {
               opacity: "0.3",
             }}
           />
+          
           <ChangeStudentStatusFilter
             isLoading={this.state.isLoading}
             onClearFilters={() => this.onClearFilters}
@@ -344,7 +350,6 @@ class ChangeStudentStatus extends Component {
             getDataByStatus={() => this.getData()}
             onHandleChange={(e) => this.onHandleChange(e)}
           />
-
           <div
             style={{
               marginTop: 15,
@@ -353,7 +358,24 @@ class ChangeStudentStatus extends Component {
               font: "Bold 16px Lato",
               letterSpacing: "1.8px",
             }}
-          ></div>
+          >
+            {this.state.totalStudents>1? 
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                textTransform: "capitalize",
+                textAlign: "left"
+              }}
+              variant="h6"
+            >
+              Total Students: {this.state.totalStudents}
+            </Typography>
+            :
+            ""
+            }
+            
+          </div>
           <ChangeStatusTableComponent
             columns={columns}
             rows={this.state.studentData}

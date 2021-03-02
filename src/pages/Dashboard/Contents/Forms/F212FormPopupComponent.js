@@ -13,6 +13,7 @@ import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CardMedia from '@material-ui/core/CardMedia';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -113,7 +114,8 @@ function AcademicSessionStudentAchievements(props){
                 <TableRow>
                   <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Module</StyledTableCell>
                   <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Courses</StyledTableCell>
-                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Marks</StyledTableCell>
+                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Original Marks</StyledTableCell>
+                  <StyledTableCell align="center" style={{backgroundColor:"#4caf50"}}>Resit Marks</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -123,16 +125,17 @@ function AcademicSessionStudentAchievements(props){
                         <StyledTableCell component="th" scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.moduleNumber}</StyledTableCell>
                         <StyledTableCell scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.coursesObject.Label}</StyledTableCell>
                         <StyledTableCell scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.marks}</StyledTableCell>
+                        <StyledTableCell scope="row" align="center" style={{borderColor:"#4caf50"}}>{dt.resetMarks}</StyledTableCell>
                       </StyledTableRow>
                     ))
                   :
                   this.state.isLoading ?
                     <StyledTableRow>
-                      <StyledTableCell component="th" scope="row" colSpan={3}><center><CircularProgress/></center></StyledTableCell>
+                      <StyledTableCell component="th" scope="row" colSpan={4}><center><CircularProgress/></center></StyledTableCell>
                     </StyledTableRow>
                     :
                     <StyledTableRow>
-                      <StyledTableCell component="th" scope="row" colSpan={3}><center><b>No Data</b></center></StyledTableCell>
+                      <StyledTableCell component="th" scope="row" colSpan={4}><center><b>No Data</b></center></StyledTableCell>
                     </StyledTableRow>
                   }
               </TableBody>
@@ -180,6 +183,10 @@ function CourseRow(props) {
           <TextField type="hidden" name="marks" value={rowData.preMarks} />
         </StyledTableCell>
         <StyledTableCell align="center">
+          {rowData.preResetMarks}
+          <TextField type="hidden" name="resetMarks" value={rowData.preResetMarks} />
+        </StyledTableCell>
+        <StyledTableCell align="center">
             <Tooltip title="Delete">
               <Fab
                 color="secondary"
@@ -217,16 +224,115 @@ class F212FormPopupComponent extends Component {
       academicSessionIdError: "",
       preMarks: "",
       preMarksError: "",
+      preResetMarks: "",
+      preResetMarksError: "",
       preModuleMenuItems: [],
       preModuleId: "",
       preModuleIdError: "",
       preCourseMenuItems: [],
       preCourses: {},
       courseRowDataArray: [],
-      sessionAchievementsData: []
+      sessionAchievementsData: [],
+      preSelectedCourseIMenutems:[],
+      preSelectedCourseIMenutemsDefault:[],
+      studentInfo: ""
     };
   }
 
+
+
+  
+  getStudentDetail = async (studentId=0) => {
+    this.setState({ isLoading: true });
+    let data = new FormData();
+    data.append("studentId", studentId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonStudentsDetailView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ studentId: json.DATA || [] });
+            let studentInfo = json.DATA[0]|| "";
+              this.setState({studentInfo:studentInfo});
+              // console.log("Student Info"+this.state.studentId);
+              // console.log("Props"+this.props);
+          } else {
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+  loadProgrammeCoursesSelction = async (academicSessionId=0, programmeGroupId=0, studentId=0) => {
+    let data = new FormData();
+    data.append("academicsSessionId", 16);
+    data.append("programmeGroupId", programmeGroupId);
+    data.append("studentId", studentId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonProgrammeCoursesSelectionView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({ preCourseMenuItems: json.DATA || []});
+             }else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log("loadProgrammeCoursesSelction", json);
+          
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
   loadAllSessionAchievementsData = async (studentId=0) => {
     const data = new FormData();
     data.append("studentId", studentId);
@@ -251,7 +357,7 @@ class F212FormPopupComponent extends Component {
             let sessionAchievementsData = json.DATA || [];
             this.setState({ sessionAchievementsData: sessionAchievementsData });
           } else {
-            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
           }
           console.log("loadData", json);
         },
@@ -263,13 +369,60 @@ class F212FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
     this.setState({ isLoading: false });
   };
 
+  loadPreSelectedCourses = async (academicSessionId=0, studentId=0) => {
+    const data = new FormData();
+    data.append("studentId", studentId);
+    data.append("academicsSessionId", academicSessionId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonProgrammeCoursesStudentSelectionView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({ 
+              preSelectedCourseIMenutems: data,
+              preSelectedCourseIMenutemsDefault: data
+             });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
+          }
+          console.log("loadPreSelectedCourses", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+  
   loadData = async (academicSessionId=0, studentId=0) => {
     const data = new FormData();
     data.append("studentId", studentId);
@@ -298,12 +451,13 @@ class F212FormPopupComponent extends Component {
                 preModuleId: json.DATA[i].moduleNumber,
                 preCourses: json.DATA[i].coursesObject,
                 preMarks: json.DATA[i].marks,
+                preResetMarks: json.DATA[i].resetMarks,
               };
               courseRowDataArray.push(courseRowDataObject);
             }
             this.setState({ courseRowDataArray: courseRowDataArray });
           } else {
-            this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error");
           }
           console.log("loadData", json);
         },
@@ -315,7 +469,7 @@ class F212FormPopupComponent extends Component {
             });
           } else {
             console.log(error);
-            this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
           }
         }
       );
@@ -324,6 +478,13 @@ class F212FormPopupComponent extends Component {
 
   handleClickOpen = () => {
     this.setState({ popupBoxOpen: true });
+  };
+  handleOpenSnackbar = (msg, severity) => {
+    this.setState({
+      isOpenSnackbar: true,
+      snackbarMessage: msg,
+      snackbarSeverity: severity,
+    });
   };
 
   handleClose = () => {
@@ -416,7 +577,7 @@ class F212FormPopupComponent extends Component {
     let preModuleId = this.state.preModuleId;
     let preCourses = this.state.preCourses;
     let preMarks = this.state.preMarks;
-
+    let preResetMarks = this.state.preResetMarks;
     // let moduleNumber = document.getElementsByName("moduleNumber");
     // for (let i = 0; i < moduleNumber.length; i++) {
     //   if (moduleNumber[i].value == preModuleId) {
@@ -425,11 +586,11 @@ class F212FormPopupComponent extends Component {
     //     return;
     //   }
     // }
-
     let courseRowDataObject = {
       preModuleId: preModuleId,
       preCourses: preCourses,
       preMarks: preMarks,
+      preResetMarks: preResetMarks,
     };
 
     courseRowDataArray.push(courseRowDataObject);
@@ -439,14 +600,53 @@ class F212FormPopupComponent extends Component {
       preModuleId: "",
       preCourses: {},
       preMarks: "",
+      preResetMarks: 0,
     });
 
+    let preSelectedCourseIMenutems = [...this.state.preSelectedCourseIMenutemsDefault] || [];
+    let preSelectedCourseIMenutemsLength = preSelectedCourseIMenutems.length || 0;
+    let courseRowDataArrayLength = courseRowDataArray.length || 0;
+    let newPreSelectedCourseIMenutems = [];
+
+    for(let i=0; i<preSelectedCourseIMenutemsLength; i++){
+      let alredaySelected = true;
+      for(let j=0; j<courseRowDataArrayLength;j++){
+        if(preSelectedCourseIMenutems[i].ID == courseRowDataArray[j].preCourses.ID){
+          alredaySelected = false;
+          break;
+        }
+      }
+      if(alredaySelected){
+        newPreSelectedCourseIMenutems.push(preSelectedCourseIMenutems[i]);
+      }
+    }
+    this.setState({preSelectedCourseIMenutems:newPreSelectedCourseIMenutems});
   };
 
   handeDeleteCourseRow = (index) => {
     let courseRowDataArray = this.state.courseRowDataArray;
     courseRowDataArray.splice(index, 1);
     this.setState({ courseRowDataArray: courseRowDataArray });
+
+    let preSelectedCourseIMenutems = [...this.state.preSelectedCourseIMenutemsDefault] || [];
+    let preSelectedCourseIMenutemsLength = preSelectedCourseIMenutems.length || 0;
+    let courseRowDataArrayLength = courseRowDataArray.length || 0;
+    let newPreSelectedCourseIMenutems = [];
+
+    for(let i=0; i<preSelectedCourseIMenutemsLength; i++){
+      let alredaySelected = true;
+      for(let j=0; j<courseRowDataArrayLength;j++){
+        if(preSelectedCourseIMenutems[i].ID == courseRowDataArray[j].preCourses.ID){
+          alredaySelected = false;
+          break;
+        }
+      }
+      if(alredaySelected){
+        newPreSelectedCourseIMenutems.push(preSelectedCourseIMenutems[i]);
+      }
+    }
+    this.setState({preSelectedCourseIMenutems:newPreSelectedCourseIMenutems});
+
   };
 
   onHandleChange = (e) => {
@@ -468,6 +668,10 @@ class F212FormPopupComponent extends Component {
     });
   };
 
+  handleClickOnPreSelectedCourses(obj) {
+    this.handleSetPreCourses(obj);
+  }
+
   handleSetPreCourses = (value) => {
     this.setState({
       preCourses: value,
@@ -482,9 +686,9 @@ class F212FormPopupComponent extends Component {
   componentDidUpdate(prevProps){
     // Typical usage (don't forget to compare props):
     if (this.props.isOpen !== prevProps.isOpen) {
-
+      this.getStudentDetail(this.props.data.studentId);
+      
       this.setState({popupBoxOpen: this.props.isOpen});
-
       if ( 
           this.props.data.studentId!=0 
           && this.props.data.studentId!="" 
@@ -496,12 +700,15 @@ class F212FormPopupComponent extends Component {
             academicSessionId: this.props.data.academicSessionId || "",
             academicSessionMenuItems: this.props.academicSessionMenuItems || []
           });
+          this.loadProgrammeCoursesSelction(this.props.data.academicSessionId, this.props.data.programmeGroupId, this.props.data.studentId);
           this.loadAllSessionAchievementsData(this.props.data.studentId);
+          this.loadPreSelectedCourses(this.props.data.academicSessionId, this.props.data.studentId);
           this.loadData(this.props.data.academicSessionId, this.props.data.studentId);
       }
     }
   }
 
+  
   render() {
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -535,15 +742,132 @@ class F212FormPopupComponent extends Component {
             <Typography
               style={{
                 color: "#1d5f98",
+                fontWeight: "bold"
+              }}
+              variant= "h5"
+            >
+              Student Achievements
+            </Typography>
+            <Grid container
+                justify="flex-start"
+                alignItems="center"
+                spacing={2}
+                style={{borderBottom: "1px solid rgb(58, 127, 187, 0.3)"}}
+                >
+                  <Grid item xs={3}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
                 fontWeight: 600,
-                borderBottom: "1px solid rgb(58, 127, 187, 0.3)",
-                fontSize: 20,
+                fontSize: 18
               }}
             >
-              {data.studentNucleusId+" - "+data.studentName}
+              {"Student ID: "+data.studentNucleusId}
             </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Student Name: "+data.studentName}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Gender: "+ this.state.studentInfo.gender}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"CNIC: "+ this.state.studentInfo.cnic}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Mobile Number: "+ this.state.studentInfo.mobileNo}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Email: "+this.state.studentInfo.email}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Blood Group: "+ this.state.studentInfo.bloodGroup}
+            </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Degree: "+ this.state.studentInfo.degree}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                  <CardMedia
+                className={classes.image}
+                style={{
+                  backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonImageView?fileName=${this.state.studentInfo.imageName})`,
+                  height: 160,
+                  width: 140,
+                  border: "1px solid rgb(58, 127, 187, 0.3)",
+                  margin: 10,
+                  float: "right"
+                  }}
+                  title="Student Profile"
+                  />
+                  </Grid>
+                  
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              No. of Subjects Studied at UCL
+            </Typography>
+            </Grid>
           </DialogTitle>
-          <DialogContent style={{marginTop:-30}}>
+          <DialogContent >
             {/* <DialogContentText> */}
               <Grid
                 container
@@ -597,7 +921,7 @@ class F212FormPopupComponent extends Component {
                     ))}
                   </TextField>
                 </Grid>  
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={2}>
                   <TextField
                     id="preModuleId"
                     name="preModuleId"
@@ -619,7 +943,7 @@ class F212FormPopupComponent extends Component {
                     }
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                   <Autocomplete
                     //multiple
                     fullWidth
@@ -677,7 +1001,7 @@ class F212FormPopupComponent extends Component {
                   <TextField
                     id="preMarks"
                     name="preMarks"
-                    label="Marks"
+                    label="Original Marks"
                     type="number"
                     required
                     fullWidth
@@ -688,6 +1012,20 @@ class F212FormPopupComponent extends Component {
                     helperText={
                       this.state.preMarksError ? this.state.preMarksError : " "
                     }
+                  />
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <TextField
+                    id="preResetMarks"
+                    name="preResetMarks"
+                    label="Resit Marks"
+                    type="number"
+                    fullWidth
+                    variant="outlined"
+                    onChange={this.onHandleChange}
+                    value={this.state.preResetMarks}
+                    error={!!this.state.preResetMarksError}
+                    helperText={this.state.preResetMarksError ? this.state.preResetMarksError : " "}
                   />
                 </Grid>
                 <Grid item xs={1} style={{ textAlign: "center" }}>
@@ -706,10 +1044,25 @@ class F212FormPopupComponent extends Component {
                   </IconButton>
                 </Grid>
                 <Grid item xs={12}>
+                  {this.state.preSelectedCourseIMenutems.length>0 && <Typography color="primary" component="span">Pre Selected Courses <small>(click on for selection)</small>: &nbsp;</Typography>}
+                  {this.state.preSelectedCourseIMenutems.map((d, i)=>
+                  <Fragment>
+                    <Chip 
+                      key={i} 
+                      size="small" 
+                      label={d.Label} 
+                      color="primary"
+                      style={{cursor:"pointer"}}
+                      onClick={(e)=>this.handleClickOnPreSelectedCourses(d)}
+                    />
+                    <span>&nbsp;</span>
+                  </Fragment>
+                  )}
                   <Divider
                     style={{
                       backgroundColor: "rgb(58, 127, 187)",
                       opacity: "0.3",
+                      marginTop:4
                     }}
                   />
                 </Grid>
@@ -719,7 +1072,8 @@ class F212FormPopupComponent extends Component {
                       <TableRow>
                         <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>Module</StyledTableCell>
                         <StyledTableCell align="center">Courses</StyledTableCell>
-                        <StyledTableCell align="center">Marks</StyledTableCell>
+                        <StyledTableCell align="center">Original Marks</StyledTableCell>
+                        <StyledTableCell align="center">Resit Marks</StyledTableCell>
                         <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)', minWidth:100}}>Action</StyledTableCell>
                       </TableRow>
                     </TableHead>
@@ -738,11 +1092,11 @@ class F212FormPopupComponent extends Component {
                         :
                         this.state.isLoading ?
                           <StyledTableRow key={1}>
-                            <StyledTableCell component="th" scope="row" colSpan={4}><center><CircularProgress/></center></StyledTableCell>
+                            <StyledTableCell component="th" scope="row" colSpan={5}><center><CircularProgress/></center></StyledTableCell>
                           </StyledTableRow>
                           :
                           <StyledTableRow key={1}>
-                            <StyledTableCell component="th" scope="row" colSpan={4}><center><b>No Data</b></center></StyledTableCell>
+                            <StyledTableCell component="th" scope="row" colSpan={5}><center><b>No Data</b></center></StyledTableCell>
                           </StyledTableRow>
                         }
                     </TableBody>
