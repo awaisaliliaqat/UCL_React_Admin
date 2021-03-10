@@ -14,6 +14,7 @@ import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CardMedia from '@material-ui/core/CardMedia';
+import ProfilePlaceholder from '../../../../assets/Images/ProfilePlaceholder.png';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -742,7 +743,8 @@ class F212FormPopupComponent extends Component {
             <Typography
               style={{
                 color: "#1d5f98",
-                fontWeight: "bold"
+                fontWeight: "bold",
+                borderBottom: "0"
               }}
               variant= "h5"
             >
@@ -842,21 +844,32 @@ class F212FormPopupComponent extends Component {
             </Typography>
                   </Grid>
                   <Grid item xs={3}>
-                  <CardMedia
+                    {this.state.studentInfo.imageName==null?
+                    <img src={ProfilePlaceholder} 
+                    style={{
+                      width: 140,
+                      height: 160,
+                      border: "1px solid rgb(58, 127, 187, 0.3)",
+                      margin: 10,
+                      float: "right"
+                    }}  />
+                    : 
+                 <CardMedia
                 className={classes.image}
                 style={{
                   backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonImageView?fileName=${this.state.studentInfo.imageName})`,
-                  height: 160,
                   width: 140,
+                  height: 160,
                   border: "1px solid rgb(58, 127, 187, 0.3)",
                   margin: 10,
                   float: "right"
                   }}
                   title="Student Profile"
                   />
+                }
                   </Grid>
                   
-            <Typography
+            {/* <Typography
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
@@ -864,7 +877,7 @@ class F212FormPopupComponent extends Component {
               }}
             >
               No. of Subjects Studied at UCL
-            </Typography>
+            </Typography> */}
             </Grid>
           </DialogTitle>
           <DialogContent >
