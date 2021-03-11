@@ -8,6 +8,7 @@ import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import CardMedia from '@material-ui/core/CardMedia';
+import ProfilePlaceholder from '../../../../assets/Images/ProfilePlaceholder.png';
 
 const styles = (theme) => ({
   
@@ -265,7 +266,8 @@ class F212FormChangeStatusPopup extends Component {
             <Typography
               style={{
                 color: "#1d5f98",
-                fontWeight: "bold"
+                fontWeight: "bold",
+                borderBottom: "0"
               }}
               variant= "h5"
             >
@@ -366,7 +368,17 @@ class F212FormChangeStatusPopup extends Component {
             </Typography>
                   </Grid>
                   <Grid item xs={3}>
-                  <CardMedia
+                    {this.state.studentInfo.imageName==null?
+                    <img src={ProfilePlaceholder} 
+                    style={{
+                      width: 140,
+                      height: 160,
+                      border: "1px solid rgb(58, 127, 187, 0.3)",
+                      margin: 10,
+                      float: "right"
+                    }}  />
+                    : 
+                 <CardMedia
                 className={classes.image}
                 style={{
                   backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonImageView?fileName=${this.state.studentInfo.imageName})`,
@@ -378,6 +390,7 @@ class F212FormChangeStatusPopup extends Component {
                   }}
                   title="Student Profile"
                   />
+                }
                   </Grid>
             </Grid>
           </DialogTitle>
