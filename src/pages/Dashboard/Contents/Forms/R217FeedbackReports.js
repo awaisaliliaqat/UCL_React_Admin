@@ -682,7 +682,7 @@ class R217FeedbackReports extends Component {
                                                 </StyledTableRow>
                                                 ))}
                                             </TableBody>
-                                    </Table>
+                                    </Table> 
                             </TableContainer>
                         </Grid>
                     </Grid>
