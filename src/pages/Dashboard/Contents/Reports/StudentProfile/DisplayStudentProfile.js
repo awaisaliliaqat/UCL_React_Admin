@@ -1345,6 +1345,7 @@ class DisplayAdmissionApplications extends Component {
               <TableHead>
                 <TableRow>
                   <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)", borderRight: "1px solid rgb(47, 87, 165)" }} align="center">Module</StyledTableCell>
+                  <StyledTableCell align="center">Academic Session</StyledTableCell>
                   <StyledTableCell align="center">Courses</StyledTableCell>
                   <StyledTableCell align="center">Original Marks</StyledTableCell>
                   <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>Reset Marks</StyledTableCell>
@@ -1354,6 +1355,7 @@ class DisplayAdmissionApplications extends Component {
                   {this.state.uolEnrollmentMarks.map((dt, i) => (
                       <StyledTableRow key={"row"+data.sessionLabel+i}>
                         <StyledTableCell component="th" scope="row" align="center">{dt.moduleNumber}</StyledTableCell>
+                        <StyledTableCell scope="row" align="center" >{dt.academicSessionLabel}</StyledTableCell>
                         <StyledTableCell scope="row" align="center" >{dt.coursesObject.Label}</StyledTableCell>
                         <StyledTableCell scope="row" align="center" >{dt.marks}</StyledTableCell>
                         <StyledTableCell scope="row" align="center" >{dt.resetMarks}</StyledTableCell>
