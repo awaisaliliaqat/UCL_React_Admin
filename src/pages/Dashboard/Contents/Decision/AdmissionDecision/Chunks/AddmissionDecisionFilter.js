@@ -56,12 +56,12 @@ const AddmissionDecisionFilter = props => {
     return (
         <Fragment>
             <div className={classes.container}>
+            
 
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>
                     <span className={classes.label}>Admission Decision</span>
-
                     <TextField
                         placeholder="Decision"
                         variant="outlined"
@@ -85,9 +85,37 @@ const AddmissionDecisionFilter = props => {
                     </TextField>
                 </div>
                 <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Academic Session</span>
+                    <TextField
+                      id="academicSessionId"
+                      name="academicSessionId"
+                      variant="outlined"
+                      value={values.academicSessionId}
+                      InputProps={{ classes: { input: classes.resize } }}
+                      onChange={e => {
+                        onHandleChange(e);
+                    }}
+                    //   error={!!values.academicSessionIdError}
+                    //   helperText={values.academicSessionIdError}
+                      select
+                    >
+                      {values.academicSessionMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"academicSessionMenuItems"+dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    
+                </div>
+                <div className={classes.item} style={{
                     width: '8%'
                 }}>
-                    <span className={classes.label}>ID</span>
+                    <span className={classes.label}>IDs</span>
                     <TextField
                         placeholder="ID"
                         variant="outlined"
