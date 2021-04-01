@@ -133,6 +133,8 @@ import R210Reports from "./Contents/Forms/R210Reports";
 import F211Form from "./Contents/Forms/F211Form";
 import F211Reports from "./Contents/Forms/F211Reports";
 import F212Form from "./Contents/Forms/F212Form";
+import F220Form from "./Contents/Forms/F220Form";
+import F221Form from "./Contents/Forms/F221Form";
 import R213Reports from "./Contents/Forms/R213Reports";
 import R216Reports from "./Contents/Forms/R216Reports";
 import R217FeedbackReports from "./Contents/Forms/R217FeedbackReports";
@@ -1882,6 +1884,36 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F212Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F220Form"
+                exact
+                path="/dashboard/F220Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F220Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F221Form"
+                exact
+                path="/dashboard/F221Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F221Form
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
