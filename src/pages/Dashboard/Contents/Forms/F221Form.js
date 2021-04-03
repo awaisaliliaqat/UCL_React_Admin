@@ -376,7 +376,7 @@ class F221Form extends Component {
         return res.json(); 
       })
       .then(
-        (json) => {
+        (json) => { 
           if (json.CODE === 1) {
             this.setState({newProgrammeGroupsMenuItems: json.DATA || []});
             this.setState({newProgrammeGroupId: this.state.programmeGroupId});
