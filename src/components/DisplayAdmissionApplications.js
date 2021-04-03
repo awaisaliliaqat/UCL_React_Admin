@@ -372,6 +372,9 @@ class DisplayAdmissionApplications extends Component {
                             marginBottom: '1%'
                         }}>
                             <span className={classes.tagValue}>{data.degreeLabel}</span>
+                            <span style={{
+                                marginLeft: "4%"
+                            }} className={classes.tagValue}>{data.academicSessionLabel}</span>
                         </div>
                         {data.degreeId === 11 &&
                             <Fragment>

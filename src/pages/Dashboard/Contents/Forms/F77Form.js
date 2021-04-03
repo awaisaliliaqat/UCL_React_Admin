@@ -639,7 +639,7 @@ class R77Reports extends Component {
                           <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(47, 87, 165)', width:"35%"}}>Name</StyledTableCell>
                           <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(47, 87, 165)', width:"10%"}}>Start date</StyledTableCell>
                           <StyledTableCell align="center" style={{borderRight: '1px solid rgb(47, 87, 165)', width:"10%"}}>Total Marks</StyledTableCell>
-                          <StyledTableCell align="center" style={{borderRight: '1px solid rgb(47, 87, 165)', width:"25%" }}>Is&nbsp;Graded</StyledTableCell>
+                          <StyledTableCell align="center" style={{borderRight: '1px solid rgb(47, 87, 165)', width:"25%" }}>Mark as&nbsp;Graded</StyledTableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
