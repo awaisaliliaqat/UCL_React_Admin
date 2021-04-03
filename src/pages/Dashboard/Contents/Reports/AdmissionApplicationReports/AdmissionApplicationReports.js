@@ -41,7 +41,10 @@ class AdmissionApplicationReports extends Component {
             applicationId: "",
             isLoginMenu: false,
             isReload: false,
-            eventDate: null
+            eventDate: null,
+            academicSessionMenuItems: [],
+            academicSessionId: 64,
+            academicSessionIdError: ""
 
         }
     }
@@ -50,6 +53,7 @@ class AdmissionApplicationReports extends Component {
         this.getGenderData();
         this.getDegreesData();
         this.getData(this.state.applicationStatusId);
+        this.loadAcademicSessions();
     }
 
     getGenderData = async () => {
@@ -85,6 +89,50 @@ class AdmissionApplicationReports extends Component {
                 }
             );
     };
+    loadAcademicSessions = async () => {
+        this.setState({ isLoading: true });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C01CommonAcademicsSessionsView`;
+        await fetch(url, {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+          }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+          })
+          .then(
+            (json) => {
+              if (json.CODE === 1) {
+                let array = json.DATA || [];
+                let arrayLength = array.length;
+                let res = array.find( (obj) => obj.isActive === 1 );
+                if(res){
+                  this.setState({academicSessionId:res.ID});
+                }
+                this.setState({ academicSessionMenuItems: array });
+                
+              } else {
+                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+              }
+            },
+            (error) => {
+              if (error.status == 401) {
+                this.setState({
+                  isLoginMenu: true,
+                  isReload: false,
+                });
+              } else {
+                console.log(error);
+                this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+              }
+            }
+          );
+        this.setState({ isLoading: false });
+      };
 
     getDegreesData = async () => {
         let data = [];
@@ -303,10 +351,10 @@ class AdmissionApplicationReports extends Component {
             isLoading: true,
             admissionData: []
         })
-        const reload = status === 1 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
+        const reload = status === 1 && this.state.applicationId === "" && this.state.academicSessionId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.studentName === "";
         const type = status === 1 ? "Pending" : status === 2 ? "Submitted" : "Pending";
         const eventDataQuery = this.state.eventDate ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsView?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsView?applicationId=${this.state.applicationId}&academicSessionId=${this.state.academicSessionId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({

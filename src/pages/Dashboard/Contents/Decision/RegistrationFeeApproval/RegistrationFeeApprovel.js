@@ -52,7 +52,10 @@ class RegistrationFeeApprovel extends Component {
             selectedData: {},
             methodData: [],
             methodId: 0,
-            methodIdError: ""
+            methodIdError: "",
+            academicSessionMenuItems: [],
+            academicSessionId: 64,
+            academicSessionIdError: ""
 
         }
     }
@@ -63,6 +66,7 @@ class RegistrationFeeApprovel extends Component {
         this.getStatusTypeData();
         this.getMethodData();
         this.getData();
+        this.loadAcademicSessions();
     }
 
     getGenderData = async () => {
@@ -98,6 +102,50 @@ class RegistrationFeeApprovel extends Component {
                 }
             );
     };
+    loadAcademicSessions = async () => {
+        this.setState({ isLoading: true });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C01CommonAcademicsSessionsView`;
+        await fetch(url, {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+          }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+          })
+          .then(
+            (json) => {
+              if (json.CODE === 1) {
+                let array = json.DATA || [];
+                let arrayLength = array.length;
+                let res = array.find( (obj) => obj.isActive === 1 );
+                if(res){
+                  this.setState({academicSessionId:res.ID});
+                }
+                this.setState({ academicSessionMenuItems: array });
+                
+              } else {
+                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+              }
+            },
+            (error) => {
+              if (error.status == 401) {
+                this.setState({
+                  isLoginMenu: true,
+                  isReload: false,
+                });
+              } else {
+                console.log(error);
+                this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+              }
+            }
+          );
+        this.setState({ isLoading: false });
+      };
 
     getStatusTypeData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03CommonAcademicsFeePayableStatusTypesView`;
@@ -308,7 +356,7 @@ class RegistrationFeeApprovel extends Component {
                 isDownloadExcel: true
             })
             const paymentDate = this.state.eventDate ? `&paymentDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalExcelDownload?paymentStatusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}`;
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalExcelDownload?paymentStatusId=${this.state.applicationStatusId}&academicSessionId=${this.state.academicSessionId}&applicationId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}`;
             await fetch(url, {
                 method: "GET",
                 headers: new Headers({
@@ -354,8 +402,8 @@ class RegistrationFeeApprovel extends Component {
             isLoading: true
         })
         const paymentDate = this.state.eventDate ? `&paymentDate=${format(this.state.eventDate, "dd-MMM-yyyy")}` : '';
-        const reload = this.state.applicationStatusId === 0 && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.referenceNo === "" && this.state.studentName === "" && this.state.eventDate === null;
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalView?paymentStatusId=${this.state.applicationStatusId}&applicationId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}`;
+        const reload = this.state.applicationStatusId === 0 && this.state.academicSessionId === "" && this.state.applicationId === "" && this.state.genderId === 0 && this.state.degreeId === 0 && this.state.referenceNo === "" && this.state.studentName === "" && this.state.eventDate === null;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03AdmissionsProspectApplicationRegistrationFeeApprovalView?paymentStatusId=${this.state.applicationStatusId}&academicSessionId=${this.state.academicSessionId}&applicationId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
