@@ -426,10 +426,36 @@ class DisplayAdmissionApplications extends Component {
                         </span>
                         </div>
 
+                        <div className={classes.fieldValuesContainer}>
+                            <div className={classes.valuesContainer} style={{
+                                width: '20%',
+                                textAlign: 'center'
+                            }}>
+                                Admission Session
+                           </div>
+                            <div style={{
+                                textAlign: `${data.sessionLabel ? 'left' : 'center'}`
+                            }} className={classes.value}>
+                                {data.sessionLabel || "-"}
+                            </div>
+                            <div className={classes.valuesContainer} style={{
+                                width: '20%',
+                                marginLeft: 15,
+                                textAlign: 'center'
+                            }}>
+                               Current Session
+                           </div>
+                            <div style={{
+                                textAlign: `${data.sessionLabel ? 'left' : 'center'}`
+                            }} className={classes.value}>
+                                {data.sessionLabel || "-"}
+                            </div>
+                        </div>       
+                       
+                                 
+                        <div className={classes.fieldValuesContainer} >
+                             
 
-                        <div className={classes.fieldValuesContainer} style={{
-                            marginTop: '1%',
-                        }}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
