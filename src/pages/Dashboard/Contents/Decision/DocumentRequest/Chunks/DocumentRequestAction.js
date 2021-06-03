@@ -269,6 +269,8 @@ class DocumentRequestAction extends Component {
     };
 
     deleteFile = (id,documentTypeId) => {
+        let {documentData}=this.state;
+      
         if(id!=0){
 
         
@@ -307,11 +309,17 @@ class DocumentRequestAction extends Component {
                     }
                 });
         } else{
-            
-            const index = this.state.documentData.findIndex(item => item.documentTypeId === documentTypeId)
+          
+
+            const index = documentData.findIndex(item => item.documentTypeId === documentTypeId)
+          
             if (index != -1) {
-                this.state.documentData.splice(index,1);
+               
+                documentData.splice(index,1);
             } 
+            this.setState({
+                documentData
+            })
         }   
     };
 
