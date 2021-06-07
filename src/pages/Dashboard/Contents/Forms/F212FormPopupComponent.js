@@ -172,8 +172,18 @@ function CourseRow(props) {
   return (
       <StyledTableRow key={rowData}>
         <StyledTableCell component="th" scope="row" align="center">
-          {rowData.preModuleId}
-          <TextField type="hidden" name="moduleNumber" value={rowData.preModuleId}/>
+         
+          {rowData.preModuleId==0?
+          <input name="moduleNumber"></input>
+          :(
+            <Fragment>
+              {rowData.preModuleId}
+            <input type="hidden" name="moduleNumber" value={rowData.preModuleId}></input>
+            </Fragment>
+            )
+          
+          }
+         
         </StyledTableCell>
         <StyledTableCell align="center">
           {rowData.preCourses.Label}
