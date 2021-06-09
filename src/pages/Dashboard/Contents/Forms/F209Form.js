@@ -303,6 +303,7 @@ class F209Form extends Component {
 						programmeGroupId: "",
 						rubricsMenuItems : [],
 					});
+					this.loadProgrammeGroups(value);
 				break;
 				case "programmeGroupId":
 					this.setState({ rubricsMenuItems : [] });
