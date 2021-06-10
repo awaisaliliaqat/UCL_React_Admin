@@ -898,6 +898,7 @@ class F221Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            this.loadNewAcademicSessions(this.state.academicSessionId);
             let data = json.DATA || [];
             let dataLength = data.length || 0;
 
