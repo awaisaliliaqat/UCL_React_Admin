@@ -260,7 +260,7 @@ class DocumentRequest extends Component {
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
                             Document Requests
-            </Typography>
+                        </Typography>
                     </div>
                     <Divider style={{
                         backgroundColor: 'rgb(58, 127, 187)',

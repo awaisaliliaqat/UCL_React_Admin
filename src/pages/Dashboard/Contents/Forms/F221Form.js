@@ -234,6 +234,7 @@ class F221Form extends Component {
             let res = array.find( (obj) => obj.isActive === 1 );
             if(res){
               this.setState({academicSessionId:res.ID});
+              console.log(this.state.academicSessionId)
               this.loadProgrammeGroups(res.ID);
             }
             this.setState({ academicSessionMenuItems: array });
@@ -282,6 +283,9 @@ class F221Form extends Component {
             let array = json.DATA || [];
             let arrayLength = array.length;
             let res = array.find( (obj) => obj.isActive === 1 );
+            this.setState({newAcademicSessionId:array[0].ID});
+            this.loadNewProgrammeGroups(this.state.newAcademicSessionId);
+            
             if(res){
               this.setState({newAcademicSessionId:res.ID});
               this.loadNewProgrammeGroups(res.ID);
@@ -331,7 +335,6 @@ class F221Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({programmeGroupsMenuItems: json.DATA || []});
-           
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -373,9 +376,11 @@ class F221Form extends Component {
         return res.json(); 
       })
       .then(
-        (json) => {
+        (json) => { 
           if (json.CODE === 1) {
             this.setState({newProgrammeGroupsMenuItems: json.DATA || []});
+            this.setState({newProgrammeGroupId: this.state.programmeGroupId});
+            this.loadNewProgrammes(this.state.newProgrammeGroupId);
            
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
@@ -465,6 +470,7 @@ class F221Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({newProgrammeMenuItems: json.DATA || []});
+            this.setState({newProgrammeId: this.state.programmeId});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -874,6 +880,7 @@ class F221Form extends Component {
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("programmeId",  this.state.programmeId);
+    this.loadNewAcademicSessions(this.state.academicSessionId);
     // data.append("courseId", "82");
     // data.append("applicationStatusFilterId", "");
     // data.append("renewalStatusId", "");
@@ -898,7 +905,11 @@ class F221Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+<<<<<<< HEAD
             this.loadNewAcademicSessions(this.state.academicSessionId);
+=======
+           
+>>>>>>> 445c3868ea12f16463cd8ef32d29d1fb9c5fd842
             let data = json.DATA || [];
             let dataLength = data.length || 0;
 
@@ -987,6 +998,7 @@ class F221Form extends Component {
             programmeGroupsMenuItems: [],
           
           });
+          this.loadNewProgrammes(value);
           this.loadProgrammeGroups(value);
           this.loadNewAcademicSessions(value);
         break;
@@ -1022,8 +1034,7 @@ class F221Form extends Component {
         break;
         case "newProgrammeGroupId":
           this.setState({
-            newProgrammeGroupId: "",
-           
+            newProgrammeId: "",
           });
           // this.loadCourse(this.state.academicSessionId, value);
           // this.loadModules(this.state.academicSessionId, value);

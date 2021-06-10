@@ -9,9 +9,11 @@ import {
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import Grid from '@material-ui/core/Grid';
 import { Link } from 'react-router-dom';
 import TablePanel from '../../../../../../components/ControlledTable/RerenderTable/TablePanel';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import DeleteIcon from '@material-ui/icons/Delete';
 // import DeleteIcon from '@material-ui/icons/Delete';
 
 class DocumentRequestAction extends Component {
@@ -24,11 +26,13 @@ class DocumentRequestAction extends Component {
             documentList: [],
             applicationId: props.match.params.id,
             documentTypeId: 0,
+            documentTypeLabel: "",
             documentTypeIdError: "",
             remarks: "",
             remarksError: "",
             isLoginMenu: false,
             isReload: false,
+            ArrayError:""
 
         }
     }
@@ -109,6 +113,8 @@ class DocumentRequestAction extends Component {
                         this.setState({
                             documentData: json.DATA || []
                         })
+
+                        console.log(this.state.documentData);
                     }
                 },
                 error => {
@@ -143,13 +149,25 @@ class DocumentRequestAction extends Component {
         }
         this.setState({
             documentTypeIdError,
-            remarksError
+            remarksError,
+            ArrayError:""
         })
         return isValid;
     }
 
     onHandleChange = e => {
         const { name, value } = e.target;
+        const { documentList } = this.state;
+        console.log("e.target",e.target);
+        console.log(documentList);
+        for(let j=0;j<documentList.length;j++){
+             if(value==documentList[j].ID){
+                this.setState({
+                    documentTypeLabel:documentList[j].Label
+                })
+             }
+        }
+        console.log("name"+name);
         const errName = `${name}Error`;
         this.setState({
             [name]: value,
@@ -157,10 +175,35 @@ class DocumentRequestAction extends Component {
         })
     }
 
-    handleSubmitButtonClick = () => {
+
+    onAdd=()=>{
+       
         const isValid = this.isFormValid();
         if (isValid) {
+            let {documentData} =this.state;
+            documentData.push({
+                 id: "", applicationId: this.state.applicationId,documentTypeId:this.state.documentTypeId,documentTypeLabel:this.state.documentTypeLabel,remarks:this.state.remarks,isUploaded:0,uploadedOn:""
+            })
+             
+            this.setState({
+                documentData,
+                documentTypeId: "",
+                documentTypeIdError: "",
+                remarks: "",
+                remarksError: ""
+            })
+        }
+      
+    }
+
+    handleSubmitButtonClick = () => {
+       
+        if (this.state.documentData.length>0) {
             document.getElementById("submit-button").click();
+        }else{
+            this.setState({
+                ArrayError:"Please add Document Type and Remarks."
+            })
         }
         return;
     };
@@ -168,7 +211,16 @@ class DocumentRequestAction extends Component {
     handleSubmit = async (e) => {
 
         e.preventDefault();
-        const data = new FormData(e.target);
+        //const data = new FormData(e.target);
+         const data = new FormData();
+         data.append("applicationId", this.state.applicationId);
+        for(let i=0;i<this.state.documentData.length;i++){
+           
+            data.append("documentTypeId", this.state.documentData[i].documentTypeId);
+            data.append("remarks", this.state.documentData[i].remarks);
+        }
+        
+      
         this.setState({
             isLoading: true,
         });
@@ -216,39 +268,123 @@ class DocumentRequestAction extends Component {
         });
     };
 
-    deleteFile = (id) => {
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C01AdmissionsProspectApplicationDocumentsDelete?documentTypeId=${id}`;
+    deleteFile = (id,documentTypeId) => {
+        let {documentData}=this.state;
+      
+        if(id!=0){
+
+        
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C17AdmissionsProspectApplicationRaiseDocumentRequestDelete?documentTypeId=${id}`;
+            fetch(url, {
+                method: "POST",
+                headers: new Headers({
+                    Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+                }),
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        throw res;
+                    }
+                    return res.json();
+                })
+                .then(
+                    (result) => {
+                        console.log(result);
+                        if (result["CODE"] === 1) {
+                            this.loadData();
+
+                        } else {
+                            alert(result["SYSTEM_MESSAGE"]);
+                        }
+                    })
+                .catch((error) => {
+                    if (error.status === 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        alert('Operation Failed, Please try again later.');
+                        console.log(error);
+                    }
+                });
+        } else{
+          
+
+            const index = documentData.findIndex(item => item.documentTypeId === documentTypeId)
+          
+            if (index != -1) {
+               
+                documentData.splice(index,1);
+            } 
+            this.setState({
+                documentData
+            })
+        }   
+    };
+
+    DownloadFile = (fileName) => {
+        const data = new FormData();
+        data.append("fileName", fileName);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${
+            process.env.REACT_APP_SUB_API_NAME
+            }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
+
         fetch(url, {
-            method: "POST",
+            method: "GET",
             headers: new Headers({
-                Authorization: "Bearer " + localStorage.getItem("uclToken"),
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
             }),
         })
             .then((res) => {
-                if (!res.ok) {
-                    throw res;
-                }
-                return res.json();
-            })
-            .then(
-                (result) => {
-                    console.log(result);
-                    if (result["CODE"] === 1) {
-                        this.loadData();
-                    } else {
-                        alert(result["SYSTEM_MESSAGE"]);
-                    }
-                })
-            .catch((error) => {
-                if (error.status === 401) {
+                if (res.status === 200) {
+                    return res.blob();
+                } else if (res.status === 401) {
                     this.setState({
                         isLoginMenu: true,
                         isReload: false
                     })
+                    return {}
                 } else {
                     alert('Operation Failed, Please try again later.');
-                    console.log(error);
+                    return {}
                 }
+            })
+            .then((result) => {
+                var csvURL = window.URL.createObjectURL(result);
+                var tempLink = document.createElement("a");
+                tempLink.href = csvURL;
+                tempLink.setAttribute("download", fileName);
+                tempLink.click();
+                console.log(csvURL);
+                if (result.CODE === 1) {
+                    //Code
+                } else if (result.CODE === 2) {
+                    alert(
+                        "SQL Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.CODE === 3) {
+                    alert(
+                        "Other Error (" +
+                        result.CODE +
+                        "): " +
+                        result.USER_MESSAGE +
+                        "\n" +
+                        result.SYSTEM_MESSAGE
+                    );
+                } else if (result.error === 1) {
+                    alert(result.error_message);
+                } else if (result.success === 0 && result.redirect_url !== "") {
+                    window.location = result.redirect_url;
+                }
+            })
+            .catch((error) => {
+                console.log(error);
             });
     };
 
@@ -335,17 +471,22 @@ class DocumentRequestAction extends Component {
                 name: "Action", renderer: rowData => {
                     return (
                         <Fragment>
-                            <div style={{ display: 'flex', margin: '-10px' }}>
+                            <div style={{ display: 'flex', margin: '-10px',float:'left' }}>
                                 <IconButton disabled={rowData.isUploaded === 0} onClick={() =>
                                     this.DownloadFile(rowData.fileName)
                                 } aria-label="download">
                                     <CloudDownloadIcon />
                                 </IconButton>
-                                {/* <IconButton onClick={() => this.deleteFile(rowData.id)
-                                } aria-label="delete">
+                                <IconButton onClick={() => this.deleteFile(rowData.id,rowData.documentTypeId) } aria-label="delete">
                                     <DeleteIcon />
+                                </IconButton> 
+                                  {/* <IconButton  onClick={() =>
+                                    this.DownloadFile(rowData.fileName)
+                                } aria-label="delete">
+                                    <CloudDownloadIcon />
                                 </IconButton> */}
                             </div>
+                     
                         </Fragment>
                     )
                 }, sortable: false, customStyleHeader: { width: '10%' }
@@ -435,21 +576,48 @@ class DocumentRequestAction extends Component {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={() => this.handleSubmitButtonClick()}
+                                onClick={() => this.onAdd()}
                                 style={{
                                     height: 40,
                                     marginLeft: 20,
                                     marginRight: 20,
                                     textTransform: 'capitalize',
                                 }}
-                            > {this.state.isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Request"}</Button>
+                            > {this.state.isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Add"}</Button>
                         </div>
                     </form>
+                    { 
+                    <span style={{
+                        fontSize: 14,
+                        color: 'red',
+                        marginBottom:20
+                        
+                        }}>
+                           {this.state.ArrayError}
+                        </span>}
                     <div style={{ marginTop: 20 }}>
                         <TablePanel isShowIndexColumn data={this.state.documentData} isLoading={this.state.isLoading} sortingEnabled={false} columns={columns} />
                     </div>
+                    <div style={{
+                            marginTop: 30,
+                            display: 'flex',
+                            justifyContent: 'flex-end'
+                        }}>
+                        <Button disabled={this.state.isLoading} variant="contained"
+                                color="primary" onClick={this.handleSubmitButtonClick}  style={{
+                                    height: 40,
+                                    marginLeft: 20,
+                                    marginRight: 20,
+                                    textTransform: 'capitalize',
+                                }}>
+                            {this.state.isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Request"}
+                        </Button>
+                        
+                     </div>         
                 </div>
+              
             </Fragment>
+            
         );
     }
 }
