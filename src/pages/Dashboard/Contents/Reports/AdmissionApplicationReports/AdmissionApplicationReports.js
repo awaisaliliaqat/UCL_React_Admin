@@ -396,7 +396,7 @@ class AdmissionApplicationReports extends Component {
 
     }
 
-    DownloadFile = (fileName) => {
+    DownloadFile = (fileName) => { 
         const data = new FormData();
         data.append("fileName", fileName);
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;

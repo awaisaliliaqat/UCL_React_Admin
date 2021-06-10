@@ -83,6 +83,34 @@ const AssignAccountIdFiltter = props => {
                           </MenuItem>
                     </TextField>
                 </div>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Academic Session</span>
+                    <TextField
+                      id="academicSessionId"
+                      name="academicSessionId"
+                      variant="outlined"
+                      value={values.academicSessionId}
+                      InputProps={{ classes: { input: classes.resize } }}
+                      onChange={e => {
+                        onHandleChange(e);
+                    }}
+                    //   error={!!values.academicSessionIdError}
+                    //   helperText={values.academicSessionIdError}
+                      select
+                    >
+                      {values.academicSessionMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"academicSessionMenuItems"+dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    
+                </div>
 
                 {/* <div className={classes.item} style={{
                     width: '20%'

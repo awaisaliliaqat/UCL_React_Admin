@@ -22,13 +22,17 @@ class OfferLetter extends Component {
             applicationId: "",
             isLoginMenu: false,
             isReload: false,
-            isOpenOfferLetterMenu: false
+            isOpenOfferLetterMenu: false,
+            academicSessionMenuItems: [],
+            academicSessionId: 64,
+            academicSessionIdError: ""
 
         }
     }
 
     componentDidMount() {
         this.getData();
+        this.loadAcademicSessions();
 
     }
 
@@ -79,14 +83,59 @@ class OfferLetter extends Component {
 
 
     }
+    loadAcademicSessions = async () => {
+        this.setState({ isLoading: true });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C05CommonAcademicSessionsView`;
+        await fetch(url, {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+          }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+          })
+          .then(
+            (json) => {
+              if (json.CODE === 1) {
+                let array = json.DATA || [];
+                let arrayLength = array.length;
+                let res = array.find( (obj) => obj.isActive === 1 );
+                if(res){
+                  this.setState({academicSessionId:res.ID});
+                }
+                this.setState({ academicSessionMenuItems: array });
+                
+              } else {
+                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+              }
+            },
+            (error) => {
+              if (error.status == 401) {
+                this.setState({
+                  isLoginMenu: true,
+                  isReload: false,
+                });
+              } else {
+                console.log(error);
+                this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+              }
+            }
+          );
+        this.setState({ isLoading: false });
+      };
 
     getData = async () => {
         this.setState({
             isLoading: true
         })
         const applicationId = this.state.applicationId ? this.state.applicationId : 0;
+        const academicSessionId = this.state.academicSessionId ? this.state.academicSessionId : 0;
         const reload = applicationId === 0;
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C05AdmissionsProspectApplicationForOfferLetterView?applicationId=${applicationId}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C05AdmissionsProspectApplicationForOfferLetterView?applicationId=${applicationId}&academicSessionId=${academicSessionId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
