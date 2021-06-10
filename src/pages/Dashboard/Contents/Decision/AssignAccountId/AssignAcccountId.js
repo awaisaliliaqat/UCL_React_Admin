@@ -35,6 +35,13 @@ class OfferLetter extends Component {
         this.loadAcademicSessions();
 
     }
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+          isOpenSnackbar: true,
+          snackbarMessage: msg,
+          snackbarSeverity: severity,
+        });
+      };
 
     getDataById = async id => {
         this.setState({

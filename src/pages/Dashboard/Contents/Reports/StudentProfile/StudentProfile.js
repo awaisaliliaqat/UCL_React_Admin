@@ -16,26 +16,196 @@ class EditStudentInformation extends Component {
       isLoginMenu: false,
       isReload: false,
       eventDate: null,
-      totalStudents:[]
+      totalStudents:[],
+      academicSessionMenuItems: [],
+      academicSessionId: "",
+      academicSessionIdError: "",
+      programmeGroupsMenuItems:[],
+      programmeGroupId:"",
+      programmeGroupIdError: "",
+      programmeIdMenuItems: [],
+      programmeId: "",
+      programmeIdError: "",
     };
   }
 
   componentDidMount() {
     //this.getData();
+    this.loadAcademicSessions();
+    this.getProgrammeGroups();
+    this.loadProgrammes(0);
   }
 
   onClearFilters = () => {
     this.setState({
       studentId: "",
+      programmeId: "",
+      programmeGroupId:"",
+      academicSessionId: ""
     });
+  };
+  handleOpenSnackbar = (msg, severity) => {
+    this.setState({
+        isOpenSnackbar: true,
+        snackbarMessage: msg,
+        snackbarSeverity: severity
+    });
+};
+onHandleChangeAS = e => {
+  const { name, value } = e.target;
+  this.setState({
+      [name]: value
+    })
+    console.log(">>>>>",value)
+  this.state.academicSessionId=value;
+  this.state.programmeGroupId= "";
+  this.state.programmeId= "";
+}
+onHandleChangePG = e => {
+  const { name, value } = e.target;
+  this.setState({
+      [name]: value
+  })
+  this.state.programmeGroupId = value;
+  this.state.programmeId= "";
+  this.loadProgrammes(this.state.programmeGroupId)
+}
+onHandleChangeProgramme = e => {
+  const { name, value } = e.target;
+  this.setState({
+      [name]: value,
+  })
+  this.state.programmeId = value;
+
+}
+
+  loadAcademicSessions = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonAcademicSessionsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let array = json.DATA || [];
+            let arrayLength = array.length;
+            let res = array.find( (obj) => obj.isActive === 1 );
+            if(res){
+              this.setState({academicSessionId:res.ID});
+            }
+            this.setState({ academicSessionMenuItems: array });
+            
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  getProgrammeGroups = async () => {
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonProgrammeGroupsView?academicSessionId=${this.state.academicSessionId||0}`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({programmeGroupsMenuItems: json.DATA || []});
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getProgrammeGroups",json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+            console.log(error);
+          }
+        }
+      );
+  };
+
+  loadProgrammes = async (programGroup) => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonProgrammesView?programmeGroupId=${this.state.programmeGroupId|| 0 ||programGroup}`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ programmeIdMenuItems: json.DATA });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadProgrammes", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
   };
 
   getData = async () => {
     this.setState({
       isLoading: true,
     });
-    const reload = this.state.studentId === "";
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonStudentsView?studentId=${this.state.studentId}`;
+    // const reload = this.state.studentId === "";
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonStudentsView?studentId=${this.state.studentId||0}&programmeGroupId=${this.state.programmeGroupId||0}&academicSessionId=${this.state.academicSessionId||0}&programmeId=${this.state.programmeId||0}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -63,7 +233,7 @@ class EditStudentInformation extends Component {
           if (error.status === 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: reload,
+              // isReload: reload,
             });
           } else {
             alert("Failed to fetch, Please try again later.");
@@ -158,7 +328,7 @@ class EditStudentInformation extends Component {
     return (
       <Fragment>
         <LoginMenu
-          reload={this.state.isReload}
+          // reload={this.state.isReload}
           open={this.state.isLoginMenu}
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
@@ -211,6 +381,9 @@ class EditStudentInformation extends Component {
             values={this.state}
             getDataByStatus={() => this.getData()}
             onHandleChange={(e) => this.onHandleChange(e)}
+            onHandleChangeAS={(e) => this.onHandleChangeAS(e)}
+            onHandleChangePG={(e) => this.onHandleChangePG(e)}
+            onHandleChangeProgramme={(e) => this.onHandleChangeProgramme(e)}
           />
           <div
             style={{

@@ -297,6 +297,13 @@ class RegistrationFeeApprovel extends Component {
             })
         }
     }
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+          isOpenSnackbar: true,
+          snackbarMessage: msg,
+          snackbarSeverity: severity,
+        });
+      };
 
     getData = async () => {
         this.setState({
