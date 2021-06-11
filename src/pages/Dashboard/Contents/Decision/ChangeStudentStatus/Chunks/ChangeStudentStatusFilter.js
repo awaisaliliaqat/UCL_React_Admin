@@ -157,7 +157,7 @@ const ChangeStudentStatusFilter = (props) => {
         className={classes.item}
         style={{
           width: "20%",
-          float: "right",
+          float: "left",
           marginTop: 10,
           marginBottom: 10,
         }}
@@ -183,6 +183,72 @@ const ChangeStudentStatusFilter = (props) => {
           })}
         </TextField>
       </div>
+      <div
+        className={classes.item}
+        style={{
+          width: "20%",
+          float: "left",
+          marginTop: 10,
+          marginBottom: 10,
+        }}
+      >
+        <span className={classes.label}>Reasons *</span>
+        <TextField
+          placeholder="Reasons"
+          variant="outlined"
+          InputProps={{ classes: { input: classes.resize } }}
+          value={values.reasonId}
+          name="reasonId"
+          disabled={!values.sessionId}
+          onChange={(e) => {
+            onHandleChange(e);
+          }}
+          select
+        >
+          {values.reasonData.map((item) => {
+            return (
+              <MenuItem key={item.id} value={item.id}>
+                {item.label}
+              </MenuItem>
+            );
+          })}
+        </TextField>
+      </div>{
+        values.reasonId==7?
+        <div
+        className={classes.item}
+        style={{
+          width: "20%",
+          float: "left",
+          marginTop: 10,
+          marginBottom: 10,
+        }}>
+        <span className={classes.label}>Other Reasons *</span>
+        <TextField
+          placeholder="otherReasonId"
+          variant="outlined"
+          InputProps={{ classes: { input: classes.resize } }}
+          value={values.otherReasonId}
+          name="otherReasonId"
+          onChange={(e) => {
+            onHandleChange(e);
+          }}
+          select
+        >
+          {values.otherReasonData.map((item) => {
+            return (
+              <MenuItem key={item.id} value={item.id}>
+                {item.label}
+              </MenuItem>
+            );
+          })}
+        </TextField>
+      </div>:
+      ""
+
+
+      }
+      
       <Divider
         style={{
           backgroundColor: "rgb(58, 127, 187)",

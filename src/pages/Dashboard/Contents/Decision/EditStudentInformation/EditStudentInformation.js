@@ -75,6 +75,7 @@ class EditStudentInformation extends Component {
 				studentId: "",
 				studentName: "",
 				studentStatus: 1,
+        pictureStatus: 0,
 				applicationId: "",
 				isLoginMenu: false,
 				isReload: false,
@@ -91,7 +92,8 @@ class EditStudentInformation extends Component {
             applicationId: "",
             studentName:"",
             programmeGroupId:"",
-            studentStatus:1
+            studentStatus: 1,
+            pictureStatus: 0,
         })
     }
 
@@ -135,7 +137,7 @@ class EditStudentInformation extends Component {
     getData = async () => {
         this.setState({isLoading: true});
         const reload = this.state.studentId === "" && this.state.applicationId === "";
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonStudentsView?applicationId=${this.state.applicationId}&studentId=${this.state.studentId}&studentName=${this.state.studentName}&programmeGroupId=${this.state.programmeGroupId}&isActive=${this.state.studentStatus}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonStudentsView?applicationId=${this.state.applicationId}&studentId=${this.state.studentId}&studentName=${this.state.studentName}&programmeGroupId=${this.state.programmeGroupId}&isActive=${this.state.studentStatus}&isPicture=${this.state.pictureStatus}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -152,7 +154,7 @@ class EditStudentInformation extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.setState({
-                            admissionData: json.DATA || []
+                            admissionData: json.DATA || [],
                         })
                         let totalStudents = this.state.admissionData.length;
                         this.setState({totalStudents: totalStudents});

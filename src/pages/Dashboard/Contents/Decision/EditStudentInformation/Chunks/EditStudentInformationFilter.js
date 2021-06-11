@@ -138,6 +138,25 @@ const AddmissionDecisionFilter = props => {
                     </MenuItem>
                   </TextField>
                 </div>
+
+                <div className={classes.item} style={{ width: "20%" }}>
+                  <span className={classes.label}>Picture Status</span>
+                  <TextField
+                    placeholder="Picture Status"
+                    variant="outlined"
+                    InputProps={{ classes: { input: classes.resize } }}
+                    value={values.pictureStatus}
+                    name="pictureStatus"
+                    onChange={(e) => {
+                      onHandleChange(e);
+                    }}
+                    select
+                  >
+                    <MenuItem value={1}>With</MenuItem>
+                    <MenuItem value={2}>Without</MenuItem>
+                  </TextField>
+                </div>
+
                 <div className={classes.actions}>
                     <Button
                         variant="contained"
