@@ -123,11 +123,11 @@ class ChangeStudentStatus extends Component {
         (json) => {
           if (json.CODE === 1) {
             let studentData = json.DATA || [];
-            // for(let i=0; i<studentData.length; i++) {
-            //   let fName = studentData[i].firstName;
-            //   let lName = studentData[i].lastName;
-            //   studentData[i].firstName = fName+" "+lName;
-            // }
+            for(let i=0; i<studentData.length; i++) {
+              let fName = studentData[i].firstName;
+              let lName = studentData[i].lastName;
+              studentData[i].firstName = fName+" "+lName;
+            }
             this.setState({studentData: json.DATA || []});
             let totalStudents = this.state.studentData.length;
             this.setState({totalStudents: totalStudents});
