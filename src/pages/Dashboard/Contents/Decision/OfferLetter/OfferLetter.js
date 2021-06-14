@@ -24,7 +24,7 @@ class OfferLetter extends Component {
             isReload: false,
             isOpenOfferLetterMenu: false,
             academicSessionMenuItems: [],
-            academicSessionId: 64,
+            academicSessionId: 0,
             academicSessionIdError: ""
 
         }
@@ -109,7 +109,7 @@ class OfferLetter extends Component {
             (json) => {
               if (json.CODE === 1) {
                 let array = json.DATA || [];
-                let arrayLength = array.length;
+                // let arrayLength = array.length;
                 let res = array.find( (obj) => obj.isActive === 1 );
                 if(res){
                   this.setState({academicSessionId:res.ID});
