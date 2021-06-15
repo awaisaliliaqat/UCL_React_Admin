@@ -766,36 +766,34 @@ class F212FormPopupComponent extends Component {
                 spacing={2}
                 style={{borderBottom: "1px solid rgb(58, 127, 187, 0.3)"}}
                 >
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                   <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18
-              }}
-            >
-              {"Student ID: "+data.studentNucleusId}
-            </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Student Name: "+data.studentName}
-            </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
-            </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                    style={{
+                      color: "#1d5f98",
+                      fontWeight: 600,
+                      fontSize: 18
+                    }}
+                  >
+                    {"Student ID: "+data.studentNucleusId}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "#1d5f98",
+                      fontWeight: 600,
+                      fontSize: 18
+                    }}
+                  >
+                    {"UOL No: "+this.state.studentInfo.uolNo}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "#1d5f98",
+                      fontWeight: 600,
+                      fontSize: 18,
+                    }}
+                  >
+                    {"Student Name: "+data.studentName}
+                  </Typography>
                   <Typography
               style={{
                 color: "#1d5f98",
@@ -805,6 +803,27 @@ class F212FormPopupComponent extends Component {
             >
               {"Gender: "+ this.state.studentInfo.gender}
             </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Programme: "+ this.state.studentInfo.degree}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
+            </Typography>
+                  
             <Typography
               style={{
                 color: "#1d5f98",
@@ -823,17 +842,6 @@ class F212FormPopupComponent extends Component {
             >
               {"Mobile Number: "+ this.state.studentInfo.mobileNo}
             </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                  <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Email: "+this.state.studentInfo.email}
-            </Typography>
             <Typography
               style={{
                 color: "#1d5f98",
@@ -841,19 +849,10 @@ class F212FormPopupComponent extends Component {
                 fontSize: 18,
               }}
             >
-              {"Blood Group: "+ this.state.studentInfo.bloodGroup}
-            </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Degree: "+ this.state.studentInfo.degree}
+              {"Email: "+ this.state.studentInfo.email}
             </Typography>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     {this.state.studentInfo.imageName==null?
                     <img src={ProfilePlaceholder} 
                     style={{
@@ -878,16 +877,6 @@ class F212FormPopupComponent extends Component {
                   />
                 }
                   </Grid>
-                  
-            {/* <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              No. of Subjects Studied at UCL
-            </Typography> */}
             </Grid>
           </DialogTitle>
           <DialogContent >
