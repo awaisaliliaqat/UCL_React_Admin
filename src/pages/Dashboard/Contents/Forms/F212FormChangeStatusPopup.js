@@ -105,7 +105,7 @@ class F212FormChangeStatusPopup extends Component {
               "error"
             );
           }
-          console.log("getStudentDetail", json);
+          
         },
         (error) => {
           if (error.status == 401) {
@@ -122,6 +122,8 @@ class F212FormChangeStatusPopup extends Component {
     this.setState({ isLoading: false });
   };
   loadProgrammeCoursesSelction = async (slectedAcademicSessionId=0, programmeGroupId=0, studentId=0) => {
+   
+   
     let data = new FormData();
     data.append("academicsSessionId", slectedAcademicSessionId);
     data.append("programmeGroupId", programmeGroupId);
@@ -145,6 +147,7 @@ class F212FormChangeStatusPopup extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
+            this.setState({ courseCreditId:  []});
             this.setState({ courseMenuItems: json.DATA || []});
              }else {
             this.handleOpenSnackbar(
@@ -235,7 +238,7 @@ class F212FormChangeStatusPopup extends Component {
       applicationStatusMenuItems=[], 
       renewalStatusMenuItems=[],
       courseCompletionStatusMenuItems=[],
-      endYearAchievementMenuItems=[], 
+      // endYearAchievementMenuItems=[], 
       examEntryStatusMenuItems=[],
       pathwayMenuItems=[],
       isLoading,
@@ -504,7 +507,7 @@ class F212FormChangeStatusPopup extends Component {
                   </TextField>
                   
                 </Grid>
-                <Grid item xs={6} md={6}>
+                {/* <Grid item xs={6} md={6}>
                     
                   <TextField
                     name="endYearAchievementId"
@@ -528,7 +531,7 @@ class F212FormChangeStatusPopup extends Component {
                     ))}
                   </TextField>
                   
-                </Grid>
+                </Grid> */}
                 {/* End */}
                     <Grid item xs={6} md={3}>
                     
