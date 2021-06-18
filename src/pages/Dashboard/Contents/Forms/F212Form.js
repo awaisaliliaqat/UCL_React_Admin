@@ -1007,7 +1007,7 @@ class F212Form extends Component {
     let renewalStatusId = document.getElementById("renewalStatusId").value;
     let examEntryStatusId = document.getElementById("examEntryStatusId").value;
     let courseCompletionStatusId = document.getElementById("courseCompletionStatusId").value;
-    let endYearAchievementId = document.getElementById("endYearAchievementId").value;
+    // let endYearAchievementId = document.getElementById("endYearAchievementId").value;
     let pathwayId = document.getElementById("pathwayId").value;
     let UOLNo = document.getElementById("UOLNo").value;
     let candidateNoEle = document.getElementById("candidateNo");
@@ -1039,11 +1039,11 @@ class F212Form extends Component {
     if(ccsObj){
       courseCompletionStatusLabel = ccsObj.label;
     }
-    let  endYearAchievementLabel = ""; 
-    let eyaObj = this.state. endYearAchievementMenuItems.find( (obj) => obj.id ==  endYearAchievementId);
-    if(eyaObj){
-      endYearAchievementLabel = eyaObj.label;
-    }
+    // let  endYearAchievementLabel = ""; 
+    // let eyaObj = this.state. endYearAchievementMenuItems.find( (obj) => obj.id ==  endYearAchievementId);
+    // if(eyaObj){
+    //   endYearAchievementLabel = eyaObj.label;
+    // }
     
     let pathwayLabel = ""; 
     let pwObj = this.state.pathwayMenuItems.find( (obj) => obj.id == pathwayId);
@@ -1058,7 +1058,7 @@ class F212Form extends Component {
     data.append("renewalStatusId", renewalStatusId);
     data.append("examEntryStatusId", examEntryStatusId);
     data.append("courseCompletionStatusId", courseCompletionStatusId);
-    data.append("endYearAchievementId", endYearAchievementId);
+    // data.append("endYearAchievementId", endYearAchievementId);
     data.append("pathwayId", pathwayId);
     data.append("uolNumber", UOLNo);
     data.append("candidateNo", candidateNo);
@@ -1080,8 +1080,8 @@ class F212Form extends Component {
         row10.examEntryStatusLabel = examEntryStatusLabel;
         row10.courseCompletionStatusId = courseCompletionStatusId;
         row10.courseCompletionStatusLabel = courseCompletionStatusLabel;
-        row10.endYearAchievementId = endYearAchievementId;
-        row10.endYearAchievementLabel = endYearAchievementLabel;
+        // row10.endYearAchievementId = endYearAchievementId;
+        // row10.endYearAchievementLabel = endYearAchievementLabel;
         row10.pathwayId = pathwayId;
         row10.pathwayLabel = pathwayLabel;
         row10.uolNumber = UOLNo;
@@ -1095,7 +1095,7 @@ class F212Form extends Component {
           renewalStatusId: renewalStatusId,
           examEntryStatusId: examEntryStatusId,
           courseCompletionStatusId:  courseCompletionStatusId,
-          endYearAchievementId:  endYearAchievementId,
+          // endYearAchievementId:  endYearAchievementId,
           pathwayId: pathwayId,
           uolNumber: UOLNo,
           candidateNo: candidateNo,
