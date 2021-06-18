@@ -596,6 +596,7 @@ class F212FormPopupComponent extends Component {
   };
 
   handeAddCourseRow = () => {
+   
     if (
       !this.isPreModuleValid() ||
       !this.isPreCoursesValid() ||
@@ -633,6 +634,7 @@ class F212FormPopupComponent extends Component {
       preCourses: {},
       preMarks: "",
       preResetMarks: 0,
+      
     });
 
     let preSelectedCourseIMenutems = [...this.state.preSelectedCourseIMenutemsDefault] || [];
@@ -694,6 +696,35 @@ class F212FormPopupComponent extends Component {
       break;
       default:
     }
+    this.setState({
+      [name]: value,
+      [errName]: "",
+    });
+  };
+
+
+  onHandleChange = (e) => {
+    const { name, value } = e.target;
+  
+    const errName = `${name}Error`;
+    switch (name) {
+      case "academicSessionId":
+        this.setState({
+          courseId: "",
+          tableData:[]
+        });
+        this.loadData(value, this.props.data.studentId);
+      break;
+      case "endYearAchievementId":
+        this.setState({
+          endYearAchievementId:value
+        });
+        
+      break;
+      default:
+    }
+
+
     this.setState({
       [name]: value,
       [errName]: "",
@@ -928,6 +959,37 @@ class F212FormPopupComponent extends Component {
                   name="studentId"
                   value={data.studentId}
                 />
+
+               <Grid container>
+                  <Grid item xs={12} md={2} >
+                    <TextField
+                      name="endYearAchievementId"
+                      variant="outlined"
+                      label="Year End Achievement"
+                      onChange={this.onHandleChange}
+                      error={!!this.state.endYearAchievementError}
+                      helperText={this.state.endYearAchievementError ? this.state.endYearAchievementError : " "}
+                      required
+                      fullWidth
+                      select
+                      inputProps={{
+                        id:"endYearAchievementId",
+                        name:"endYearAchievementId"
+                      }}
+                    >
+                    {this.state.endYearAchievementMenuItems.map((dt, i) => (
+                    
+                      <MenuItem
+                        key={"endYearAchievementMenuItems"+dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))}
+                    </TextField>
+                  </Grid>
+                  
+                </Grid>
                 <Grid item xs={12} md={2}>
                   <TextField
                     id="academicSessionId"
@@ -1063,48 +1125,26 @@ class F212FormPopupComponent extends Component {
                     helperText={this.state.preResetMarksError ? this.state.preResetMarksError : " "}
                   />
                 </Grid>
-                <Grid container>
-                  <Grid item xs={12} md={2} style={{paddingLeft:31}}>
-                    <TextField
-                      name="endYearAchievementId"
-                      variant="outlined"
-                      label="Year End Achievement"
-                      error={!!this.state.endYearAchievementError}
-                      helperText={this.state.endYearAchievementError ? this.state.endYearAchievementError : " "}
-                      required
-                      fullWidth
-                      select
-                      inputProps={{
-                        id:"endYearAchievementId"
-                      }}
-                    >
-                    {this.state.endYearAchievementMenuItems.map((dt, i) => (
-                    
-                      <MenuItem
-                        key={"endYearAchievementMenuItems"+dt.id}
-                        value={dt.id}
-                      >
-                        {dt.label}
-                      </MenuItem>
-                    ))}
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={1} style={{ textAlign: "center", paddingTop:15 }}>
-                    <IconButton
-                      color="primary"
-                      aria-label="Add"
-                      component="span"
-                      onClick={this.handeAddCourseRow}
-                      style={{ marginTop: "-1em" }}
-                    >
-                      <Tooltip title="Add New">
-                        <Fab color="primary" aria-label="add" size="small">
-                          <AddIcon />
-                        </Fab>
-                      </Tooltip>
-                    </IconButton>
-                  </Grid>
-                </Grid>
+               
+                <Grid item xs={1} style={{ textAlign: "center", paddingTop:15 }}>
+                <IconButton
+                  color="primary"
+                  aria-label="Add"
+                  component="span"
+                
+                  onClick={this.handeAddCourseRow}
+                  style={{ marginTop: "-1em" }}
+                >
+                  <Tooltip title="Add New">
+                    <Fab color="primary" aria-label="add" size="small" >
+                      <AddIcon />
+                    </Fab>
+                  </Tooltip>
+                </IconButton>
+              </Grid>
+               
+                
+               
                 <Grid item xs={12}>
                   {this.state.preSelectedCourseIMenutems.length>0 && <Typography color="primary" component="span">Pre Selected Courses <small>(click on for selection)</small>: &nbsp;</Typography>}
                   {this.state.preSelectedCourseIMenutems.map((d, i)=>
