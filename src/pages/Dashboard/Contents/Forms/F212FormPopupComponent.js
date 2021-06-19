@@ -1131,12 +1131,12 @@ class F212FormPopupComponent extends Component {
                   color="primary"
                   aria-label="Add"
                   component="span"
-                
+                disabled={!this.state.endYearAchievementId}
                   onClick={this.handeAddCourseRow}
                   style={{ marginTop: "-1em" }}
                 >
-                  <Tooltip title="Add New">
-                    <Fab color="primary" aria-label="add" size="small" >
+                  <Tooltip title="Add New" disabled={!this.state.endYearAchievementId}>
+                    <Fab color="primary" aria-label="add" size="small" disabled={!this.state.endYearAchievementId}>
                       <AddIcon />
                     </Fab>
                   </Tooltip>
