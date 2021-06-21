@@ -61,6 +61,7 @@ class F212Form extends Component {
       academicSessionMenuItems: [],
       academicSessionId: "",
       academicSessionIdError: "",
+      mainPagestudentNucleusId:"",
       programmeGroupId: "",
       programmeGroupIdError: "",
       programmeGroupsMenuItems: [],
@@ -703,6 +704,15 @@ class F212Form extends Component {
     data.append("courseCompletionStatusId", this.state.courseCompletionStatus);
     data.append("endYearAchievementId", this.state.endYearAchievement);
     data.append("pathwayId", this.state.pathway);
+    let studentId=0;
+   
+    if(document.getElementById("StudentID").value!=""){
+      data.append("studentId", parseInt(document.getElementById("StudentID").value));
+    }else{
+      data.append("studentId",0);
+    }
+    
+    
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonStudentsView`;
     await fetch(url, {
       method: "POST",
@@ -815,6 +825,8 @@ class F212Form extends Component {
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
+    console.log(name,value)
+    console.log(this.state.mainPagestudentNucleusId);
     const errName = `${name}Error`;
     switch (name) {
         case "academicSessionId":
@@ -846,10 +858,12 @@ class F212Form extends Component {
           });
           this.loadModules(this.state.academicSessionId, value);
           this.loadProgrammeCourses(this.state.academicSessionId, value);
-          // this.loadProgrammeCoursesSelction(this.state.academicSessionId, value);
-
-
-          
+        break;
+        case "mainPagestudentNucleusId":
+          this.setState({
+            [name]: value,
+         
+          });
         break;
         case "courseId":
           this.setState({
@@ -1448,6 +1462,18 @@ class F212Form extends Component {
                       ))}
                     </TextField>
                   </Grid>
+                  <Grid item xs={12}  md={3}>
+                   <TextField
+                    id="mainPagestudentNucleusId"
+                    name="mainPagestudentNucleusId"
+                    variant="outlined"
+                    label="Student ID"
+                    value={this.state.mainPagestudentNucleusId}
+                    onChange={this.onHandleChange}
+                    defaultValue={""}
+                    fullWidth
+                   />
+                  </Grid>
                   <Grid item xs={12} md={4}>
                     <TextField
                       id="programmeGroupId"
@@ -1528,7 +1554,10 @@ class F212Form extends Component {
                       }
                     </TextField> 
                     */}
+
+                  
                   </Grid>
+                  
                   <Grid item xs={12} md={3}>
                     <TextField
                       id="applicationStatusFilterId"
@@ -1707,7 +1736,7 @@ class F212Form extends Component {
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={this.state.isLoading || (!this.state.programmeId && this.state.academicSessionId<20)}
+                      disabled={this.state.isLoading || (!this.state.programmeId && this.state.academicSessionId<20) }
                       onClick={() => this.handleGetData()}
                       style={{width:"100%", height:54, marginBottom:24}}
                     > 
