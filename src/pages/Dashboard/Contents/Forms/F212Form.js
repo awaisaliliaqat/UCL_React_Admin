@@ -704,13 +704,14 @@ class F212Form extends Component {
     data.append("courseCompletionStatusId", this.state.courseCompletionStatus);
     data.append("endYearAchievementId", this.state.endYearAchievement);
     data.append("pathwayId", this.state.pathway);
-    let studentId=0;
+    data.append("studentId", this.state.studentId || 0);
+    // let studentId=0;
    
-    if(document.getElementById("StudentID").value!=""){
-      data.append("studentId", parseInt(document.getElementById("StudentID").value));
-    }else{
-      data.append("studentId",0);
-    }
+    // if(document.getElementById("StudentID").value!=""){
+    //   data.append("studentId", parseInt(document.getElementById("StudentID").value));
+    // }else{
+    //   data.append("studentId",0);
+    // }
     
     
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonStudentsView`;
