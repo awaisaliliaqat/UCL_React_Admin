@@ -54,7 +54,7 @@ class StudentReports extends Component {
                 isLoading: true
 
             })
-            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C37CommonStudentsExcelDownload?programmeId=${this.state.programmeId}`;
+            const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C37CommonStudentsExcelDownload?academicsSessionId=${this.state.academicSessionId}&programmeId=${this.state.programmeId}`;
             await fetch(url, {
                 method: "GET",
                 headers: new Headers({
