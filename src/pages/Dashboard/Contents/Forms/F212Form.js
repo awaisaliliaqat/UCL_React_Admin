@@ -825,8 +825,6 @@ class F212Form extends Component {
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name,value)
-    console.log(this.state.mainPagestudentNucleusId);
     const errName = `${name}Error`;
     switch (name) {
         case "academicSessionId":
@@ -862,7 +860,6 @@ class F212Form extends Component {
         case "mainPagestudentNucleusId":
           this.setState({
             [name]: value,
-         
           });
         break;
         case "courseId":
@@ -1736,7 +1733,7 @@ class F212Form extends Component {
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={this.state.isLoading || (!this.state.programmeId && this.state.academicSessionId<20) }
+                      disabled={ this.state.isLoading || (!this.state.programmeId && this.state.academicSessionId<20 && !this.state.mainPagestudentNucleusId) }
                       onClick={() => this.handleGetData()}
                       style={{width:"100%", height:54, marginBottom:24}}
                     > 
