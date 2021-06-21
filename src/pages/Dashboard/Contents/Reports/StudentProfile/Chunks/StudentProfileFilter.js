@@ -163,8 +163,8 @@ const AddmissionDecisionFilter = props => {
                         variant="contained"
                         color="primary"
                         className={classes.button}
-                        disabled={isLoading}
-                        disabled={!values.programmeId}
+                        // disabled={isLoading}
+                        disabled={values.isLoading || (!values.programmeId && !values.studentId )}
                         onClick={() => getDataByStatus()}
                     > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
                     <Button
