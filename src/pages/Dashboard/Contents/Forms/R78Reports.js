@@ -46,6 +46,9 @@ class R78Reports extends Component {
       academicSessionMenuItems: [],
       academicSessionId: "",
       academicSessionIdError: "",
+      pathwayMenuItems: [],
+      pathwayId: "",
+      pathwayIdError: "",
     };
   }
 
@@ -144,6 +147,49 @@ class R78Reports extends Component {
       );
     this.setState({isLoading: false});
   };
+
+  loadPathway = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonUolEnrollmentPathwayView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({pathwayMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadPathway", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+
   loadAcademicSessions = async () => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonAcademicSessionsView`;
@@ -240,6 +286,7 @@ class R78Reports extends Component {
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("courseId", this.state.courseId);
+    data.append("pathwayId", this.state.pathwayId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonStudentsView`;
     await fetch(url, {
       method: "POST",
@@ -358,6 +405,9 @@ class R78Reports extends Component {
         case "courseId":
           this.setState({tableData: []});
         break;
+        case "pathwayId":
+          this.setState({[name]: value});
+        break;
     default:
         break;
     }
@@ -425,6 +475,7 @@ class R78Reports extends Component {
     this.props.setDrawerOpen(false);
     this.getSchools();
     this.loadAcademicSessions();
+    this.loadPathway();
   }
 
   render() {
@@ -566,7 +617,7 @@ class R78Reports extends Component {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={2}>
               <TextField
                 id="schoolId"
                 name="schoolId"
@@ -598,7 +649,7 @@ class R78Reports extends Component {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={2}>
               <TextField
                 id="programmeGroupId"
                 name="programmeGroupId"
@@ -648,6 +699,39 @@ class R78Reports extends Component {
                   this.state.coursesMenuItems.map((dt, i) => (
                     <MenuItem
                       key={"coursesMenuItems"+dt.id}
+                      value={dt.id}
+                    >
+                      {dt.label}
+                    </MenuItem>
+                  ))
+                :
+                  <Grid 
+                    container 
+                    justify="center">
+                      <CircularProgress />
+                    </Grid>
+                }
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <TextField
+                id="pathwayId"
+                name="pathwayId"
+                variant="outlined"
+                label="Pathway"
+                onChange={this.onHandleChange}
+                value={this.state.pathwayId}
+                disabled={!this.state.schoolId}
+                error={!!this.state.pathwayIdError}
+                helperText={this.state.pathwayIdError ? this.state.pathwayIdError : " "}
+                required
+                fullWidth
+                select
+              >
+                {this.state.pathwayMenuItems && !this.state.isLoading ? 
+                  this.state.pathwayMenuItems.map((dt, i) => (
+                    <MenuItem
+                      key={"pathwayMenuItems"+dt.id}
                       value={dt.id}
                     >
                       {dt.label}
