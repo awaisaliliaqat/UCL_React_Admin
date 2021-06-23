@@ -5,7 +5,7 @@ import ExcelIcon from "../../../../assets/Images/excel.png";
 import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
-import R66ReportsTableComponent from "./R66ReportsTableComponent";
+import R78ReportsTableComponent from "./R78ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import SearchIcon from "mdi-material-ui/FileSearchOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
@@ -13,7 +13,7 @@ import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/Custom
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 
-class R66Reports extends Component {
+class R78Reports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -67,7 +67,7 @@ class R66Reports extends Component {
 
   getSchools = async () => {
     this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonSchoolsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonSchoolsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({Authorization:"Bearer "+localStorage.getItem("uclAdminToken")}),
@@ -108,7 +108,7 @@ class R66Reports extends Component {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("schoolId", schoolId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeGroupsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonProgrammeGroupsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -147,9 +147,52 @@ class R66Reports extends Component {
       );
     this.setState({isLoading: false});
   };
+
+  loadPathway = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonUolEnrollmentPathwayView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({pathwayMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadPathway", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
+
   loadAcademicSessions = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -196,7 +239,7 @@ class R66Reports extends Component {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("programmeGroupId", programmeGroupId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeCoursesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonProgrammeCoursesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -236,47 +279,6 @@ class R66Reports extends Component {
     this.setState({isLoading: false});
   };
 
-  loadPathway = async () => {
-    this.setState({isLoading: true});
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonUolEnrollmentPathwayView`;
-    await fetch(url, {
-      method: "POST",
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({pathwayMenuItems: json.DATA || []});
-          } else {
-            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-          }
-          console.log("loadPathway", json);
-        },
-        (error) => {
-          if (error.status === 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
-            console.log(error);
-          }
-        }
-      );
-    this.setState({isLoading: false});
-  };
-
   getData = async () => {
     this.setState({isLoading: true});
     let data = new FormData();
@@ -285,7 +287,7 @@ class R66Reports extends Component {
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("courseId", this.state.courseId);
     data.append("pathwayId", this.state.pathwayId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonStudentsView`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -334,7 +336,7 @@ class R66Reports extends Component {
     if( !this.isSchoolValid() ) {return;}
       if (this.state.isDownloadPdf === false) {
           this.setState({isDownloadPdf: true})
-          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsPdfDownload?schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${this.state.courseId}`;
+          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C78CommonStudentsPdfDownload?schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${this.state.courseId}`;
         //const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
           await fetch(url, {
               method: "GET",
@@ -405,7 +407,6 @@ class R66Reports extends Component {
         break;
         case "pathwayId":
           this.setState({[name]: value});
-          console.log("pathway", value);
         break;
     default:
         break;
@@ -484,6 +485,8 @@ class R66Reports extends Component {
       { name: "nucluesId", title: "NucleusID" },
       { name: "studentName", title: "Student\xa0Name" },
       { name: "pathway", title: "Pathway" },
+      { name: "deactivationDate", title: "Deactivation\xa0Date" },
+      { name: "reason", title: "Reason" },
       // { name: "schoolLabel", title: "School" },
       // { name: "programmeGroupLabel", title: "Program Group" },
       //{ name: "dateOfAdmission", title: "Date of Admission" },
@@ -523,7 +526,7 @@ class R66Reports extends Component {
                 </IconButton>
               </Tooltip> 
               */}
-              Students List
+              Deactive Students List
               <br/>
             </Typography>
             
@@ -721,6 +724,7 @@ class R66Reports extends Component {
                 disabled={!this.state.schoolId}
                 error={!!this.state.pathwayIdError}
                 helperText={this.state.pathwayIdError ? this.state.pathwayIdError : " "}
+                required
                 fullWidth
                 select
               >
@@ -811,7 +815,7 @@ class R66Reports extends Component {
           />
           
           {this.state.tableData && !this.state.isLoading ? (
-            <R66ReportsTableComponent
+            <R78ReportsTableComponent
               data={this.state.tableData}
               columns={columns}
               showFilter={this.state.showTableFilter}
@@ -838,4 +842,4 @@ class R66Reports extends Component {
     );
   }
 }
-export default R66Reports;
+export default R78Reports;
