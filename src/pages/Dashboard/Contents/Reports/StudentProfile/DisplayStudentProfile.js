@@ -254,6 +254,7 @@ class DisplayAdmissionApplications extends Component {
             tableData: [],
             uolAllAchived: [],
             achivementDetail: [],
+            isTrue: false
         }
     }
 
@@ -263,6 +264,11 @@ class DisplayAdmissionApplications extends Component {
         const { id = 0 } = this.props.match.params
         this.getAddmissionForm(id);
         this.studentAttendanceData(id);
+    }
+    handleChange=()=>{
+        this.setState({
+            isTrue: !this.state.isTrue,
+        });
     }
     studentAttendanceData = async (id) => {
         this.setState({ isLoading: true });
@@ -1258,6 +1264,28 @@ class DisplayAdmissionApplications extends Component {
                                     Submitted Assignments
                                 </span>
                             </div>
+                            <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
+
+                            <IconButton
+                            // className={clsx(classes.expand, {[classes.expandOpen]: this.state.isTrue,})}
+                            onClick={this.handleChange}
+                            // aria-expanded={this.state.isTrue}
+                            aria-label="show more"
+                            >
+                            <ExpandMoreIcon
+                            color="primary" style={{color:"rgb(47 87 165)"}}/>
+                        </IconButton>
+                        {data.sessionLabel}
+                        <Divider
+                            style={{
+                            backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+                            opacity: "0.3",
+                            marginLeft: 50,
+                            marginTop: -10
+                            }}
+                        />
+                            </Typography>
+                            <Collapse in={this.state.isTrue}>
                             <div style={{
                                 marginLeft: '3%',
                                 marginRight: '3%',
@@ -1292,9 +1320,10 @@ class DisplayAdmissionApplications extends Component {
                                 ""
                                 }
                             </div>
+                            </Collapse>
                         </Fragment>
 
-                        <Fragment>
+                        {/* <Fragment>
                             <div className={classes.valuesContainer}>
                                 <span 
                                     style={{
@@ -1338,7 +1367,7 @@ class DisplayAdmissionApplications extends Component {
                                 ""
                                 }
                             </div>
-                        </Fragment>
+                        </Fragment> */}
 
 
                         <Fragment>
@@ -1444,7 +1473,7 @@ class DisplayAdmissionApplications extends Component {
                                         fontSize: 'larger'
                                     }}
                                 >
-                                    UOL Marks
+                                    UOL Achievement
                                 </span>
                             </div>
                             <div 
