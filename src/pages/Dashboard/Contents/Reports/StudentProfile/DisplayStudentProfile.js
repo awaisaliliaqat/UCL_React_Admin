@@ -234,6 +234,78 @@ const StyledTableCell = withStyles((theme) => ({
       </Grid>
     );
   }
+
+//   function YearEndStatus(props){
+
+//     const { classes, data, isOpen } = props;
+  
+//     const [state, setState] = useState({"expanded": isOpen });
+    
+//     const handleExpandClick = () => {
+//       setState({expanded:!state.expanded});
+//     }
+  
+//     return (
+//       <Grid item xs={12} >
+//         <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
+//           <IconButton
+//             className={clsx(classes.expand, {[classes.expandOpen]: state.expanded,})}
+//             onClick={handleExpandClick}
+//             aria-expanded={state.expanded}
+//             aria-label="show more"
+//           >
+//             <ExpandMoreIcon color="primary" style={{color:"rgb(47 87 165)"}}/>
+//           </IconButton>
+//           {data.sessionLabel}
+//           <Divider
+//             style={{
+//               backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+//               opacity: "0.3",
+//               marginLeft: 50,
+//               marginTop: -10
+//             }}
+//           />
+//         </Typography>
+//         <Collapse in={state.expanded} timeout="auto" unmountOnExit>
+//           <div style={{paddingLeft:50}}>
+//             <TableContainer component={Paper}>
+//               <Table className={classes.table} size="small" aria-label="customized table">
+//                 <TableHead>
+//                   <TableRow>
+//                     <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Module</StyledTableCell>
+//                     <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Courses</StyledTableCell>
+//                     <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Original Marks</StyledTableCell>
+//                     <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Resit Marks</StyledTableCell>
+//                   </TableRow>
+//                 </TableHead>
+//                 <TableBody>
+//                     {data.endStatusArray.length > 0 ?
+//                       data.endStatusArray.map((dt, i) => (
+//                         <StyledTableRow key={"row"+data.sessionLabel+i}>
+//                           <StyledTableCell component="th" scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.moduleNumber}</StyledTableCell>
+//                           <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.coursesObject.Label}</StyledTableCell>
+//                           <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.marks}</StyledTableCell>
+//                           <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.resetMarks}</StyledTableCell>
+//                         </StyledTableRow>
+//                       ))
+//                     :
+//                     this.state.isLoading ?
+//                       <StyledTableRow>
+//                         <StyledTableCell component="th" scope="row" colSpan={4}><center><CircularProgress/></center></StyledTableCell>
+//                       </StyledTableRow>
+//                       :
+//                       <StyledTableRow>
+//                         <StyledTableCell component="th" scope="row" colSpan={4}><center><b>No Data</b></center></StyledTableCell>
+//                       </StyledTableRow>
+//                     }
+//                 </TableBody>
+//               </Table>
+//             </TableContainer>
+//           </div>
+//         </Collapse>
+//       </Grid>
+//     );
+//   }
 class DisplayAdmissionApplications extends Component {
     constructor(props) {
         super(props);
@@ -253,7 +325,9 @@ class DisplayAdmissionApplications extends Component {
             tableHeaderData: [],
             tableData: [],
             uolAllAchived: [],
+            yearEndStatus: [],
             achivementDetail: [],
+            isTrue: false
         }
     }
 
@@ -263,6 +337,11 @@ class DisplayAdmissionApplications extends Component {
         const { id = 0 } = this.props.match.params
         this.getAddmissionForm(id);
         this.studentAttendanceData(id);
+    }
+    handleChange=()=>{
+        this.setState({
+            isTrue: !this.state.isTrue,
+        });
     }
     studentAttendanceData = async (id) => {
         this.setState({ isLoading: true });
@@ -349,12 +428,11 @@ class DisplayAdmissionApplications extends Component {
 
                         let uolAllAchived = json.DATA[0].uolAllAchived || [];
                         this.setState({uolAllAchived: uolAllAchived});
-                        console.log("uolAllAchived");
-                        console.log(uolAllAchived);
 
 
-                        console.log("achivementDetail");
-                        console.log(this.state.uolAllAchived.achivementDetail);
+                        let yearEndStatus = json.DATA[0].yearEndStatus || [];
+                        this.setState({yearEndStatus: yearEndStatus});
+                        console.log("ye hai>>>>>",this.state.yearEndStatus);
 
 
 
@@ -464,7 +542,7 @@ class DisplayAdmissionApplications extends Component {
         const { classes } = this.props;
         const { data } = this.state;
         const { studentProgressReport } = data;
-        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], } = data;
+        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], yearEndStatus=[],} = data;
         return (
             <Fragment>
                 {this.state.isLoading &&
@@ -1258,6 +1336,28 @@ class DisplayAdmissionApplications extends Component {
                                     Submitted Assignments
                                 </span>
                             </div>
+                            <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
+
+                            <IconButton
+                            // className={clsx(classes.expand, {[classes.expandOpen]: this.state.isTrue,})}
+                            onClick={this.handleChange}
+                            // aria-expanded={this.state.isTrue}
+                            aria-label="show more"
+                            >
+                            <ExpandMoreIcon
+                            color="primary" style={{color:"rgb(47 87 165)"}}/>
+                        </IconButton>
+                        {data.sessionLabel}
+                        <Divider
+                            style={{
+                            backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+                            opacity: "0.3",
+                            marginLeft: 50,
+                            marginTop: -10
+                            }}
+                        />
+                            </Typography>
+                            <Collapse in={this.state.isTrue}>
                             <div style={{
                                 marginLeft: '3%',
                                 marginRight: '3%',
@@ -1292,9 +1392,10 @@ class DisplayAdmissionApplications extends Component {
                                 ""
                                 }
                             </div>
+                            </Collapse>
                         </Fragment>
 
-                        <Fragment>
+                        {/* <Fragment>
                             <div className={classes.valuesContainer}>
                                 <span 
                                     style={{
@@ -1338,7 +1439,7 @@ class DisplayAdmissionApplications extends Component {
                                 ""
                                 }
                             </div>
-                        </Fragment>
+                        </Fragment> */}
 
 
                         <Fragment>
@@ -1444,7 +1545,7 @@ class DisplayAdmissionApplications extends Component {
                                         fontSize: 'larger'
                                     }}
                                 >
-                                    UOL Marks
+                                    UOL Achievement
                                 </span>
                             </div>
                             <div 
@@ -1458,43 +1559,29 @@ class DisplayAdmissionApplications extends Component {
                             />
                             )}
                             </div>
-                            {/* <div
-                            style={{
-                            marginLeft: '3%',
-                            marginRight: '3%',
-                            marginTop: '2%',
-                            marginBottom: '1%',
-                            display: 'flex'}}
-                            >
-
-                            
-                            <TableContainer component={Paper}>
-            <Table className={classes.table} size="small" aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)", borderRight: "1px solid rgb(47, 87, 165)" }} align="center">Module</StyledTableCell>
-                  <StyledTableCell align="center">Academic Session</StyledTableCell>
-                  <StyledTableCell align="center">Courses</StyledTableCell>
-                  <StyledTableCell align="center">Original Marks</StyledTableCell>
-                  <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>Reset Marks</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                  {uolEnrollmentMarks.map((dt, i) => (
-                      <StyledTableRow key={"row"+data.sessionLabel+i}>
-                        <StyledTableCell component="th" scope="row" align="center">{dt.moduleNumber}</StyledTableCell>
-                        <StyledTableCell scope="row" align="center" >{dt.academicSessionLabel}</StyledTableCell>
-                        <StyledTableCell scope="row" align="center" >{dt.coursesObject.Label}</StyledTableCell>
-                        <StyledTableCell scope="row" align="center" >{dt.marks}</StyledTableCell>
-                        <StyledTableCell scope="row" align="center" >{dt.resetMarks}</StyledTableCell>
-                      </StyledTableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          </div> */}
-                           
                         </Fragment>
+                        {/* <Fragment>
+                            <div className={classes.valuesContainer}>
+                                <span 
+                                    style={{
+                                        fontSize: 'larger'
+                                    }}
+                                >
+                                    Year End Status
+                                </span>
+                            </div>
+                            <div 
+                            >
+                            {this.state.yearEndStatus.map( (data, index) =>
+                            <YearEndStatus 
+                                key={"sessionAchievementsData"+index}
+                                classes={classes}
+                                data={data}
+                                isOpen={ index==0 ? true : false}
+                            />
+                            )}
+                            </div>
+                        </Fragment> */}
 
                     </div>
                     <div className={classes.bottomSpace}></div>
