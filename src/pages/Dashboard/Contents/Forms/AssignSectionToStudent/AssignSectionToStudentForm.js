@@ -443,7 +443,7 @@ class AssignSectionToStudentForm extends Component {
         }
     }
     onFormSubmit = async (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         const data = new FormData(e.target);
         this.setState({ isLoading: true });
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C28CommonAcademicsSectionsStudentsSave`;

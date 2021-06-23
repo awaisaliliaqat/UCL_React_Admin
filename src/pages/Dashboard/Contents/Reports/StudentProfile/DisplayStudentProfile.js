@@ -1,12 +1,14 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment,useState } from 'react';
 import PropTypes from "prop-types";
 import { withStyles } from '@material-ui/core/styles';
 import Logo from '../../../../../assets/Images/logo.png';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@material-ui/core';
+import clsx from 'clsx';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {Collapse, Divider, Grid, Table, Typography, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@material-ui/core';
 // import StudentProgressReport from '../../../../Dashboard/Contents/Reports/StudentProfile/Chunks/StudentProgressReport';
 import StudentProgressReport from './Chunks/StudentProgressReport';
 const styles = (theme) => ({
@@ -139,6 +141,7 @@ const styles = (theme) => ({
     }
 });
 
+
 const StyledTableCell = withStyles((theme) => ({
     head: {
       backgroundColor: "rgb(47, 87, 165)", //theme.palette.common.black,
@@ -160,6 +163,77 @@ const StyledTableCell = withStyles((theme) => ({
     },
   }))(TableRow);
 
+  function AcademicSessionStudentAchievements(props){
+
+    const { classes, data, isOpen } = props;
+  
+    const [state, setState] = useState({"expanded": isOpen });
+    
+    const handleExpandClick = () => {
+      setState({expanded:!state.expanded});
+    }
+  
+    return (
+      <Grid item xs={12} >
+        <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
+          <IconButton
+            className={clsx(classes.expand, {[classes.expandOpen]: state.expanded,})}
+            onClick={handleExpandClick}
+            aria-expanded={state.expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon color="primary" style={{color:"rgb(47 87 165)"}}/>
+          </IconButton>
+          {data.sessionLabel}
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: -10
+            }}
+          />
+        </Typography>
+        <Collapse in={state.expanded} timeout="auto" unmountOnExit>
+          <div style={{paddingLeft:50}}>
+            <TableContainer component={Paper}>
+              <Table className={classes.table} size="small" aria-label="customized table">
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Module</StyledTableCell>
+                    <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Courses</StyledTableCell>
+                    <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Original Marks</StyledTableCell>
+                    <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Resit Marks</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                    {data.achivementDetail.length > 0 ?
+                      data.achivementDetail.map((dt, i) => (
+                        <StyledTableRow key={"row"+data.sessionLabel+i}>
+                          <StyledTableCell component="th" scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.moduleNumber}</StyledTableCell>
+                          <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.coursesObject.Label}</StyledTableCell>
+                          <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.marks}</StyledTableCell>
+                          <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.resetMarks}</StyledTableCell>
+                        </StyledTableRow>
+                      ))
+                    :
+                    this.state.isLoading ?
+                      <StyledTableRow>
+                        <StyledTableCell component="th" scope="row" colSpan={4}><center><CircularProgress/></center></StyledTableCell>
+                      </StyledTableRow>
+                      :
+                      <StyledTableRow>
+                        <StyledTableCell component="th" scope="row" colSpan={4}><center><b>No Data</b></center></StyledTableCell>
+                      </StyledTableRow>
+                    }
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+        </Collapse>
+      </Grid>
+    );
+  }
 class DisplayAdmissionApplications extends Component {
     constructor(props) {
         super(props);
@@ -178,8 +252,11 @@ class DisplayAdmissionApplications extends Component {
             uolEnrollmentMarks: [],
             tableHeaderData: [],
             tableData: [],
+            uolAllAchived: [],
+            achivementDetail: [],
         }
     }
+
 
     componentDidMount() {
         // eslint-disable-next-line react/prop-types
@@ -269,6 +346,20 @@ class DisplayAdmissionApplications extends Component {
                         this.setState({uolEnrollmentMarks: uolEnrollmentMarks});
                         console.log("uolEnrollmentMarks");
                         console.log(uolEnrollmentMarks);
+
+                        let uolAllAchived = json.DATA[0].uolAllAchived || [];
+                        this.setState({uolAllAchived: uolAllAchived});
+                        console.log("uolAllAchived");
+                        console.log(uolAllAchived);
+
+
+                        console.log("achivementDetail");
+                        console.log(this.state.uolAllAchived.achivementDetail);
+
+
+
+                        
+
                         if (json.DATA) {
                             if (json.DATA.length > 0) {
                                 this.setState({
@@ -373,7 +464,7 @@ class DisplayAdmissionApplications extends Component {
         const { classes } = this.props;
         const { data } = this.state;
         const { studentProgressReport } = data;
-        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[] } = data;
+        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], } = data;
         return (
             <Fragment>
                 {this.state.isLoading &&
@@ -1356,7 +1447,18 @@ class DisplayAdmissionApplications extends Component {
                                     UOL Marks
                                 </span>
                             </div>
-                            <div
+                            <div 
+                            >
+                            {this.state.uolAllAchived.map( (data, index) =>
+                            <AcademicSessionStudentAchievements 
+                                key={"sessionAchievementsData"+index}
+                                classes={classes}
+                                data={data}
+                                isOpen={ index==0 ? true : false}
+                            />
+                            )}
+                            </div>
+                            {/* <div
                             style={{
                             marginLeft: '3%',
                             marginRight: '3%',
@@ -1378,7 +1480,7 @@ class DisplayAdmissionApplications extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                  {this.state.uolEnrollmentMarks.map((dt, i) => (
+                  {uolEnrollmentMarks.map((dt, i) => (
                       <StyledTableRow key={"row"+data.sessionLabel+i}>
                         <StyledTableCell component="th" scope="row" align="center">{dt.moduleNumber}</StyledTableCell>
                         <StyledTableCell scope="row" align="center" >{dt.academicSessionLabel}</StyledTableCell>
@@ -1390,7 +1492,7 @@ class DisplayAdmissionApplications extends Component {
               </TableBody>
             </Table>
           </TableContainer>
-          </div>
+          </div> */}
                            
                         </Fragment>
 
