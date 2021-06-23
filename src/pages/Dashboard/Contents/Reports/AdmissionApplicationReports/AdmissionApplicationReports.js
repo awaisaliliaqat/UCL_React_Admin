@@ -110,6 +110,7 @@ class AdmissionApplicationReports extends Component {
                 let array = json.DATA || [];
                 // let arrayLength = array.length;
                 let res = array.find( (obj) => obj.isActive === 1 );
+                console.log(res);
                 if(res){
                   this.setState({academicSessionId:res.ID});
                 }

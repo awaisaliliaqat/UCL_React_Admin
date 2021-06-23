@@ -2,19 +2,24 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { withStyles, makeStyles } from "@material-ui/styles";
 import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
-  Paper, Collapse, Fab, } from "@material-ui/core";
+  Paper, Collapse, Fab, RadioButton} from "@material-ui/core";
 import {Typography, TextField, MenuItem} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import FilterListOutlinedIcon from '@material-ui/icons/FilterListOutlined';
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import F212FormChangeStatusPopup from "./F212FormChangeStatusPopup";
-import F212FormPopupComponent from "./F212FormPopupComponent";
-import F212FormTableComponent from "./F212FormTableComponent";
+import F220FormChangeStatusPopup from "./F220FormChangeStatusPopup";
+import F220FormPopupComponent from "./F220FormPopupComponent";
+import F220FormTableComponent from "./F220FormTableComponent";
 import InputBase from '@material-ui/core/InputBase';
 import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
 import AddIcon from "@material-ui/icons/Add";
+import ClearIcon from '@material-ui/icons/Clear';
+import Checkbox from '@material-ui/core/Checkbox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import BottomBar from "../../../../components/BottomBar/BottomBar";
 
 const styles = () => ({
   root: {
@@ -51,7 +56,7 @@ class F212Form extends Component {
     this.state = {
       isLoading: false,
       showSearchFilter: true,
-      showTableFilter: true,
+      showTableFilter: false,
       isLoginMenu: false,
       isReload: false,
       isOpenSnackbar: false,
@@ -59,9 +64,9 @@ class F212Form extends Component {
       snackbarSeverity: "",
       tableData: [],
       academicSessionMenuItems: [],
+      newAcademicSessionMenuItems: [],
       academicSessionId: "",
       academicSessionIdError: "",
-      mainPagestudentNucleusId:"",
       programmeGroupId: "",
       programmeGroupIdError: "",
       programmeGroupsMenuItems: [],
@@ -92,6 +97,7 @@ class F212Form extends Component {
       endYearAchievementError: "",
       pathwayMenuItems: [],
       pathway: 0,
+      newAcademicSessionId: "",
       pathwayError: "",
       preCourseMenuItems: [],
       preCourseSelectionItems: [],
@@ -101,8 +107,8 @@ class F212Form extends Component {
         studentNucleusId: "", 
         studentName: ""
       },
-      f212FormChangeStatusPopupIsOpen: false,
-      f212FormChangeStatusPopupData: {
+      F220FormChangeStatusPopupIsOpen: false,
+      F220FormChangeStatusPopupData: {
         studentId: "",
         programmeGroupId: "",
         studentNucleusId: "", 
@@ -158,6 +164,7 @@ class F212Form extends Component {
               this.loadProgrammeGroups(res.ID);
             }
             this.setState({ academicSessionMenuItems: array });
+            
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
@@ -433,6 +440,15 @@ class F212Form extends Component {
       );
     this.setState({isLoading: false});
   };
+  
+  onCheckClickB = (index) =>{
+    console.log(document.getElementById("b"+index));
+    document.getElementById("b"+index).checked = false;
+  }
+  onCheckClickA = (index) =>{
+    console.log(document.getElementById("a"+index));
+    document.getElementById("a"+index).checked = false;
+  }
 
   loadExamEntryStatus = async () => {
     this.setState({isLoading: true});
@@ -596,10 +612,10 @@ class F212Form extends Component {
     this.setState({isLoading: false});
   };
 
-  loadModules = async (academicsSessionId, programmeId) => {
+  loadModules = async (academicsSessionId, programmeId=0) => {
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
-    data.append("programmeId", programmeId);
+    // data.append("programmeId", programmeId);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonProgrammeModulesView`;
     await fetch(url, {
@@ -696,18 +712,15 @@ class F212Form extends Component {
     let data = new FormData();
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("programmeGroupId", this.state.programmeGroupId);
-    data.append("programmeId", this.state.programmeId);
-    data.append("courseId", this.state.courseId);
-    data.append("applicationStatusFilterId", this.state.applicationStatusFilterId);
-    data.append("renewalStatusId", this.state.renewalStatus);
-    data.append("examEntryStatusId", this.state.examEntryStatus);
-    data.append("courseCompletionStatusId", this.state.courseCompletionStatus);
-    data.append("endYearAchievementId", this.state.endYearAchievement);
-    data.append("pathwayId", this.state.pathway);
-     data.append("studentId", this.state.mainPagestudentNucleusId || 0);
-    
-    
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonStudentsView`;
+    data.append("programmeId", "25");
+    data.append("courseId", "82");
+    data.append("applicationStatusFilterId", "");
+    data.append("renewalStatusId", "");
+    data.append("examEntryStatusId", "");
+    data.append("courseCompletionStatusId", "");
+    data.append("endYearAchievementId", "");
+    data.append("pathwayId", "");
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonStudentsView2`;
     await fetch(url, {
       method: "POST",
       body:data,
@@ -720,19 +733,13 @@ class F212Form extends Component {
           throw res;
         }
         return res.json();
-      }) 
+      })
       .then(
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
             let dataLength = data.length || 0;
-            if(dataLength==0){
-              if(this.state.mainPagestudentNucleusId){
-                this.loadModules(this.state.academicSessionId,data[0].programmeId)
-                this.loadProgrammeCourses(this.state.academicSessionId,data[0].programmeId)
-              }
-            }
-            
+
             for (let i=0; i<dataLength; i++) {
 
               let f212FormPopupData = {
@@ -742,27 +749,29 @@ class F212Form extends Component {
               };
 
               data[i].action = (
-                <IconButton
-                  color="primary"
-                  aria-label="Add"
-                  onClick={()=>this.f212FormPopupSetData(f212FormPopupData)}
-                  variant="outlined"
-                  component="span"
-                  style={{padding:5}}
-                >
-                  <Tooltip title="Add / Change">
-                    <Fab 
-                      color="primary" 
-                      aria-label="add" 
-                      size="small"
-                    >
-                      <AddIcon fontSize="small"/>
-                    </Fab>
-                  </Tooltip>
-                </IconButton>
+                
+                  // <Checkbox
+                  //   icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 30 }} />}
+                  //   checkedIcon={<CheckBoxIcon style={{ fontSize: 30 }} />}
+                  //   color="primary"
+                  //   onChange={() => this.onCheckClickB(i)}
+                  //   // checked={row.isChecked}
+                  //   inputProps={{ 'aria-label': 'secondary checkbox', 'id':`${"a"+i}` }}
+                  // />
+                  <input
+                  type="checkbox"
+                  id={"a"+i}
+                  style={{
+                    color: "primary",
+                    "height": "1.2rem",
+                    "width": "100%"
+                  }}
+                  onChange={() => this.onCheckClickB(i)}
+                   />
+                
               );
 
-              let f212FormChangeStatusPopupData = {
+              let F220FormChangeStatusPopupData = {
                 studentId: data[i].id,
                 programmeGroupId: this.state.programmeGroupId,
                 studentNucleusId: data[i].studentId,
@@ -779,27 +788,41 @@ class F212Form extends Component {
               };
 
               data[i].changeStatusAction = (
-                <IconButton
-                  color="primary"
-                  aria-label="Add"
-                  onClick={()=>this.f212FormChangeStatusPopupSetData(f212FormChangeStatusPopupData)}
-                  variant="outlined"
-                  component="span"
-                  style={{padding:5}}
-                >
-                  <Tooltip title="Add / Change">
-                    <Fab 
-                      color="primary" 
-                      aria-label="add" 
-                      size="small"
-                    >
-                      <AddIcon fontSize="small"/>
-                    </Fab>
-                  </Tooltip>
-                </IconButton>
+                // <RadioButton
+                //   value="radioA"
+                //   inputProps={{ 'aria-label': 'Radio A' }}
+                // />
+                <input 
+                type="checkbox"
+                style={{
+                  color: "primary",
+                  "height": "1.2rem",
+                  "width": "100%"
+                }} 
+                id={"b"+i}
+                onChange={() => this.onCheckClickA(i)}
+                 />
+                // <Checkbox
+                //     icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 30 }} />}
+                //     checkedIcon={<CheckBoxIcon style={{ fontSize: 30 }} />}
+                //     color="primary"
+                //     // onChange={(e) => this.onCheckClick(e, row)}
+                //     // checked={row.isChecked}
+                //     inputProps={{ 'aria-label': 'secondary checkbox', 'id':`${"b"+i}` }}
+                //   />
               );
 
             }
+
+
+         
+            // this.state.tableData.add({
+            //   "Roshaan": "Rao",
+            //   "displayName" : "displayName"
+
+            // })
+         
+
             this.setState({tableData: data});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
@@ -823,6 +846,12 @@ class F212Form extends Component {
     this.setState({isLoading: false});
   };
 
+  onHandleChange2 = (e) => {
+    const { name, value } = e.target;
+    this.setState({
+      newAcademicSessionId: value
+    });
+  }
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -837,6 +866,11 @@ class F212Form extends Component {
           });
           this.loadProgrammeGroups(value);
         break;
+        case "newAcademicSessionId":
+          this.setState({
+           
+          });
+          break;
         case "programmeGroupId":
             this.setState({
               programmeGroupId: "",
@@ -844,8 +878,9 @@ class F212Form extends Component {
               coursesMenuItems:[],
               tableData: []
             });
-            //this.loadCourse(this.state.academicSessionId, value);
-            this.loadProgrammes(value);
+            // this.loadCourse(this.state.academicSessionId, value);
+            // this.loadModules(this.state.academicSessionId, value);
+            // this.loadProgrammes(9);
         break;
         case "programmeId":
           this.setState({
@@ -856,11 +891,6 @@ class F212Form extends Component {
           });
           this.loadModules(this.state.academicSessionId, value);
           this.loadProgrammeCourses(this.state.academicSessionId, value);
-        break;
-        case "mainPagestudentNucleusId":
-          this.setState({
-            [name]: value,
-          });
         break;
         case "courseId":
           this.setState({
@@ -935,15 +965,12 @@ class F212Form extends Component {
 
   
   handleGetData = () => {
-    if(!this.state.mainPagestudentNucleusId){
-      if(
-        !this.isAcademicSessionValid()
-        || !this.isProgrammeGroupValid()
-        || !this.isProgrammeValid
-        // || !this.isCourseValid()
-      ){return;}
-    }
-    
+    if(
+      !this.isAcademicSessionValid()
+      || !this.isProgrammeGroupValid()
+      || !this.isProgrammeValid
+      // || !this.isCourseValid()
+    ){return;}
     this.setState({tableData:[]});
     this.loadData();
   }
@@ -978,17 +1005,17 @@ class F212Form extends Component {
     this.f212FormPopupOpen();
   }
 
-  f212FormChangeStatusPopupOpen = () => {
-    this.setState({f212FormChangeStatusPopupIsOpen: true});
+  F220FormChangeStatusPopupOpen = () => {
+    this.setState({F220FormChangeStatusPopupIsOpen: true});
   }
 
-  f212FormChangeStatusPopupClose = () => {
-    this.setState({f212FormChangeStatusPopupIsOpen: false});
+  F220FormChangeStatusPopupClose = () => {
+    this.setState({F220FormChangeStatusPopupIsOpen: false});
   }
 
-  f212FormChangeStatusPopupSetData = (data) => {
+  F220FormChangeStatusPopupSetData = (data) => {
     this.setState({
-      f212FormChangeStatusPopupData: {
+      F220FormChangeStatusPopupData: {
         studentId: data.studentId,
         programmeGroupId: this.state.programmeGroupId, 
         studentNucleusId: data.studentNucleusId,
@@ -1004,7 +1031,7 @@ class F212Form extends Component {
         courseIds: data.courseIds
       }
     });
-    this.f212FormChangeStatusPopupOpen();
+    this.F220FormChangeStatusPopupOpen();
   }
 
   onChangeStatusFormSubmit = async () => {
@@ -1021,7 +1048,7 @@ class F212Form extends Component {
     let renewalStatusId = document.getElementById("renewalStatusId").value;
     let examEntryStatusId = document.getElementById("examEntryStatusId").value;
     let courseCompletionStatusId = document.getElementById("courseCompletionStatusId").value;
-    // let endYearAchievementId = document.getElementById("endYearAchievementId").value;
+    let endYearAchievementId = document.getElementById("endYearAchievementId").value;
     let pathwayId = document.getElementById("pathwayId").value;
     let UOLNo = document.getElementById("UOLNo").value;
     let candidateNoEle = document.getElementById("candidateNo");
@@ -1053,11 +1080,11 @@ class F212Form extends Component {
     if(ccsObj){
       courseCompletionStatusLabel = ccsObj.label;
     }
-    // let  endYearAchievementLabel = ""; 
-    // let eyaObj = this.state. endYearAchievementMenuItems.find( (obj) => obj.id ==  endYearAchievementId);
-    // if(eyaObj){
-    //   endYearAchievementLabel = eyaObj.label;
-    // }
+    let  endYearAchievementLabel = ""; 
+    let eyaObj = this.state. endYearAchievementMenuItems.find( (obj) => obj.id ==  endYearAchievementId);
+    if(eyaObj){
+      endYearAchievementLabel = eyaObj.label;
+    }
     
     let pathwayLabel = ""; 
     let pwObj = this.state.pathwayMenuItems.find( (obj) => obj.id == pathwayId);
@@ -1072,7 +1099,7 @@ class F212Form extends Component {
     data.append("renewalStatusId", renewalStatusId);
     data.append("examEntryStatusId", examEntryStatusId);
     data.append("courseCompletionStatusId", courseCompletionStatusId);
-    // data.append("endYearAchievementId", endYearAchievementId);
+    data.append("endYearAchievementId", endYearAchievementId);
     data.append("pathwayId", pathwayId);
     data.append("uolNumber", UOLNo);
     data.append("candidateNo", candidateNo);
@@ -1094,14 +1121,14 @@ class F212Form extends Component {
         row10.examEntryStatusLabel = examEntryStatusLabel;
         row10.courseCompletionStatusId = courseCompletionStatusId;
         row10.courseCompletionStatusLabel = courseCompletionStatusLabel;
-        // row10.endYearAchievementId = endYearAchievementId;
-        // row10.endYearAchievementLabel = endYearAchievementLabel;
+        row10.endYearAchievementId = endYearAchievementId;
+        row10.endYearAchievementLabel = endYearAchievementLabel;
         row10.pathwayId = pathwayId;
         row10.pathwayLabel = pathwayLabel;
         row10.uolNumber = UOLNo;
         row10.candidateNo = candidateNo;
 
-        let f212FormChangeStatusPopupData = {
+        let F220FormChangeStatusPopupData = {
           studentId: row.id,
           studentNucleusId: row.studentId,
           studentName: row.displayName,
@@ -1109,7 +1136,7 @@ class F212Form extends Component {
           renewalStatusId: renewalStatusId,
           examEntryStatusId: examEntryStatusId,
           courseCompletionStatusId:  courseCompletionStatusId,
-          // endYearAchievementId:  endYearAchievementId,
+          endYearAchievementId:  endYearAchievementId,
           pathwayId: pathwayId,
           uolNumber: UOLNo,
           candidateNo: candidateNo,
@@ -1120,7 +1147,7 @@ class F212Form extends Component {
           <IconButton
             color="primary"
             aria-label="Add"
-            onClick={()=>this.f212FormChangeStatusPopupSetData(f212FormChangeStatusPopupData)}
+            onClick={()=>this.F220FormChangeStatusPopupSetData(F220FormChangeStatusPopupData)}
             variant="outlined"
             component="span"
             style={{padding:5}}
@@ -1134,6 +1161,14 @@ class F212Form extends Component {
                 <AddIcon fontSize="small"/>
               </Fab>
             </Tooltip>
+            <Checkbox
+             icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 30 }} />}
+             checkedIcon={<CheckBoxIcon style={{ fontSize: 30 }} />}
+             color="primary"
+            //  onChange={(e) => this.onCheckClick(e, row)}
+            //  checked={row.isChecked}
+             inputProps={{ 'aria-label': 'secondary checkbox' }}
+                        />
           </IconButton>
         );
 
@@ -1167,7 +1202,7 @@ class F212Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-            this.f212FormChangeStatusPopupClose();
+            this.F220FormChangeStatusPopupClose();
           } else {
             this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
           }
@@ -1202,22 +1237,12 @@ class F212Form extends Component {
     let programmeCourseId = document.getElementsByName("programmeCourseId");
     let marks = document.getElementsByName("marks");
     let resetMarks = document.getElementsByName("resetMarks");
-    let endYearAchievementId = document.getElementById("endYearAchievementId").value;
-
-
-    let  endYearAchievementLabel = ""; 
-    let eyaObj = this.state.endYearAchievementMenuItems.find( (obj) => obj.id ==  endYearAchievementId);
-    console.log("Yooo ",eyaObj);
-    if(eyaObj){
-      endYearAchievementLabel = eyaObj.label;
-    }
 
     let data = new FormData();
     data.append("id", 0);
     data.append("academicSessionId", academicSessionId);
     data.append("programmeId", this.state.programmeId);
     data.append("studentId", studentId);
-    data.append("endYearAchievementId", endYearAchievementId);
 
     let recordLength = moduleNumber.length || 0;
 
@@ -1230,72 +1255,7 @@ class F212Form extends Component {
       }
     }
     
-    console.log("1=> ",[...this.state.tableData]);
-
-    let tableData = [...this.state.tableData];
-    
-    let tableDataNewInstance = tableData.map((row, index) => { 
-      
-      let row10 = { ...row };
-      
-      if(row.id == studentId){
-        
-       console.log(endYearAchievementId, endYearAchievementLabel);
-        row10.endYearAchievementId = endYearAchievementId;
-        row10.endYearAchievementIdLabel = endYearAchievementLabel;
-      
-       
-        let f212FormChangeStatusPopupData = {
-          studentId: row.id,
-          studentNucleusId: row.studentId,
-          studentName: row.displayName,
-          applicationStatusId: row.applicationStatusId,
-          renewalStatusId: row.renewalStatusId,
-          examEntryStatusId: row.examEntryStatusId,
-          courseCompletionStatusId:  row.courseCompletionStatusId,
-          endYearAchievementId:  endYearAchievementId,
-          pathwayId: row.pathwayId,
-          uolNumber: row.UOLNo,
-          candidateNo: row.candidateNo,
-          courseIds : row.courseIds
-        };
-
-        row10.changeStatusAction = (
-          <IconButton
-            color="primary"
-            aria-label="Add"
-            onClick={()=>this.f212FormChangeStatusPopupSetData(f212FormChangeStatusPopupData)}
-            variant="outlined"
-            component="span"
-            style={{padding:5}}
-          >
-            <Tooltip title="Add / Change">
-              <Fab 
-                color="primary" 
-                aria-label="add" 
-                size="small"
-              >
-                <AddIcon fontSize="small"/>
-              </Fab>
-            </Tooltip>
-          </IconButton>
-        );
-        console.log("row10   ",row10)
-      }
-      
-      return ( 
-        row.id == studentId ? { ...row10 } : row 
-      )
-    }); // tableData.map ends
-  
-    this.setState({ 
-      tableData: tableDataNewInstance,
-      isLoading: true 
-    });
-
-    console.log("2=> ",[...tableDataNewInstance]);
-
-    // this.setState({ isLoading: true });
+    this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsCoursesStudentsAchievementsSave`;
     await fetch(url, {
       method: "POST",
@@ -1345,6 +1305,7 @@ class F212Form extends Component {
     this.loadCourseCompletionStatus();
     this.loadEndYearAchievement();
     this.loadPathway();
+    this.loadProgrammes(9);
   }
 
   render() {
@@ -1360,9 +1321,9 @@ class F212Form extends Component {
         />
         <div style={{padding:20}}>
           <Grid container justify="space-between">
-            <F212FormChangeStatusPopup
-              isOpen={this.state.f212FormChangeStatusPopupIsOpen}
-              data={this.state.f212FormChangeStatusPopupData}
+            <F220FormChangeStatusPopup
+              isOpen={this.state.F220FormChangeStatusPopupIsOpen}
+              data={this.state.F220FormChangeStatusPopupData}
               applicationStatusMenuItems={this.state.applicationStatusMenuItems}
               renewalStatusMenuItems={this.state.renewalStatusMenuItems} 
               examEntryStatusMenuItems={this.state.examEntryStatusMenuItems}
@@ -1372,18 +1333,17 @@ class F212Form extends Component {
               isLoading={this.state.isLoading}
               onFormSubmit={() => this.onChangeStatusFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}
-              handleClose={this.f212FormChangeStatusPopupClose}
+              handleClose={this.F220FormChangeStatusPopupClose}
               preCourseSelectionItems={this.state.preCourseSelectionItems}
               slectedAcademicSessionId={this.state.academicSessionId}
               slectedprogrammeId={this.state.programmeId}
             />
-            <F212FormPopupComponent
+            <F220FormPopupComponent
               isOpen={this.state.f212FormPopupIsOpen}
               data={this.state.f212FormPopupData}
               academicSessionMenuItems={this.state.academicSessionMenuItems}
               preModuleMenuItems={this.state.preModuleMenuItems}
               preCourseMenuItems={this.state.preCourseMenuItems}
-              endYearAchievementMenuItems={this.state.endYearAchievementMenuItems} 
               isLoading={this.state.isLoading}
               onFormSubmit ={() => this.onStudentAchievementFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}
@@ -1398,7 +1358,7 @@ class F212Form extends Component {
                 }}
                 variant="h5"
               >
-                UOL Enrolment
+                Student Promotion
                 <span style={{ 
                     float: "right",
                     marginBottom: -6,
@@ -1438,12 +1398,12 @@ class F212Form extends Component {
                 unmountOnExit
               >
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                       id="academicSessionId"
                       name="academicSessionId"
                       variant="outlined"
-                      label="Academic Session"
+                      label="Existing Academic Session"
                       onChange={this.onHandleChange}
                       value={this.state.academicSessionId}
                       error={!!this.state.academicSessionIdError}
@@ -1461,18 +1421,6 @@ class F212Form extends Component {
                         </MenuItem>
                       ))}
                     </TextField>
-                  </Grid>
-                  <Grid item xs={12}  md={3}>
-                   <TextField
-                    id="mainPagestudentNucleusId"
-                    name="mainPagestudentNucleusId"
-                    variant="outlined"
-                    label="Student ID"
-                    value={this.state.mainPagestudentNucleusId}
-                    onChange={this.onHandleChange}
-                    defaultValue={""}
-                    fullWidth
-                   />
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <TextField
@@ -1499,13 +1447,12 @@ class F212Form extends Component {
                       ))}
                     </TextField>
                   </Grid>
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={12} md={4}>
                     <TextField
                       id="programmeId"
                       name="programmeId"
                       variant="outlined"
                       label="Programme"
-                      required
                       onChange={this.onHandleChange}
                       value={this.state.programmeId}
                       error={!!this.state.programmeIdError}
@@ -1554,156 +1501,140 @@ class F212Form extends Component {
                       }
                     </TextField> 
                     */}
+                  </Grid>
+                  {/* <Grid item xs={12} md={3}>
+                    <TextField
+                      id="pathway"
+                      name="pathway"
+                      variant="outlined"
+                      label="Pathway"
+                      onChange={this.onHandleChange}
+                      value={this.state.pathway}
+                      error={!!this.state.pathwayError}
+                      helperText={this.state.pathwayError}
+                      fullWidth
+                      select
+                      disabled={!this.state.programmeGroupId}
+                    >
+                      <MenuItem value={0}>Any</MenuItem>
+                      {this.state.pathwayMenuItems ? 
+                        this.state.pathwayMenuItems.map((dt, i) => (
+                          <MenuItem
+                            key={"pathwayMenuItems"+dt.id}
+                            value={dt.id}
+                          >
+                            {dt.label}
+                          </MenuItem>
+                        ))
+                        :
+                        ""
+                      }
+                    </TextField>
+                  </Grid> */}
+                  
+                  <Grid item xs={12} md={1}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={this.state.isLoading || (!this.state.programmeGroupId && this.state.academicSessionId<20)}
+                      onClick={() => this.handleGetData()}
+                      style={{width:"100%", height:54, marginBottom:24}}
+                    > 
+                      {this.state.isLoading ? <CircularProgress style={{color:'white'}} size={36}/> : "Search"}
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Collapse>
+              <Divider
+                style={{
+                  backgroundColor: "rgb(58, 127, 187)",
+                  opacity: "0.3",
+                }}
+              />
+              <br/>
+            </Grid>
 
-                  
-                  </Grid>
-                  
+
+
+
+
+
+            <Grid container spacing={2}>
                   <Grid item xs={12} md={3}>
                     <TextField
-                      id="applicationStatusFilterId"
-                      name="applicationStatusFilterId"
+                      id="academicSessionId"
+                      name="academicSessionId"
                       variant="outlined"
-                      label="Application Status"
+                      label="New Academic Session"
                       onChange={this.onHandleChange}
-                      value={this.state.applicationStatusFilterId}
-                      error={!!this.state.applicationStatusFilterIdError}
-                      helperText={this.state.applicationStatusFilterIdError}
+                      value={this.state.academicSessionId}
+                      error={!!this.state.academicSessionIdError}
+                      helperText={this.state.academicSessionIdError}
+                      required
                       fullWidth
                       select
-                      disabled={!this.state.programmeGroupId}
                     >
-                      <MenuItem value={0}>Any</MenuItem>
-                      {this.state.applicationStatusFilterMenuItems ? 
-                        this.state.applicationStatusFilterMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"applicationStatusFilterMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12} md={2}>
-                    <TextField
-                      id="renewalStatus"
-                      name="renewalStatus"
-                      variant="outlined"
-                      label="Renewal Status"
-                      onChange={this.onHandleChange}
-                      value={this.state.renewalStatus}
-                      error={!!this.state.renewalStatusError}
-                      helperText={this.state.renewalStatusError}
-                      fullWidth
-                      select
-                      disabled={!this.state.programmeGroupId}
-                    >
-                      <MenuItem value={0}>Any</MenuItem>
-                      {this.state.renewalStatusMenuItems ? 
-                        this.state.renewalStatusMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"renewalStatusMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      id="courseCompletionStatus"
-                      name="courseCompletionStatus"
-                      variant="outlined"
-                      label="Course Completion Status"
-                      onChange={this.onHandleChange}
-                      value={this.state.courseCompletionStatus}
-                      // error={!!this.state.courseCompletionStatus}
-                      // helperText={this.state.courseCompletionStatus}
-                      fullWidth
-                      select
-                      disabled={!this.state.programmeGroupId}
-                    >
-                      <MenuItem value={0}>Any</MenuItem>
-                      {this.state.courseCompletionStatusMenuItems ? 
-                        this.state.courseCompletionStatusMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"courseCompletionStatusMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
+                      {this.state.academicSessionMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"academicSessionMenuItems"+dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={3}>
                     <TextField
-                      id="endYearAchievement"
-                      name="endYearAchievement"
+                      id="programmeGroupId"
+                      name="programmeGroupId"
                       variant="outlined"
-                      label="Year End Achievement"
-                      onChange={this.onHandleChange}
-                      value={this.state.endYearAchievement}
-                      // error={!!this.state.courseCompletionStatus}
-                      // helperText={this.state.endYearAchievement}
+                      label="New Program Group"
                       fullWidth
                       select
-                      disabled={!this.state.programmeGroupId}
+                      required
+                      onChange={this.onHandleChange}
+                      value={this.state.programmeGroupId}
+                      error={!!this.state.programmeGroupIdError}
+                      helperText={this.state.programmeGroupIdError}
+                      disabled={!this.state.academicSessionId}
                     >
-                      <MenuItem value={0}>Any</MenuItem>
-                      {this.state.endYearAchievementMenuItems ? 
-                        this.state.endYearAchievementMenuItems.map((dt, i) => (
+                      {this.state.programmeGroupsMenuItems.map((dt, i) => (
                           <MenuItem
-                            key={"endYearAchievementMenuItems"+dt.id}
-                            value={dt.id}
+                            key={"programmeGroupsMenuItems"+dt.Id}
+                            value={dt.Id}
                           >
-                            {dt.label}
+                            {dt.Label}
                           </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
+                      ))}
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={3}>
                     <TextField
-                      id="examEntryStatus"
-                      name="examEntryStatus"
+                      id="programmeId"
+                      name="programmeId"
                       variant="outlined"
-                      label="Exam Entry Status"
+                      label="New Programme"
                       onChange={this.onHandleChange}
-                      value={this.state.examEntryStatus}
-                      error={!!this.state.examEntryStatusError}
-                      helperText={this.state.examEntryStatusError}
+                      value={this.state.programmeId}
+                      error={!!this.state.programmeIdError}
+                      helperText={this.state.programmeIdError}
                       fullWidth
                       select
-                      disabled={!this.state.programmeGroupId}
                     >
-                      <MenuItem value={0}>Any</MenuItem>
-                      {this.state.examEntryStatusMenuItems ? 
-                        this.state.examEntryStatusMenuItems.map((dt, i) => (
+                      {this.state.programmeMenuItems.map((dt, i) => (
                           <MenuItem
-                            key={"examEntryStatusMenuItems"+dt.id}
-                            value={dt.id}
+                            key={"programmeMenuItems"+dt.ID}
+                            value={dt.ID}
                           >
-                            {dt.label}
+                            {dt.Label}
                           </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
+                      ))}
                     </TextField>
                   </Grid>
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={12} md={3}
+                  style={{marginBottom:20}}
+                  >
                     <TextField
                       id="pathway"
                       name="pathway"
@@ -1732,33 +1663,26 @@ class F212Form extends Component {
                       }
                     </TextField>
                   </Grid>
-                  <Grid item xs={12} md={1}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={ this.state.isLoading || (!this.state.programmeId && this.state.academicSessionId<20 && !this.state.mainPagestudentNucleusId) }
-                      onClick={() => this.handleGetData()}
-                      style={{width:"100%", height:54, marginBottom:24}}
-                    > 
-                      {this.state.isLoading ? <CircularProgress style={{color:'white'}} size={36}/> : "Search"}
-                    </Button>
-                  </Grid>
-                  <Divider
-                    style={{
-                      backgroundColor: "rgb(58, 127, 187)",
-                      opacity: "0.3",
-                    }}
-                  />
+                  
+                  
                 </Grid>
-              </Collapse>
-            </Grid>
+            
             <Grid item xs={12}>
-              <F212FormTableComponent
+              <F220FormTableComponent
                 rows={this.state.tableData}
                 showFilter={this.state.showTableFilter}
               />
             </Grid>
           </Grid>
+          <BottomBar
+                    left_button_text="View"
+                    left_button_hide={true}
+                    bottomLeftButtonAction={() => this.viewReport()}
+                    right_button_text="Promote"
+                    bottomRightButtonAction={() => this.clickOnFormSubmit()}
+                    loading={this.state.isLoading}
+                    isDrawerOpen={this.props.isDrawerOpen}
+                />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}
