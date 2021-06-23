@@ -39,6 +39,7 @@ class ChangeStatusTableComponent extends Component {
                 { columnName: 'email', wordWrapEnabled: true, width: 200 },
                 { columnName: 'sessionLabel', wordWrapEnabled: true },
                 { columnName: 'action', width: 130, align:"center" },
+                { columnName: 'statusChangeDate', width: 130, wordWrapEnabled: true },
             ],
             defaultSorting: [],
             sortingStateColumnExtensions: [

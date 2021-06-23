@@ -90,8 +90,12 @@ class F212FormChangeStatusPopup extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            this.state.studentInfo=[];
             this.setState({ studentId: json.DATA || [] });
             let studentInfo = json.DATA[0]|| "";
+
+            
+
               this.setState({studentInfo:studentInfo});
               // console.log("Student Info"+this.state.studentId);
               // console.log("Props"+this.props);
@@ -101,7 +105,7 @@ class F212FormChangeStatusPopup extends Component {
               "error"
             );
           }
-          console.log("getStudentDetail", json);
+          
         },
         (error) => {
           if (error.status == 401) {
@@ -118,6 +122,8 @@ class F212FormChangeStatusPopup extends Component {
     this.setState({ isLoading: false });
   };
   loadProgrammeCoursesSelction = async (slectedAcademicSessionId=0, programmeGroupId=0, studentId=0) => {
+   
+   
     let data = new FormData();
     data.append("academicsSessionId", slectedAcademicSessionId);
     data.append("programmeGroupId", programmeGroupId);
@@ -141,6 +147,7 @@ class F212FormChangeStatusPopup extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
+            this.setState({ courseCreditId:  []});
             this.setState({ courseMenuItems: json.DATA || []});
              }else {
             this.handleOpenSnackbar(
@@ -231,7 +238,7 @@ class F212FormChangeStatusPopup extends Component {
       applicationStatusMenuItems=[], 
       renewalStatusMenuItems=[],
       courseCompletionStatusMenuItems=[],
-      endYearAchievementMenuItems=[], 
+      // endYearAchievementMenuItems=[], 
       examEntryStatusMenuItems=[],
       pathwayMenuItems=[],
       isLoading,
@@ -280,36 +287,34 @@ class F212FormChangeStatusPopup extends Component {
                 spacing={2}
                 style={{borderBottom: "1px solid rgb(58, 127, 187, 0.3)"}}
                 >
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                   <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18
-              }}
-            >
-              {"Student ID: "+data.studentNucleusId}
-            </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Student Name: "+data.studentName}
-            </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
-            </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                    style={{
+                      color: "#1d5f98",
+                      fontWeight: 600,
+                      fontSize: 18
+                    }}
+                  >
+                    {"Student ID: "+data.studentNucleusId}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "#1d5f98",
+                      fontWeight: 600,
+                      fontSize: 18
+                    }}
+                  >
+                    {"UOL No: "+this.state.studentInfo.uolNo}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "#1d5f98",
+                      fontWeight: 600,
+                      fontSize: 18,
+                    }}
+                  >
+                    {"Student Name: "+data.studentName}
+                  </Typography>
                   <Typography
               style={{
                 color: "#1d5f98",
@@ -319,6 +324,27 @@ class F212FormChangeStatusPopup extends Component {
             >
               {"Gender: "+ this.state.studentInfo.gender}
             </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Programme: "+ this.state.studentInfo.degree}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
+            </Typography>
+                  
             <Typography
               style={{
                 color: "#1d5f98",
@@ -337,9 +363,7 @@ class F212FormChangeStatusPopup extends Component {
             >
               {"Mobile Number: "+ this.state.studentInfo.mobileNo}
             </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                  <Typography
+            <Typography
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
@@ -348,26 +372,8 @@ class F212FormChangeStatusPopup extends Component {
             >
               {"Email: "+ this.state.studentInfo.email}
             </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Blood Group: "+ this.state.studentInfo.bloodGroup}
-            </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Degree: "+ this.state.studentInfo.degree}
-            </Typography>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     {this.state.studentInfo.imageName==null?
                     <img src={ProfilePlaceholder} 
                     style={{
@@ -501,7 +507,7 @@ class F212FormChangeStatusPopup extends Component {
                   </TextField>
                   
                 </Grid>
-                <Grid item xs={6} md={6}>
+                {/* <Grid item xs={6} md={6}>
                     
                   <TextField
                     name="endYearAchievementId"
@@ -525,7 +531,7 @@ class F212FormChangeStatusPopup extends Component {
                     ))}
                   </TextField>
                   
-                </Grid>
+                </Grid> */}
                 {/* End */}
                     <Grid item xs={6} md={3}>
                     

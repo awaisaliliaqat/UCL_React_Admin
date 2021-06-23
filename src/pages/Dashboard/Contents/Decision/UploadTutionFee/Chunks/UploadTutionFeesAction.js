@@ -10,6 +10,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import TablePanel from '../../../../../../components/ControlledTable/RerenderTable/TablePanel';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+
+import { TextField, MenuItem } from '@material-ui/core';
 // import DeleteIcon from '@material-ui/icons/Delete';
 
 function MyDropzone(props) {
@@ -63,11 +65,12 @@ class UploadTutionFeesAction extends Component {
 
     render() {
 
-        const { values, downloadFile, handleFileChange, handleSubmit, handleUploadButtonClick } = this.props;
+        const { values, downloadFile, handleFileChange, handleSubmit, handleUploadButtonClick, onHandleChange } = this.props;
 
         const columns = [
             { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%' } },
             { name: "File", dataIndex: "fileName", sortable: false, customStyleHeader: { width: '30%' } },
+            { name: "Session ID", dataIndex: "academicSessionLabel", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Upload Date", dataIndex: "uploadedOn", sortable: false, customStyleHeader: { width: '17%' } },
             {
                 name: "Action", renderer: rowData => {
@@ -98,14 +101,51 @@ class UploadTutionFeesAction extends Component {
                         marginTop: 30,
                         display: 'flex'
                     }}>
+                         <div style={{
+                    width: '20%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginRight: 10,
+                }}>
+                    <span style={{
+                        textAlign: 'left',
+                        font: 'bold 14px Lato',
+                        letterSpacing: 0,
+                        color: '#174A84',
+                        opacity: 1,
+                        marginBottom: 5,
+                        inlineSize: 'max-content'
+                    }}>Academic Session</span>
+                    <TextField
+                      id="academicSessionId"
+                      name="academicSessionId"
+                      variant="outlined"
+                      value={values.academicSessionId}
+                      onChange={e => {
+                          onHandleChange(e);
+                    }}
+                      select
+                    >
+                      {values.academicSessionMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"academicSessionMenuItems"+dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    
+                </div>
+                        
 
                         <div style={{
-                            width: '100%'
-                        }}>
-                            <MyDropzone files={values.files} onChange={handleFileChange} disabled={false} />
+                            width: '80%',
+                            marginTop: 25
+                        }}><MyDropzone files={values.files} onChange={handleFileChange} disabled={false} />
                             <div style={{
                                 textAlign: 'center',
-                                marginTop: 10
+                                marginTop: 25
                             }}>
                                 <span style={{
                                     color: '#ff2d2d'
@@ -118,7 +158,7 @@ class UploadTutionFeesAction extends Component {
                             onClick={() => handleUploadButtonClick()}
                             style={{
                                 height: 40,
-                                marginTop: 5,
+                                marginTop: 30,
                                 marginLeft: 15,
                                 textTransform: 'capitalize',
                                 width: 90
@@ -141,6 +181,7 @@ UploadTutionFeesAction.propTypes = {
     handleUploadButtonClick: PropTypes.func,
     handleFileChange: PropTypes.func,
     handleSubmit: PropTypes.func,
+    onHandleChange: PropTypes.func,
     downloadFile: PropTypes.func,
     deleteFile: PropTypes.func
 
@@ -151,6 +192,7 @@ UploadTutionFeesAction.defaultProps = {
     handleUploadButtonClick: fn => fn,
     handleFileChange: fn => fn,
     handleSubmit: fn => fn,
+    onHandleChange: fn => fn,
     downloadFile: fn => fn,
     deleteFile: fn => fn
 

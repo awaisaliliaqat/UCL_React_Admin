@@ -271,7 +271,12 @@ class F209Form extends Component {
 				(json) => {
 					if (json.CODE === 1) {
 						let data =  json.DATA || [];
-						this.setState({ rubricsMenuItems : data });
+						let G = data.length;
+						if(G==0){
+							this.handleOpenSnackbar(<span>Define session term for this academic session first.</span>,"error");
+						}else{
+							this.setState({ rubricsMenuItems : data });
+						}
 					} else {
 						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 					}
@@ -303,6 +308,7 @@ class F209Form extends Component {
 						programmeGroupId: "",
 						rubricsMenuItems : [],
 					});
+					this.loadProgrammeGroups(value);
 				break;
 				case "programmeGroupId":
 					this.setState({ rubricsMenuItems : [] });

@@ -2,7 +2,8 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import { TextField, Button } from '@material-ui/core';
+// import { TextField, Button } from '@material-ui/core';
+import { TextField, Button, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 const useStyles = makeStyles(() => ({
     root: {
@@ -71,6 +72,34 @@ const OfferLetterFilter = props => {
                         }}
 
                     />
+                </div>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Academic Session</span>
+                    <TextField
+                      id="academicSessionId"
+                      name="academicSessionId"
+                      variant="outlined"
+                      value={values.academicSessionId}
+                      InputProps={{ classes: { input: classes.resize } }}
+                      onChange={e => {
+                        onHandleChange(e);
+                    }}
+                    //   error={!!values.academicSessionIdError}
+                    //   helperText={values.academicSessionIdError}
+                      select
+                    >
+                      {values.academicSessionMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"academicSessionMenuItems"+dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    
                 </div>
                 {/* <div className={classes.item} style={{
                     width: '20%'

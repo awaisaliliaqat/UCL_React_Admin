@@ -26,7 +26,11 @@ class ChangeStudentStatus extends Component {
       studentName: "",
       studentStatus: 1,
       sessionId: "",
+      reasonId:"",
+      otherReasonId:"",
       sessionData: [],
+      reasonData: [],
+      otherReasonData: [],
       isLoginMenu: false,
       isReload: false,
       showTableFilter: false,
@@ -119,11 +123,11 @@ class ChangeStudentStatus extends Component {
         (json) => {
           if (json.CODE === 1) {
             let studentData = json.DATA || [];
-            // for(let i=0; i<studentData.length; i++) {
-            //   let fName = studentData[i].firstName;
-            //   let lName = studentData[i].lastName;
-            //   studentData[i].firstName = fName+" "+lName;
-            // }
+            for(let i=0; i<studentData.length; i++) {
+              let fName = studentData[i].firstName;
+              let lName = studentData[i].lastName;
+              studentData[i].firstName = fName+" "+lName;
+            }
             this.setState({studentData: json.DATA || []});
             let totalStudents = this.state.studentData.length;
             this.setState({totalStudents: totalStudents});
@@ -167,6 +171,82 @@ class ChangeStudentStatus extends Component {
           if (json.CODE === 1) {
             this.setState({
               sessionData: json.DATA || [],
+            });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+            console.log(error);
+          }
+        }
+      );
+  };
+  getReasonsData = async () => {
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonActiveDecactiveReasonView`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({
+              reasonData: json.DATA || [],
+            });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+            console.log(error);
+          }
+        }
+      );
+  };
+  getOtherReasonsData = async () => {
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonActiveDecactiveReasonOtherView`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({
+              otherReasonData: json.DATA || [],
             });
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -265,6 +345,8 @@ class ChangeStudentStatus extends Component {
   componentDidMount() {
     this.getProgrammeGroups();
     this.getSessionData();
+    this.getReasonsData();
+    this.getOtherReasonsData();
     //this.getData();
   }
 
@@ -281,6 +363,7 @@ class ChangeStudentStatus extends Component {
       { name: "email", title: "Email" },
       { name: "sessionLabel", title: "Session" },
       { name: "statusLabel", title: "Status" },
+      { name: "statusChangeDate", title: "Status Changed On" },
       { name: "action", title: "Selection", 
         getCellValue: (rowData) => { return (
             <Checkbox
@@ -384,6 +467,8 @@ class ChangeStudentStatus extends Component {
         </div>
         <form noValidate onSubmit={this.onFormSubmit}>
           <input type="hidden" name="sessionId" value={this.state.sessionId} />
+          <input type="hidden" name="reasonId" value={this.state.reasonId} />
+          <input type="hidden" name="otherReasonId" value={this.state.otherReasonId||0} />
           <input type="hidden" id="statusValue" name="status" value="" />
           {this.state.editRecord.map((item) => {
             if (item.checked) {
@@ -404,7 +489,9 @@ class ChangeStudentStatus extends Component {
           left_button_hide
           right_button_text="Activate"
           disableRightButton={
-            !this.state.sessionId || this.state.editRecord.length <= 0
+            !this.state.sessionId ||
+            !this.state.reasonId || 
+            this.state.editRecord.length <= 0
           }
           bottomRightButtonAction={() => this.clickOnFormSubmit(1)}
           loading={this.state.isLoading}
@@ -413,6 +500,7 @@ class ChangeStudentStatus extends Component {
               <Button
                 disabled={
                   !this.state.sessionId ||
+                  !this.state.reasonId ||
                   this.state.editRecord.length <= 0 ||
                   this.state.isLoading
                 }

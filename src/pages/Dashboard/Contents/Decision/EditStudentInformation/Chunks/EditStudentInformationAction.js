@@ -46,6 +46,19 @@ const styles = () => ({
     width: "100%",
     textAlign: "center",
   },
+  image: {
+    height: 140,
+    width: 130,
+    border: '1px solid',
+    marginLeft: 50,
+    textAlign: 'center',
+    marginTop: '-25px',
+    backgroundSize: 'cover',
+    backgroundpPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    'WebkitPrintColorAdjust': 'exact',
+    'colorAdjust': 'exact',
+}
 });
 
 function isEmpty(obj) {
@@ -85,6 +98,7 @@ class DocumentRequestAction extends Component {
       middleNameError: "",
       lastName: "",
       lastNameError: "",
+      imageName: "",
       dateOfBirth: null,
       dateOfBirthError: "",
       mobileNo: "",
@@ -621,6 +635,8 @@ getCitiesData = async (id, type, value='') => {
     }else{
       // window.location.reload();
     }
+    console.log("ddddd",data);
+    
 
     this.setState({
       appliedFor: data.degreeId || "",
@@ -629,6 +645,7 @@ getCitiesData = async (id, type, value='') => {
       chessSubDegree: data.chessDegreeTransferId || "",
 
       firstName: data.firstName || "",
+      imageName: data.imageName || "",
       middleName: data.middleName || "",
       lastName: data.lastName || "",
       dateOfBirth: dob,
@@ -955,6 +972,7 @@ getCitiesData = async (id, type, value='') => {
             paddingRight: 30,
           }}
         >
+          
           <Typography
             style={{
               color: "#1d5f98",
@@ -970,6 +988,7 @@ getCitiesData = async (id, type, value='') => {
               }}
               aria-label="Back"
             >
+              
               <Link
                 id="back-button"
                 style={{
@@ -980,8 +999,15 @@ getCitiesData = async (id, type, value='') => {
               >
                 <ArrowBackIcon />
               </Link>
+              
             </IconButton>{" "}
             Nucleus ID: {this.state.data.studentId}
+            <div className={classes.image} style={{
+              float: "right",
+              marginTop : 30,
+              backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${this.state.imageName})`,
+                }}>
+                </div>
           </Typography>
 
           <Divider

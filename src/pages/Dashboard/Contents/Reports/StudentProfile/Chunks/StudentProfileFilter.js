@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button, MenuItem } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(() => ({
@@ -49,7 +49,7 @@ const useStyles = makeStyles(() => ({
 
 const AddmissionDecisionFilter = props => {
     const classes = useStyles();
-    const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading } = props;
+    const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading, onHandleChangeAS, onHandleChangePG, onHandleChangeProgramme  } = props;
 
 
     return (
@@ -73,12 +73,98 @@ const AddmissionDecisionFilter = props => {
 
                     />
                 </div>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Academic Session</span>
+                    <TextField
+                      id="academicSessionId"
+                      name="academicSessionId"
+                      variant="outlined"
+                      value={values.academicSessionId}
+                      InputProps={{ classes: { input: classes.resize } }}
+                      onChange={e => {
+                        onHandleChangeAS(e);
+                    }}
+                    //   error={!!values.academicSessionIdError}
+                    //   helperText={values.academicSessionIdError}
+                      select
+                    >
+                      {values.academicSessionMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"academicSessionMenuItems"+dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    
+                </div>
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Programme Group</span>
+                    <TextField
+                      id="programmeGroupId"
+                      name="programmeGroupId"
+                      variant="outlined"
+                      value={values.programmeGroupId}
+                      InputProps={{ classes: { input: classes.resize } }}
+                      onChange={e => {
+                        onHandleChangePG(e);
+                    }}
+                    //   error={!!values.academicSessionIdError}
+                    //   helperText={values.academicSessionIdError}
+                      select
+                    >
+                      {values.programmeGroupsMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"programmeGroupsMenuItems"+dt.Id}
+                          value={dt.Id}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    
+                </div>
+
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Programme</span>
+                    <TextField
+                      id="programmeId"
+                      name="programmeId"
+                      variant="outlined"
+                      value={values.programmeId}
+                      InputProps={{ classes: { input: classes.resize } }}
+                      onChange={e => {
+                        onHandleChangeProgramme(e);
+                    }}
+                    //   error={!!values.academicSessionIdError}
+                    //   helperText={values.academicSessionIdError}
+                      select
+                    >
+                      {values.programmeIdMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"programmeIdMenuItems"+dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    
+                </div>
                 <div className={classes.actions}>
                     <Button
                         variant="contained"
                         color="primary"
                         className={classes.button}
-                        disabled={isLoading}
+                        // disabled={isLoading}
+                        disabled={values.isLoading || (!values.programmeId && !values.studentId )}
                         onClick={() => getDataByStatus()}
                     > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
                     <Button
@@ -107,7 +193,10 @@ AddmissionDecisionFilter.defaultProps = {
     values: {},
     onClearFilters: fn => fn,
     handleDateChange: fn => fn,
-    isLoading: false
+    isLoading: false.valueOf,
+    onHandleChangeAS: fn => fn,
+    onHandleChangePG: fn => fn,
+    onHandleChangeProgramme: fn => fn
 
 
 
@@ -116,6 +205,9 @@ AddmissionDecisionFilter.defaultProps = {
 
 AddmissionDecisionFilter.propTypes = {
     onHandleChange: PropTypes.func,
+    onHandleChangeAS: PropTypes.func,
+    onHandleChangePG: PropTypes.func,
+    onHandleChangeProgramme: PropTypes.func,
     values: PropTypes.object,
     getDataByStatus: PropTypes.func,
     onClearFilters: PropTypes.func,

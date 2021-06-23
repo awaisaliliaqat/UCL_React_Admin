@@ -43,7 +43,7 @@ class AdmissionApplicationReports extends Component {
             isReload: false,
             eventDate: null,
             academicSessionMenuItems: [],
-            academicSessionId: 64,
+            academicSessionId: 0,
             academicSessionIdError: ""
 
         }
@@ -108,7 +108,7 @@ class AdmissionApplicationReports extends Component {
             (json) => {
               if (json.CODE === 1) {
                 let array = json.DATA || [];
-                let arrayLength = array.length;
+                // let arrayLength = array.length;
                 let res = array.find( (obj) => obj.isActive === 1 );
                 console.log(res);
                 if(res){
@@ -397,7 +397,7 @@ class AdmissionApplicationReports extends Component {
 
     }
 
-    DownloadFile = (fileName) => {
+    DownloadFile = (fileName) => { 
         const data = new FormData();
         data.append("fileName", fileName);
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;

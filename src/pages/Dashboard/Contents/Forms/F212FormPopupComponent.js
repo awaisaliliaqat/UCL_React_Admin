@@ -172,8 +172,18 @@ function CourseRow(props) {
   return (
       <StyledTableRow key={rowData}>
         <StyledTableCell component="th" scope="row" align="center">
-          {rowData.preModuleId}
-          <TextField type="hidden" name="moduleNumber" value={rowData.preModuleId}/>
+         
+          {rowData.preModuleId==0?
+          <input name="moduleNumber"></input>
+          :(
+            <Fragment>
+              {rowData.preModuleId}
+            <input type="hidden" name="moduleNumber" value={rowData.preModuleId}></input>
+            </Fragment>
+            )
+          
+          }
+         
         </StyledTableCell>
         <StyledTableCell align="center">
           {rowData.preCourses.Label}
@@ -236,12 +246,15 @@ class F212FormPopupComponent extends Component {
       sessionAchievementsData: [],
       preSelectedCourseIMenutems:[],
       preSelectedCourseIMenutemsDefault:[],
+      endYearAchievementMenuItems:[], 
+      endYearAchievementError: "",
+      endYearAchievementId:"",
       studentInfo: ""
     };
   }
 
 
-
+  
   
   getStudentDetail = async (studentId=0) => {
     this.setState({ isLoading: true });
@@ -494,6 +507,7 @@ class F212FormPopupComponent extends Component {
       preCourses: {},
       preMarks: "",
       courseRowDataArray: [],
+      endYearAchievementId:"",
     });
     this.props.f212FormPopupClose();
   };
@@ -509,6 +523,22 @@ class F212FormPopupComponent extends Component {
     }
     return isValid;
   };
+
+
+  isYearEndValid = () => {
+    let isValid = true;
+
+    let endYearAchievementId = parseInt(document.getElementById("endYearAchievementId").value);
+    
+    if (isNaN(endYearAchievementId)) {
+      this.setState({ endYearAchievementError: "Please select year end achievement." });
+      document.getElementById("endYearAchievementId").focus();
+      isValid = false;
+    } else {
+      this.setState({ endYearAchievementError: "" });
+    }
+    return isValid;
+  };  
 
   isPreCoursesValid = () => {
     let isValid = true;
@@ -566,10 +596,12 @@ class F212FormPopupComponent extends Component {
   };
 
   handeAddCourseRow = () => {
+   
     if (
       !this.isPreModuleValid() ||
       !this.isPreCoursesValid() ||
-      !this.isMarksValid()
+      !this.isMarksValid()||
+      !this.isYearEndValid()
     ) {
       return;
     }
@@ -602,6 +634,7 @@ class F212FormPopupComponent extends Component {
       preCourses: {},
       preMarks: "",
       preResetMarks: 0,
+      
     });
 
     let preSelectedCourseIMenutems = [...this.state.preSelectedCourseIMenutemsDefault] || [];
@@ -669,6 +702,35 @@ class F212FormPopupComponent extends Component {
     });
   };
 
+
+  onHandleChange = (e) => {
+    const { name, value } = e.target;
+  
+    const errName = `${name}Error`;
+    switch (name) {
+      case "academicSessionId":
+        this.setState({
+          courseId: "",
+          tableData:[]
+        });
+        this.loadData(value, this.props.data.studentId);
+      break;
+      case "endYearAchievementId":
+        this.setState({
+          endYearAchievementId:value
+        });
+        
+      break;
+      default:
+    }
+
+
+    this.setState({
+      [name]: value,
+      [errName]: "",
+    });
+  };
+
   handleClickOnPreSelectedCourses(obj) {
     this.handleSetPreCourses(obj);
   }
@@ -699,7 +761,8 @@ class F212FormPopupComponent extends Component {
             preCourseMenuItems: this.props.preCourseMenuItems || [],
             preModuleMenuItems: this.props.preModuleMenuItems || [],
             academicSessionId: this.props.data.academicSessionId || "",
-            academicSessionMenuItems: this.props.academicSessionMenuItems || []
+            academicSessionMenuItems: this.props.academicSessionMenuItems || [],
+            endYearAchievementMenuItems: this.props.endYearAchievementMenuItems || []
           });
           this.loadProgrammeCoursesSelction(this.props.data.academicSessionId, this.props.data.programmeGroupId, this.props.data.studentId);
           this.loadAllSessionAchievementsData(this.props.data.studentId);
@@ -711,6 +774,7 @@ class F212FormPopupComponent extends Component {
 
   
   render() {
+    console.log("PROPS",this.props)
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -756,36 +820,34 @@ class F212FormPopupComponent extends Component {
                 spacing={2}
                 style={{borderBottom: "1px solid rgb(58, 127, 187, 0.3)"}}
                 >
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                   <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18
-              }}
-            >
-              {"Student ID: "+data.studentNucleusId}
-            </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Student Name: "+data.studentName}
-            </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
-            </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                    style={{
+                      color: "#1d5f98",
+                      fontWeight: 600,
+                      fontSize: 18
+                    }}
+                  >
+                    {"Student ID: "+data.studentNucleusId}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "#1d5f98",
+                      fontWeight: 600,
+                      fontSize: 18
+                    }}
+                  >
+                    {"UOL No: "+this.state.studentInfo.uolNo}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "#1d5f98",
+                      fontWeight: 600,
+                      fontSize: 18,
+                    }}
+                  >
+                    {"Student Name: "+data.studentName}
+                  </Typography>
                   <Typography
               style={{
                 color: "#1d5f98",
@@ -795,6 +857,27 @@ class F212FormPopupComponent extends Component {
             >
               {"Gender: "+ this.state.studentInfo.gender}
             </Typography>
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Programme: "+ this.state.studentInfo.degree}
+            </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                  <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                fontSize: 18,
+              }}
+            >
+              {"Date Of Birth: "+ this.state.studentInfo.dateOfBirth}
+            </Typography>
+                  
             <Typography
               style={{
                 color: "#1d5f98",
@@ -813,17 +896,6 @@ class F212FormPopupComponent extends Component {
             >
               {"Mobile Number: "+ this.state.studentInfo.mobileNo}
             </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                  <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Email: "+this.state.studentInfo.email}
-            </Typography>
             <Typography
               style={{
                 color: "#1d5f98",
@@ -831,19 +903,10 @@ class F212FormPopupComponent extends Component {
                 fontSize: 18,
               }}
             >
-              {"Blood Group: "+ this.state.studentInfo.bloodGroup}
-            </Typography>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              {"Degree: "+ this.state.studentInfo.degree}
+              {"Email: "+ this.state.studentInfo.email}
             </Typography>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     {this.state.studentInfo.imageName==null?
                     <img src={ProfilePlaceholder} 
                     style={{
@@ -868,16 +931,6 @@ class F212FormPopupComponent extends Component {
                   />
                 }
                   </Grid>
-                  
-            {/* <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                fontSize: 18,
-              }}
-            >
-              No. of Subjects Studied at UCL
-            </Typography> */}
             </Grid>
           </DialogTitle>
           <DialogContent >
@@ -906,6 +959,37 @@ class F212FormPopupComponent extends Component {
                   name="studentId"
                   value={data.studentId}
                 />
+
+               <Grid container>
+                  <Grid item xs={12} md={2} >
+                    <TextField
+                      name="endYearAchievementId"
+                      variant="outlined"
+                      label="Year End Achievement"
+                      onChange={this.onHandleChange}
+                      error={!!this.state.endYearAchievementError}
+                      helperText={this.state.endYearAchievementError ? this.state.endYearAchievementError : " "}
+                      required
+                      fullWidth
+                      select
+                      inputProps={{
+                        id:"endYearAchievementId",
+                        name:"endYearAchievementId"
+                      }}
+                    >
+                    {this.state.endYearAchievementMenuItems.map((dt, i) => (
+                    
+                      <MenuItem
+                        key={"endYearAchievementMenuItems"+dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))}
+                    </TextField>
+                  </Grid>
+                  
+                </Grid>
                 <Grid item xs={12} md={2}>
                   <TextField
                     id="academicSessionId"
@@ -1041,21 +1125,26 @@ class F212FormPopupComponent extends Component {
                     helperText={this.state.preResetMarksError ? this.state.preResetMarksError : " "}
                   />
                 </Grid>
-                <Grid item xs={1} style={{ textAlign: "center" }}>
-                  <IconButton
-                    color="primary"
-                    aria-label="Add"
-                    component="span"
-                    onClick={this.handeAddCourseRow}
-                    style={{ marginTop: "-1em" }}
-                  >
-                    <Tooltip title="Add New">
-                      <Fab color="primary" aria-label="add" size="small">
-                        <AddIcon />
-                      </Fab>
-                    </Tooltip>
-                  </IconButton>
-                </Grid>
+               
+                <Grid item xs={1} style={{ textAlign: "center", paddingTop:15 }}>
+                <IconButton
+                  color="primary"
+                  aria-label="Add"
+                  component="span"
+                disabled={!this.state.endYearAchievementId}
+                  onClick={this.handeAddCourseRow}
+                  style={{ marginTop: "-1em" }}
+                >
+                  <Tooltip title="Add New" disabled={!this.state.endYearAchievementId}>
+                    <Fab color="primary" aria-label="add" size="small" disabled={!this.state.endYearAchievementId}>
+                      <AddIcon />
+                    </Fab>
+                  </Tooltip>
+                </IconButton>
+              </Grid>
+               
+                
+               
                 <Grid item xs={12}>
                   {this.state.preSelectedCourseIMenutems.length>0 && <Typography color="primary" component="span">Pre Selected Courses <small>(click on for selection)</small>: &nbsp;</Typography>}
                   {this.state.preSelectedCourseIMenutems.map((d, i)=>

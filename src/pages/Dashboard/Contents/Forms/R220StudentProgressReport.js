@@ -126,6 +126,8 @@ class R218StudentProgressReport extends Component {
       fromDateLabel: "",
       toDateLabel: "",
       tableHeaderData: [],
+      tableAssignmentHeaderColumn: "",
+      tableBottomFirstColumn: "",
       tableData: [],
       academicSessionLabel: "____-____",
       programmeLabel: "",
@@ -196,19 +198,10 @@ class R218StudentProgressReport extends Component {
           if (json.CODE === 1) {
 
             let tableHeaderData = [];
-            let attendanceRecordCol = ["Del", "Att", "%Att", "Credits"];
-            tableHeaderData = tableHeaderData.concat(attendanceRecordCol);
-            let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
-            tableHeaderData = tableHeaderData.concat(assignmentGraders);
-            let seminarGrades = ["1", "2", "Credits"];
-            tableHeaderData = tableHeaderData.concat(seminarGrades);
-            let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
-            tableHeaderData = tableHeaderData.concat(subjectiveEvalGradesCol);
-            let examMarksCol = ["1", "2", "Credits"];
-            tableHeaderData = tableHeaderData.concat(examMarksCol);
-            let creditsCol = ["Poss", "Ach", "%Age"];
-            tableHeaderData = tableHeaderData.concat(creditsCol);
-            this.setState({tableHeaderData: tableHeaderData});
+
+            let assignmentGraders = null;
+
+           
            
             let data = json.DATA || [];
             let totalStudents = data.length;
@@ -225,6 +218,26 @@ class R218StudentProgressReport extends Component {
                 // totalPercentage: data[0].totalPercentage,
                 // resultClassification:  data[0].resultClassification,
               });
+
+              /*
+              Total Number Of Assignment Header Columns
+              */
+
+              let totalColumnsLength = data[0].totalColumns+1 || [];
+              if(totalColumnsLength){
+                assignmentGraders=[totalColumnsLength];
+                for(let i=0; i<totalColumnsLength; i++){
+                  let columnIndex=i+1;
+                  if(columnIndex==totalColumnsLength){
+                    assignmentGraders[i]="Credits";
+                  }else{
+                    assignmentGraders[i]=columnIndex+"";
+                  }
+                }
+
+                this.setState({tableAssignmentHeaderColumn: totalColumnsLength});
+                this.setState({tableBottomFirstColumn:(totalColumnsLength+20)-4});
+              }
               
               let allStudentData = [];
               for(let j=0; j<dataLength; j++){
@@ -279,7 +292,24 @@ class R218StudentProgressReport extends Component {
 
               this.setState({allStudentData: allStudentData});
 
-            }    
+            } 
+            
+            
+            // let tableHeaderData = [];
+            let attendanceRecordCol = ["Del", "Att", "%Att", "Credits"];
+            tableHeaderData = tableHeaderData.concat(attendanceRecordCol);
+            //let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
+            tableHeaderData = tableHeaderData.concat(assignmentGraders);
+            let seminarGrades = ["1", "2", "Credits"];
+            tableHeaderData = tableHeaderData.concat(seminarGrades);
+            let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
+            tableHeaderData = tableHeaderData.concat(subjectiveEvalGradesCol);
+            let examMarksCol = ["1", "2", "Credits"];
+            tableHeaderData = tableHeaderData.concat(examMarksCol);
+            let creditsCol = ["Poss", "Ach", "%Age"];
+            tableHeaderData = tableHeaderData.concat(creditsCol);
+            this.setState({tableHeaderData: tableHeaderData});
+
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
@@ -385,7 +415,7 @@ class R218StudentProgressReport extends Component {
                       <TableRow>
                         <StyledTableCell align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
                         <StyledTableCell align="center" colSpan="4">Attendance Record</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="9">Assignment Graders</StyledTableCell>
+                        <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn}>Assignment Graders</StyledTableCell>
                         <StyledTableCell align="center" colSpan="3">Seminar Grades</StyledTableCell>
                         <StyledTableCell align="center" colSpan="5">Subjective Eval Grades</StyledTableCell>
                         <StyledTableCell align="center" colSpan="3">Exam Marks</StyledTableCell>
@@ -403,7 +433,7 @@ class R218StudentProgressReport extends Component {
                     <TableBody>
                       <Fragment>
                         <TableRow>
-                          <StyledTableCell colSpan="29" style={{ backgroundColor: "#e1e3e8" }}>&nbsp;</StyledTableCell>
+                          <StyledTableCell colSpan={this.state.tableAssignmentHeaderColumn+20} style={{ backgroundColor: "#e1e3e8" }}>&nbsp;</StyledTableCell>
                         </TableRow>
                         {d.tableData.length > 0 ? (
                           <Fragment>
@@ -415,20 +445,20 @@ class R218StudentProgressReport extends Component {
                             </StyledTableRow>
                           ))}
                           <TableRow>
-                            <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderBottom:"none", fontWeight:600}}>Accumulated Credit:&emsp;</StyledTableCell>
+                            <StyledTableCell colSpan={this.state.tableBottomFirstColumn} align="right" style={{borderRight:"none", borderBottom:"none", fontWeight:600}}>Accumulated Credit:&emsp;</StyledTableCell>
                             <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>{d.totalPOS}</StyledTableCell>
                             <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>{d.totalAchieved}</StyledTableCell>
                             <StyledTableCell align="center" style={{borderRight:"none", borderLeft:"none", borderBottom:"none", fontWeight:600}}>{d.totalPercentage}</StyledTableCell>
                             <StyledTableCell style={{borderLeft:"none", borderBottom:"none", fontWeight:600}}></StyledTableCell>
                           </TableRow>
                           <TableRow>
-                            <StyledTableCell colSpan="25" align="right" style={{borderRight:"none", borderTop:"none", fontWeight:600}}>Result Classification:&emsp;</StyledTableCell>
+                            <StyledTableCell colSpan={this.state.tableBottomFirstColumn} align="right" style={{borderRight:"none", borderTop:"none", fontWeight:600}}>Result Classification:&emsp;</StyledTableCell>
                             <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none", fontWeight:600}}>&emsp;{d.resultClassification}</StyledTableCell>
                           </TableRow>
                           </Fragment>
                         ):(
                         <TableRow>
-                          <StyledTableCell colSpan="29">&nbsp;</StyledTableCell>
+                          <StyledTableCell colSpan={this.state.tableAssignmentHeaderColumn+20}>&nbsp;</StyledTableCell>
                         </TableRow>
                         )}
                       </Fragment>

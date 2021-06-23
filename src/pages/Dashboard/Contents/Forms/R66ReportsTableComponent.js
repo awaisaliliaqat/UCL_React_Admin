@@ -29,13 +29,14 @@ class R66ReportsTableComponent extends Component {
         //{ columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
-        { columnName: "SRNo", width: 80 },
-        { columnName: "nucluesId", width: 100 },
+        { columnName: "SRNo", width: 100 },
+        { columnName: "nucluesId", wordWrapEnabled: true },
         { columnName: "studentName", wordWrapEnabled: true },
-        { columnName: "schoolLabel", wordWrapEnabled: true },
-        { columnName: "programmeGroupLabel", wordWrapEnabled: true },
-        { columnName: "dateOfAdmission", width: 150},
-        { columnName: "statusLabel", width: 120}
+        { columnName: "pathway", wordWrapEnabled: true },
+        // { columnName: "schoolLabel", wordWrapEnabled: true },
+        // { columnName: "programmeGroupLabel", wordWrapEnabled: true },
+        // { columnName: "dateOfAdmission", width: 150},
+        // { columnName: "statusLabel", width: 120}
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
