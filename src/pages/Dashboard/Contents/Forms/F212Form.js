@@ -720,7 +720,7 @@ class F212Form extends Component {
           throw res;
         }
         return res.json();
-      })
+      }) 
       .then(
         (json) => {
           if (json.CODE === 1) {
