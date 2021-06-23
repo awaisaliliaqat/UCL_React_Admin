@@ -726,7 +726,13 @@ class F212Form extends Component {
           if (json.CODE === 1) {
             let data = json.DATA || [];
             let dataLength = data.length || 0;
-
+            if(dataLength==0){
+              if(this.state.mainPagestudentNucleusId){
+                this.loadModules(this.state.academicSessionId,data[0].programmeId)
+                this.loadProgrammeCourses(this.state.academicSessionId,data[0].programmeId)
+              }
+            }
+            
             for (let i=0; i<dataLength; i++) {
 
               let f212FormPopupData = {
@@ -1196,7 +1202,7 @@ class F212Form extends Component {
     let programmeCourseId = document.getElementsByName("programmeCourseId");
     let marks = document.getElementsByName("marks");
     let resetMarks = document.getElementsByName("resetMarks");
-    let endYearAchievementId = parseInt(document.getElementById("endYearAchievementId").value);
+    let endYearAchievementId = document.getElementById("endYearAchievementId").value;
 
 
     let  endYearAchievementLabel = ""; 

@@ -248,7 +248,7 @@ class F212FormPopupComponent extends Component {
       preSelectedCourseIMenutemsDefault:[],
       endYearAchievementMenuItems:[], 
       endYearAchievementError: "",
-      endYearAchievementId:"",
+      endYearAchievementId:0,
       studentInfo: ""
     };
   }
@@ -600,8 +600,8 @@ class F212FormPopupComponent extends Component {
     if (
       !this.isPreModuleValid() ||
       !this.isPreCoursesValid() ||
-      !this.isMarksValid()||
-      !this.isYearEndValid()
+      !this.isMarksValid()
+      // !this.isYearEndValid()
     ) {
       return;
     }
@@ -1131,12 +1131,16 @@ class F212FormPopupComponent extends Component {
                   color="primary"
                   aria-label="Add"
                   component="span"
-                disabled={!this.state.endYearAchievementId}
+                // disabled={!this.state.endYearAchievementId}
                   onClick={this.handeAddCourseRow}
                   style={{ marginTop: "-1em" }}
                 >
-                  <Tooltip title="Add New" disabled={!this.state.endYearAchievementId}>
-                    <Fab color="primary" aria-label="add" size="small" disabled={!this.state.endYearAchievementId}>
+                  <Tooltip title="Add New" 
+                  // disabled={!this.state.endYearAchievementId}
+                  >
+                    <Fab color="primary" aria-label="add" size="small" 
+                    // disabled={!this.state.endYearAchievementId}
+                    >
                       <AddIcon />
                     </Fab>
                   </Tooltip>
