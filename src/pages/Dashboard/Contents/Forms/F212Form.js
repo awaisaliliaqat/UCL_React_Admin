@@ -728,6 +728,9 @@ class F212Form extends Component {
             let dataLength = data.length || 0;
             if(dataLength!=0){
               if(this.state.mainPagestudentNucleusId){
+                this.setState({
+                    programmeId:data[0].programmeId
+                });
                 this.loadModules(this.state.academicSessionId,data[0].programmeId)
                 this.loadProgrammeCourses(this.state.academicSessionId,data[0].programmeId)
               }
@@ -1009,12 +1012,12 @@ class F212Form extends Component {
 
   onChangeStatusFormSubmit = async () => {
 
-    if (
-      !this.isAcademicSessionValid() 
-      || !this.isProgrammeGroupValid()
-      || !this.isProgrammeValid()
-      // || !this.isCourseValid()
-    ) { return; }
+    // if (
+    //   !this.isAcademicSessionValid() 
+    //   || !this.isProgrammeGroupValid()
+    //   || !this.isProgrammeValid()
+    //   // || !this.isCourseValid()
+    // ) { return; }
 
     let studentId = document.getElementById("studentId").value;
     let applicationStatusId = document.getElementById("applicationStatusId").value;
@@ -1190,10 +1193,10 @@ class F212Form extends Component {
 
   onStudentAchievementFormSubmit = async (e) => {
 
-    if (
-        !this.isAcademicSessionValid() 
-        || !this.isProgrammeValid()
-    ) { return; }
+    // if (
+    //     !this.isAcademicSessionValid() 
+    //     || !this.isProgrammeValid()
+    // ) { return; }
 
     
     let academicSessionId = document.getElementById("academicSessionIdSA").value;
