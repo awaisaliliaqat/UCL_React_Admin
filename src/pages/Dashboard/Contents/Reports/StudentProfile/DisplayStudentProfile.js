@@ -418,7 +418,7 @@ class DisplayAdmissionApplications extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                        let studentProgressReport = json.DATA[0].studentProgressReport || [];
+                        let studentProgressReport = json.DATA[0].studentProgressAllSessionsReport || [];
                         this.setState({studentProgressReport: studentProgressReport});
                         console.log("studentProgressReport");
                         let uolEnrollmentMarks = json.DATA[0].uolEnrollmentMarks || [];
@@ -1532,8 +1532,14 @@ class DisplayAdmissionApplications extends Component {
                                     Student Progress Report
                                 </span>
                             </div>
-                            
-                                <StudentProgressReport studentProgressReport={this.state.studentProgressReport}/>
+                            { this.state.studentProgressReport.map((data, index)=>
+                                <StudentProgressReport 
+                                key={"studentProgressReport"+index}
+                                data={data}
+                                isOpen={ index==0 ? true : false}
+                                // studentProgressReport={this.state.studentProgressReport}
+                                />
+                            )}
                             
                                 
                            
