@@ -3,8 +3,9 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Logo from "../../../../../../assets/Images/logo.png";
 import CloseIcon from "@material-ui/icons/Close";
-import { IconButton, Typography, CircularProgress, Grid } from "@material-ui/core";
+import { Collapse, Divider,IconButton, Typography, CircularProgress, Grid } from "@material-ui/core";
 import CustomizedSnackbar from "../../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {
   Table,
   TableBody,
@@ -137,7 +138,8 @@ class StudentProgressReport extends Component {
       totalPercentage: "_ _",
       resultClassification: "_ _ _",
       endDate:"",
-      studentProgressReport: []
+      studentProgressReport: [], 
+      isTrue: false
     };
   }
 
@@ -170,6 +172,11 @@ class StudentProgressReport extends Component {
     }
     this.setState({ isOpenSnackbar: false });
   };
+  handleChange=()=>{
+    this.setState({
+        isTrue: !this.state.isTrue,
+    });
+}
 
   
 
@@ -189,7 +196,8 @@ class StudentProgressReport extends Component {
      
     let tableData = [];
     let assignmentGraders = null;
-    let data = this.props.studentProgressReport ;
+    let data = this.props.data.studentProgressReport ;
+    console.log("ye aya hai>>>>",this.props);
     let dataLength = data.length;
     if(dataLength){
       this.setState({
@@ -306,6 +314,28 @@ class StudentProgressReport extends Component {
         <div className={classes.mainDiv}>
         <div className={classes.flexColumn}>
             <br/>
+            <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
+
+                            <IconButton
+                            // className={clsx(classes.expand, {[classes.expandOpen]: this.state.isTrue,})}
+                            onClick={this.handleChange}
+                            // aria-expanded={this.state.isTrue}
+                            aria-label="show more"
+                            >
+                            <ExpandMoreIcon
+                            color="primary" style={{color:"rgb(47 87 165)"}}/>
+                        </IconButton>
+                        {this.props.data.sessionLabel}
+                        <Divider
+                            style={{
+                            backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+                            opacity: "0.3",
+                            marginLeft: 50,
+                            marginTop: -10
+                            }}
+                        />
+                            </Typography>
+                            <Collapse in={this.state.isTrue}>
             <TableContainer 
               component={Paper} 
               style={{ 
@@ -374,6 +404,7 @@ class StudentProgressReport extends Component {
                 </TableBody>
               </Table>
             </TableContainer>
+            </Collapse>
             {/* 
             <br/><br/><br/><br/><br/><br/><br/><br/>
             <div>
@@ -384,6 +415,7 @@ class StudentProgressReport extends Component {
             </div> 
             */}
           </div>
+          
           <div className={classes.bottomSpace}></div>
         </div>
       </Fragment>
