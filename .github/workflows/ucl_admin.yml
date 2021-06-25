@@ -1,4 +1,4 @@
-ame: Node.js CI
+name: UCL Admin CI
 on:
   push:
     branches: [ test ]
