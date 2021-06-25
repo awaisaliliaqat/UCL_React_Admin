@@ -96,7 +96,6 @@ class AddmissionDecision extends Component {
                         })
                     } else {
                         alert('Failed to fetch, Please try again later.');
-                        console.log(error);
                     }
                 }
             );
