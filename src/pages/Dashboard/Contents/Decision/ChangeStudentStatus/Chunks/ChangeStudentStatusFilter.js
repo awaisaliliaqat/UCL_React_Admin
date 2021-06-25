@@ -4,6 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Divider from "@material-ui/core/Divider";
 import { TextField, Button, MenuItem } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { DatePicker } from "@material-ui/pickers";
+
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -48,8 +50,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 const ChangeStudentStatusFilter = (props) => {
+  
   const classes = useStyles();
-  const {values, onHandleChange, getDataByStatus, onClearFilters, isLoading} = props;
+  const {values, onHandleChange, getDataByStatus, isLoading, handleDateChange  } = props;
 
   return (
     <Fragment>
@@ -245,9 +248,33 @@ const ChangeStudentStatusFilter = (props) => {
         </TextField>
       </div>:
       ""
-
-
       }
+                <div className={classes.item} style={{
+                   width: "20%",
+                   float: "left",
+                   marginTop: 10,
+                   marginBottom: 10,
+                }}>
+                    <span className={classes.label}>User Date</span>
+                    <DatePicker
+                        // autoOk
+                        invalidDateMessage=""
+                        placeholder="User Date"
+                        disableFuture
+                        variant="inline"
+                        inputVariant="outlined"
+                        format="dd-MMM-yyyy"
+                        name="userDate"
+                        value={values.userDate}
+                        InputProps={{
+                            classes: { input: classes.resize }
+                        }}
+                        onChange={(event) => {
+                          handleDateChange(event);
+                        }}
+
+                    />
+                </div>
       
       <Divider
         style={{

@@ -572,6 +572,14 @@ class DisplayAdmissionApplications extends Component {
                         <div className={classes.flexColumn}>
                             <span className={classes.tagTitle}>{data.degreeLabel || "N/A"}</span>
                             <span className={classes.tagTitle}>Nucleus ID: {data.studentId || "N/A"}</span>
+                            <span className={classes.tagTitle}>{data.isActive==1? "Active": "Deactive"}</span>
+                            {data.isActive==0?
+                            <Fragment>
+                                <span className={classes.tagTitle}>{data.statusChangeReason}</span>
+                                <span className={classes.tagTitle}>{data.statusChangeDate}</span>
+                            </Fragment>
+                            :""
+                            }
                         </div>
 
                         <div className={classes.image} style={{
