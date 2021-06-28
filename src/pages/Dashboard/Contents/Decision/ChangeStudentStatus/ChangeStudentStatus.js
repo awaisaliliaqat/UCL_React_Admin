@@ -14,6 +14,7 @@ import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/Cus
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ChangeStatusTableComponent from "./Chunks/ChangeStatusTableComponent";
 import { Button } from "@material-ui/core";
+import { format } from "date-fns";
 
 class ChangeStudentStatus extends Component {
   constructor(props) {
@@ -28,6 +29,7 @@ class ChangeStudentStatus extends Component {
       sessionId: "",
       reasonId:"",
       otherReasonId:"",
+      userDate: null,
       sessionData: [],
       reasonData: [],
       otherReasonData: [],
@@ -323,6 +325,11 @@ class ChangeStudentStatus extends Component {
       [name]: value,
     });
   };
+  handleDateChange = (date) => {
+    this.setState({
+      userDate : date
+      });
+}
 
   onCheckClick = (e, row = {}) => {
     const { checked } = e.target;
@@ -351,6 +358,7 @@ class ChangeStudentStatus extends Component {
   }
 
   render() {
+    const userDate = format(this.state.userDate || new Date("2000-01-01"),"dd-MM-yyyy");
     const columns = [
       { name: "studentId", title: "Nucleus Id" },
       //{ name: "firstName", title: "Name", getCellValue: (rowData) => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}},
@@ -432,6 +440,7 @@ class ChangeStudentStatus extends Component {
             values={this.state}
             getDataByStatus={() => this.getData()}
             onHandleChange={(e) => this.onHandleChange(e)}
+            handleDateChange={(e) => this.handleDateChange(e)}
           />
           <div
             style={{
@@ -469,6 +478,7 @@ class ChangeStudentStatus extends Component {
           <input type="hidden" name="sessionId" value={this.state.sessionId} />
           <input type="hidden" name="reasonId" value={this.state.reasonId} />
           <input type="hidden" name="otherReasonId" value={this.state.otherReasonId||0} />
+          <input type="hidden" name="userDate" value={userDate||""} />
           <input type="hidden" id="statusValue" name="status" value="" />
           {this.state.editRecord.map((item) => {
             if (item.checked) {

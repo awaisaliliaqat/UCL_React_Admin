@@ -96,7 +96,6 @@ class AddmissionDecision extends Component {
                         })
                     } else {
                         alert('Failed to fetch, Please try again later.');
-                        console.log(error);
                     }
                 }
             );
@@ -138,7 +137,6 @@ class AddmissionDecision extends Component {
                   isReload: false,
                 });
               } else {
-                console.log(error);
                 this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
               }
             }
@@ -165,7 +163,6 @@ class AddmissionDecision extends Component {
                     this.setState({
                         statusTypeData: json.DATA,
                     });
-                    console.log(json.DATA);
                 },
                 (error) => {
                     if (error.status === 401) {
@@ -175,7 +172,6 @@ class AddmissionDecision extends Component {
                         })
                     } else {
                         alert('Failed to fetch, Please try again later.');
-                        console.log(error);
                     }
                 }
             );
@@ -200,7 +196,6 @@ class AddmissionDecision extends Component {
                     this.setState({
                         DecisionData: json.DATA || [],
                     });
-                    console.log(json.DATA);
                 },
                 (error) => {
                     if (error.status === 401) {
@@ -210,7 +205,6 @@ class AddmissionDecision extends Component {
                         })
                     } else {
                         alert('Failed to fetch, Please try again later.');
-                        console.log(error);
                     }
                 }
             );
@@ -244,7 +238,6 @@ class AddmissionDecision extends Component {
                     } else {
                         alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
                     }
-                    console.log(json);
                 },
                 error => {
                     if (error.status === 401) {
@@ -254,7 +247,6 @@ class AddmissionDecision extends Component {
                         })
                     } else {
                         alert('Failed to fetch, Please try again later.');
-                        console.log(error);
                     }
                 });
         this.setState({
@@ -306,7 +298,6 @@ class AddmissionDecision extends Component {
                         })
                     } else {
                         alert('Failed to fetch, Please try again later.');
-                        console.log(error);
                     }
                 }
             );
@@ -360,7 +351,6 @@ class AddmissionDecision extends Component {
                     } else {
                         alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
                     }
-                    console.log(json);
                 },
                 error => {
                     if (error.status === 401) {
@@ -370,7 +360,6 @@ class AddmissionDecision extends Component {
                         })
                     } else {
                         alert('Failed to fetch, Please try again later.');
-                        console.log(error);
                     }
                 });
         this.setState({
@@ -412,7 +401,6 @@ class AddmissionDecision extends Component {
                             tempLink.setAttribute("download", `AdmissionDecisionStatus.xlsx`);
                             tempLink.href = csvURL;
                             tempLink.click();
-                            console.log(json);
                         }
                     },
                     error => {
@@ -423,7 +411,6 @@ class AddmissionDecision extends Component {
                             })
                         } else {
                             alert('Failed to fetch, Please try again later.');
-                            console.log(error);
                         }
                     });
             this.setState({
