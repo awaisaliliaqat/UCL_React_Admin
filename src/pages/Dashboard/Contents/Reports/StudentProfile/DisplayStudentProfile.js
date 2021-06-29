@@ -573,12 +573,13 @@ class DisplayAdmissionApplications extends Component {
                             <span className={classes.tagTitle}>{data.degreeLabel || "N/A"}</span>
                             <span className={classes.tagTitle}>Nucleus ID: {data.studentId || "N/A"}</span>
                             <span className={classes.tagTitle}>{data.isActive==1? "Active": "Deactive"}</span>
-                            {data.isActive==0?
-                            <Fragment>
+                            {data.isActive==0 && data.statusChangeReason!==""?
                                 <span className={classes.tagTitle}>{data.statusChangeReason}</span>
+                                :""
+                            }
+                            {data.isActive==0 && data.statusChangeDate!==""?
                                 <span className={classes.tagTitle}>{data.statusChangeDate}</span>
-                            </Fragment>
-                            :""
+                                :""
                             }
                         </div>
 
