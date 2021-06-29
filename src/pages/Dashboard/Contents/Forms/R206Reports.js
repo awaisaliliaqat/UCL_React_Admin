@@ -1,30 +1,23 @@
 import React, { Component, Fragment, useState } from "react";
 import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button, Dialog, DialogContent} from "@material-ui/core";
 import {Typography, TextField, MenuItem} from "@material-ui/core";
-import ExcelIcon from "../../../../assets/Images/excel.png";
-import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import { format } from "date-fns";
 import R206ReportsTableComponent from "./R206ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
-import SearchIcon from "mdi-material-ui/FileSearchOutline";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import ZipIcon from "../../../../assets/Images/zip_export_icon.png";
 import { useDropzone } from "react-dropzone";
 
-function isEmpty(obj) { 
-  if (obj == null) return true;
-  if (obj.length > 0) return false;
-  if (obj.length === 0) return true;
-  if (typeof obj !== "object") return true;
-  for (var key in obj) {
-    if (hasOwnProperty.call(obj, key)) return false;
-  }
-  return true;
-}
+// function isEmpty(obj) { 
+//   if (obj == null) return true;
+//   if (obj.length > 0) return false;
+//   if (obj.length === 0) return true;
+//   if (typeof obj !== "object") return true;
+//   for (var key in obj) {
+//     if (hasOwnProperty.call(obj, key)) return false;
+//   }
+//   return true;
+// }
 
 function MyDropzone(props) {
 
