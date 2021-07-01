@@ -173,7 +173,7 @@ class F36FormPopupComponent extends Component {
   onFormSubmit = async (e) => {
     //e.preventDefault();
     if (
-      !this.isFileValid() ||
+      // !this.isFileValid() ||
       !this.isobtainedMarksValid() ||
       !this.isRemarksValid()
     ) {
@@ -281,7 +281,7 @@ class F36FormPopupComponent extends Component {
                   aria-label="download"
                   color="primary"
                 >
-                  <CloudDownloadOutlinedIcon />
+                  <CloudDownloadOutlinedIcon/>
                 </IconButton>
               </Tooltip>
               {assignmentGradedData.gradedAssignmentUrl && 
@@ -315,6 +315,24 @@ class F36FormPopupComponent extends Component {
                   id="id"
                   name="id"
                   defaultValue={this.props.recordId}
+                />
+                <TextField
+                  type="hidden"
+                  id="assignmentId"
+                  name="assignmentId"
+                  defaultValue={this.props.assignmentId}
+                />
+                <TextField
+                  type="hidden"
+                  id="assignmentSectionId"
+                  name="assignmentSectionId"
+                  defaultValue={this.props.assignmentSectionId}
+                />
+                <TextField
+                  type="hidden"
+                  id="studentId"
+                  name="studentId"
+                  defaultValue={this.props.studentId}
                 />
                 <Grid item xs={12} md={6}>
                   <MyDropzone files={this.state.files} onChange={event => this.handleFileChange(event)} disabled={this.state.uploadLoading} />
