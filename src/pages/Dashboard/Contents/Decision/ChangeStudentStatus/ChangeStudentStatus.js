@@ -511,6 +511,7 @@ class ChangeStudentStatus extends Component {
                 disabled={
                   !this.state.sessionId ||
                   !this.state.reasonId ||
+                  !this.state.userDate||
                   this.state.editRecord.length <= 0 ||
                   this.state.isLoading
                 }

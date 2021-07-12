@@ -92,9 +92,9 @@ const styles = (theme) => ({
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: "rgb(47, 87, 165)", //theme.palette.common.black,
-    color: theme.palette.common.white,
-    fontWeight: 500,
+    backgroundColor: "rgb(118, 118, 119)", //theme.palette.common.black,
+    color: 'black',
+    fontWeight: 900,
     border: "1px solid white",
     fontSize: 13,
     padding: 5
@@ -375,8 +375,8 @@ class R218StudentProgressReport extends Component {
                   <span className={classes.title}>Universal College Lahore</span>
                   <br />
                 <span className={classes.subTitle}>{this.state.programmeLabel}</span>
-                  <br/>
-                  <span className={classes.subTitle}>Total Students: {this.state.totalStudents}</span>
+                  {/* <br/>
+                  <span className={classes.subTitle}>Total Students: {this.state.totalStudents}</span> */}
                   <br/>
                   <br/>
                   <span className={classes.subTitle}>{this.state.studentLabel}</span>
