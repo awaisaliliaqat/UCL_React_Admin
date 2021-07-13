@@ -418,7 +418,7 @@ class DisplayAdmissionApplications extends Component {
             .then(
                 json => {
                     if (json.CODE === 1) {
-                        let studentProgressReport = json.DATA[0].studentProgressReport || [];
+                        let studentProgressReport = json.DATA[0].studentProgressAllSessionsReport || [];
                         this.setState({studentProgressReport: studentProgressReport});
                         console.log("studentProgressReport");
                         let uolEnrollmentMarks = json.DATA[0].uolEnrollmentMarks || [];
@@ -572,6 +572,14 @@ class DisplayAdmissionApplications extends Component {
                         <div className={classes.flexColumn}>
                             <span className={classes.tagTitle}>{data.degreeLabel || "N/A"}</span>
                             <span className={classes.tagTitle}>Nucleus ID: {data.studentId || "N/A"}</span>
+                            <span className={classes.tagTitle}>{data.isActive==1? "Active": "Deactive"}</span>
+                            {data.isActive==0?
+                            <Fragment>
+                                <span className={classes.tagTitle}>{data.statusChangeReason}</span>
+                                <span className={classes.tagTitle}>{data.statusChangeDate}</span>
+                            </Fragment>
+                            :""
+                            }
                         </div>
 
                         <div className={classes.image} style={{
@@ -1532,8 +1540,14 @@ class DisplayAdmissionApplications extends Component {
                                     Student Progress Report
                                 </span>
                             </div>
-                            
-                                <StudentProgressReport studentProgressReport={this.state.studentProgressReport}/>
+                            { this.state.studentProgressReport.map((data, index)=>
+                                <StudentProgressReport 
+                                key={"studentProgressReport"+index}
+                                data={data}
+                                isOpen={ index==0 ? true : false}
+                                // studentProgressReport={this.state.studentProgressReport}
+                                />
+                            )}
                             
                                 
                            
