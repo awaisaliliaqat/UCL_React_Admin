@@ -92,7 +92,7 @@ const styles = (theme) => ({
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: "rgb(118, 118, 119)", //theme.palette.common.black,
+    backgroundColor: "rgb(162 162 177)", //theme.palette.common.black,
     color: 'black',
     fontWeight: 900,
     border: "1px solid white",
@@ -366,24 +366,33 @@ class R218StudentProgressReport extends Component {
         <div className={classes.mainDiv}>
           <table style={{width:"100%"}}>
             <thead>
-              <div style={{display: "inlineBlock"}}>
+              
+            </thead>
+            <tbody>
+              {this.state.allStudentData.map((d, i) => 
+              <div className={classes.flexColumn}>
+                <br/>
+                <TableContainer component={Paper} style={{overflowX: "inherit"}}>
+
+                  <div style={{display: "inlineBlock"}}>
                 <div 
                   style={{
                     display: "inline-block"
                   }}
                 >
-                  <span className={classes.title}>Universal College Lahore</span>
-                  <br />
-                <span className={classes.subTitle}>{this.state.programmeLabel}</span>
+                  <span className={classes.title} style={{padding:8}}>Universal College Lahore</span>
+                      <br/>
+                  <span className={classes.subTitle} style={{padding:8}}>{d.studentName}</span>
+                <span className={classes.subTitle} style={{padding:8}}>{this.state.studentLabel}</span>
+                  <br/>
+                <span className={classes.subTitle} style={{padding:8}}>{this.state.programmeLabel}</span>
                   {/* <br/>
                   <span className={classes.subTitle}>Total Students: {this.state.totalStudents}</span> */}
-                  <br/>
-                  <br/>
-                  <span className={classes.subTitle}>{this.state.studentLabel}</span>
+                  {/* <br/> */}
                 </div>
-                <div>
+                {/* <div>
                 
-                </div>
+                </div> */}
                 <div style={{display: "inline"}}>
                   <span
                     style={{
@@ -392,40 +401,35 @@ class R218StudentProgressReport extends Component {
                       textAlign: "center",
                       color: "#2f57a5",
                       width: 160,
-                      padding: 5,
+                      padding: 10,
                       border: "solid 2px #2f57a5",
                       display: "block",
                       float:"right",
-                      marginRight: 56
+                      marginBottom: 7
+                      // marginRight: 56,
+                      // marginTop: 40
                     }}
                   >
                     Progress Report<br/>Academic Year<br/>{this.state.academicSessionLabel}<br/>Upto<br/>{this.state.endDate}
                   </span>
                 </div>
               </div>
-            </thead>
-            <tbody>
-              {this.state.allStudentData.map((d, i) => 
-              <div className={classes.flexColumn}>
-                <br/>
-                <TableContainer component={Paper} style={{overflowX: "inherit"}}>
-                  <span className={classes.subTitle} style={{padding:8}}>{d.studentName}</span>
                   <Table size="small" className={classes.table} aria-label={"customized table"+i} size="small">
                     <TableHead>
                       <TableRow>
-                        <StyledTableCell align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="4">Attendance Record</StyledTableCell>
-                        <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn}>Assignment Graders</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="3">Seminar Grades</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="5">Subjective Eval Grades</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="3">Exam Marks</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="3">Credits</StyledTableCell>
-                        <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)", width:60 }}>Internal<br/>Transcript<br/>Grade</StyledTableCell>
+                        <StyledTableCell align="center" rowSpan="2" style={{border: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
+                        <StyledTableCell align="center" colSpan="4" style={{border: "1px solid rgb(47, 87, 165)" }}>Attendance Record</StyledTableCell>
+                        <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn} style={{border: "1px solid rgb(47, 87, 165)" }}>Assignment Graders</StyledTableCell>
+                        <StyledTableCell align="center" colSpan="3" style={{border: "1px solid rgb(47, 87, 165)" }}>Seminar Grades</StyledTableCell>
+                        <StyledTableCell align="center" colSpan="5" style={{border: "1px solid rgb(47, 87, 165)" }}>Subjective Eval Grades</StyledTableCell>
+                        <StyledTableCell align="center" colSpan="3" style={{border: "1px solid rgb(47, 87, 165)" }}>Exam Marks</StyledTableCell>
+                        <StyledTableCell align="center" colSpan="3" style={{border: "1px solid rgb(47, 87, 165)" }}>Credits</StyledTableCell>
+                        <StyledTableCell rowSpan="2" align="center" style={{ border: "1px solid rgb(47, 87, 165)", width:60 }}>Internal<br/>Transcript<br/>Grade</StyledTableCell>
                       </TableRow>
                       <TableRow>
                         { this.state.tableHeaderData && 
                           this.state.tableHeaderData.map((data, index)=> 
-                            <StyledTableCell key={data+index} align="center" >{data}</StyledTableCell>
+                            <StyledTableCell style={{border: "1px solid rgb(47, 87, 165)" }} key={data+index} align="center" >{data}</StyledTableCell>
                           )
                         }
                       </TableRow>
