@@ -42,7 +42,10 @@ class F36Form extends Component {
       popupTitle:"",
       recordId:"",
       fileName:"",
-      assignmentGradedData:{}
+      assignmentGradedData:{},
+      assignmentId: "",
+      assignmentSectionId: "", 
+      studentId: ""
     };
   }
 
@@ -63,14 +66,17 @@ class F36Form extends Component {
     });
   };
 
-  handlePopupOpen = (popupTitle, recordId, fileName, totalMarks, assignmentGradedData) => {
+  handlePopupOpen = (popupTitle, recordId, fileName, totalMarks, assignmentGradedData, assignmentId, assignmentSectionId, studentId) => {
     this.setState({ 
       popupTitle: popupTitle,
       recordId: recordId,
       fileName: fileName,
       popupBoxOpen: true,
       totalMarks: totalMarks,
-      assignmentGradedData: assignmentGradedData
+      assignmentGradedData: assignmentGradedData,
+      assignmentId: assignmentId,
+      studentId: studentId,
+      assignmentSectionId: assignmentSectionId
     });
   };
 
@@ -81,6 +87,9 @@ class F36Form extends Component {
       recordId:"",
       fileName:"",
       totalMarks:"",
+      assignmentId: "",
+      studentId: "",
+      assignmentSectionId: "",
       assignmentGradedData:{}
     });
   }
@@ -116,6 +125,9 @@ class F36Form extends Component {
             this.setState({assignmentsData: json.DATA || []});
             for (var i = 0; i < json.DATA.length; i++) {
               let recordId = json.DATA[i].studentAssignmentId;
+              let assignmentId= json.DATA[i].id;
+              let studentId = json.DATA[i].studentId;
+              let assignmentSectionId = json.DATA[i].sectionId;
               let popupTitle = json.DATA[i].nucleusId+" - "+json.DATA[i].studentName+" - "+json.DATA[i].sectionLabel+"\xa0\xa0\xa0("+json.DATA[i].label+")";
               let fileName = json.DATA[i].assignmentUrl;
               let isAssignmentGraded = json.DATA[i].isAssignmentGraded;
@@ -144,7 +156,7 @@ class F36Form extends Component {
                           :
                           {height:36, width:36, backgroundColor:"rgb(29, 95, 152)"}
                       }
-                      onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName, totalMarks, assignmentGradedData)}
+                      onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName, totalMarks, assignmentGradedData, assignmentId, assignmentSectionId, studentId )}
                     >
                       <EditIcon fontSize="small"/>
                     </Fab>
@@ -158,16 +170,22 @@ class F36Form extends Component {
                       onClick={(e)=>this.downloadFile(e, fileName)} 
                       aria-label="download"
                       color="primary"
+                      disabled={fileName=== ""|| fileName===null? true:false}
                     >
                       <CloudDownloadIcon />
                     </IconButton>
                   </Tooltip>
-                  {gradedAssignmentUrl && 
+                  {isAssignmentGraded===1 && 
                   <Tooltip title="Download Graded Assignemt">
                     <IconButton 
                       onClick={(e)=>this.downloadFile(e, gradedAssignmentUrl)} 
                       aria-label="download"
-                      style={{color:"rgb(76, 175, 80)"}}
+                      style={gradedAssignmentUrl==="" || gradedAssignmentUrl===null?
+                      {color: "primary"}
+                      :
+                      {color: "rgb(76, 175, 80)"}
+                        }
+                      disabled={gradedAssignmentUrl=== ""||gradedAssignmentUrl===null? true:false}
                     >
                       <CloudDownloadIcon />
                     </IconButton>
@@ -343,6 +361,9 @@ class F36Form extends Component {
         <F36FormPopupComponent
           recordId={this.state.recordId}
           fileName={this.state.fileName}
+          assignmentId={this.state.assignmentId}
+          studentId={this.state.studentId}
+          assignmentSectionId={this.state.assignmentSectionId}
           downloadFile={this.downloadFile}
           handlePopupClose={this.handlePopupClose}
           popupBoxOpen={this.state.popupBoxOpen}

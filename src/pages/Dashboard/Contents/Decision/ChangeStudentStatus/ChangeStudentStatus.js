@@ -500,7 +500,7 @@ class ChangeStudentStatus extends Component {
           right_button_text="Activate"
           disableRightButton={
             !this.state.sessionId ||
-            !this.state.reasonId || 
+            // !this.state.reasonId || 
             this.state.editRecord.length <= 0
           }
           bottomRightButtonAction={() => this.clickOnFormSubmit(1)}
@@ -511,6 +511,7 @@ class ChangeStudentStatus extends Component {
                 disabled={
                   !this.state.sessionId ||
                   !this.state.reasonId ||
+                  !this.state.userDate||
                   this.state.editRecord.length <= 0 ||
                   this.state.isLoading
                 }
