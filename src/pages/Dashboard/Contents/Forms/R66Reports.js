@@ -334,7 +334,7 @@ class R66Reports extends Component {
     if( !this.isSchoolValid() ) {return;}
       if (this.state.isDownloadPdf === false) {
           this.setState({isDownloadPdf: true})
-          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsPdfDownload?schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${this.state.courseId}`;
+          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsPdfDownload?academicSessionId=${this.state.academicSessionId}&schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${this.state.courseId}&pathwayId=${this.state.pathwayId}`;
         //const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
           await fetch(url, {
               method: "GET",
@@ -353,7 +353,7 @@ class R66Reports extends Component {
                     if(json){
                       var csvURL = window.URL.createObjectURL(json);
                       var tempLink = document.createElement("a");
-                      tempLink.setAttribute("download", `Students_List.pdf`);
+                      tempLink.setAttribute("download", `Students_List.xlsx`);
                       tempLink.href = csvURL;
                       tempLink.click();
                       console.log("downloadPDFData:", json);
@@ -546,8 +546,10 @@ class R66Reports extends Component {
                   <FilterIcon fontSize="default" color="primary" />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Export PDF">
+              {this.state.programmeGroupId ?
+              <Tooltip title="Export PDF" >
                 {this.state.isDownloadPdf ?
+
                   <CircularProgress 
                     size={14}
                     style={{cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`}}
@@ -555,8 +557,9 @@ class R66Reports extends Component {
                   :
                   <img 
                     alt="" 
-                    src={PDFIcon} 
+                    src={ExcelIcon} 
                     onClick={() => this.downloadPDFData()} 
+                    disabled="false"
                     style = {{
                       height: 22, 
                       width: 22,
@@ -566,6 +569,8 @@ class R66Reports extends Component {
                   />
                 }
               </Tooltip> 
+              :""
+            }
             </div>
           </div>
           <Divider
@@ -746,7 +751,7 @@ class R66Reports extends Component {
               <Button
                 variant="contained"
                 color="primary"
-                disabled={this.state.isLoading ||( !this.state.schoolId && !this.state.academicSessionId)}
+                disabled={this.state.isLoading ||(!this.state.programmeGroupId)}
                 onClick={() => this.handleGetData()}
                 style={{width:"100%", height:54, marginBottom:24}}
               > 
