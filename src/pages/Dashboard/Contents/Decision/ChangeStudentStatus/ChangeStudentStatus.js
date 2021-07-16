@@ -41,7 +41,10 @@ class ChangeStudentStatus extends Component {
       snackbarSeverity: "",
       programmeGroupId:"",
       programmeGroupsMenuItems:[],
-      totalStudents: []
+      totalStudents: [],
+      academicSessionMenuItems: [],
+      academicSessionId: 0,
+      academicSessionIdError: ""
     };
   }
 
@@ -66,6 +69,51 @@ class ChangeStudentStatus extends Component {
     this.setState({
       isOpenSnackbar: false,
     });
+  };
+
+  loadAcademicSessions = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C05CommonAcademicSessionsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let array = json.DATA || [];
+            // let arrayLength = array.length;
+            let res = array.find( (obj) => obj.isActive === 1 );
+            if(res){
+              this.setState({academicSessionId:res.ID});
+            }
+            this.setState({ academicSessionMenuItems: array });
+            
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
   };
 
   getProgrammeGroups = async () => {
@@ -108,7 +156,7 @@ class ChangeStudentStatus extends Component {
   getData = async () => {
     this.setState({isLoading:true});
     const reload = this.state.studentId === "";
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonStudentsView?studentId=${this.state.studentId}&studentName=${this.state.studentName}&programmeGroupId=${this.state.programmeGroupId}&isActive=${this.state.studentStatus}`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonStudentsView?studentId=${this.state.studentId}&studentName=${this.state.studentName}&programmeGroupId=${this.state.programmeGroupId}&isActive=${this.state.studentStatus}&academicSessionId=${this.state.academicSessionId}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -350,10 +398,12 @@ class ChangeStudentStatus extends Component {
   };
 
   componentDidMount() {
+    this.loadAcademicSessions();
     this.getProgrammeGroups();
     this.getSessionData();
     this.getReasonsData();
     this.getOtherReasonsData();
+    
     //this.getData();
   }
 
