@@ -283,11 +283,12 @@ class F221Form extends Component {
             let array = json.DATA || [];
             let arrayLength = array.length;
             let res = array.find( (obj) => obj.isActive === 1 );
-            this.setState({newAcademicSessionId:array[0].ID});
-            this.loadNewProgrammeGroups(this.state.newAcademicSessionId);
+            // this.setState({newAcademicSessionId:array[0].ID});
+           
             
             if(res){
               this.setState({newAcademicSessionId:res.ID});
+              // this.loadNewProgrammeGroups(this.state.newAcademicSessionId);
               this.loadNewProgrammeGroups(res.ID);
             }
             this.setState({ newAcademicSessionMenuItems: array });
@@ -1849,7 +1850,7 @@ class F221Form extends Component {
                     left_button_text="View"
                     left_button_hide={true}
                     bottomLeftButtonAction={() => this.viewReport()}
-                    right_button_text="Promote"
+                    right_button_text="Save"
                     bottomRightButtonAction={() => this.onFormSubmit()}
                     disableRightButton={!this.state.pathway}
                     loading={this.state.isLoading}
