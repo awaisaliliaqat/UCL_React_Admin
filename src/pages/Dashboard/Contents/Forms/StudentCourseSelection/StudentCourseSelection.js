@@ -17,7 +17,9 @@ class StudentCourseSelection extends Component {
       isLoading: false,
       admissionData: [],
       coursesData: [],
+      previousCoursesData: [],
       selectedCoursesData: [],
+      
       achivementsData: [],
       moduleData: [],
       isOpenActionMenu: false,
@@ -121,6 +123,57 @@ class StudentCourseSelection extends Component {
               isOpenActionMenu: true,
               selectedData: rowData,
               selectedCoursesData: selectedCoursesData
+            });
+          } else {
+            alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            alert("Failed to fetch, Please try again later.");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      viewLoading: false,
+    });
+  };
+
+
+
+  getPreviousCouresData = async (rowData) => {
+    this.setState({
+      viewLoading: true,
+    });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsPreviousOfferedCoursesView?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&studentId=${rowData.id}`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let previousCoursesData = json.DATA || [];
+            
+            this.setState({
+               previousCoursesData: json.DATA || [],
+              // isOpenActionMenu: true,
+              // selectedData: rowData,
+              // selectedCoursesData: selectedCoursesData
             });
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
@@ -557,6 +610,7 @@ class StudentCourseSelection extends Component {
                 onClick={() => {
                   this.onReadOnly();
                   this.getCouresData(rowData);
+                  this.getPreviousCouresData(rowData)
                   this.getModulesData(rowData);
                   this.getStudentAchivementsData(rowData);
                 }}
@@ -588,6 +642,7 @@ class StudentCourseSelection extends Component {
                 disabled={this.state.viewLoading}
                 onClick={() => {
                   this.getCouresData(rowData);
+                  this.getPreviousCouresData(rowData);
                   this.getModulesData(rowData);
                   this.getStudentAchivementsData(rowData);
                 }}
@@ -633,6 +688,7 @@ class StudentCourseSelection extends Component {
           open={this.state.isOpenActionMenu}
           handleClose={() => this.setState({ isOpenActionMenu: false, readOnly: false })}
           selectedData={this.state.selectedData}
+          previousCoursesData={this.state.previousCoursesData}
           coursesData={this.state.coursesData}
           moduleData={this.state.moduleData}
           achivementsData={this.state.achivementsData}

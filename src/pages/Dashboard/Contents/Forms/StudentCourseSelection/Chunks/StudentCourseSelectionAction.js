@@ -98,7 +98,7 @@ class StudentCourseSelectionAction extends Component {
 
     render() {
         
-        const { achivementsData,moduleData, coursesData, handleSetCourses, selectedCoursesData, handleCheckboxChange, selectedData, open, handleClose, onClear, onSave, readOnly} = this.props;
+        const { achivementsData,moduleData, previousCoursesData,coursesData, handleSetCourses, selectedCoursesData, handleCheckboxChange, selectedData, open, handleClose, onClear, onSave, readOnly} = this.props;
         const columns = [
             //{ name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '14%' } },
             //{ name: "Course Code", dataIndex: "courseCode", sortable: false, customStyleHeader: { width: '14%' } },
@@ -138,6 +138,14 @@ class StudentCourseSelectionAction extends Component {
                     )
                 }, sortable: false, customStyleHeader: { width: '10%', textAlign: 'center' }, align: 'center'
             },
+        ]
+
+        const previouscolumns = [
+            //{ name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '14%' } },
+            //{ name: "Course Code", dataIndex: "courseCode", sortable: false, customStyleHeader: { width: '14%' } },
+            { name: "Session", renderer: rowData => { return ( <Fragment>{rowData.sessionLabel}</Fragment> )}, sortable: false, customStyleHeader: { width: '20%' }},
+            { name: "Course Title", renderer: rowData => { return ( <Fragment>{rowData.courseTitle}</Fragment> )}, sortable: false, customStyleHeader: { width: '20%' }},
+           
         ]
 
         const modulesColumns = [
@@ -250,6 +258,9 @@ class StudentCourseSelectionAction extends Component {
                                         )}
                                     />
                                     {/* <TablePanel data={selectedCoursesData} sortingEnabled columns={columns} /> */}
+                                   
+                                       
+                                   
                                     <Table aria-label="customized table">
                                         <TableHead>
                                             <TableRow>
@@ -296,6 +307,26 @@ class StudentCourseSelectionAction extends Component {
                                         ))}
                                         </TableBody>
                                     </Table>
+                                    <br></br>
+                                    <br></br>
+                                    <Table aria-label="customized table">
+                                        <TableHead>
+                                            <TableRow>
+                                            {previouscolumns.map((row) => (
+                                                <StyledTableCell key={"L"+row.name}>{row.name}</StyledTableCell>
+                                            ))}
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {previousCoursesData.map((rowData, index) => (
+                                            <StyledTableRow key={"R"+rowData.courseTitle}>
+                                                <StyledTableCell>{rowData.sessionLabel}</StyledTableCell>
+                                                <StyledTableCell>{rowData.courseTitle}</StyledTableCell>
+                                                
+                                            </StyledTableRow>
+                                        ))}
+                                        </TableBody>
+                                    </Table>    
                                 </Grid>
                             </Grid>
                         </div>
