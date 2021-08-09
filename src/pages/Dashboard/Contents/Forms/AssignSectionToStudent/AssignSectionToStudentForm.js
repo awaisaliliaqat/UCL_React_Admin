@@ -654,7 +654,7 @@ class AssignSectionToStudentForm extends Component {
                                 })}
                             </TextField>
                         </Grid>
-
+                              
                         <Grid item xs={4}>
                             <TextField
                                 id="programmeId"
@@ -888,6 +888,7 @@ class AssignSectionToStudentForm extends Component {
                     <input type="hidden" name="courseId" value={this.state.offeredCoursesId} />
                     <input type="hidden" name="lectureSectionId" value={this.state.assigneLectureSectionId} />
                     <input type="hidden" name="tutorialSectionId" value={this.state.assigneTutorialSectionId} />
+                    <input type="hidden" name="sessionId" value={this.state.sessionId} />
                     {this.state.studentsData.map(item => {
                         if (item.isChecked) {
                             return (
