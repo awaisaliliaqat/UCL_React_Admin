@@ -442,7 +442,10 @@ class R46Reports extends Component {
           tableData: []
         });
         this.getCourses(value);
-    break;
+      break;
+      case "startTime":
+        this.setState({tableData:[]});
+      break;
     default:
         break;
     }
