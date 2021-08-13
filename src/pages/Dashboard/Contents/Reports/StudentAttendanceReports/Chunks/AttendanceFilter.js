@@ -57,6 +57,50 @@ const AttendanceFilter = props => {
     return (
         <Fragment>
             <div className={classes.container}>
+
+
+               
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                <span className={classes.label}>Session*</span>    
+                <TextField
+                id="academicSessionId"
+                name="academicSessionId"
+                variant="outlined"
+                placeholder="Session"
+                InputProps={{ classes: { input: classes.resize } }}
+                fullWidth
+                select
+                onChange={e => {
+                    onHandleChange(e);
+                }}
+                value={values.academicSessionId}
+                error={!!values.academicSessionIdError}
+                helperText={values.academicSessionIdError ? values.academicSessionIdError : ""}
+                // disabled={!this.state.schoolId}
+              >
+                {values.academicSessionMenuItems && !values.isLoading ? 
+                  values.academicSessionMenuItems.map((dt, i) => (
+                    <MenuItem
+                      key={"academicSessionMenuItems"+dt.ID}
+                      value={dt.ID}
+                    >
+                      {dt.Label}
+                    </MenuItem>
+                  ))
+                :
+                  <div 
+                    container 
+                    justify="center"
+                  >
+                    <CircularProgress />
+                  </div>
+                }
+              </TextField>
+              </div>
+               
+
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>

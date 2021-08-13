@@ -55,6 +55,9 @@ class AttendanceReports extends Component {
             isOpenSnackbar: false,
             snackbarMessage: "",
             snackbarSeverity: "",
+            academicSessionMenuItems: [],
+            academicSessionId: "",
+            academicSessionIdError: "",
             totalStudents: []
 
         }
@@ -62,7 +65,55 @@ class AttendanceReports extends Component {
 
     componentDidMount() {
         this.getSectionTypeData();
+        this.loadAcademicSessions();
     }
+
+    loadAcademicSessions = async () => {
+        this.setState({ isLoading: true });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonAcademicSessionsView`;
+        await fetch(url, {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+          }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+          })
+          .then(
+            (json) => {
+              if (json.CODE === 1) {
+                let array = json.DATA || [];
+                let arrayLength = array.length;
+                let res = array.find( (obj) => obj.isActive === 1 );
+                if(res){
+                  this.setState({academicSessionId:res.ID});
+                  
+                }
+                this.setState({ academicSessionMenuItems: array });
+              } else {
+                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+              }
+              console.log("loadAcademicSessions", json);
+            },
+            (error) => {
+              if (error.status == 401) {
+                this.setState({
+                  isLoginMenu: true,
+                  isReload: false,
+                });
+              } else {
+                console.log(error);
+                this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+              }
+            }
+          );
+        this.setState({ isLoading: false });
+      };
+
 
     getSectionTypeData = async () => {
         this.setState({
@@ -114,7 +165,7 @@ class AttendanceReports extends Component {
         this.setState({
             isLoading: true
         })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C43CommonAcademicsSectionsView?sectionTypeId=${sectionTypeId}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C43CommonAcademicsSectionsView?sectionTypeId=${sectionTypeId}&sessionId=${this.state.academicSessionId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -229,7 +280,17 @@ class AttendanceReports extends Component {
                     attendanceData: []
                 })
                 this.getSectionData(value);
-                break;
+            break;
+            case "academicSessionId":
+                this.setState({
+                    sectionTypeId: 0,
+                    sectionObject: {},
+                    sectionId: 0,
+                    sectionData: [],
+                    attendanceData: []
+                });
+                // this.getCourses(value);
+            break;
             default:
                 break;
         }
