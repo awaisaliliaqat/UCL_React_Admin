@@ -13,7 +13,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { Button, Chip, TextField } from '@material-ui/core';
+import { Button, Chip, TextField,MenuItem } from '@material-ui/core';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Grid from '@material-ui/core/Grid';
 
@@ -90,6 +90,8 @@ const DialogActions = withStyles((theme) => ({
 
 class StudentCourseSelectionAction extends Component {
 
+    
+
     constructor(props) {
         super(props);
         this.state = {
@@ -98,11 +100,14 @@ class StudentCourseSelectionAction extends Component {
 
     render() {
         
-        const { achivementsData,moduleData, previousCoursesData,coursesData, handleSetCourses, selectedCoursesData, handleCheckboxChange, selectedData, open, handleClose, onClear, onSave, readOnly} = this.props;
+        const { achivementsData,moduleData,moduleDropDownData, previousCoursesData,coursesData, handleSetCourses, selectedCoursesData,selectedCoursesDataV2, handleCheckboxChange, selectedData, open, handleClose, onClear, onSave, readOnly,handleChangeModuleDropDown,moduleId} = this.props;
+       
+        
         const columns = [
             //{ name: "Course Id", dataIndex: "courseId", sortable: false, customStyleHeader: { width: '14%' } },
             //{ name: "Course Code", dataIndex: "courseCode", sortable: false, customStyleHeader: { width: '14%' } },
-            { name: "Course Title", renderer: rowData => { return ( <Fragment>{rowData.courseTitle}</Fragment> )}, sortable: false, customStyleHeader: { width: '20%' }},
+            { name: "Module Number", dataIndex: "module", sortable: false, customStyleHeader: { width: '20%' } },
+            {  name: "Course Title", renderer: rowData => { return ( <Fragment>{rowData.courseTitle}</Fragment> )}, sortable: false, customStyleHeader: { width: '20%' }},
             { name: "Prerequisite Course", dataIndex: "prerequisites", sortable: false, customStyleHeader: { width: '20%' } },
             { name: "Register", renderer: rowData => {
                     return (
@@ -214,13 +219,40 @@ class StudentCourseSelectionAction extends Component {
                                         Offered Courses
                                     </div>
                                     <br/>
+                                    <div  style={{
+                                       width: '100%'
+                                    }}>
+                                        <span > Module*</span>
+
+                                        <TextField
+                                            placeholder="Module"
+                                            variant="outlined"
+                                            name="moduleId"
+                                            id="moduleId"
+                                            style={{ width: '100%'}}
+                                             //value={this.state.sessionId}
+                                            onChange={e => {
+                                                this.props.handleChangeModuleDropDown(e);
+                                            }}
+                                            select
+                                        >
+                                            {moduleDropDownData.map(item => {
+                                                return (
+                                                    <MenuItem key={item.id} value={item.id}>
+                                                        {item.moduleNumber}
+                                                    </MenuItem>
+                                                );
+                                            })}
+                                        </TextField>
+                                    </div> 
+                                    <br></br>
                                     <Autocomplete
                                         multiple
                                         fullWidth
                                         id="preCourses"
                                         disabled={readOnly}
                                         options={coursesData}
-                                        value={selectedCoursesData}
+                                        value={selectedCoursesDataV2}
                                         onChange={(event, value) =>
                                             handleSetCourses(value)
                                         }
@@ -272,6 +304,7 @@ class StudentCourseSelectionAction extends Component {
                                         <TableBody>
                                         {selectedCoursesData.map((rowData, index) => (
                                             <StyledTableRow key={"R"+rowData.courseTitle}>
+                                                <StyledTableCell>{rowData.moduleNumber}</StyledTableCell>
                                                 <StyledTableCell>{rowData.courseTitle}</StyledTableCell>
                                                 <StyledTableCell>{rowData.prerequisites}</StyledTableCell>
                                                 <StyledTableCell>
