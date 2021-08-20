@@ -106,6 +106,7 @@ import F75Form from "./Contents/Forms/F75Form";
 import R76Reports from "./Contents/Forms/R76Reports";
 import F77Form from "./Contents/Forms/F77Form";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
+import CovidVaccineCertificateApproval from "./Contents/Reports/CovidVaccineCertificateApproval/CovidVaccineCertificateApproval";
 import ChangeStudentStatus from "./Contents/Decision/ChangeStudentStatus/ChangeStudentStatus";
 import SyncTimeTable from "./Contents/LMS/SyncTimeTable/SyncTimeTable";
 import SyncTimeTableToday from "./Contents/LMS/SyncTimeTable/SyncTimeTableToday";
@@ -1544,6 +1545,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/student-profile"
                 component={StudentProfile}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="covid-vaccine_certificate"
+                exact
+                path="/dashboard/covid-vaccine_certificate"
+                component={CovidVaccineCertificateApproval}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
