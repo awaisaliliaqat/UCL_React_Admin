@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import {TextField, Grid, Divider, Typography, Chip,
    Checkbox, Collapse, CircularProgress,Paper,TableContainer, IconButtonTable,Table, TableBody, TableCell, IconButton,
-   TableHead, TableRow} from "@material-ui/core";
+   TableHead, TableRow, Switch} from "@material-ui/core";
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
@@ -12,6 +12,12 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -67,6 +73,84 @@ const styles = (theme) => ({
     transform: 'rotate(0deg)',
   }
 });
+
+
+function Switches(props) {
+    
+  const [open, setOpen] = React.useState(false);
+  const [dialogMsg, setDialogMsg] = React.useState("");
+  const [switchState, setSwitchState] = React.useState(props.isChecked);
+  
+  const handleClickOpen = () => {
+      if(switchState){
+          setDialogMsg("Are you sure you want to deactivate?");
+      }else{
+          setDialogMsg("Are you sure you want to activate?");
+      }
+      setOpen(true);
+  };
+
+  const handleClose = () => {
+      setOpen(false);
+  };
+
+  const handleChange = (event) => {
+      if(switchState){
+          //setSwitchState(event.target.checked);
+          props.onChangeAction(props.recordId, 0, setSwitchState);
+      }else{
+          //setSwitchState(event.target.checked);
+          props.onChangeAction(props.recordId, 1, setSwitchState);
+      }
+  };
+
+  return (
+      <Fragment>
+          <Switch
+              checked={switchState}
+              //onChange={handleChange}
+              onClick={handleClickOpen}
+              color="primary"
+              name="switch"
+              inputProps={{ 'aria-label': 'primary checkbox' }}
+          />
+          <div>
+              <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+              >
+                  <DialogTitle id="alert-dialog-title">
+                  <Typography 
+                      variant="subtitle1"
+                      style={{ 
+                          color: '#1d5f98', 
+                          fontWeight: 600, 
+                          textTransform: 'capitalize' 
+                      }}
+                  >        
+                      Confirm !
+                  </Typography>
+                  </DialogTitle>
+                  <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                      {dialogMsg}&emsp;
+                  </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                  <Button onClick={handleClose} color="secondary">
+                      No
+                  </Button>
+                  <Button onClick={handleClose, handleChange} color="primary" variant="contained" autoFocus>
+                      Yes
+                  </Button>
+                  </DialogActions>
+              </Dialog>
+          </div>
+      </Fragment>
+  );
+}
 
 function FeatureDetail(props){
  
@@ -362,6 +446,57 @@ class F70Form extends Component {
   handleExpandClick = () => {
     this.setState({expanded:!this.state.expanded});
   }
+
+
+  onSwitchStatusChange = async(id, isActive, changeSwitch) => {
+    const data = new FormData();
+    data.append("id", id);
+    data.append(" isActive", isActive);
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C70IsActiveStatusUpdate`;
+    await fetch(url, {
+        method: "POST", 
+        body: data, 
+        headers: new Headers({
+            Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
+        })
+    })
+        .then(res => {
+            if (!res.ok) {
+                throw res;
+            }
+            return res.json();
+        })
+        .then(
+            json => {
+                if (json.CODE === 1) {
+                    changeSwitch(true);
+                    if(this.state.recordId!=0){
+                        window.location="#/dashboard/F70Form/0";
+                    }else{
+                        window.location.reload();
+                    }
+                } else {
+                    //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
+                    changeSwitch(false);
+                    this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
+                }
+                console.log(json);
+            },
+            error => {
+                if (error.status == 401) {
+                    this.setState({
+                        isLoginMenu: true,
+                        isReload: false
+                    })
+                } else {
+                    console.log(error);
+                    //alert("Failed to Save ! Please try Again later.");
+                    this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+                }
+            });
+    this.setState({isLoading: false})
+}
 
   loadUsers = async () => {
     this.setState({ isLoading: true });
@@ -987,7 +1122,7 @@ class F70Form extends Component {
             </Typography>
 
               </Grid> 
-              <Grid style={{ background: "#1d5f98"}} item xs={12} md={3}>
+              <Grid style={{ background: "#1d5f98"}} item xs={12} md={2}>
               <Typography
               style={{
                
@@ -1003,7 +1138,7 @@ class F70Form extends Component {
 
               </Grid> 
 
-              <Grid style={{ background: "#1d5f98"}} item xs={12} md={3}>
+              <Grid style={{ background: "#1d5f98"}} item xs={12} md={2}>
               <Typography
               style={{
                
@@ -1018,7 +1153,7 @@ class F70Form extends Component {
              </Typography>
 
               </Grid> 
-              <Grid style={{ background: "#1d5f98"}} item xs={12} md={3}>
+              <Grid style={{ background: "#1d5f98"}} item xs={12} md={2}>
               <Typography
               style={{
                
@@ -1034,6 +1169,29 @@ class F70Form extends Component {
 
               </Grid> 
 
+              <Grid style={{ background: "#1d5f98"}} item xs={12} md={2}>
+              <Typography
+              style={{
+               
+                fontWeight: 400,
+                width: "100%",
+                fontSize: 15,
+                color:"#fff"
+              }}
+              variant="h5"
+             >
+             Status
+             </Typography>
+
+              </Grid> 
+          </Grid>
+          <Grid container
+              spacing={2}
+              style={{
+                marginLeft: 5,
+                marginRight: 10,
+                marginTop: 25,
+              }}>
               <Grid item xs={12} md={3}>
               <Typography
               style={{
@@ -1049,7 +1207,7 @@ class F70Form extends Component {
             </Typography>
 
               </Grid> 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
               <Typography
               style={{
                
@@ -1064,7 +1222,7 @@ class F70Form extends Component {
 
               </Grid> 
 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
               <Typography
               style={{
                
@@ -1078,7 +1236,7 @@ class F70Form extends Component {
              </Typography>
 
               </Grid> 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
               <Typography
               style={{
                
@@ -1092,6 +1250,19 @@ class F70Form extends Component {
              </Typography>
 
               </Grid> 
+
+              <Grid item xs={12} md={2}>
+                {this.state.userId!=[]?
+                    <Switches 
+                    key={"abc_1"+this.state.user.userId+this.state.user.userIsActive}
+                    isChecked={this.state.user.userIsActive==1}
+                    recordId={this.state.user.userId}
+                    onChangeAction={this.onSwitchStatusChange}
+                    />:""
+                }
+               
+              </Grid> 
+             
             </Grid>
 
             <Grid>
