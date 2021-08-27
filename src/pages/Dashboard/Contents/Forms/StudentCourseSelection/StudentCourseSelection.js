@@ -39,6 +39,7 @@ class StudentCourseSelection extends Component {
       programmeData: [],
       regStatusId: 1,
       studentId: "",
+      studentIddToSend: "",
       studentName: "",
       isDownloadExcel: false,
       totalStudents: []
@@ -102,8 +103,11 @@ class StudentCourseSelection extends Component {
     this.setState({
       viewLoading: true,
     });
+    this.setState({
+      selectedCoursesDataV2: [],
+    });
     if(moduleId!=0){
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsOfferedCoursesView?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&studentId=${this.state.studentId}&moduleId=${moduleId}&programmeId=${this.state.selectedData.programmeId}`;
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsOfferedCoursesView?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&studentId=${this.state.studentIddToSend}&moduleId=${moduleId}&programmeId=${this.state.selectedData.programmeId}`;
       await fetch(url, {
         method: "GET",
         headers: new Headers({
@@ -687,6 +691,7 @@ class StudentCourseSelection extends Component {
   }
 
   handleSetCourses = (value = []) => {
+    
     for (let i = 0; i < value.length; i++) {
       value[i].isRegistered = 1;
     }
@@ -765,7 +770,7 @@ class StudentCourseSelection extends Component {
                 onClick={() => {
                 
                   this.setState({
-                    studentId:rowData.id,
+                    studentIddToSend:rowData.id,
                     selectedData:rowData
                   });
                   this.onReadOnly();
@@ -805,7 +810,7 @@ class StudentCourseSelection extends Component {
                 onClick={() => {
                   
                   this.setState({
-                    studentId:rowData.id,
+                    studentIddToSend:rowData.id,
                     selectedData:rowData
                   });
                   this.getCouresData(0);
