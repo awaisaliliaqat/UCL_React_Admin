@@ -113,6 +113,8 @@ class F221Form extends Component {
       pathwayError: "",
       preCourseMenuItems: [],
       preCourseSelectionItems: [],
+      countWithdrawn:0,
+      countPromoted:0,
       f212FormPopupIsOpen: false,
       f212FormPopupData: {
         studentId: "", 
@@ -144,9 +146,11 @@ class F221Form extends Component {
       });
       var els=document.getElementsByName('promote');
       var els2=document.getElementsByName('widthdrawn');
+      var els3=document.getElementsByName('graduate');
        for (var i=0, len = els.length; i<len; i++) {
            els[i].checked = false;
            els2[i].checked = true;
+           els3[i].checked = false;
        }
     }else{
       this.setState({
@@ -155,9 +159,11 @@ class F221Form extends Component {
       });
       var els=document.getElementsByName('promote');
       var els2=document.getElementsByName('widthdrawn');
+      var els3=document.getElementsByName('graduate');
        for (var i=0, len = els.length; i<len; i++) {
            els[i].checked = false;
            els2[i].checked = false;
+           els3[i].checked = false;
        }
     }
   }
@@ -169,9 +175,11 @@ class F221Form extends Component {
       });
          var els=document.getElementsByName('promote');
          var els2=document.getElementsByName('widthdrawn');
+         var els3=document.getElementsByName('graduate');
           for (var i=0, len = els.length; i<len; i++) {
               els[i].checked = true;
               els2[i].checked=false;
+              els3[i].checked = false;
           }
     }else{
       this.setState({
@@ -180,9 +188,11 @@ class F221Form extends Component {
       });
       var els=document.getElementsByName('promote');
          var els2=document.getElementsByName('widthdrawn');
+         var els3=document.getElementsByName('graduate');
           for (var i=0, len = els.length; i<len; i++) {
               els[i].checked = false;
               els2[i].checked = false;
+              els3[i].checked = false;
           }
       
     }
@@ -191,9 +201,11 @@ class F221Form extends Component {
   onAllClick = () => {
     var els=document.getElementsByName('promote');
     var els2=document.getElementsByName('widthdrawn');
+    var els3=document.getElementsByName('graduate');
        for (var i=0, len = els.length; i<len; i++) {
            els[i].checked = false;
            els2[i].checked = false;
+           els3[i].checked =false;
        }
       this.setState({
         isPromoteAll:false,
@@ -203,12 +215,24 @@ class F221Form extends Component {
       // document.getElementsByName('isPromoteAll').checked==false;
 }
   onCheckClickB = (index) =>{
+    // this.saveButtonValidate();
     console.log(document.getElementById("widthdrawn"+index));
     document.getElementById("widthdrawn"+index).checked = false;
+    document.getElementById("graduate"+index).checked = false;
   }
   onCheckClickA = (index) =>{
+    // this.saveButtonValidate();
     console.log(document.getElementById("promote"+index));
     document.getElementById("promote"+index).checked = false;
+    document.getElementById("graduate"+index).checked = false;
+  }
+
+  onCheckClickGraduate = (index) =>{
+    
+    // this.saveButtonValidate();
+    console.log(document.getElementById("widthdrawn"+index));
+    document.getElementById("promote"+index).checked = false;
+    document.getElementById("widthdrawn"+index).checked = false;
   }
 
   loadAcademicSessions = async () => {
@@ -935,6 +959,30 @@ class F221Form extends Component {
                 </Fragment>
                 
               );
+
+              data[i].graduate = (
+                
+             
+                <Fragment>
+                  <form>
+                  {/* <input type="hidden" name="recordId"value={data[i].id} />
+                  <input type="hidden" name="programmeGroupId" value={this.state.newProgrammeGroupId}/>
+                  <input type="hidden" name="studentIds" value={data[i].studentId} />
+                  <input type="hidden" name="pathwayId" value={data[i].pathwayId} />
+                  <input type="hidden" name="programmeId" value={this.state.newprogramId} /> */}
+                  <input type="checkbox" name={"graduate"} id={"graduate"+i} 
+                    style={{
+                      "height": "1.2rem",
+                      "width": "100%"
+                    }}
+                    onChange={() => this.onCheckClickGraduate(i)}
+                    />
+                  </form>
+                  
+                  
+                </Fragment>
+                
+              );
               data[i].changeStatusAction = (
                 <input 
                 type="checkbox"
@@ -1178,36 +1226,122 @@ class F221Form extends Component {
     });
     this.F221FormChangeStatusPopupOpen();
   }
+
+  isValidFunc(){
+    var students=document.getElementsByName('recordId');
+    if(students.length>0){
+      var isPromoted=document.getElementsByName('promote');
+      var isWithdrawn=document.getElementsByName('widthdrawn');
+      var isGradated=document.getElementsByName('graduate');
+      
+      var countPromoted=0;
+      var countWithDraw=0;
+      var countGraduated=0;
+      for (var i=0, len = students.length; i<len; i++) {
+        console.log("isPromoted[i]",isPromoted[i]);
+        // console.log("isPromoted[i]",isPromoted[i]);
+        var isPromte=isPromoted[i].checked;
+        var isWithdr=isWithdrawn[i].checked;
+        var isGradate=isGradated[i].checked;
+        if(isPromte==true || isWithdr==true || isGradate==true){
+         
+          if(isWithdr==true){
+            countPromoted++;
+          }
+          if(isPromte==true){
+            
+            countWithDraw++;
+          }
+
+          if(isGradate==true){
+            
+            countGraduated++;
+          }
+          
+        }
+       
+      }
+
+      
+      if(countPromoted==0 && countWithDraw==0 && countGraduated==0){
+        alert("Please check Promote, Withdrawn or Graduate against atleast 1 student.");
+        return false;
+      }
+
+      if(countPromoted>0 || countWithDraw>0 || countGraduated>0){
+       
+        if(countPromoted>0 ){
+          if(!this.state.newAcademicSessionId){
+            alert("Please select new session");
+            return false;
+          }
+
+          if(!this.state.pathway){
+            alert("Please select pathway");
+            return false;
+          }
+
+          this.onFormSubmit();
+
+        }else{
+
+          this.onFormSubmit();
+        
+        }
+      }
+    }
+  }
+  
+
   onFormSubmit = async () => {
+    
     let data = new FormData();
     data.append("recordId", 0);
+    data.append("academicsSessionOldId", this.state.academicSessionId);
     data.append("academicsSessionId", this.state.newAcademicSessionId);
+    data.append("programmeIdOld", this.state.programmeId);
     data.append("programmeId", this.state.newProgrammeId);
     data.append("programmeGroupId", this.state.newProgrammeGroupId);
+    data.append("programmeGroupIdOld", this.state.programmeGroupId);
     data.append("pathwayId", this.state.pathway);
     var students=document.getElementsByName('recordId');
     var isPromoted=document.getElementsByName('promote');
     var isWithdrawn=document.getElementsByName('widthdrawn');
+    var isGradated=document.getElementsByName('graduate');
     
     for (var i=0, len = students.length; i<len; i++) {
       
       var isPromte=isPromoted[i].checked;
       var isWithdr=isWithdrawn[i].checked;
-      if(isPromte==true || isWithdr==true){
+      var isGradate=isGradated[i].checked;
+      if(isPromte==true || isWithdr==true || isGradate==true){
         data.append("studentIds",students[i].value);
         if(isWithdr==true){
           // data.append("isWithdrawn", 1);
           data.append("isPromoted", 1);
         }else {
           // data.append("isWithdrawn", 0);
+         
           data.append("isPromoted", 0);
         }
+
+
         if(isPromte==true){
           data.append("isWithDrawn", 1);
-          // data.append("isPromoted", 1);
+          
         }else {
-          // data.append("isPromoted", 0);
+        
+          
           data.append("isWithDrawn", 0);
+        }
+
+        if(isGradate==true){
+          data.append("isGraduated", 1);
+         
+        }else {
+         
+         
+          data.append("isGraduated", 0);
         }
         
       }
@@ -1846,16 +1980,18 @@ class F221Form extends Component {
               />
             </Grid>
           </Grid>
+          <br></br>
+          <br></br>
           <BottomBar
-                    left_button_text="View"
-                    left_button_hide={true}
-                    bottomLeftButtonAction={() => this.viewReport()}
-                    right_button_text="Save"
-                    bottomRightButtonAction={() => this.onFormSubmit()}
-                    disableRightButton={!this.state.pathway}
-                    loading={this.state.isLoading}
-                    isDrawerOpen={this.props.isDrawerOpen}
-                />
+                left_button_text="View"
+                left_button_hide={true}
+                bottomLeftButtonAction={() => this.viewReport()}
+                right_button_text="Save"
+                bottomRightButtonAction={() => this.isValidFunc()}
+                // disableRightButton={!!this.saveButtonValidate()}
+                loading={this.state.isLoading}
+                isDrawerOpen={this.props.isDrawerOpen}
+          />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}

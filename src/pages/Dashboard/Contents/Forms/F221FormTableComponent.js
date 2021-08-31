@@ -14,7 +14,8 @@ class F221FormTableComponent extends Component {
         { name: "applicationStatusLabel", title: "Programme" },
         { name: "pathwayLabel", title: "Pathway" },
         { name: "changeStatusAction", title: "Promote\xa0Student"},
-        { name: "action", title: <span>Withdrawn</span>}
+        { name: "action", title: <span>Withdrawn</span>},
+        { name: "graduate", title: <span>Graduate</span>}
       ],
       rows: [],
       formatColumns: [],
@@ -32,6 +33,7 @@ class F221FormTableComponent extends Component {
       sortingStateColumnExtensions: [
         { columnName: "changeStatusAction", sortingEnabled: false },
         { columnName: "action", sortingEnabled: false },
+        { columnName: "graduate", sortingEnabled: false}
       ],
       tableColumnExtensions: [
         { columnName: "studentId"},
@@ -40,12 +42,14 @@ class F221FormTableComponent extends Component {
         { columnName: "pathwayLabel",  wordWrapEnabled: true },
         { columnName: "changeStatusAction",  align:"center"},
         { columnName: "action", align:"center"},
+        { columnName: "graduate", align:"center"}
       ],
       defaultColumnWidths: [],
       defaultFilters: [],
       filteringStateColumnExtensions: [
         { columnName: "changeStatusAction", filteringEnabled: false },
         { columnName: "action", filteringEnabled: false },
+        { columnName: "graduate", filteringEnabled: false }
       ]
     };
   }
