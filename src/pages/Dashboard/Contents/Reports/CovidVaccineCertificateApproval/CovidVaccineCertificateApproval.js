@@ -482,7 +482,16 @@ onHandleChangeStatus = e => {
       {
         name: "Action",
         renderer: (rowData) => {
-          console.log(rowData);
+         let colorForApprove="";
+         let colorForDecline="";
+
+        
+
+         if(rowData.isApproved=="Approved"){
+          colorForApprove="green"
+         }else if(rowData.isApproved=="Rejected"){
+          colorForDecline="red"
+         }
           return (
             rowData.fileName!=""?
              
@@ -490,18 +499,17 @@ onHandleChangeStatus = e => {
               <IconButton onClick={() => this.DownloadFile(rowData.fileName)}>
                 <CloudDownload fontSize="small" />
               </IconButton>
-              {rowData.isApproved!="Approved" && rowData.isApproved!="Rejected"?
-               <Fragment>
-                  <IconButton onClick={() => this.UpdateStatus(rowData.studentIdd,1)}>
+              
+              <Fragment>
+                  <IconButton style={{color:colorForApprove}}  onClick={() => this.UpdateStatus(rowData.studentIdd,1)}>
                   <ThumbUpIcon fontSize="small" />
                   </IconButton>
             
-                  <IconButton onClick={() => this.UpdateStatus(rowData.studentIdd,2)}>
+                  <IconButton style={{color:colorForDecline}} onClick={() => this.UpdateStatus(rowData.studentIdd,2)}>
                     <ThumbDownAltSharpIcon fontSize="small" />
                   </IconButton>
                 </Fragment>
-                :""
-              }
+                {/*  */}
              
 
 
