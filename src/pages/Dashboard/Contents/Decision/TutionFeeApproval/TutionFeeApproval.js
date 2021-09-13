@@ -490,6 +490,8 @@ class RegistrationFeeApprovel extends Component {
             { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '13%' } },
             { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '20%', textAlign: 'center' } },
             { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
+            
+            { name: "DOB", dataIndex: "dateOfBirth", sortIndex: "dateOfBirth", sortable: true, customStyleHeader: { width: '15%' } },
             { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
             { name: "Bill No", dataIndex: "billNo", sortable: false, customStyleHeader: { width: '10%' } },
             { name: "Bill Amount", dataIndex: "billAmount", sortable: false, customStyleHeader: { width: '13%' } },

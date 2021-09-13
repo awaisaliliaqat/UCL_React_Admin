@@ -271,6 +271,7 @@ class F27Form extends Component {
 
   loadProgrammeGroupCourses = async (ProgrammeGroupId) => {
     let data = new FormData();
+    data.append("sessionId", this.state.academicsSessionId);
     data.append("programmeGroupId", ProgrammeGroupId);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C27CommonProgrammeCoursesView`;
