@@ -34,10 +34,14 @@ class R66Reports extends Component {
       programmeGroupId: "",
       programmeGroupIdError: "",
       programmeGroupsMenuItems: [],
+      programmeId: "",
+      programmeIdError: "",
+      programmeMenuItems: [],
       programId:"",
       programIdError:"",
       totalCourseStudent:"",
       totalGroupStudent:"",
+      totalProgrammeStudent:"",
       totalSchoolStudent:"",
       coursesMenuItems: [],
       courseId: "",
@@ -192,6 +196,50 @@ class R66Reports extends Component {
     this.setState({ isLoading: false });
   };
 
+  getProgrammes = async (programmeGroupId) => {
+    this.setState({isLoading: true});
+    let data = new FormData();
+    data.append("programmeGroupId", programmeGroupId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammesView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({programmeMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getCourse", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
   getCourse = async (programmeGroupId) => {
     this.setState({isLoading: true});
     let data = new FormData();
@@ -282,6 +330,7 @@ class R66Reports extends Component {
     let data = new FormData();
     data.append("schoolId", this.state.schoolId);
     data.append("programmeGroupId", this.state.programmeGroupId);
+    data.append("programmeId", this.state.programmeId);
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("courseId", this.state.courseId);
     data.append("pathwayId", this.state.pathwayId);
@@ -308,6 +357,7 @@ class R66Reports extends Component {
             this.state.totalCourseStudent= json.DATA[0].totalCourseStudent;
             this.state.totalGroupStudent= json.DATA[0].totalGroupStudent;
             this.state.totalSchoolStudent= json.DATA[0].totalSchoolStudent;
+            this.state.totalProgrammeStudent=json.DATA[0].totalProgrammeStudent;
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -387,6 +437,8 @@ class R66Reports extends Component {
               programmeGroupId: "",
               courseId:"",
               coursesMenuItems:[],
+              programmeMenuItems:[],
+              programmeId:"",
               tableData: []
             });
             this.getProgramGroup(value);
@@ -396,9 +448,18 @@ class R66Reports extends Component {
               programmeGroupId: "",
               courseId:"",
               coursesMenuItems:[],
-              tableData: []
+              tableData: [],
+              programmeMenuItems:[],
+              programmeId:""
             });
+            this.getProgrammes(value);
             this.getCourse(value);
+        break;
+        case "programmeId":
+            this.setState({
+              tableData: [],
+            });
+            
         break;
         case "courseId":
           this.setState({tableData: []});
@@ -582,8 +643,8 @@ class R66Reports extends Component {
           <br/>
           <Grid 
             container 
-            justify="center"
-            alignItems="center"
+            justify="left"
+            alignItems="left"
             spacing={2}
           >
             <Grid item xs={12} md={2}>
@@ -684,84 +745,126 @@ class R66Reports extends Component {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
-              <TextField
-                id="courseId"
-                name="courseId"
-                variant="outlined"
-                label="Course"
-                onChange={this.onHandleChange}
-                value={this.state.courseId}
-                error={!!this.state.courseIdError}
-                helperText={this.state.courseIdError ? this.state.courseIdError : " "}
-                fullWidth
-                select
-              >
-                {this.state.coursesMenuItems && !this.state.isLoading ? 
-                  this.state.coursesMenuItems.map((dt, i) => (
-                    <MenuItem
-                      key={"coursesMenuItems"+dt.id}
-                      value={dt.id}
-                    >
-                      {dt.label}
-                    </MenuItem>
-                  ))
-                :
-                  <Grid 
-                    container 
-                    justify="center">
-                      <CircularProgress />
-                    </Grid>
-                }
-              </TextField>
-            </Grid>
             <Grid item xs={12} md={2}>
               <TextField
-                id="pathwayId"
-                name="pathwayId"
+                id="programmeId"
+                name="programmeId"
                 variant="outlined"
-                label="Pathway"
-                onChange={this.onHandleChange}
-                value={this.state.pathwayId}
-                disabled={!this.state.schoolId}
-                error={!!this.state.pathwayIdError}
-                helperText={this.state.pathwayIdError ? this.state.pathwayIdError : " "}
+                label="Programme "
                 fullWidth
                 select
+                onChange={this.onHandleChange}
+                value={this.state.programmeId}
+                error={!!this.state.programmeIdError}
+                helperText={this.state.programmeIdError ? this.state.programmeIdError : " "}
+                disabled={!this.state.programmeGroupId}
               >
-                {this.state.pathwayMenuItems && !this.state.isLoading ? 
-                  this.state.pathwayMenuItems.map((dt, i) => (
+                {this.state.programmeMenuItems && !this.state.isLoading ? 
+                  this.state.programmeMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"pathwayMenuItems"+dt.id}
-                      value={dt.id}
+                      key={"programmeMenuItems"+dt.ID}
+                      value={dt.ID}
                     >
-                      {dt.label}
+                      {dt.Label}
                     </MenuItem>
                   ))
                 :
                   <Grid 
                     container 
-                    justify="center">
-                      <CircularProgress />
-                    </Grid>
+                    justify="center"
+                  >
+                    <CircularProgress />
+                  </Grid>
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={1}>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={this.state.isLoading ||(!this.state.programmeGroupId)}
-                onClick={() => this.handleGetData()}
-                style={{width:"100%", height:54, marginBottom:24}}
-              > 
-                {this.state.isLoading ? 
-                    <CircularProgress style={{color:'white'}} size={36}/>
-                    : 
-                    "Search"
-                }
-              </Button>
-            </Grid>
+            <Grid item xs={12} md={3}>
+                <TextField
+                  id="courseId"
+                  name="courseId"
+                  variant="outlined"
+                  label="Course"
+                  onChange={this.onHandleChange}
+                  value={this.state.courseId}
+                  error={!!this.state.courseIdError}
+                  helperText={this.state.courseIdError ? this.state.courseIdError : " "}
+                  fullWidth
+                  select
+                >
+                  {this.state.coursesMenuItems && !this.state.isLoading ? 
+                    this.state.coursesMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"coursesMenuItems"+dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))
+                  :
+                    <Grid 
+                      container 
+                      justify="center">
+                        <CircularProgress />
+                      </Grid>
+                  }
+                </TextField>
+              </Grid>
+           
+          </Grid>
+          <Grid
+            container 
+            justify="left"
+            alignItems="left"
+            spacing={2}
+          >
+           
+              <Grid item xs={12} md={2}>
+                <TextField
+                  id="pathwayId"
+                  name="pathwayId"
+                  variant="outlined"
+                  label="Pathway"
+                  onChange={this.onHandleChange}
+                  value={this.state.pathwayId}
+                  disabled={!this.state.schoolId}
+                  error={!!this.state.pathwayIdError}
+                  helperText={this.state.pathwayIdError ? this.state.pathwayIdError : " "}
+                  fullWidth
+                  select
+                >
+                  {this.state.pathwayMenuItems && !this.state.isLoading ? 
+                    this.state.pathwayMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"pathwayMenuItems"+dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))
+                  :
+                    <Grid 
+                      container 
+                      justify="center">
+                        <CircularProgress />
+                      </Grid>
+                  }
+                </TextField>
+              </Grid>
+              <Grid item xs={12} md={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={this.state.isLoading ||(!this.state.programmeGroupId)}
+                  onClick={() => this.handleGetData()}
+                  style={{width:"100%", height:54, marginBottom:24}}
+                > 
+                  {this.state.isLoading ? 
+                      <CircularProgress style={{color:'white'}} size={36}/>
+                      : 
+                      "Search"
+                  }
+                </Button>
+              </Grid>
           </Grid>
           {this.state.schoolId? 
               <Typography
@@ -789,6 +892,21 @@ class R66Reports extends Component {
                    variant="subtitle1"
                >
                  {this.state.totalGroupStudent}
+               </Typography>
+               :
+               ""
+          }
+          {this.state.totalProgrammeStudent!="Total Students OF 0"? 
+              <Typography
+                style={{
+                   color: "#1d5f98",
+                   fontWeight: 600,
+                   textTransform: "capitalize",
+                   textAlign: "left"
+                       }}
+                   variant="subtitle1"
+               >
+                 {this.state.totalProgrammeStudent}
                </Typography>
                :
                ""
