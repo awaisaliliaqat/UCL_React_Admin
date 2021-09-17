@@ -420,6 +420,8 @@ class ChangeStudentStatus extends Component {
       { name: "mobileNo", title: "Mobile No" },
       { name: "email", title: "Email" },
       { name: "sessionLabel", title: "Session" },
+      { name: "uolNumber", title: "UOL #" },
+      
       { name: "statusLabel", title: "Status" },
       { name: "statusChangeDate", title: "Status Changed On" },
       { name: "action", title: "Selection", 

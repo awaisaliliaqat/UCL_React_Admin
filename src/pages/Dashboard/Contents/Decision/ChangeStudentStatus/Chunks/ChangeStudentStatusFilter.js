@@ -144,6 +144,7 @@ const ChangeStudentStatusFilter = (props) => {
             }}
             select
           >
+            <MenuItem value={2}>All</MenuItem>
             <MenuItem value={0}>Deactive</MenuItem>
             <MenuItem value={1} selected={true}>
               Active

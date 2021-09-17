@@ -38,6 +38,8 @@ class ChangeStatusTableComponent extends Component {
                 { columnName: 'mobileNo', wordWrapEnabled: true },
                 { columnName: 'email', wordWrapEnabled: true, width: 200 },
                 { columnName: 'sessionLabel', wordWrapEnabled: true },
+                { columnName: 'uolNumber', wordWrapEnabled: true },
+                
                 { columnName: 'action', width: 130, align:"center" },
                 { columnName: 'statusChangeDate', width: 130, wordWrapEnabled: true },
             ],
