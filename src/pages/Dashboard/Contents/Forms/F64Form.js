@@ -442,22 +442,7 @@ class R46Reports extends Component {
     if(checked){
       this.setState({tableData:[]});
     }
-    switch (name){
-      // isMarkAttendance: false,
-      // isMarkAbsent: false
-      case"isMarkAttendance":
-      this.setState({
-        isMarkAbsent: false
-      })
-      break;
-      case"isMarkAbsent":
-      this.setState({
-        isMarkAttendance: false
-      })
-      break;
-      default:
 
-    }
   }
 
 
@@ -471,6 +456,7 @@ class R46Reports extends Component {
         var element = abc[j];
          document.getElementById(element.id).checked=checked;
       }
+
       this.setState({
         isMarkAbsent: false
       })
@@ -502,8 +488,43 @@ class R46Reports extends Component {
   }
 
   onFormSubmit = async (e) => {
-    let myForm = document.getElementById("myForm");
-    const data = new FormData(myForm);
+    
+    let data = new FormData();
+    
+    
+    var abc = document.getElementsByName("studentId");
+    if(this.state.isMarkAttendance){
+  
+       
+        for(var j=0;j<abc.length;j++){
+          var element = abc[j];
+           
+         if(document.getElementById(element.id).checked==true){
+          data.append("studentId", element.value);
+         }
+        }
+        data.append("sectionId",this.state.sectionId?this.state.sectionId.id:"");
+        data.append("classDate",this.getDateInString(this.state.preDate));
+        data.append("startTime",this.state.startTimeId);
+    }else if(this.state.isMarkAbsent){
+        
+        for(var i=0;i<abc.length;i++){
+          var element2 = abc[i];
+         if(document.getElementById(element2.id).checked==false){
+          data.append("studentId",element2.value );
+         }
+         } 
+
+         data.append("sectionId",this.state.sectionId?this.state.sectionId.id:"");
+        data.append("classDate",this.getDateInString(this.state.preDate));
+        data.append("startTime",this.state.startTimeId);
+
+    }else if(this.state.isMarkAttendance==false && this.state.isMarkAbsent==false){
+      let myForm = document.getElementById("myForm"); 
+      data = new FormData(myForm);
+    }
+    // data.append("isMarkAbsent", this.state.isMarkAbsent==true? "1" : "0");
+    // data.append("isMarkAttendance", this.state.isMarkAttendance==true? "1" : "0");
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C64CommonAcademicsAttendanceSave`;
     await fetch(url, {
@@ -762,6 +783,7 @@ class R46Reports extends Component {
               <TextField type="hidden" name="sectionId" value={this.state.sectionId?this.state.sectionId.id:""}/>
               <TextField type="hidden" name="classDate" value={this.getDateInString(this.state.preDate)}/>
               <TextField type="hidden" name="startTime" value={this.state.startTimeId}/>
+              {/* <TextField type="hidden" name="startTime" value={this.state.isMarkAbsent}/> */}
               <FormControl component="fieldset">
                   <FormGroup aria-label="position" row>
                     <FormControlLabel
@@ -778,7 +800,7 @@ class R46Reports extends Component {
                   <FormGroup aria-label="position" row>
                     <FormControlLabel
                       name="isMarkAbsent"
-                      value="2"
+                      value="1"
                       control={<Checkbox color="primary" checked={this.state.isMarkAbsent} onChange={this.handleChangeCheckboxAttendance} name="isMarkAbsent" />}
                       label="Mark Absent"
                       labelPlacement="end"
@@ -790,7 +812,7 @@ class R46Reports extends Component {
                   <FormGroup aria-label="position" row>
                     <FormControlLabel
                       name="isMarkAttendance"
-                      value="3"
+                      value="1"
                       control={<Checkbox color="primary" checked={this.state.isMarkAttendance} onChange={this.handleChangeCheckboxAttendance} name="isMarkAttendance" />}
                       label="Mark Attendance"
                       labelPlacement="end"
