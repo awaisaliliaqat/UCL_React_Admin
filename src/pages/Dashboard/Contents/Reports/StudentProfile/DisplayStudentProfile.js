@@ -342,6 +342,78 @@ const StyledTableCell = withStyles((theme) => ({
     );
   }
 
+
+  function AssignmentsSubmmited(props){
+
+    const { classes, data, isOpen } = props;
+  
+    const [state, setState] = useState({"expanded": isOpen });
+    
+    const handleExpandClick = () => {
+      setState({expanded:!state.expanded});
+    }
+  
+    return (
+      <Grid item xs={12} >
+        <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
+          <IconButton
+            className={clsx(classes.expand, {[classes.expandOpen]: state.expanded,})}
+            onClick={handleExpandClick}
+            aria-expanded={state.expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon color="primary" style={{color:"rgb(47 87 165)"}}/>
+          </IconButton>
+          {data.sessionLabel}
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: -10
+            }}
+          />
+        </Typography>
+        <Collapse in={state.expanded} timeout="auto" unmountOnExit>
+			<div style={{
+				marginLeft: '3%',
+				marginRight: '3%',
+				marginTop: '2%',
+				marginBottom: '1%',
+				display: 'flex'
+			}}>
+				{data.assignmentSubmittedList.length ? 
+				<TableContainer component={Paper}>
+					<Table size="small" aria-label="customized table">
+						<TableHead>
+							<TableRow>
+								<StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Title</StyledTableCell>
+								<StyledTableCell align="center">Section</StyledTableCell>
+								<StyledTableCell align="center">Marks</StyledTableCell>
+								<StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Remarks</StyledTableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+						{data.assignmentSubmittedList.map((item, index)=>
+							<StyledTableRow key={index}>
+								<StyledTableCell component="th" scope="row">{item.assignmentLabel}</StyledTableCell>
+								<StyledTableCell align="center">{item.sectionLabel}</StyledTableCell>
+								<StyledTableCell align="center">{item.marks}</StyledTableCell>
+								<StyledTableCell align="center">{item.remarks}</StyledTableCell>
+							</StyledTableRow>
+						)} 
+						</TableBody>
+					</Table>
+				</TableContainer>
+				:
+				""
+				}
+			</div>
+     </Collapse>
+      </Grid>
+    );
+  }
+
 //   function YearEndStatus(props){
 
 //     const { classes, data, isOpen } = props;
@@ -1420,7 +1492,7 @@ class DisplayAdmissionApplications extends Component {
                                     fontSize: 'larger'
                                 }}>
                                     Enrolled Sections
-                        </span>
+                                </span>
                             </div>
                             <div 
                             >
@@ -1461,16 +1533,7 @@ class DisplayAdmissionApplications extends Component {
                             </div>
                             <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
 
-                            <IconButton
-                            // className={clsx(classes.expand, {[classes.expandOpen]: this.state.isTrue,})}
-                            onClick={this.handleChange}
-                            // aria-expanded={this.state.isTrue}
-                            aria-label="show more"
-                            >
-                            <ExpandMoreIcon
-                            color="primary" style={{color:"rgb(47 87 165)"}}/>
-                        </IconButton>
-                        {data.sessionLabel}
+                           
                         <Divider
                             style={{
                             backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
@@ -1480,7 +1543,7 @@ class DisplayAdmissionApplications extends Component {
                             }}
                         />
                             </Typography>
-                            <Collapse in={this.state.isTrue}>
+                            {/* <Collapse in={this.state.isTrue}>
                             <div style={{
                                 marginLeft: '3%',
                                 marginRight: '3%',
@@ -1515,7 +1578,15 @@ class DisplayAdmissionApplications extends Component {
                                 ""
                                 }
                             </div>
-                            </Collapse>
+                            </Collapse> */}
+                             {assignmentsSubmitted.map( (data, index) =>
+                                <AssignmentsSubmmited 
+                                    key={"AssignmentsSubmmitedData"+index}
+                                    classes={classes}
+                                    data={data}
+                                    isOpen={ index==0 ? true : false}
+                                />
+                                )}
                         </Fragment>
 
                         {/* <Fragment>
