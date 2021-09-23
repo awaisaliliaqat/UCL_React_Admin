@@ -139,6 +139,9 @@ import R213Reports from "./Contents/Forms/R213Reports";
 import R216Reports from "./Contents/Forms/R216Reports";
 import R217FeedbackReports from "./Contents/Forms/R217FeedbackReports";
 import R217Reports from "./Contents/Forms/R217Reports";
+import AllActiveClasses from "./Contents/Reports/AllActiveClasses/AllActiveClasses";
+ 
+
 import ManualClassEntry from "./Contents/Forms/ManualClassEntry";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 
@@ -726,6 +729,23 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+              {/* <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="AllActiveClasses"
+                exact
+                path="/dashboard/AllActiveClasses"
+                render={(props) => {
+                  return (
+                    <AllActiveClasses
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              /> */}
+
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F31Form"
@@ -1894,6 +1914,14 @@ const Dashboard = (props) => {
                     />
                   );
                 }}
+              />
+              
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="all-active-classes"
+                exact
+                path="/dashboard/all-active-classes"
+                component={AllActiveClasses}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

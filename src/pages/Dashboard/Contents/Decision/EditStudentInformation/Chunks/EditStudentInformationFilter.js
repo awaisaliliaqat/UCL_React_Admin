@@ -132,6 +132,7 @@ const AddmissionDecisionFilter = props => {
                     }}
                     select
                   >
+                    {/* <MenuItem value={0}>All</MenuItem> */}
                     <MenuItem value={0}>Deactive</MenuItem>
                     <MenuItem value={1} selected={true}>
                       Active
