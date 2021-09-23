@@ -76,7 +76,9 @@ class R46Reports extends Component {
       preDateError: "",
       tableData: [],
       isAttendanceEditable: false,
-      isTeacherOnly: false
+      isTeacherOnly: false,
+      isMarkAttendance: false,
+      isMarkAbsent: false
     };
   }
 
@@ -299,7 +301,9 @@ class R46Reports extends Component {
     data.append("startTime", startTimeId);
     this.setState({
       isLoading: true,
-      isTeacherOnly: false
+      isTeacherOnly: false,
+      isMarkAttendance: false,
+      isMarkAbsent: false
     });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C64CommonStudentsView`;
     await fetch(url, {
@@ -369,7 +373,9 @@ class R46Reports extends Component {
       tableData:[],
       courseId: value, 
       courseIdError: "",
-      isTeacherOnly: false
+      isTeacherOnly: false,
+      isMarkAttendance: false,
+      isMarkAbsent: false
     });
     if(value) {
       this.getSections(value.id);
@@ -384,7 +390,9 @@ class R46Reports extends Component {
       tableData:[],
       sectionId: value, 
       sectionError: "",
-      isTeacherOnly: false
+      isTeacherOnly: false,
+      isMarkAttendance: false,
+      isMarkAbsent: false
     });
     if(value) {
       this.getTimeSlots(value.id, this.state.preDate);
@@ -396,6 +404,8 @@ class R46Reports extends Component {
       preDate: date,
       startTimeId:"",
       isTeacherOnly: false,
+      isMarkAttendance: false,
+      isMarkAbsent: false,
       tableData: []
     });
     this.getTimeSlots(this.state.sectionId.id, date);
@@ -431,6 +441,51 @@ class R46Reports extends Component {
     this.setState({[name]: checked});
     if(checked){
       this.setState({tableData:[]});
+    }
+    switch (name){
+      // isMarkAttendance: false,
+      // isMarkAbsent: false
+      case"isMarkAttendance":
+      this.setState({
+        isMarkAbsent: false
+      })
+      break;
+      case"isMarkAbsent":
+      this.setState({
+        isMarkAttendance: false
+      })
+      break;
+      default:
+
+    }
+  }
+
+
+  handleChangeCheckboxAttendance = (e) => {
+    const { name, checked } = e.target;
+    this.setState({[name]: checked});
+    switch (name){
+      case"isMarkAttendance":
+      var abc = document.getElementsByName("studentId");
+      for(var j=0;j<abc.length;j++){
+        var element = abc[j];
+         document.getElementById(element.id).checked=checked;
+      }
+      this.setState({
+        isMarkAbsent: false
+      })
+      break;
+      case"isMarkAbsent":
+      var abcd=document.getElementsByName("studentId");
+      for(var i=0;i<abcd.length;i++){
+        var elements = abcd[i];
+        elements.checked=false;
+      }
+      this.setState({
+        isMarkAttendance: false
+      })
+      break;
+      default:
     }
   }
 
@@ -476,7 +531,9 @@ class R46Reports extends Component {
               preDate: this.getTodaysDate(),
               startTimeMenuItems: [],
               startTimeId: "",
-              isTeacherOnly: false
+              isTeacherOnly: false,
+              isMarkAttendance: false,
+              isMarkAbsent: false
             });
             setTimeout(() => {
                 //window.location.reload();
@@ -717,6 +774,30 @@ class R46Reports extends Component {
                     />
                   </FormGroup>
                 </FormControl>
+                <FormControl component="fieldset">
+                  <FormGroup aria-label="position" row>
+                    <FormControlLabel
+                      name="isMarkAbsent"
+                      value="2"
+                      control={<Checkbox color="primary" checked={this.state.isMarkAbsent} onChange={this.handleChangeCheckboxAttendance} name="isMarkAbsent" />}
+                      label="Mark Absent"
+                      labelPlacement="end"
+                      disabled={!this.state.startTimeId}
+                    />
+                  </FormGroup>
+                </FormControl>
+                <FormControl component="fieldset">
+                  <FormGroup aria-label="position" row>
+                    <FormControlLabel
+                      name="isMarkAttendance"
+                      value="3"
+                      control={<Checkbox color="primary" checked={this.state.isMarkAttendance} onChange={this.handleChangeCheckboxAttendance} name="isMarkAttendance" />}
+                      label="Mark Attendance"
+                      labelPlacement="end"
+                      disabled={!this.state.startTimeId}
+                    />
+                  </FormGroup>
+                </FormControl>
                 <TableContainer component={Paper} style={{overflowX:"inherit"}}>
                   <Table size="small" className={classes.table} aria-label="customized table">
                       <TableHead>
@@ -733,13 +814,24 @@ class R46Reports extends Component {
                               <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.label}</Typography></StyledTableCell>
                               {/* <StyledTableCell  align="center">&nbsp;</StyledTableCell> */}
                               <StyledTableCell align="center">
-                              <Checkbox
-                                defaultChecked={!!dt.isPresent}
+                              {/* <Checkbox
+                                //defaultChecked={!!dt.isPresent}
                                 color="primary"
                                 name="studentId"
+                                id={"studentId"+dt.id}
                                 value={dt.id}
                                 inputProps={{ 'aria-label': 'studentId'}}
-                              />
+                              /> */}
+                              <input style={{
+                                    width: "1.3em",
+                                    height: "1.3em"
+                              }} 
+                              id={"studentId"+dt.id}
+                              name="studentId"
+                              value={dt.id}
+                              defaultChecked={!!dt.isPresent}
+                              // checked={!!dt.isPresent}
+                               type="checkbox"/>
                               </StyledTableCell>
                             </StyledTableRow>
                           )
