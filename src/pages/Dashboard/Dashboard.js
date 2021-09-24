@@ -147,7 +147,11 @@ import F219Form from "./Contents/Forms/F219Form";
 import F219Reports from "./Contents/Forms/F219Reports";
 import R220Reports from "./Contents/Forms/R220Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
+<<<<<<< HEAD
 import F1001Form from "./Contents/PayrollModule/Forms/F1001Form";
+=======
+import AllActiveClasses from "./Contents/Reports/AllActiveClasses/AllActiveClasses";
+>>>>>>> c8d7b645d6982cdf84e81d1b944fcbc968029c63
 
 const drawerWidth = 283;
 
@@ -1553,6 +1557,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/covid-vaccine_certificate"
                 component={CovidVaccineCertificateApproval}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="all-active-classes"
+                exact
+                path="/dashboard/all-active-classes"
+                component={AllActiveClasses}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
