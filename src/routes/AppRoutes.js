@@ -21,6 +21,8 @@ import R217FeedbackReports from '../pages/Dashboard/Contents/Forms/R217FeedbackR
 import R216Reports from '../pages/Dashboard/Contents/Forms/R216Reports';
 import R218StudentProgressReport from '../pages/Dashboard/Contents/Forms/R218StudentProgressReport';
 import R220StudentProgressReport from '../pages/Dashboard/Contents/Forms/R220StudentProgressReport';
+import PayrollDashboard from "../pages/PayrollModule/PayrollDashboard";
+
 
 const CheckLogin = () => {
   const uclAdminToken = localStorage.getItem("uclAdminToken");
@@ -52,6 +54,7 @@ const AppRoute = () => {
             <PrivateRoutes exact path="/R217FeedbackReports/:id" component={R217FeedbackReports} />
             <PrivateRoutes exact path="/R218StudentProgressReport/:id" component={R218StudentProgressReport} />
             <PrivateRoutes exact path="/R220StudentProgressReport/:id" component={R220StudentProgressReport} />
+            <PrivateRoutes exact path="/PayrollDashboard" component={PayrollDashboard} />
             <PrivateRoutes exact path="*" component={Dashboard} />
           </Switch>
         </Suspense>

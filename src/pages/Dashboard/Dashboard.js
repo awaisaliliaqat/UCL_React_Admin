@@ -147,6 +147,7 @@ import F219Form from "./Contents/Forms/F219Form";
 import F219Reports from "./Contents/Forms/F219Reports";
 import R220Reports from "./Contents/Forms/R220Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
+import F1001Form from "./Contents/PayrollModule/Forms/F1001Form";
 
 const drawerWidth = 283;
 
@@ -2021,6 +2022,25 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+              {/* Payroll Module */}
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F1001Form"
+                exact
+                path="/payroll/F1001Form"
+                render={(props) => {
+                  return (
+                    <F1001Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"
