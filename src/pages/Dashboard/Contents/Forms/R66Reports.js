@@ -12,6 +12,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 class R66Reports extends Component {
   constructor(props) {
@@ -332,7 +333,7 @@ class R66Reports extends Component {
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("programmeId", this.state.programmeId);
     data.append("academicSessionId", this.state.academicSessionId);
-    data.append("courseId", this.state.courseId);
+    data.append("courseId", this.state.courseId.id);
     data.append("pathwayId", this.state.pathwayId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsView`;
     await fetch(url, {
@@ -426,6 +427,25 @@ class R66Reports extends Component {
           })
       }
   }
+
+  handleSetUserId = (value) => {
+    
+    this.setState({
+      courseId: value,
+      courseIdError: "",
+      tableData:[]
+    });
+
+    console.log("value",value);
+    if(value!=null && value!="undefined"){
+     
+      this.setState({userIds:value.id});
+    // }
+    }
+    
+   
+  };
+
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
@@ -778,7 +798,7 @@ class R66Reports extends Component {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
+              {/* <Grid item xs={12} md={3}>
                 <TextField
                   id="courseId"
                   name="courseId"
@@ -808,7 +828,39 @@ class R66Reports extends Component {
                       </Grid>
                   }
                 </TextField>
+              </Grid> */}
+
+              
+              <Grid item xs={12} md={3}>
+                <Autocomplete
+
+                  fullWidth
+                  id="courseId"
+                  options={this.state.coursesMenuItems}
+                  value={this.state.courseId}
+                  onChange={(event, value) =>
+                    this.handleSetUserId(value)
+                  }
+                  disabled={this.state.isEditMode}
+                  // disableCloseOnSelect
+                  getOptionLabel={(option) => option.label}
+                  
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Course"
+                      placeholder="Search and Select"
+                      error={!!this.state.courseIdError}
+                      helperText={this.state.courseIdError}
+                    />
+                  )}
+                />
+                <TextField type="hidden" name="userId" value={this.state.userIds}/>
               </Grid>
+              
+             
+           
            
           </Grid>
           <Grid
