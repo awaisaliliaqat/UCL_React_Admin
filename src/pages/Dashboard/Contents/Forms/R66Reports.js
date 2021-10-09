@@ -333,7 +333,12 @@ class R66Reports extends Component {
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("programmeId", this.state.programmeId);
     data.append("academicSessionId", this.state.academicSessionId);
-    data.append("courseId", this.state.courseId.id);
+    if(this.state.courseId!=""){
+      data.append("courseId", this.state.courseId.id);
+    }else{
+      data.append("courseId", "0");
+    }
+    
     data.append("pathwayId", this.state.pathwayId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsView`;
     await fetch(url, {
