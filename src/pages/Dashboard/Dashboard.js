@@ -148,6 +148,7 @@ import F219Reports from "./Contents/Forms/F219Reports";
 import R220Reports from "./Contents/Forms/R220Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 import AllActiveClasses from "./Contents/Reports/AllActiveClasses/AllActiveClasses";
+import R80Reports from "./Contents/Forms/R80Reports";
 
 const drawerWidth = 283;
 
@@ -2022,6 +2023,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F221Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R80Reports"
+                exact
+                path="/dashboard/R80Reports"
+                render={(props) => {
+                  return (
+                    <R80Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
