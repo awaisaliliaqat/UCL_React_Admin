@@ -114,7 +114,7 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-class StudentProgressReport extends Component {
+class StudentProgressSingleSessionReport extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -182,7 +182,7 @@ class StudentProgressReport extends Component {
 
   componentDidMount() {
     
-    console.log("studentProgressReport");
+    // console.log("studentProgressReport");
    
 
      
@@ -196,8 +196,8 @@ class StudentProgressReport extends Component {
      
     let tableData = [];
     let assignmentGraders = null;
-    let data = this.props.data.studentProgressReport ;
-    // console.log("ye aya hai>>>>",this.props);
+    let data = this.props.data;
+    console.log("AHOO ye aya hai>>>>",data);
     let dataLength = data.length;
     if(dataLength){
       this.setState({
@@ -314,28 +314,8 @@ class StudentProgressReport extends Component {
         <div className={classes.mainDiv}>
         <div className={classes.flexColumn}>
             <br/>
-            <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
-
-                            <IconButton
-                            // className={clsx(classes.expand, {[classes.expandOpen]: this.state.isTrue,})}
-                            onClick={this.handleChange}
-                            // aria-expanded={this.state.isTrue}
-                            aria-label="show more"
-                            >
-                            <ExpandMoreIcon
-                            color="primary" style={{color:"rgb(47 87 165)"}}/>
-                        </IconButton>
-                        {this.props.data.sessionLabel}
-                        <Divider
-                            style={{
-                            backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
-                            opacity: "0.3",
-                            marginLeft: 50,
-                            marginTop: -10
-                            }}
-                        />
-                            </Typography>
-                            <Collapse in={this.state.isTrue}>
+            
+                           
             <TableContainer 
               component={Paper} 
               style={{ 
@@ -404,7 +384,7 @@ class StudentProgressReport extends Component {
                 </TableBody>
               </Table>
             </TableContainer>
-            </Collapse>
+          
             {/* 
             <br/><br/><br/><br/><br/><br/><br/><br/>
             <div>
@@ -427,4 +407,4 @@ class StudentProgressReport extends Component {
 //   classes: PropTypes.object.isRequired,
 // };
 
-export default withStyles(styles)(StudentProgressReport);
+export default withStyles(styles)(StudentProgressSingleSessionReport);
