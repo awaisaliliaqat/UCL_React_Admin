@@ -356,7 +356,8 @@ const StyledTableCell = withStyles((theme) => ({
               backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
               opacity: "0.3",
               marginLeft: 50,
-              marginTop: 10
+              marginTop: '2%',
+              marginBottom: '1%',
             }}
           />
             <div style={{
@@ -400,7 +401,8 @@ const StyledTableCell = withStyles((theme) => ({
               backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
               opacity: "0.3",
               marginLeft: 50,
-              marginTop: 10
+              marginTop: '1%',
+              marginBottom: '1%',
             }}
           />
              <TableContainer component={Paper}>
@@ -428,8 +430,50 @@ const StyledTableCell = withStyles((theme) => ({
                 </TableBody>
               </Table>
             </TableContainer> 
-
-
+           <div
+           style={{
+           
+            marginTop: '1%',
+            marginBottom: '1%',
+          }}>
+{data.assignmentSubmittedListTitle}
+           </div>
+            
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: '1%',
+              marginBottom: '1%',
+            }}
+          />
+            {data.assignmentSubmittedList.length ? 
+				<TableContainer component={Paper}>
+					<Table size="small" aria-label="customized table">
+						<TableHead>
+							<TableRow>
+								<StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Title</StyledTableCell>
+								<StyledTableCell align="center">Section</StyledTableCell>
+								<StyledTableCell align="center">Marks</StyledTableCell>
+								<StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Remarks</StyledTableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+						{data.assignmentSubmittedList.map((item, index)=>
+							<StyledTableRow key={index}>
+								<StyledTableCell component="th" scope="row">{item.assignmentLabel}</StyledTableCell>
+								<StyledTableCell align="center">{item.sectionLabel}</StyledTableCell>
+								<StyledTableCell align="center">{item.marks}</StyledTableCell>
+								<StyledTableCell align="center">{item.remarks}</StyledTableCell>
+							</StyledTableRow>
+						)} 
+						</TableBody>
+					</Table>
+				</TableContainer>
+				:
+				""
+				}
 
           </div>
         </Collapse>
@@ -1717,7 +1761,7 @@ class DisplayAdmissionApplications extends Component {
                            
                         </Fragment> */}
 
-                        <Fragment>
+                        {/* <Fragment>
                             <div className={classes.valuesContainer}>
                                 <span 
                                     style={{
@@ -1739,42 +1783,7 @@ class DisplayAdmissionApplications extends Component {
                             }}
                         />
                             </Typography>
-                            {/* <Collapse in={this.state.isTrue}>
-                            <div style={{
-                                marginLeft: '3%',
-                                marginRight: '3%',
-                                marginTop: '2%',
-                                marginBottom: '1%',
-                                display: 'flex'
-                            }}>
-                                {assignmentsSubmitted.length ? 
-                                <TableContainer component={Paper}>
-                                    <Table size="small" aria-label="customized table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Title</StyledTableCell>
-                                                <StyledTableCell align="center">Section</StyledTableCell>
-                                                <StyledTableCell align="center">Marks</StyledTableCell>
-                                                <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Remarks</StyledTableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                        {assignmentsSubmitted.map((item, index)=>
-                                            <StyledTableRow key={index}>
-                                                <StyledTableCell component="th" scope="row">{item.assignmentLabel}</StyledTableCell>
-                                                <StyledTableCell align="center">{item.sectionLabel}</StyledTableCell>
-                                                <StyledTableCell align="center">{item.marks}</StyledTableCell>
-                                                <StyledTableCell align="center">{item.remarks}</StyledTableCell>
-                                            </StyledTableRow>
-                                        )} 
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                                :
-                                ""
-                                }
-                            </div>
-                            </Collapse> */}
+                          
                              {assignmentsSubmitted.map( (data, index) =>
                                 <AssignmentsSubmmited 
                                     key={"AssignmentsSubmmitedData"+index}
@@ -1783,7 +1792,7 @@ class DisplayAdmissionApplications extends Component {
                                     isOpen={ index==0 ? true : false}
                                 />
                                 )}
-                        </Fragment>
+                        </Fragment> */}
 
                         {/* <Fragment>
                             <div className={classes.valuesContainer}>
@@ -1851,61 +1860,61 @@ class DisplayAdmissionApplications extends Component {
                             }}>
                                 {studentAttendance.length > 0 ?
                                 <TableContainer component={Paper} style={{ overflowX: "inherit" }}>
-              <Table
-                size="small"
-                className={classes.table}
-                aria-label="customized table"
-              >
-                <TableHead>
-                  <TableRow>
-                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
-                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
-                  </TableRow>
-                  <TableRow>
-                    {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
-                    <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
-                    <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
-                    <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
-                    {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {studentAttendance.length > 0 ? (
-                    studentAttendance.map((row, index) => (
-                      <Fragment key={"row" + row.studentId + index}>
-                        {/* <TableRow>
-                          <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
-                        </TableRow> */}
-                        {row.teacherCourseData.map((row2, index2) => 
-                          <TableRow key={"row" + row2.courseId + index2}>
-                            <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                            <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
-                          </TableRow>
-                        )}
-                      </Fragment>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-                                 :
-                                  ""
+                                    <Table
+                                        size="small"
+                                        className={classes.table}
+                                        aria-label="customized table"
+                                    >
+                                        <TableHead>
+                                        <TableRow>
+                                            <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
+                                            <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
+                                            <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
+                                            <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
+                                            <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+                                            <StyledTableCell align="center">Schedule</StyledTableCell>
+                                            <StyledTableCell align="center">Attended</StyledTableCell>
+                                            <StyledTableCell align="center">Schedule</StyledTableCell>
+                                            <StyledTableCell align="center">Attended</StyledTableCell>
+                                            <StyledTableCell align="center">Schedule</StyledTableCell>
+                                            <StyledTableCell align="center">Attended</StyledTableCell>
+                                            {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+                                        </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {studentAttendance.length > 0 ? (
+                                            studentAttendance.map((row, index) => (
+                                            <Fragment key={"row" + row.studentId + index}>
+                                                {/* <TableRow>
+                                                <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
+                                                </TableRow> */}
+                                                {row.teacherCourseData.map((row2, index2) => 
+                                                <TableRow key={"row" + row2.courseId + index2}>
+                                                    <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                                                    <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
+                                                </TableRow>
+                                                )}
+                                            </Fragment>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                            <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
+                                            </TableRow>
+                                        )}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                                        :
+                                                        ""
                                   }
                             </div>
                         </Fragment>
