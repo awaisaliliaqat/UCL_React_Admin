@@ -41,6 +41,8 @@ import AssignSectionToStudentReport from "./Contents/Forms/AssignSectionToStuden
 import AssignSectionToTeacherReport from "./Contents/Forms/AssignSectionToTeacher/AssignSectionToTeacherReports";
 import F06Form from "./Contents/Forms/F06Form";
 import F06Reports from "./Contents/Forms/F06Reports";
+import F81Form from "./Contents/Forms/F81Form";
+import F81Reports from "./Contents/Forms/F81Reports";
 import F07Form from "./Contents/Forms/F07Form";
 import F07Reports from "./Contents/Forms/F07Reports";
 import F08Form from "./Contents/Forms/F08Form";
@@ -66,6 +68,7 @@ import ControlledDialog from "../../components/ControlledDialog/ControlledDialog
 import TeacherAttendance from "./Contents/LMS/TeacherAttendance/TeacherAttendance";
 import StudentReports from "./Contents/Reports/StudentReports/StudentReports";
 import TeacherAttendanceReports from "./Contents/Reports/TeacherAttendanceReports/AttendanceReports";
+import MonthWiseTeachersTimeSheetReports from "./Contents/PayrollModule/Reports/MonthWiseTeachersTimeSheetReports/MonthWiseTeachersTimeSheetReports";
 import StudentAttendanceReports from "./Contents/Reports/StudentAttendanceReports/AttendanceReports";
 import F39Form from "./Contents/Forms/F39Form";
 import F39Reports from "./Contents/Forms/F39Reports";
@@ -1513,6 +1516,14 @@ const Dashboard = (props) => {
                 path="/dashboard/teacher-attendance-reports-admin"
                 component={TeacherAttendanceReports}
               />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="month-wise-teachers-timesheet-reports"
+                exact
+                path="/dashboard/month-wise-teachers-timesheet-reports"
+                component={MonthWiseTeachersTimeSheetReports}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="student-attendance-reports-admin"
@@ -2038,6 +2049,36 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R80Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+               <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F81Form"
+                exact
+                path="/dashboard/F81Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F81Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F81Form"
+                exact
+                path="/dashboard/F81Reports"
+                render={(props) => {
+                  return (
+                    <F81Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
