@@ -569,6 +569,7 @@ class R66Reports extends Component {
       { name: "SRNo", title: "SR#" },
       { name: "nucluesId", title: "NucleusID" },
       { name: "studentName", title: "Student\xa0Name" },
+      { name: "uolNumber", title: "Uol #" },
       { name: "pathway", title: "Pathway" },
       // { name: "schoolLabel", title: "School" },
       // { name: "programmeGroupLabel", title: "Program Group" },
