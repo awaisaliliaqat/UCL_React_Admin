@@ -525,6 +525,8 @@ class ChangeStudentStatus extends Component {
             rows={this.state.studentData}
             showFilter={this.state.showTableFilter}
           />
+          <br/>
+          <br/>
         </div>
         <form noValidate onSubmit={this.onFormSubmit}>
           <input type="hidden" name="sessionId" value={this.state.sessionId} />

@@ -79,7 +79,7 @@ class R77Reports extends Component {
       startTime: "",
       startTimeError: "",
       isTeacherOnly: false,
-      totalPhysicalAssignment:0,
+      totalPhysicalAssignment: 0,
     };
   }
 
@@ -275,9 +275,11 @@ class R77Reports extends Component {
           if (json.CODE === 1) {
             this.setState({tableData: []});
             this.setState({tableData: json.DATA || []});
+            var newLength = json.DATA.length - 1;
+            console.log("newLength"+newLength);
             if(json.DATA.length>0){
               this.setState({
-                totalPhysicalAssignment : json.DATA[0].totalPhysicalAssignments || 0
+                totalPhysicalAssignment : json.DATA[newLength].totalPhysicalAssignments || 0
               });
              }
            
@@ -645,21 +647,23 @@ class R77Reports extends Component {
                       <TableBody>
                         {this.state.tableData.length > 0 ?
                           this.state.tableData.map((dt,i)=>
-                            <StyledTableRow key={dt+i}>
-                              <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.label}</Typography></StyledTableCell>
-                              <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.startDateReport}</Typography></StyledTableCell>
-                              <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.totalMarks}</Typography></StyledTableCell>
-                             
-                              <StyledTableCell align="center">
-                              <Checkbox
-                                defaultChecked={!!dt.isGraded}
-                                color="primary"
-                                name="assignmentId"
-                                value={dt.id}
-                                inputProps={{ 'aria-label': 'assignmentId' }}
-                              />
-                              </StyledTableCell>
-                            </StyledTableRow>
+                          !dt.totalPhysicalAssignments?
+                          <StyledTableRow key={dt+i}>
+                            <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.label}</Typography></StyledTableCell>
+                            <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.startDateReport}</Typography></StyledTableCell>
+                            <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.totalMarks}</Typography></StyledTableCell>
+                            <StyledTableCell align="center">
+                            <Checkbox
+                              defaultChecked={!!dt.isGraded}
+                              color="primary"
+                              name="assignmentId"
+                              value={dt.id}
+                              inputProps={{ 'aria-label': 'assignmentId' }}
+                            />
+                            </StyledTableCell>
+                          </StyledTableRow>
+                          :
+                          ""
                           )
                           : this.state.isLoading ?
                             <StyledTableRow key={1}>
