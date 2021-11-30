@@ -109,6 +109,7 @@ import F75Form from "./Contents/Forms/F75Form";
 import R76Reports from "./Contents/Forms/R76Reports";
 import F77Form from "./Contents/Forms/F77Form";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
+import ChangeStudentProgramme from "./Contents/Reports/ChangeStudentProgramme/ChangeStudentProgramme";
 import CovidVaccineCertificateApproval from "./Contents/Reports/CovidVaccineCertificateApproval/CovidVaccineCertificateApproval";
 import ChangeStudentStatus from "./Contents/Decision/ChangeStudentStatus/ChangeStudentStatus";
 import SyncTimeTable from "./Contents/LMS/SyncTimeTable/SyncTimeTable";
@@ -152,6 +153,7 @@ import R220Reports from "./Contents/Forms/R220Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 import AllActiveClasses from "./Contents/Reports/AllActiveClasses/AllActiveClasses";
 import R80Reports from "./Contents/Forms/R80Reports";
+import StudentDynamicColumnsReports  from "./Contents/Reports/StudentDynamicColumnsReports/StudentDynamicColumnsReports";
 
 const drawerWidth = 283;
 
@@ -1511,6 +1513,13 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="students-dynamic-excel-report"
+                exact
+                path="/dashboard/students-dynamic-excel-report"
+                component={StudentDynamicColumnsReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="teacher-attendance-reports-admin"
                 exact
                 path="/dashboard/teacher-attendance-reports-admin"
@@ -1559,12 +1568,20 @@ const Dashboard = (props) => {
                 path="/dashboard/student-profile"
                 component={StudentProfile}
               />
+              
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="covid-vaccine_certificate"
                 exact
                 path="/dashboard/covid-vaccine_certificate"
                 component={CovidVaccineCertificateApproval}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="change_student_programme"
+                exact
+                path="/dashboard/change_student_programme"
+                component={ChangeStudentProgramme}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

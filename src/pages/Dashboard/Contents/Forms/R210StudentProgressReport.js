@@ -402,7 +402,7 @@ class DisplayAdmissionApplications extends Component {
                   <TableRow>
                     <StyledTableCell align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
                     <StyledTableCell align="center" colSpan="4">Attendance Record</StyledTableCell>
-                    <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn}>Assignment Graders</StyledTableCell>
+                    <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn}>Assignment Grades</StyledTableCell>
                     <StyledTableCell align="center" colSpan="3">Seminar Grades</StyledTableCell>
                     <StyledTableCell align="center" colSpan="5">Subjective Eval Grades</StyledTableCell>
                     <StyledTableCell align="center" colSpan="3">Exam Marks</StyledTableCell>

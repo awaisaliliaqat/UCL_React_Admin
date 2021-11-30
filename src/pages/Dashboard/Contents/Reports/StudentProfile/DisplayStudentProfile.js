@@ -81,6 +81,11 @@ const styles = (theme) => ({
         marginLeft: '38%',
         justifyContent: 'space-between'
     },
+    tagTitleDoubleColumnContainer: {
+        display: 'flex',
+        marginLeft: '20%',
+        justifyContent: 'space-between'
+    },
     tagTitle: {
         padding: 6,
         marginBottom: 10,
@@ -936,20 +941,29 @@ class DisplayAdmissionApplications extends Component {
                             <span className={classes.subTitle}>(a project of UCL pvt Ltd)</span>
                         </div>
                     </div>
-                    <div className={classes.tagTitleContainer}>
+                    <div className={classes.tagTitleDoubleColumnContainer}>
                         <div className={classes.flexColumn}>
                             <span className={classes.tagTitle}>{data.degreeLabel || "N/A"}</span>
-                            <span className={classes.tagTitle}>Nucleus ID: {data.studentId || "N/A"}</span>
+                            <span className={classes.tagTitle}>Joining Date: {data.joiningDate || "-"}</span>
                             <span className={classes.tagTitle}>Uol #: {data.uolNumber || "N/A"}</span>
-                            <span className={classes.tagTitle}>{data.isActive==1? "Active": "Deactive"}</span>
                             {data.isActive==0 && data.statusChangeReason!==""?
-                                <span className={classes.tagTitle}>{data.statusChangeReason}</span>
+                                <span className={classes.tagTitle}>Reason: { data.statusChangeReason}</span>
                                 :""
                             }
+                            
+                            
+                        </div>
+                        <div className={classes.flexColumn}>
+                            <span className={classes.tagTitle}>Nucleus ID: {data.studentId || "N/A"}</span>
+                            <span className={classes.tagTitle}>Exit Date: {data.exitDate || "-"}</span>
+                            <span className={classes.tagTitle}>{data.isActive==1? "Active": "Deactive"}</span>
+                           
                             {data.isActive==0 && data.statusChangeDate!==""?
-                                <span className={classes.tagTitle}>{data.statusChangeDate}</span>
+                                <span className={classes.tagTitle}>Deactived On: {data.statusChangeDate}</span>
                                 :""
                             }
+                            
+                            
                         </div>
 
                         <div className={classes.image} style={{
@@ -957,6 +971,7 @@ class DisplayAdmissionApplications extends Component {
                         }}>
                         </div>
                     </div>
+
                     <div className={classes.flexColumn}>
                         <div style={{
                             backgroundColor: 'rgb(47, 87, 165)',
@@ -998,7 +1013,7 @@ class DisplayAdmissionApplications extends Component {
                                 {data.sessionLabel || "-"}
                             </div>
                         </div>       
-                        <div className={classes.fieldValuesContainer}>
+                        {/* <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1022,7 +1037,7 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.exitDate || "-"}
                             </div>
-                        </div>   
+                        </div>    */}
                                  
                         <div className={classes.fieldValuesContainer} >
                              

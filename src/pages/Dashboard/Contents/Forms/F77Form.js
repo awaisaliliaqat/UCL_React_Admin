@@ -9,6 +9,7 @@ import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/Custom
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { DatePicker } from "@material-ui/pickers";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
+import { FlaskEmpty } from "mdi-material-ui";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -80,6 +81,8 @@ class R77Reports extends Component {
       startTimeError: "",
       isTeacherOnly: false,
       totalPhysicalAssignment: 0,
+      totalNoOfAssesment: 0,
+      gradedAssignment: 0
     };
   }
 
@@ -276,13 +279,19 @@ class R77Reports extends Component {
             this.setState({tableData: []});
             this.setState({tableData: json.DATA || []});
             var newLength = json.DATA.length - 1;
-            console.log("newLength"+newLength);
+             this.setState({
+                  totalPhysicalAssignment : json.DATA[newLength].totalPhysicalAssignments || 0,
+             });
+            
             if(json.DATA.length>0){
-              this.setState({
-                totalPhysicalAssignment : json.DATA[newLength].totalPhysicalAssignments || 0
-              });
+                  for(let i=0;i<json.DATA.length;i++){
+                    if(json.DATA[i].totalNoOfAssesment>0){
+                      this.setState({
+                        totalNoOfAssesment : json.DATA[i].totalNoOfAssesment || 0
+                      });
+                    }
+                }
              }
-           
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -306,6 +315,13 @@ class R77Reports extends Component {
   };
 
   onFormSubmit = async (e) => {
+    var assignmentIds = document.getElementsByName("assignmentId").length;
+    var assessmentIds = document.getElementsByName("assessmentId").length;
+    var gradedAssignment = (assignmentIds+assessmentIds);
+     if(gradedAssignment>this.state.totalNoOfAssesment){
+      alert("You Can't Select More Than "+this.state.totalNoOfAssesment);
+      return false;
+     }
     let myForm = document.getElementById("myForm");
     const data = new FormData(myForm);
     this.setState({ isLoading: true });
@@ -325,6 +341,9 @@ class R77Reports extends Component {
       })
       .then(
         (json) => {
+         
+          
+
           if (json.CODE === 1) {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             this.setState({
@@ -625,7 +644,10 @@ class R77Reports extends Component {
             <Grid item xs={12}>
               <Grid>
                 <Typography>
-                  Total Physical Assignments : {this.state.totalPhysicalAssignment}
+                  Total Physical Assignment : {this.state.totalPhysicalAssignment}
+                </Typography>
+                <Typography>
+                  Max. No. Of Assessments For This Term : {this.state.totalNoOfAssesment}
                 </Typography>
               </Grid>
 
@@ -638,6 +660,7 @@ class R77Reports extends Component {
                   <Table size="small" className={classes.table} aria-label="customized table">
                       <TableHead>
                         <TableRow>
+                        <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(47, 87, 165)', width:"10%"}}>Sequence No.</StyledTableCell>
                           <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(47, 87, 165)', width:"35%"}}>Name</StyledTableCell>
                           <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(47, 87, 165)', width:"10%"}}>Start date</StyledTableCell>
                           <StyledTableCell align="center" style={{borderRight: '1px solid rgb(47, 87, 165)', width:"10%"}}>Total Marks</StyledTableCell>
@@ -647,19 +670,30 @@ class R77Reports extends Component {
                       <TableBody>
                         {this.state.tableData.length > 0 ?
                           this.state.tableData.map((dt,i)=>
-                          !dt.totalPhysicalAssignments?
+                           !dt.totalNoOfAssesment?
                           <StyledTableRow key={dt+i}>
+                            <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.SRNo}</Typography></StyledTableCell>
                             <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.label}</Typography></StyledTableCell>
                             <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.startDateReport}</Typography></StyledTableCell>
                             <StyledTableCell component="th" scope="row"><Typography component="span" variant="body1" color="primary">{dt.totalMarks}</Typography></StyledTableCell>
+                        
                             <StyledTableCell align="center">
-                            <Checkbox
+                              {dt.TypeId==1?
+                              <Checkbox
                               defaultChecked={!!dt.isGraded}
                               color="primary"
                               name="assignmentId"
                               value={dt.id}
                               inputProps={{ 'aria-label': 'assignmentId' }}
                             />
+                            :
+                            <Checkbox
+                              defaultChecked={!!dt.isGraded}
+                              color="primary"
+                              name="assessmentId"
+                              value={dt.assessmentId}
+                              inputProps={{ 'aria-label': 'assessmentId' }}
+                            />}
                             </StyledTableCell>
                           </StyledTableRow>
                           :
@@ -671,7 +705,7 @@ class R77Reports extends Component {
                             </StyledTableRow>
                             :
                             <StyledTableRow key={1}>
-                              <StyledTableCell component="th" scope="row" colSpan={4}><center><b>No Data</b></center></StyledTableCell>
+                              <StyledTableCell component="th" scope="row" colSpan={5}><center><b>No Data</b></center></StyledTableCell>
                             </StyledTableRow>
                           }
                     </TableBody>
@@ -693,7 +727,7 @@ class R77Reports extends Component {
             bottomRightButtonAction={this.onFormSubmit}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.tableData.length && !this.state.isTeacherOnly}
+            disableRightButton={!this.state.tableData.length && !this.state.isTeacherOnly }
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
