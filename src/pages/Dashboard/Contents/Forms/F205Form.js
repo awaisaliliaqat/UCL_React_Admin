@@ -158,6 +158,7 @@ class F205Form extends Component {
                     <IconButton 
                       onClick={(e)=>this.downloadFile(e, fileUrl, fileName)}
                       aria-label="download"
+                      disabled={fileName=== ""|| fileName===null? true:false}
                       color="primary"
                     >
                       <CloudDownloadIcon />
