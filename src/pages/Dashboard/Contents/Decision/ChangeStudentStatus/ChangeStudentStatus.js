@@ -411,6 +411,7 @@ class ChangeStudentStatus extends Component {
     const userDate = format(this.state.userDate || new Date("2000-01-01"),"dd-MM-yyyy");
     const columns = [
       { name: "studentId", title: "Nucleus Id" },
+      { name: "accountsId", title: "Accounts Id" },
       //{ name: "firstName", title: "Name", getCellValue: (rowData) => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}},
       { name: "firstName", title: "First Name"},
       { name: "middleName", title: "Middle Name"},
