@@ -73,6 +73,24 @@ const AddmissionDecisionFilter = props => {
 
                     />
                 </div>
+
+                <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Name</span>
+                    <TextField
+                        placeholder="Name"
+                        variant="outlined"
+                        InputProps={{ classes: { input: classes.resize } }}
+                        value={values.studentName}
+                        name="studentName"
+                        onChange={e => {
+                            onHandleChange(e)
+
+                        }}
+
+                    />
+                </div>
                 <div className={classes.item} style={{
                     width: '20%'
                 }}>
@@ -164,7 +182,7 @@ const AddmissionDecisionFilter = props => {
                         color="primary"
                         className={classes.button}
                         // disabled={isLoading}
-                        disabled={values.isLoading || (!values.programmeId && !values.studentId )}
+                        disabled={values.isLoading || (!values.programmeId && !values.studentId && !values.studentName )}
                         onClick={() => getDataByStatus()}
                     > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
                     <Button

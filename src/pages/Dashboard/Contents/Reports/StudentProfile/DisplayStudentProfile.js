@@ -11,6 +11,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {Collapse, Divider, Grid, Table, Typography, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@material-ui/core';
 // import StudentProgressReport from '../../../../Dashboard/Contents/Reports/StudentProfile/Chunks/StudentProgressReport';
 import StudentProgressReport from './Chunks/StudentProgressReport';
+import StudentProgressSingleSessionReport from './Chunks/StudentProgressSingleSessionReport';
 const styles = (theme) => ({
     closeButton: {
         top: theme.spacing(1),
@@ -282,6 +283,198 @@ const StyledTableCell = withStyles((theme) => ({
                     );
                 })}
             </div>
+          </div>
+        </Collapse>
+      </Grid>
+    );
+  }
+
+
+  function AllCategoriesYearWise(props){
+
+    const { classes, data, isOpen } = props;
+  
+    const [state, setState] = useState({"expanded": true });
+    
+    const handleExpandClick = () => {
+      //setState({expanded:!state.expanded});
+    }
+  
+    return (
+      <Grid item xs={12} >
+        <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
+          <IconButton
+            className={clsx(classes.expand, {[classes.expandOpen]: state.expanded,})}
+            onClick={handleExpandClick}
+            aria-expanded={state.expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon color="primary" style={{color:"rgb(47 87 165)"}}/>
+          </IconButton>
+          <div className={classes.valuesContainer}>
+            <span style={{
+                fontSize: 'larger'
+            }}>
+               {data.sessionLabel}
+            </span>
+        </div>
+           
+        </Typography>
+        <Collapse in={state.expanded} timeout="auto" unmountOnExit>
+          <div style={{paddingLeft:50}}>
+
+          {data.enrolledCoursesTitle}
+
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: 10
+            }}
+          />
+
+            <div style={{
+                marginLeft: '3%',
+                marginTop: '2%',
+                marginBottom: '1%',
+                display: 'flex'
+            }}>
+
+                {data.enrolledCourses.map((item, index) => {
+                    return (
+                        <span key={index} className={classes.tagValue} style={{
+                            marginRight: 15
+                        }}>{item.courseLabel}</span>
+                    );
+                })}
+            </div>
+
+            {data.enrolledSectionsTitle}
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: '2%',
+              marginBottom: '1%',
+            }}
+          />
+            <div style={{
+                marginLeft: '3%',
+                marginTop: '2%',
+                marginBottom: '1%',
+                display: 'flex'
+            }}>
+                {data.enrolledSections.map((item, index) => {
+                    return (
+                        <span key={index} className={classes.tagValue} style={{
+                            marginRight: 15
+                        }}>{item.sectionLabel}</span>
+                    );
+                })}
+            </div>
+
+
+            {data.studentProgressReportTitle}
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: 10
+            }}
+          />
+         
+                 { data.studentProgressReport.map((data1, index)=> 
+                <StudentProgressSingleSessionReport 
+                    key={"studentProgressReportt"+data1.academicsSessionLabel+index}
+                    data={[data1]}
+                    //isOpen={ 0==0 ? true : false}
+                />
+                 )}             
+           
+          
+           {data.achivementDetailTitle}
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: '1%',
+              marginBottom: '1%',
+            }}
+          />
+             <TableContainer component={Paper}>
+              <Table className={classes.table} size="small" aria-label="customized table">
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Module</StyledTableCell>
+                    <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Courses</StyledTableCell>
+                    <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Original Marks</StyledTableCell>
+                    <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Resit Marks</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                    {
+                      data.achivementDetail.map((dt, i) => (
+                        <StyledTableRow key={"row"+data.sessionLabel+i}>
+                          <StyledTableCell component="th" scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.moduleNumber}</StyledTableCell>
+                          <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.coursesObject.Label}</StyledTableCell>
+                          <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.marks}</StyledTableCell>
+                          <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.resetMarks}</StyledTableCell>
+                        </StyledTableRow>
+                      ))
+                  
+                    }
+                </TableBody>
+              </Table>
+            </TableContainer> 
+           <div
+           style={{
+           
+            marginTop: '1%',
+            marginBottom: '1%',
+          }}>
+{data.assignmentSubmittedListTitle}
+           </div>
+            
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: '1%',
+              marginBottom: '1%',
+            }}
+          />
+            {data.assignmentSubmittedList.length ? 
+				<TableContainer component={Paper}>
+					<Table size="small" aria-label="customized table">
+						<TableHead>
+							<TableRow>
+								<StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Title</StyledTableCell>
+								<StyledTableCell align="center">Section</StyledTableCell>
+								<StyledTableCell align="center">Marks</StyledTableCell>
+								<StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Remarks</StyledTableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+						{data.assignmentSubmittedList.map((item, index)=>
+							<StyledTableRow key={index}>
+								<StyledTableCell component="th" scope="row">{item.assignmentLabel}</StyledTableCell>
+								<StyledTableCell align="center">{item.sectionLabel}</StyledTableCell>
+								<StyledTableCell align="center">{item.marks}</StyledTableCell>
+								<StyledTableCell align="center">{item.remarks}</StyledTableCell>
+							</StyledTableRow>
+						)} 
+						</TableBody>
+					</Table>
+				</TableContainer>
+				:
+				""
+				}
+
           </div>
         </Collapse>
       </Grid>
@@ -611,10 +804,6 @@ class DisplayAdmissionApplications extends Component {
 
                         let yearEndStatus = json.DATA[0].yearEndStatus || [];
                         this.setState({yearEndStatus: yearEndStatus});
-                        console.log("ye hai>>>>>",this.state.yearEndStatus);
-
-
-
                         
 
                         if (json.DATA) {
@@ -721,7 +910,7 @@ class DisplayAdmissionApplications extends Component {
         const { classes } = this.props;
         const { data } = this.state;
         const { studentProgressReport } = data;
-        const { enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], yearEndStatus=[],} = data;
+        const { allCategoriesYearWise = [],enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], yearEndStatus=[],} = data;
         return (
             <Fragment>
                 {this.state.isLoading &&
@@ -751,6 +940,7 @@ class DisplayAdmissionApplications extends Component {
                         <div className={classes.flexColumn}>
                             <span className={classes.tagTitle}>{data.degreeLabel || "N/A"}</span>
                             <span className={classes.tagTitle}>Nucleus ID: {data.studentId || "N/A"}</span>
+                            <span className={classes.tagTitle}>Uol #: {data.uolNumber || "N/A"}</span>
                             <span className={classes.tagTitle}>{data.isActive==1? "Active": "Deactive"}</span>
                             {data.isActive==0 && data.statusChangeReason!==""?
                                 <span className={classes.tagTitle}>{data.statusChangeReason}</span>
@@ -808,7 +998,31 @@ class DisplayAdmissionApplications extends Component {
                                 {data.sessionLabel || "-"}
                             </div>
                         </div>       
-                       
+                        <div className={classes.fieldValuesContainer}>
+                            <div className={classes.valuesContainer} style={{
+                                width: '20%',
+                                textAlign: 'center'
+                            }}>
+                                Joining Date
+                           </div>
+                            <div style={{
+                                textAlign: `${data.joiningDate ? 'left' : 'center'}`
+                            }} className={classes.value}>
+                                {data.joiningDate || "-"}
+                            </div>
+                            <div className={classes.valuesContainer} style={{
+                                width: '20%',
+                                marginLeft: 15,
+                                textAlign: 'center'
+                            }}>
+                               Exit Date
+                           </div>
+                            <div style={{
+                                textAlign: `${data.exitDate ? 'left' : 'center'}`
+                            }} className={classes.value}>
+                                {data.exitDate || "-"}
+                            </div>
+                        </div>   
                                  
                         <div className={classes.fieldValuesContainer} >
                              
@@ -941,8 +1155,99 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.maritalStatusLabel || "-"}
                             </div>
+                            {/* <div className={classes.valuesContainer} style={{
+                                width: '20%',
+                                marginLeft: 15,
+                                textAlign: 'center'
+                            }}>
+                                 Suffering from any medical condition/allergies
+                           </div>
+                            <div style={{
+                                textAlign: `${data.maritalStatusLabel ? 'left' : 'center'}`
+                            }} className={classes.value}>
+                                {data.maritalStatusLabel || "-"}
+                            </div> */}
                         </div>
+                        <div className={classes.fieldValuesContainer}>
+                            <div className={classes.valuesContainer} style={{
+                                width: '20%',
+                                textAlign: 'center'
+                            }}>
+                                Suffering from any medical condition/allergies
+                           </div>
+                            <div className={classes.value} style={{
+                                width: '80%',
+                                textAlign: `${data.guardianRelationWithStudentLabel ? 'left' : 'left'}`
+                            }}>
+                                <div style={{
+                           
+                           marginTop: '1%',
+                            marginBottom: '1%'
+                        }}>
+                            <span className={classes.tagValue}>{data.isAnyMedicalCondition === 1 ? 'Yes' : 'No'}</span>
+                        </div>
+                        {data.isAnyMedicalCondition === 1 && (<Fragment>
+                            <div className={classes.valuesContainer}>
+                                <span style={{
+                                    fontSize: 'larger'
+                                }}>
+                                    Emergency Contact Details
+                        </span>
+                            </div>
 
+                            <div className={classes.fieldValuesContainer}>
+                                <div className={classes.valuesContainer} style={{
+                                    width: '20%',
+                                    textAlign: 'center'
+                                }}>
+                                    Medical Condition
+                           </div>
+                                <div className={classes.value} style={{
+                                    width: '80%',
+                                }}>
+                                    {data.medicalCondition}
+                                </div>
+                            </div>
+
+
+                            <div className={classes.fieldValuesContainer}>
+                                <div className={classes.valuesContainer} style={{
+                                    width: '20%',
+                                    textAlign: 'center'
+                                }}>
+                                    Name
+                           </div>
+                                <div className={classes.value}>
+                                    {data.emergencyContactPersonName || '-'}
+                                </div>
+                                <div className={classes.valuesContainer} style={{
+                                    width: '20%',
+                                    marginLeft: 15,
+                                    textAlign: 'center'
+                                }}>
+                                    Relationship
+                           </div>
+                                <div className={classes.value}>
+                                    {data.emergencyContactRelationshipLabel || '-'}
+                                </div>
+                            </div>
+
+                            <div className={classes.fieldValuesContainer}>
+                                <div className={classes.valuesContainer} style={{
+                                    width: '20%',
+                                    textAlign: 'center'
+                                }}>
+                                    Mobile Number
+                           </div>
+                                <div className={classes.value} style={{
+                                    width: '80%',
+                                }}>
+                                    {data.emergencyContactNumber || '-'}
+                                </div>
+                            </div>
+                        </Fragment>)}
+                            </div>
+                        </div>
                         <div className={classes.valuesContainer} >
                             <span style={{
                                 fontSize: 'larger',
@@ -1386,85 +1691,33 @@ class DisplayAdmissionApplications extends Component {
                                 {data.guardianRelationWithStudentLabel || "-"}
                             </div>
                         </div>
+                        
 
-                        <div className={classes.valuesContainer}>
+                        {/* <div className={classes.valuesContainer}>
                             <span style={{
                                 fontSize: 'larger'
                             }}>
-                                Suffering from any medical condition/allergies
+                                
                         </span>
-                        </div>
+                        </div> */}
 
 
-                        <div style={{
-                            marginLeft: '3%',
-                            marginTop: '2%',
-                            marginBottom: '1%'
-                        }}>
-                            <span className={classes.tagValue}>{data.isAnyMedicalCondition === 1 ? 'Yes' : 'No'}</span>
-                        </div>
-                        {data.isAnyMedicalCondition === 1 && (<Fragment>
-                            <div className={classes.valuesContainer}>
-                                <span style={{
-                                    fontSize: 'larger'
-                                }}>
-                                    Emergency Contact Details
-                        </span>
-                            </div>
-
-                            <div className={classes.fieldValuesContainer}>
-                                <div className={classes.valuesContainer} style={{
-                                    width: '20%',
-                                    textAlign: 'center'
-                                }}>
-                                    Medical Condition
-                           </div>
-                                <div className={classes.value} style={{
-                                    width: '80%',
-                                }}>
-                                    {data.medicalCondition}
-                                </div>
-                            </div>
-
-
-                            <div className={classes.fieldValuesContainer}>
-                                <div className={classes.valuesContainer} style={{
-                                    width: '20%',
-                                    textAlign: 'center'
-                                }}>
-                                    Name
-                           </div>
-                                <div className={classes.value}>
-                                    {data.emergencyContactPersonName || '-'}
-                                </div>
-                                <div className={classes.valuesContainer} style={{
-                                    width: '20%',
-                                    marginLeft: 15,
-                                    textAlign: 'center'
-                                }}>
-                                    Relationship
-                           </div>
-                                <div className={classes.value}>
-                                    {data.emergencyContactRelationshipLabel || '-'}
-                                </div>
-                            </div>
-
-                            <div className={classes.fieldValuesContainer}>
-                                <div className={classes.valuesContainer} style={{
-                                    width: '20%',
-                                    textAlign: 'center'
-                                }}>
-                                    Mobile Number
-                           </div>
-                                <div className={classes.value} style={{
-                                    width: '80%',
-                                }}>
-                                    {data.emergencyContactNumber || '-'}
-                                </div>
-                            </div>
-                        </Fragment>)}
+                        
 
                         <Fragment>
+                          <div >
+                          {allCategoriesYearWise.map( (data, index) =>
+                            <AllCategoriesYearWise 
+                                key={"allCategoriesYearWise"+index}
+                                classes={classes}
+                                data={data}
+                                isOpen={ index==0 ? true : false}
+                            />
+                            )}
+                           </div>     
+                        </Fragment>
+
+                        {/* <Fragment>
                             <div className={classes.valuesContainer}>
                                 <span style={{
                                     fontSize: 'larger'
@@ -1505,23 +1758,10 @@ class DisplayAdmissionApplications extends Component {
                             />
                             )}
                             </div>
-                            {/* <div style={{
-                                marginLeft: '3%',
-                                marginTop: '2%',
-                                marginBottom: '1%',
-                                display: 'flex'
-                            }}>
-                                {enrolledSections.map((item, index) => {
-                                    return (
-                                        <span key={index} className={classes.tagValue} style={{
-                                            marginRight: 15
-                                        }}>{item.sectionLabel}</span>
-                                    );
-                                })}
-                            </div> */}
-                        </Fragment>
+                           
+                        </Fragment> */}
 
-                        <Fragment>
+                        {/* <Fragment>
                             <div className={classes.valuesContainer}>
                                 <span 
                                     style={{
@@ -1543,42 +1783,7 @@ class DisplayAdmissionApplications extends Component {
                             }}
                         />
                             </Typography>
-                            {/* <Collapse in={this.state.isTrue}>
-                            <div style={{
-                                marginLeft: '3%',
-                                marginRight: '3%',
-                                marginTop: '2%',
-                                marginBottom: '1%',
-                                display: 'flex'
-                            }}>
-                                {assignmentsSubmitted.length ? 
-                                <TableContainer component={Paper}>
-                                    <Table size="small" aria-label="customized table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <StyledTableCell align="center" style={{ borderLeft: '1px solid rgb(47, 87, 165)' }}>Title</StyledTableCell>
-                                                <StyledTableCell align="center">Section</StyledTableCell>
-                                                <StyledTableCell align="center">Marks</StyledTableCell>
-                                                <StyledTableCell align="center" style={{ borderRight: '1px solid rgb(47, 87, 165)' }}>Remarks</StyledTableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                        {assignmentsSubmitted.map((item, index)=>
-                                            <StyledTableRow key={index}>
-                                                <StyledTableCell component="th" scope="row">{item.assignmentLabel}</StyledTableCell>
-                                                <StyledTableCell align="center">{item.sectionLabel}</StyledTableCell>
-                                                <StyledTableCell align="center">{item.marks}</StyledTableCell>
-                                                <StyledTableCell align="center">{item.remarks}</StyledTableCell>
-                                            </StyledTableRow>
-                                        )} 
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                                :
-                                ""
-                                }
-                            </div>
-                            </Collapse> */}
+                          
                              {assignmentsSubmitted.map( (data, index) =>
                                 <AssignmentsSubmmited 
                                     key={"AssignmentsSubmmitedData"+index}
@@ -1587,7 +1792,7 @@ class DisplayAdmissionApplications extends Component {
                                     isOpen={ index==0 ? true : false}
                                 />
                                 )}
-                        </Fragment>
+                        </Fragment> */}
 
                         {/* <Fragment>
                             <div className={classes.valuesContainer}>
@@ -1655,68 +1860,68 @@ class DisplayAdmissionApplications extends Component {
                             }}>
                                 {studentAttendance.length > 0 ?
                                 <TableContainer component={Paper} style={{ overflowX: "inherit" }}>
-              <Table
-                size="small"
-                className={classes.table}
-                aria-label="customized table"
-              >
-                <TableHead>
-                  <TableRow>
-                    <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
-                    <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
-                  </TableRow>
-                  <TableRow>
-                    {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
-                    <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
-                    <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
-                    <StyledTableCell align="center">Schedule</StyledTableCell>
-                    <StyledTableCell align="center">Attended</StyledTableCell>
-                    {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {studentAttendance.length > 0 ? (
-                    studentAttendance.map((row, index) => (
-                      <Fragment key={"row" + row.studentId + index}>
-                        {/* <TableRow>
-                          <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
-                        </TableRow> */}
-                        {row.teacherCourseData.map((row2, index2) => 
-                          <TableRow key={"row" + row2.courseId + index2}>
-                            <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
-                            <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
-                            <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
-                          </TableRow>
-                        )}
-                      </Fragment>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-                                 :
-                                  ""
+                                    <Table
+                                        size="small"
+                                        className={classes.table}
+                                        aria-label="customized table"
+                                    >
+                                        <TableHead>
+                                        <TableRow>
+                                            <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
+                                            <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
+                                            <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
+                                            <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
+                                            <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+                                            <StyledTableCell align="center">Schedule</StyledTableCell>
+                                            <StyledTableCell align="center">Attended</StyledTableCell>
+                                            <StyledTableCell align="center">Schedule</StyledTableCell>
+                                            <StyledTableCell align="center">Attended</StyledTableCell>
+                                            <StyledTableCell align="center">Schedule</StyledTableCell>
+                                            <StyledTableCell align="center">Attended</StyledTableCell>
+                                            {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+                                        </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {studentAttendance.length > 0 ? (
+                                            studentAttendance.map((row, index) => (
+                                            <Fragment key={"row" + row.studentId + index}>
+                                                {/* <TableRow>
+                                                <StyledTableCell colSpan="8" style={{ backgroundColor: "#e1e3e8" }}><b>{row.studentLabel}</b></StyledTableCell>
+                                                </TableRow> */}
+                                                {row.teacherCourseData.map((row2, index2) => 
+                                                <TableRow key={"row" + row2.courseId + index2}>
+                                                    <StyledTableCell style={{borderLeft: "1px solid rgb(47, 87, 165)"}}>{row2.courseLabel}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountScheduledLectures}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountAttendedLectures}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountScheduledLectures + row2.attandanceCountScheduledTutorials}</StyledTableCell>
+                                                    <StyledTableCell align="center">{row2.attandanceCountAttendedLectures + row2.attandanceCountAttendedTutorials}</StyledTableCell>
+                                                    <StyledTableCell align="center" style={{borderRight: "1px solid rgb(47, 87, 165)"}}>{row2.attandancePercentage}</StyledTableCell>
+                                                </TableRow>
+                                                )}
+                                            </Fragment>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                            <StyledTableCell colSpan="8">&nbsp;</StyledTableCell>
+                                            </TableRow>
+                                        )}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                                        :
+                                                        ""
                                   }
                             </div>
                         </Fragment>
 
 
 
-                        <Fragment>
+                        {/* <Fragment>
                             <div className={classes.valuesContainer}>
                                 <span 
                                     style={{
@@ -1737,8 +1942,8 @@ class DisplayAdmissionApplications extends Component {
                             
                                 
                            
-                        </Fragment>
-                        <Fragment>
+                        </Fragment> */}
+                        {/* <Fragment>
                             <div className={classes.valuesContainer}>
                                 <span 
                                     style={{
@@ -1759,7 +1964,7 @@ class DisplayAdmissionApplications extends Component {
                             />
                             )}
                             </div>
-                        </Fragment>
+                        </Fragment> */}
                         {/* <Fragment>
                             <div className={classes.valuesContainer}>
                                 <span 

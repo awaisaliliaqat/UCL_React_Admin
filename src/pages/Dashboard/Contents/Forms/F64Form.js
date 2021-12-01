@@ -249,7 +249,7 @@ class R46Reports extends Component {
 
   loadAcademicSessions = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonAcademicSessionsViewV2`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -624,13 +624,18 @@ class R46Reports extends Component {
             }}
           />
           <br/>
+
+         
           <Grid 
             container 
             justify="center"
             alignItems="center"
             spacing={2}
           > 
+      
             <Grid item xs={12} md={2}>
+
+
                 <TextField
                 id="academicSessionId"
                 name="academicSessionId"
@@ -778,6 +783,29 @@ class R46Reports extends Component {
               }}
             />
             </Grid>
+
+            <Grid item xs={12}>
+            <div
+            style={{
+              textAlign:"left",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 100,
+                //textTransform: "capitalize",
+                textAlign:"left",
+                fontSize:12
+              }}
+              variant="h6"
+            >
+              NOTE : After 48 hours attendance can not be marked, Please contact your coordinator to mark attendance after 48 hours.
+            </Typography>
+          </div>
+          </Grid>
             <Grid item xs={12}>
               <form id="myForm">
               <TextField type="hidden" name="sectionId" value={this.state.sectionId?this.state.sectionId.id:""}/>

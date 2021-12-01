@@ -13,6 +13,7 @@ class EditStudentInformation extends Component {
       isLoading: false,
       admissionData: [],
       studentId: "",
+      studentName: "",
       isLoginMenu: false,
       isReload: false,
       eventDate: null,
@@ -205,7 +206,7 @@ onHandleChangeProgramme = e => {
       isLoading: true,
     });
     // const reload = this.state.studentId === "";
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonStudentsView?studentId=${this.state.studentId||0}&programmeGroupId=${this.state.programmeGroupId||0}&academicSessionId=${this.state.academicSessionId||0}&programmeId=${this.state.programmeId||0}`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonStudentsView?studentId=${this.state.studentId||0}&studentName=${this.state.studentName||""}&programmeGroupId=${this.state.programmeGroupId||0}&academicSessionId=${this.state.academicSessionId||0}&programmeId=${this.state.programmeId||0}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({

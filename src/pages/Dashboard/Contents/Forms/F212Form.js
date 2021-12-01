@@ -60,6 +60,7 @@ class F212Form extends Component {
       tableData: [],
       academicSessionMenuItems: [],
       academicSessionId: "",
+      sessionSortOrder:"",
       academicSessionIdError: "",
       mainPagestudentNucleusId:"",
       programmeGroupId: "",
@@ -154,7 +155,11 @@ class F212Form extends Component {
             let arrayLength = array.length;
             let res = array.find( (obj) => obj.isActive === 1 );
             if(res){
-              this.setState({academicSessionId:res.ID});
+              this.setState({
+                academicSessionId:res.ID,
+                sessionSortOrder:res.SortOrder
+              
+              });
               this.loadProgrammeGroups(res.ID);
             }
             this.setState({ academicSessionMenuItems: array });
@@ -825,7 +830,16 @@ class F212Form extends Component {
       );
     this.setState({isLoading: false});
   };
+  getSessionSortOrder=(value)=>{
 
+    let obj =this.state.academicSessionMenuItems.find(((element) => {
+      return element.ID === value;
+    }))
+    
+    this.setState({
+      sessionSortOrder:obj.SortOrder
+    });
+  }
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -836,8 +850,10 @@ class F212Form extends Component {
             programmeGroupsMenuItems: [],
             courseId: "",
             coursesMenuItems: [],
-            tableData:[]
+            tableData:[],
+            sessionSortOrder:value
           });
+          this.getSessionSortOrder(value);
           this.loadProgrammeGroups(value);
         break;
         case "programmeGroupId":
@@ -896,7 +912,7 @@ class F212Form extends Component {
 
   isProgrammeGroupValid = () => {
     let isValid = true;
-    if(this.state.academicSessionId<20){
+    if(this.state.sessionSortOrder>23){
       if (!this.state.programmeGroupId) {
         this.setState({ programmeGroupIdError: "Please select programme group." });
         document.getElementById("programmeGroupId").focus();
@@ -911,7 +927,7 @@ class F212Form extends Component {
 
   isProgrammeValid = () => {
     let isValid = true;
-    if(this.state.academicSessionId<20){
+    if(this.state.sessionSortOrder>23){
       if (!this.state.programmeId) {
         this.setState({ programmeIdError: "Please select programme." });
         document.getElementById("programmeId").focus();
@@ -1739,7 +1755,7 @@ class F212Form extends Component {
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={ this.state.isLoading || (!this.state.programmeId && this.state.academicSessionId<20 && !this.state.mainPagestudentNucleusId) }
+                      disabled={ this.state.isLoading || (!this.state.programmeId && this.state.sessionSortOrder>23 && !this.state.mainPagestudentNucleusId) }
                       onClick={() => this.handleGetData()}
                       style={{width:"100%", height:54, marginBottom:24}}
                     > 

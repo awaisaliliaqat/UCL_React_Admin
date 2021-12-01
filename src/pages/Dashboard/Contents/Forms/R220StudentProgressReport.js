@@ -139,6 +139,7 @@ class R218StudentProgressReport extends Component {
       resultClassification: "_ _ _",
       allStudentData:[],
       endDate:"",
+      pathwayLabel: "",
       totalStudents:[]
     };
   }
@@ -211,6 +212,7 @@ class R218StudentProgressReport extends Component {
               this.setState({
                 //studentLabel: data[0].studentLabel,
                 programmeLabel: data[0].programmeLabel,
+                //pathwayLabel : data[0].pathwayLabel,
                 academicSessionLabel: data[0].academicsSessionLabel,
                 uptoDate: this.getDateInString(),
                 // totalPOS: data[0].totalPOS,
@@ -280,6 +282,7 @@ class R218StudentProgressReport extends Component {
                 }
             
                 allStudentData[j] = {
+                  "pathwayLabel":data[j].pathwayLabel,
                   "studentName":data[j].studentLabel,
                   "totalPOS": data[j].totalPOS,
                   "totalAchieved": data[j].totalAchieved,
@@ -386,6 +389,8 @@ class R218StudentProgressReport extends Component {
                 <span className={classes.subTitle} style={{padding:8}}>{this.state.studentLabel}</span>
                   <br/>
                 <span className={classes.subTitle} style={{padding:8}}>{this.state.programmeLabel}</span>
+                <br/>
+                <span className={classes.subTitle} style={{padding:8}}>{d.pathwayLabel}</span>
                   {/* <br/>
                   <span className={classes.subTitle}>Total Students: {this.state.totalStudents}</span> */}
                   {/* <br/> */}

@@ -61,6 +61,8 @@ const styles = () => ({
 }
 });
 
+const Input = ({ Autocomplete, ...props }) => <Component.Input {...props} autoComplete="new-password" />;
+
 function isEmpty(obj) {
   if (obj == null) return true;
 
@@ -72,6 +74,9 @@ function isEmpty(obj) {
 
   return true;
 }
+
+
+
 
 class DocumentRequestAction extends Component {
   constructor(props) {
@@ -1016,6 +1021,8 @@ getCitiesData = async (id, type, value='') => {
               opacity: "0.3",
             }}
           />
+          <form autoComplete="off">
+           
           <Grid container component="main" className={classes.root}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -1025,6 +1032,7 @@ getCitiesData = async (id, type, value='') => {
                 <FormControl
                   error={!!this.state.appliedForError}
                   className={classes.formControl}
+                  aria-autocomplete='off'
                 >
                   <InputLabel htmlFor="appliedFor">Programme</InputLabel>
                   <Select
@@ -1125,6 +1133,8 @@ getCitiesData = async (id, type, value='') => {
                   id="firstName"
                   name="firstName"
                   label="First Name"
+                  autoComplete="new-password"
+              
                   required
                   fullWidth
                   onKeyDown={this.StopEnter}
@@ -1138,6 +1148,7 @@ getCitiesData = async (id, type, value='') => {
                   id="middleName"
                   name="middleName"
                   label="Middle Name"
+                  autoComplete="new-password"
                   fullWidth
                   onKeyDown={this.StopEnter}
                   onChange={this.handleChange}
@@ -1150,6 +1161,7 @@ getCitiesData = async (id, type, value='') => {
                   id="lastName"
                   name="lastName"
                   label="Last Name"
+                  autoComplete="new-password"
                   required
                   fullWidth
                   onKeyDown={this.StopEnter}
@@ -1183,6 +1195,7 @@ getCitiesData = async (id, type, value='') => {
                   id="mobileNo"
                   name="mobileNo"
                   label="Mobile No"
+                  autoComplete="new-password"
                   type="text"
                   inputProps={{
                     maxLength: 11,
@@ -1206,6 +1219,7 @@ getCitiesData = async (id, type, value='') => {
                   id="email"
                   name="email"
                   label="Email"
+                  autoComplete="new-password"
                   type="email"
                   onChange={this.handleChange}
                   placeholder="e.g name@domain.com"
@@ -1225,6 +1239,7 @@ getCitiesData = async (id, type, value='') => {
                     id="permanentAddress"
                     name="permanentAddress"
                     label="Address"
+                    autoComplete="new-password"
                     value={this.state.permanentAddress}
                     error={!!this.state.permanentAddressError}
                     onChange={this.handleChange}
@@ -1235,13 +1250,30 @@ getCitiesData = async (id, type, value='') => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Autocomplete
+                
                   id="permanentCountryId"
                   getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
                   fullWidth
+                  aria-autocomplete="none"
                   options={this.state.countriesData}
                   onChange={this.handleAutoComplete("permanentCountryId")}
                   value={this.state.permanentCountryIdObject}
-                  renderInput={(params) => <TextField label="Country" error={!!this.state.permanentCountryIdError} {...params}/>}
+                  //autocomplete="chrome-off"
+              
+                  renderInput={(params) =>{
+                    const inputProps = params.inputProps;
+                    inputProps.autocomplete="new-password";
+                    return (
+                    <TextField 
+                    inputProps={inputProps}
+                      //autoComplete="false"
+                     
+                                        
+                     label="Country" error={!!this.state.permanentCountryIdError} {...params}
+                      />
+                    );
+                  }
+                  }
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -1252,8 +1284,12 @@ getCitiesData = async (id, type, value='') => {
                       options={this.state.permanentProvinceData}
                       onChange={this.handleAutoComplete("permanentProvinceId")}
                       value={this.state.permanentProvinceIdObject}
-                      renderInput={(params) => <TextField label="Province" error={!!this.state.permanentProvinceIdError} {...params}
-                      />}
+                      renderInput={(params) =>{ 
+                        const inputProps = params.inputProps;
+                        inputProps.autocomplete="new-password";
+                         return ( <TextField label="Province" inputProps={{autoComplete:"chrome-off"}} error={!!this.state.permanentProvinceIdError} {...params}
+                      />);}
+                    }
                   />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -1264,13 +1300,17 @@ getCitiesData = async (id, type, value='') => {
                   options={this.state.permanentCitiesData}
                   onChange={this.handleAutoComplete("permanentCityId")}
                   value={this.state.permanentCityIdObject}
-                  renderInput={(params) => <TextField label="City" error={!!this.state.permanentCityIdError} {...params}/>}
+                  renderInput={(params) =>{const inputProps = params.inputProps;
+                    inputProps.autocomplete="new-password";
+                     return ( <TextField label="City" error={!!this.state.permanentCityIdError} {...params}/>);}}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   id="permanentPostalCode"
                   name="permanentPostalCode"
+                  autoComplete="new-password"
+                  autoComplete="new-password"
                   label="Postal Code"
                   value={this.state.permanentPostalCode}
                   error={!!this.state.permanentPostalCodeError}
@@ -1291,6 +1331,7 @@ getCitiesData = async (id, type, value='') => {
                 <TextField
                   id="fatherMobileNo"
                   name="fatherMobileNo"
+                  autoComplete="new-password"
                   value={this.state.fatherMobileNo}
                   onChange={this.handleChange}
                   error={!!this.state.fatherMobileNoError}
@@ -1325,6 +1366,7 @@ getCitiesData = async (id, type, value='') => {
                   onChange={this.handleChange}
                   label="Mobile Number"
                   placeholder="e.g 03XXXXXXXXX"
+                  autoComplete="new-password"
                   helperText={
                     this.state.motherMobileNo
                       ? this.state.motherMobileNoError
@@ -1351,6 +1393,7 @@ getCitiesData = async (id, type, value='') => {
                   name="guardianMobileNo"
                   label="Mobile Number"
                   placeholder="e.g 03XXXXXXXXX"
+                  autoComplete="new-password"
                   helperText={
                     this.state.guardianMobileNo
                       ? this.state.guardianMobileNoError
@@ -1389,6 +1432,7 @@ getCitiesData = async (id, type, value='') => {
               </Grid>
             </Grid>
           </Grid>
+          </form>
         </div>
         <CustomizedSnackbar
           isOpen={this.state.isOpenSnackbar}

@@ -108,7 +108,7 @@ onHandleChangeAS = e => {
   render() {
     const columnsSubmitted = [
       {
-        name: "Course sectionLabel",
+        name: "Course",
         dataIndex: "title",
         sortable: false,
         customStyleHeader: { width: "20%", textAlign: "left" },
