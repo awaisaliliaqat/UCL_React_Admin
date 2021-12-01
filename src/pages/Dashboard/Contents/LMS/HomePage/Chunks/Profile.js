@@ -89,7 +89,28 @@ const Profile = (props) => {
             Sections Content
           </Link>
           <br/>
+          <Link href="#/dashboard/F77Form/0" target="_blank" variant="body1" className={classes.handCursor}>
+            Assignments For Progress Report
+          </Link>
+          <br/>
+          <Link href="#/dashboard/R218Reports" target="_blank" variant="body1" className={classes.handCursor}>
+            Students Progress For Teachers
+          </Link>
+          <br/>
+          <Link href="#/dashboard/R74Reports" target="_blank" variant="body1" className={classes.handCursor}>
+            Students Attendance For Teachers
+          </Link>
+          <br/>
+          <Link href="#/dashboard/F201Form/0" target="_blank" variant="body1" className={classes.handCursor}>
+            Subjective Evaluation
+          </Link>
+          <br/>
+          <Link href="#/dashboard/F202Form/0" target="_blank" variant="body1" className={classes.handCursor}>
+            Seminar Evaluation
+          </Link>
+          <br/>
         </div>
+        
         <br />
         <Typography variant="caption">Announcements</Typography>
         <Divider variant="fullWidth" />
