@@ -315,10 +315,20 @@ class R77Reports extends Component {
   };
 
   onFormSubmit = async (e) => {
-    var assignmentIds = document.getElementsByName("assignmentId").length;
-    var assessmentIds = document.getElementsByName("assessmentId").length;
-    var gradedAssignment = (assignmentIds+assessmentIds);
-     if(gradedAssignment>this.state.totalNoOfAssesment){
+    var gradedAssignment= 0;
+    var assignmentIds = document.getElementsByName("assignmentId");
+    var assessmentIds = document.getElementsByName("assessmentId");
+    for (var i=0;i<assignmentIds.length;i++){
+      if ( assignmentIds[i].checked==true ) {
+        gradedAssignment++;
+      }
+    }
+    for (var j=0;j<assessmentIds.length;j++){
+      if ( assessmentIds[j].checked==true ) {
+        gradedAssignment++;
+      }
+    }
+     if(gradedAssignment>=(this.state.totalNoOfAssesment+1)){
       alert("You Can't Select More Than "+this.state.totalNoOfAssesment);
       return false;
      }

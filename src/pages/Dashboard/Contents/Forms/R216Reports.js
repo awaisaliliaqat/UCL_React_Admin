@@ -215,11 +215,12 @@ class R216Reports extends Component {
         this.setState({isLoading: false})
     }
 
-    loadComment = async(teacherId=0, courseId=0, termId=0) => {
+    loadComment = async(teacherId=0, courseId=0, termId=0, academicSessionId=0) => {
         const data = new FormData();
         data.append("teacherId",teacherId);
         data.append("courseId",courseId);
         data.append("termId",termId);
+        data.append("academicSessionId",academicSessionId);
         this.setState({isLoading: true});
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C216CommonStudentsFeedbackCommentsTeacherView`;
         await fetch(url, {
@@ -492,7 +493,7 @@ class R216Reports extends Component {
         let ids = id.split("&");
         // console.log(ids[0] + " - " + ids[2] + " - " + ids[4] + " - " + ids[6]);
         this.loadReport(ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7]);
-        this.loadComment(ids[0], ids[2], ids[4]);
+        this.loadComment(ids[0], ids[2], ids[4],ids[6]);
         this.setState({
             courseId: ids[2],
             teacherId: ids[0],

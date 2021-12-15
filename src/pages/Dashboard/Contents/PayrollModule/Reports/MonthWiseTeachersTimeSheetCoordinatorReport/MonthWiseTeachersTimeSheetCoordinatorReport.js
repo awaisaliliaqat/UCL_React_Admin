@@ -26,7 +26,7 @@ function isEmpty(obj) {
     return true;
 }
 
-class MonthWiseTeachersTimeSheetReports extends Component {
+class MonthWiseTeachersTimeSheetAdminReports extends Component {
 
     constructor(props) {
         super(props);
@@ -378,7 +378,7 @@ class MonthWiseTeachersTimeSheetReports extends Component {
                         justifyContent: 'space-between'
                     }}>
                         <Typography style={{ color: '#1d5f98', fontWeight: 600, textTransform: 'capitalize' }} variant="h5">
-                            Month Wise Teacher's Timesheet Report
+                            Month Wise Teacher's Timesheet Admin Report
             </Typography>
                         <div style={{ float: "right" }}>
                             <Tooltip title="Table Filter">
@@ -422,4 +422,4 @@ class MonthWiseTeachersTimeSheetReports extends Component {
         );
     }
 }
-export default MonthWiseTeachersTimeSheetReports;
+export default MonthWiseTeachersTimeSheetAdminReports;

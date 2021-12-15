@@ -62,13 +62,14 @@ import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form";
 import F33Form from "./Contents/Forms/F33Form";
 import F34Form from "./Contents/Forms/F34Form";
-import F34Reports from "./Contents/Forms/F34Reports";
+import F34Reports from "./Contents/Forms/F34Reports"; 
 import F36Form from "./Contents/Forms/F36Form";
 import ControlledDialog from "../../components/ControlledDialog/ControlledDialog";
 import TeacherAttendance from "./Contents/LMS/TeacherAttendance/TeacherAttendance";
+import MonthWiseTeacherTimeSheetReport from "./Contents/PayrollModule/Reports/MonthWiseTeacherTimeSheet/MonthWiseTeacherTimeSheetReport";
 import StudentReports from "./Contents/Reports/StudentReports/StudentReports";
 import TeacherAttendanceReports from "./Contents/Reports/TeacherAttendanceReports/AttendanceReports";
-import MonthWiseTeachersTimeSheetReports from "./Contents/PayrollModule/Reports/MonthWiseTeachersTimeSheetReports/MonthWiseTeachersTimeSheetReports";
+//import A from "./Contents/PayrollModule/Reports/MonthWiseTeachersTimeSheetReports/MonthWiseTeachersTimeSheetAdminReports";
 import StudentAttendanceReports from "./Contents/Reports/StudentAttendanceReports/AttendanceReports";
 import F39Form from "./Contents/Forms/F39Form";
 import F39Reports from "./Contents/Forms/F39Reports";
@@ -154,6 +155,7 @@ import HomePage from "./Contents/LMS/HomePage/HomePage";
 import AllActiveClasses from "./Contents/Reports/AllActiveClasses/AllActiveClasses";
 import R80Reports from "./Contents/Forms/R80Reports";
 import StudentDynamicColumnsReports  from "./Contents/Reports/StudentDynamicColumnsReports/StudentDynamicColumnsReports";
+import R244Report from "./Contents/Reports/AllGraduatedStudents/R224Report";
 
 const drawerWidth = 283;
 
@@ -1504,6 +1506,13 @@ const Dashboard = (props) => {
                 path="/dashboard/teacher-attendance-report"
                 component={TeacherAttendance}
               />
+                 <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="month-wise-teacher-time-sheet-report"
+                exact
+                path="/dashboard/month-wise-teacher-time-sheet-report"
+                component={MonthWiseTeacherTimeSheetReport}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="students-excel-report"
@@ -1526,13 +1535,13 @@ const Dashboard = (props) => {
                 component={TeacherAttendanceReports}
               />
 
-              <SetRoute
+              {/* <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="month-wise-teachers-timesheet-reports"
                 exact
-                path="/dashboard/month-wise-teachers-timesheet-reports"
+                path="/dashboard/month-wise-teachers-timesheet-reports-admin"
                 component={MonthWiseTeachersTimeSheetReports}
-              />
+              /> */}
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="student-attendance-reports-admin"
@@ -2103,6 +2112,22 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R224Report"
+                exact
+                path="/dashboard/R244Report"
+                render={(props) => {
+                  return (
+                    <R244Report
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
               {/* Payroll Module */}
               {/* <SetRoute
                 setValue={(value) => handleValueChange(value)}
