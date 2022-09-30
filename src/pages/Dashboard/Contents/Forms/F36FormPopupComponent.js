@@ -1,6 +1,6 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
 import { useTheme } from "@material-ui/styles";
-import { numberExp } from "../../../../utils/regularExpression";
+import { numberExp,numberWithDecimalExp } from "../../../../utils/regularExpression";
 import {TextField, Grid, CircularProgress, Divider, Typography, Button, IconButton,
   Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, Card, 
   CardContent } from "@material-ui/core";
@@ -74,7 +74,7 @@ class F36FormPopupComponent extends Component {
       isReload: false,
       files: [],
       filesError: "",
-      obtainedMarks: "",
+      obtainedMarks: 0.0,
       obtainedMarksError: "",
       remarks:"",
       remarksError:"",
@@ -91,7 +91,7 @@ class F36FormPopupComponent extends Component {
     this.setState({
       files: [],
       filesError: "",
-      obtainedMarks: "",
+      obtainedMarks: 0.0,
       obtainedMarksError: "",
       remarks:"",
       remarksError:""
@@ -120,7 +120,7 @@ class F36FormPopupComponent extends Component {
     let regex = "";
     switch (name) {
         case "obtainedMarks":
-            regex = new RegExp(numberExp);
+           regex = new RegExp(numberWithDecimalExp);
             if (value && !regex.test(value)) {
                 return;
             }

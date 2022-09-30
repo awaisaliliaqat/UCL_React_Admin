@@ -121,7 +121,7 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-class R218StudentProgressReport extends Component {
+class R222StudentProgressReport extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -202,10 +202,20 @@ class R218StudentProgressReport extends Component {
           if (json.CODE === 1) {
 
             let tableHeaderData = [];
-            let assignmentGraders = null;
-
-
-            let tableData = [];
+            let attendanceRecordCol = ["Del", "Att", "%Att", "Credits"];
+            tableHeaderData = tableHeaderData.concat(attendanceRecordCol);
+            let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
+            tableHeaderData = tableHeaderData.concat(assignmentGraders);
+            let seminarGrades = ["1", "2", "Credits"];
+            tableHeaderData = tableHeaderData.concat(seminarGrades);
+            let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
+            tableHeaderData = tableHeaderData.concat(subjectiveEvalGradesCol);
+            let examMarksCol = ["1", "2", "Credits"];
+            tableHeaderData = tableHeaderData.concat(examMarksCol);
+            let creditsCol = ["Poss", "Ach", "%Age"];
+            tableHeaderData = tableHeaderData.concat(creditsCol);
+            this.setState({tableHeaderData: tableHeaderData});
+           
             let data = json.DATA || [];
             let dataLength = data.length;
             if(dataLength){
@@ -219,34 +229,7 @@ class R218StudentProgressReport extends Component {
                 // totalPercentage: data[0].totalPercentage,
                 // resultClassification:  data[0].resultClassification,
               });
-
-
-              /*
-              Total Number Of Assignment Header Columns
-              */
-
-              let totalColumnsLength = data[0].totalColumns+1 || [];
-
-              if(totalColumnsLength){
-                assignmentGraders=[totalColumnsLength];
-                for(let i=0; i<totalColumnsLength; i++){
-                  let columnIndex=i+1;
-                  if(columnIndex==totalColumnsLength){ 
-
-                    assignmentGraders[i]="Credits";
-
-                  }else{
-
-                    assignmentGraders[i]=columnIndex+"";
-
-                  }
-                  
-                }
-
-                this.setState({tableAssignmentHeaderColumn: totalColumnsLength});
-                this.setState({tableBottomFirstColumn:(totalColumnsLength+20)-4});
-              }
-
+              
               let allStudentData = [];
               for(let j=0; j<dataLength; j++){
                 let tableData = [];
@@ -304,24 +287,7 @@ class R218StudentProgressReport extends Component {
 
               this.setState({allStudentData: allStudentData});
 
-            }
-            
-            
-            let attendanceRecordCol = ["Del", "Att", "%Att", "Credits"];
-            tableHeaderData = tableHeaderData.concat(attendanceRecordCol);
-           // let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
-            tableHeaderData = tableHeaderData.concat(assignmentGraders);
-            let seminarGrades = ["1", "2", "Credits"];
-            tableHeaderData = tableHeaderData.concat(seminarGrades);
-            let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
-            tableHeaderData = tableHeaderData.concat(subjectiveEvalGradesCol);
-            let examMarksCol = ["1", "2", "Credits"];
-            tableHeaderData = tableHeaderData.concat(examMarksCol);
-            let creditsCol = ["Poss", "Ach", "%Age"];
-            tableHeaderData = tableHeaderData.concat(creditsCol);
-            this.setState({tableHeaderData: tableHeaderData});
-
-
+            }    
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
@@ -424,8 +390,7 @@ class R218StudentProgressReport extends Component {
                       <TableRow >
                         <StyledTableCell  align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Student</StyledTableCell>
                         <StyledTableCell  align="center" colSpan="4">Attendance Record</StyledTableCell>
-                        {/* <StyledTableCell  align="center" colSpan="9">Assignment Graders</StyledTableCell> */}
-                        <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn} style={{border: "1px solid rgb(47, 87, 165)" }}>Assignment Graders</StyledTableCell>
+                        <StyledTableCell  align="center" colSpan="9">Assignment Graders</StyledTableCell>
                         <StyledTableCell  align="center" colSpan="3">Seminar Grades</StyledTableCell>
                         <StyledTableCell  align="center" colSpan="5">Subjective Eval Grades</StyledTableCell>
                         <StyledTableCell  align="center" colSpan="3">Exam Marks</StyledTableCell>
@@ -444,9 +409,7 @@ class R218StudentProgressReport extends Component {
                     {this.state.allStudentData.map((d, i) => 
                     <TableBody>
                       <Fragment>
-                      {/* <TableRow>
-                          <StyledTableCell colSpan={this.state.tableAssignmentHeaderColumn+20} style={{ backgroundColor: "#e1e3e8" }}>&nbsp;</StyledTableCell>
-                        </TableRow> */}
+                      
                         {/* <TableRow>
                           <StyledTableCell colSpan="29" style={{ backgroundColor: "#e1e3e8" }}><span className={classes.subTitle} style={{padding:8,fontSize:12}}>{d.studentName}</span></StyledTableCell>
                         </TableRow> */}
@@ -492,8 +455,8 @@ class R218StudentProgressReport extends Component {
   }
 }
 
-R218StudentProgressReport.propTypes = {
+R222StudentProgressReport.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(R218StudentProgressReport);
+export default withStyles(styles)(R222StudentProgressReport);

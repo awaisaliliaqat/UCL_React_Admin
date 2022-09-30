@@ -185,6 +185,9 @@ class F204Form extends Component {
       startTimeError:"",
       endTime:"",
       endTimeError:"",
+      sessionTermMenuItems: [],
+      sessionTermId: "",
+      sessionTermIdError: "",
     };
   }
 
@@ -347,6 +350,49 @@ class F204Form extends Component {
           } else {
             console.log(error);
             this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+
+  loadTerms = async () => {
+    this.setState({ isLoading: true });
+    let data = new FormData();
+    
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lsm/C204CommonAcademicsSessionsTermsView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({sessionTermMenuItems: json.DATA || [] });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getTerms", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -524,6 +570,13 @@ class F204Form extends Component {
         this.setState({sectionId:""});
         this.getSectionsData(value);
         break;
+      case "sessionTermId":
+        let termMenuItems = this.state.sessionTermMenuItems;
+        // let res = termMenuItems.find((obj) => obj.id === value);
+        // if(res){
+        //   this.setState({endDate:res.endDate});
+        // }
+      break;  
       default:
         break;
     }
@@ -605,6 +658,7 @@ class F204Form extends Component {
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.getCoursesData();
+    this.loadTerms();
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
     }
@@ -664,6 +718,31 @@ class F204Form extends Component {
                 marginRight: 10,
               }}
             >
+              <Grid item xs={12} md={12}>
+              <TextField
+                id="sessionTermId"
+                name="sessionTermId"
+                variant="outlined"
+                label="Term"
+                onChange={this.onHandleChange}
+                value={this.state.sessionTermId}
+                error={!!this.state.sessionTermIdError}
+                helperText={this.state.sessionTermIdError}
+                // disabled={!this.state.academicSessionId || !this.state.programmeId}
+                required
+                fullWidth
+                select
+              >
+                {this.state.sessionTermMenuItems.map((dt, i) => (
+                  <MenuItem
+                    key={"sessionTermMenuItems"+ dt.termId}
+                    value={dt.termId}
+                  >
+                    {dt.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
                   id="courseId"

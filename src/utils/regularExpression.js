@@ -3,3 +3,4 @@ export const numberExp = "^[0-9]+$";
 export const alphabetExp = "^[a-zA-Z ]+$";
 export const emailExp = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$";
 export const numberFreeExp =  "^([^0-9]*)$";
+export const numberWithDecimalExp =  "[+-]?([0-9]*[.])?[0-9]+";

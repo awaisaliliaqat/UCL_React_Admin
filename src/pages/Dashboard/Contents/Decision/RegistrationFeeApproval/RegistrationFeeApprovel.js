@@ -61,12 +61,13 @@ class RegistrationFeeApprovel extends Component {
     }
 
     componentDidMount() {
+        this.loadAcademicSessions();
         this.getGenderData();
         this.getDegreesData();
         this.getStatusTypeData();
         this.getMethodData();
-        this.getData();
-        this.loadAcademicSessions();
+        //this.getData();
+       
     }
 
     getGenderData = async () => {
@@ -122,12 +123,12 @@ class RegistrationFeeApprovel extends Component {
               if (json.CODE === 1) {
                 let array = json.DATA || [];
                 // let arrayLength = array.length;
-                let res = array.find( (obj) => obj.isActive === 1 );
+                let res = array.find( (obj) => obj.isAdmissionActive === 1 );
                 if(res){
                   this.setState({academicSessionId:res.ID});
                 }
                 this.setState({ academicSessionMenuItems: array });
-                
+                this.getData();
               } else {
                 this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
               }

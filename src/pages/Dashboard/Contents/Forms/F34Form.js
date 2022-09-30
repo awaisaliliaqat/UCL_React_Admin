@@ -111,7 +111,80 @@ class F34Form extends Component {
       courseIdMenuItems:[],
       sectionId:"",
       sectionIdError:"",
-      sectionIdMenuItems:[]
+      sectionIdMenuItems:[],
+      timeSlotMenuItems:[
+        // {id:"00:00:00",label:"12:00 AM"},
+        // {id:"01:00:00",label:"01:00 AM"},
+        // {id:"02:00:00",label:"02:00 AM"},
+        // {id:"03:00:00",label:"03:00 AM"},
+        // {id:"04:00:00",label:"04:00 AM"},
+        // {id:"05:00:00",label:"05:00 AM"},
+        {id:"06:00:00",label:"06:00 AM"},
+        {id:"06:15:00",label:"06:15 AM"},
+        {id:"06:30:00",label:"06:30 AM"},
+        {id:"06:45:00",label:"06:45 AM"},
+        {id:"07:00:00",label:"07:00 AM"},
+        {id:"07:15:00",label:"07:15 AM"},
+        {id:"07:30:00",label:"07:30 AM"},
+        {id:"07:45:00",label:"07:45 AM"},
+        {id:"08:00:00",label:"08:00 AM"},
+        {id:"08:15:00",label:"08:15 AM"},
+        {id:"08:30:00",label:"08:30 AM"},
+        {id:"08:45:00",label:"08:45 AM"},
+        {id:"09:00:00",label:"09:00 AM"},
+        {id:"09:15:00",label:"09:15 AM"},
+        {id:"09:30:00",label:"09:30 AM"},
+        {id:"09:45:00",label:"09:45 AM"},
+        {id:"10:00:00",label:"10:00 AM"},
+        {id:"10:15:00",label:"10:15 AM"},
+        {id:"10:30:00",label:"10:30 AM"},
+        {id:"10:45:00",label:"10:45 AM"},
+        {id:"11:00:00",label:"11:00 AM"},
+        {id:"11:15:00",label:"11:15 AM"},
+        {id:"11:30:00",label:"11:30 AM"},
+        {id:"11:45:00",label:"11:45 AM"},
+        {id:"12:00:00",label:"12:00 PM"},
+        {id:"12:15:00",label:"12:15 PM"},
+        {id:"12:30:00",label:"12:30 PM"},
+        {id:"12:45:00",label:"12:45 PM"},
+        {id:"13:00:00",label:"01:00 PM"},
+        {id:"13:15:00",label:"01:15 PM"},
+        {id:"13:30:00",label:"01:30 PM"},
+        {id:"13:45:00",label:"01:45 PM"},
+        {id:"14:00:00",label:"02:00 PM"},
+        {id:"14:15:00",label:"02:15 PM"},
+        {id:"14:30:00",label:"02:30 PM"},
+        {id:"14:45:00",label:"02:45 PM"},
+        {id:"15:00:00",label:"03:00 PM"},
+        {id:"15:15:00",label:"03:15 PM"},
+        {id:"15:30:00",label:"03:30 PM"},
+        {id:"15:45:00",label:"03:45 PM"},
+        {id:"16:00:00",label:"04:00 PM"},
+        {id:"16:15:00",label:"04:15 PM"},
+        {id:"16:30:00",label:"04:30 PM"},
+        {id:"16:45:00",label:"04:45 PM"},
+        {id:"17:00:00",label:"05:00 PM"},
+        {id:"17:15:00",label:"05:15 PM"},
+        {id:"17:30:00",label:"05:30 PM"},
+        {id:"17:45:00",label:"05:45 PM"},
+        {id:"18:00:00",label:"06:00 PM"},
+        {id:"18:15:00",label:"06:15 PM"},
+        {id:"18:30:00",label:"06:30 PM"},
+        {id:"18:45:00",label:"06:45 PM"},
+        {id:"19:00:00",label:"07:00 PM"},
+        {id:"19:15:00",label:"07:15 PM"},
+        {id:"19:30:00",label:"07:30 PM"},
+        {id:"19:45:00",label:"07:45 PM"},
+        {id:"20:00:00",label:"08:00 PM"},
+        {id:"20:15:00",label:"08:15 PM"},
+        {id:"20:30:00",label:"08:30 PM"},
+        {id:"20:45:00",label:"08:45 PM"},
+        {id:"21:00:00",label:"09:00 PM"}
+      ],
+      startTime:"",
+      startTimeError:"",
+      endTime:"",
+      endTimeError:"",
     };
   }
 
@@ -266,7 +339,9 @@ class F34Form extends Component {
                 sectionId:json.DATA[0].sectionId,
                 label: json.DATA[0].label,
                 startDate: json.DATA[0].startDate,
+                startTime: json.DATA[0].startTimeReport,
                 dueDate: json.DATA[0].dueDate,
+                endTime: json.DATA[0].endTimeReport,
                 totalMarks: json.DATA[0].totalMarks,
                 instruction: json.DATA[0].instruction,
               });
@@ -341,6 +416,19 @@ class F34Form extends Component {
     return isValid;
   };
 
+
+  isStartTimeValid = () => {
+    let isValid = true;
+    if (!this.state.startTime) {
+      this.setState({ startTimeError: "Please select start time." });
+      document.getElementById("startTime").focus();
+      isValid = false;
+    } else {
+      this.setState({ startTimeError: "" });
+    }
+    return isValid;
+  };
+
   isDueDateValid = () => {
     let isValid = true;
     if (!this.state.dueDate) {
@@ -353,6 +441,17 @@ class F34Form extends Component {
     return isValid;
   };
 
+  isEndTimeValid = () => {
+    let isValid = true;
+    if (!this.state.endTime) {
+      this.setState({ endTimeError: "Please select end time." });
+      document.getElementById("endTime").focus();
+      isValid = false;
+    } else {
+      this.setState({ endTimeError: "" });
+    }
+    return isValid;
+  };
   isCourseValid = () => {
     let isValid = true;
     if (!this.state.courseId) {
@@ -425,6 +524,9 @@ class F34Form extends Component {
     this.setState({dueDate: date});
   };
 
+
+
+
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -460,7 +562,9 @@ class F34Form extends Component {
       !this.isSectionValid() ||
       !this.isLabelValid() ||
       !this.isStartDateValid() ||
+      !this.isStartTimeValid() ||
       !this.isDueDateValid() ||
+      !this.isEndTimeValid() ||
       !this.isInstructionValid() ||      
       !this.isTotalMarksValid() ||
       !this.isFileValid()
@@ -652,7 +756,7 @@ class F34Form extends Component {
                   helperText={this.state.labelError}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={4}>
                 <DatePicker
                   autoOk
                   name="startDate"
@@ -674,9 +778,37 @@ class F34Form extends Component {
                   helperText={this.state.startDateError}
                 />
               </Grid>
+              <Grid item xs={12} md={2}>
+                <TextField
+                  id="startTime"
+                  name="startTime"
+                  variant="outlined"
+                  label="Start Time"
+                  required
+                  fullWidth
+                  select
+                  onChange={this.onHandleChange}
+                  value={this.state.startTime}
+                  error={!!this.state.startTimeError}
+                  helperText={this.state.startTimeError}
+                >
+                  {this.state.timeSlotMenuItems ? 
+                    this.state.timeSlotMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"startTimeMenuItems"+dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))
+                  :
+                    this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
+                  }
+                </TextField>
+              </Grid>
               <Grid item xs={12} md={6}>
               <Grid container spacing={2}>
-                  <Grid item xs={12}>
+                  <Grid item xs={8}>
                     <DatePicker
                       autoOk
                       name="dueDate"
@@ -698,6 +830,34 @@ class F34Form extends Component {
                       helperText={this.state.dueDateError}
                     />
               </Grid>
+              <Grid item xs={12} md={4}>
+                  <TextField
+                    id="endTime"
+                    name="endTime"
+                    variant="outlined"
+                    label="End Time"
+                    required
+                    fullWidth
+                    select
+                    onChange={this.onHandleChange}
+                    value={this.state.endTime}
+                    error={!!this.state.endTimeError}
+                    helperText={this.state.endTimeError}
+                  >
+                    {this.state.timeSlotMenuItems ? 
+                      this.state.timeSlotMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"endTimeMenuItems"+dt.id}
+                          value={dt.id}
+                        >
+                          {dt.label}
+                        </MenuItem>
+                      ))
+                    :
+                      this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
+                    }
+                  </TextField>
+                </Grid>
               <Grid item xs={12}>
                 <TextField
                       id="totalMarks"

@@ -78,47 +78,10 @@ function TableRowWithData(props) {
 
   const {rowIndex, rowData={}, onChange, isLoading, ...rest} = props;
  
-  let preMarks = "";
-  let statusNFlag=false;
-  let statusNAFlag=false;
-  if(rowData.assignmentStatus!=0){
-    if(rowData.assignmentStatus==1){
-      statusNFlag=true;
-    }
-    if(rowData.assignmentStatus==2){
-      statusNAFlag=true;
-    }
-    
-    preMarks= "";
-  }else{
-    preMarks=parseInt(rowData.marks) ;
-  }
   
   
  
-  const [marks, setMarks] = useState(preMarks);
-  const [marksError, setMarksError] = useState("");
-
-  const [marksStatusN, setMarksStatusN] = useState(statusNFlag);
-
-  const [marksStatusNA, setMarksStatusNA] = useState(statusNAFlag);
   
-  const handleChangeMarksStatusN = (e) => {
-    
-    setMarksStatusN(e.target.checked);
-    setMarksStatusNA(false);
-  }
-
-  const handleChangeMarksStatusNA = (e) => {
-    
-    setMarksStatusNA(e.target.checked);
-    setMarksStatusN(false);
-  }
-
-  const handleChangeMarks = (e) => {
-    const { name, value } = e.target;
-    setMarks(value);
-  }
 
   useEffect(() => {});
 
@@ -128,65 +91,43 @@ function TableRowWithData(props) {
           {rowIndex + 1}
         </StyledTableCell>
         <StyledTableCell align="left">
-          {rowData.studentLabel}
-          <TextField type="hidden" name="studentId" defaultValue={rowData.studentId}/>
+          {rowData.studentId}
+          
         </StyledTableCell>
-        <StyledTableCell align="center">
-            <TextField
-              id={"marks"+rowIndex}
-              name="marks"
-              variant="outlined"
-              label="Marks"
-              type="number"
-              onChange={(e)=>handleChangeMarks(e)}
-              value={marks}
-              error={!!marksError}
-              helperText={marksError}
-              disabled={isLoading}
-              required
-              fullWidth
-              size="small"
-              inputProps={{
-                id:"marks"+rowIndex,
-              }}
-            />
-
+        <StyledTableCell align="left">
+          {rowData.name}
+          
         </StyledTableCell>
-        <StyledTableCell  align="left">
-        
-         <FormControlLabel control={
-          <Switch
-                   
-                   key={"n"+rowData.studentId}
-                   checked={marksStatusN}
-                   //onChange={handleChange}
-                   value={rowData.studentId}
-                   onClick={handleChangeMarksStatusN}
-                   color="primary"
-                   name="statusN"
-                   inputProps={{ 'aria-label': 'primary checkbox' }}
-                /> } label="N"
-         />      
-          <FormControlLabel control={
-          <Switch
-                   
-                   key={"na"+rowData.studentId}
-                   checked={marksStatusNA}
-                   
-                   value={rowData.studentId}
-                   onClick={handleChangeMarksStatusNA}
-                   color="primary"
-                   name="statusNA"
-                   inputProps={{ 'aria-label': 'primary checkbox' }}
-                /> } label="NA"
-         />           
-
+        <StyledTableCell align="left">
+          {rowData.degreeLabel}
+          
         </StyledTableCell>
+        <StyledTableCell align="left">
+          {rowData.pathwayLabel}
+          
+        </StyledTableCell>
+        <StyledTableCell align="left">
+          {rowData.mobileNo}
+          
+        </StyledTableCell>
+        <StyledTableCell align="left">
+          {rowData.fatherMobileNo}
+          
+        </StyledTableCell>
+        <StyledTableCell align="left">
+          {rowData.MotherMobileNo}
+          
+        </StyledTableCell>
+        <StyledTableCell align="left">
+          {rowData.GuardianMobileNo}
+          
+        </StyledTableCell>
+       
       </StyledTableRow>
   );
 }
 
-class F211Form extends Component {
+class F225Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -207,14 +148,9 @@ class F211Form extends Component {
       programmeGroupIdMenuItems: [],
       programmeGroupId: "",
       programmeGroupIdError: "",
-      sectionMenuItems: [],
-      sectionId: "",
-      sectionIdError: "",
-      termId: "",
-      termIdError: "",
-      termMenuItems: [],
-      assessmentNo: "",
-      totalNoOfAssessment: "",
+      programmeId: "",
+      programmeIdError: "",
+      programmeMenuItems: [],
       tableData:[],
       isEditMode: false
     };
@@ -239,7 +175,7 @@ class F211Form extends Component {
 
   getAcademicSessions = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C225CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -262,7 +198,7 @@ class F211Form extends Component {
               if (array[i].isActive == "1") {
                 this.setState({academicSessionId:array[i].ID});
                 this.loadProgrammeGroups(array[i].ID);
-                this.getTerms(array[i].ID);
+               
               }
             }
           } else {
@@ -289,7 +225,7 @@ class F211Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsOfferedProgrammesGroupView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C225CommonProgrammeGroupsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -327,56 +263,11 @@ class F211Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  getTerms = async (academicsSessionId) => {
-    this.setState({ isLoading: true });
+  loadProgrammes = async (programmeGroupId) => {
+    this.setState({isLoading: true});
     let data = new FormData();
-    data.append("academicsSessionId", academicsSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsTermsView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({ termMenuItems: json.DATA || [] });
-          } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-          }
-          console.log("getTerms", json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  getTotalNoOfAssessment = async (academicsSessionId, programmeGroupId, termId) => {
-    this.setState({ isLoading: true });
-    let data = new FormData();
-    data.append("academicsSessionId", academicsSessionId);
     data.append("programmeGroupId", programmeGroupId);
-    data.append("termId", termId);
-    data.append("rubricId", 1);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsEvaluationsTotalNoOfAssessmentView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C225CommonProgrammesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -393,147 +284,37 @@ class F211Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let data = json.DATA || [];
-            let dataLength = data.length;
-            if(dataLength>0){
-              this.setState({ totalNoOfAssessment :  data[0].totalNoOfAssessment});
-            }
+            this.setState({programmeMenuItems: json.DATA || []});
           } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getTotalNoOfAssessment", json);
+          console.log("loadProgrammes", json);
         },
         (error) => {
-          if (error.status == 401) {
+          if (error.status === 401) {
             this.setState({
               isLoginMenu: true,
               isReload: true,
             });
           } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
-    this.setState({ isLoading: false });
+    this.setState({isLoading: false});
   };
 
-  getSections = async (academicsSessionId=0, programmeGroupId=0) => {
-    this.setState({ isLoading: true });
-    let data = new FormData();
-    data.append("academicsSessionId", academicsSessionId);
-    data.append("programmeGroupId", programmeGroupId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSectionsView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({ sectionMenuItems: json.DATA });
-          } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-          }
-          console.log("getSections", json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  getMaxAssessmentNo = async (academicsSessionId, programmeGroupId, termId, sectionId) => {
-    this.setState({ 
-      isLoading: true,
-      isLoadingData: false
-    });
-    this.setState({  });
-    let data = new FormData();
-    data.append("academicsSessionId", academicsSessionId);
-    data.append("programmeGroupId", programmeGroupId);
-    data.append("termId", termId);
-    data.append("sectionId", sectionId);
-    data.append("assignmentTypeId", 2);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonAcademicsSessionsEvaluationsMaxAssessmentNoView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            let data = json.DATA || [];
-            let dataLength = data.length;
-            if(dataLength>0){
-              if(data[0].maxAssessmentNo < this.state.totalNoOfAssessment){
-                data[0].maxAssessmentNo++;
-                this.loadData(sectionId);
-                this.setState({isLoadingData: true});
-              }else{
-                this.handleOpenSnackbar(<span>All assessments complete.</span>,"error");
-              }
-              this.setState({assessmentNo: data[0].maxAssessmentNo});
-            }
-          } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
-          }
-          console.log("getMaxAssessmentNo", json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
-          }
-        }
-      );
-      if(!this.state.isLoadingData){
-        this.setState({ isLoading: false });
-      }
-  };
-
-  loadData = async (sectionId, id=0) => {
+  loadData = async ( id=0) => {
     const data = new FormData();
     data.append("id", id);
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("programmeGroupId", this.state.programmeGroupId);
-    data.append("termId", this.state.termId);
-    data.append("sectionId", sectionId);
-    data.append("assignmentTypeId", 2);
+    data.append("programmeId",  this.state.programmeId);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C211CommonSectionsStudentsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C225CommonStudentsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -551,22 +332,9 @@ class F211Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             if (json.DATA.length) {
-              let data =  json.DATA[0] || [];
-              if(data && id!=0){
-                this.getTotalNoOfAssessment(data.academicSessionId, data.programmeGroupId, data.sessionTermId);
-                this.setState({
-                  academicSessionId: data.academicSessionId,
-                  programmeGroupId : data.programmeGroupId,
-                  termId: data.sessionTermId,
-                  sectionId: data.sectionId,
-                  assessmentNo: data.assessmentNo,
-                  tableData: data.evaluationDetail || []
-                });
-              } else{
-                this.setState({tableData: data.evaluationDetail || []});
-              }
-            } else {
-              window.location = "#/dashboard/F211Form/0";
+              let data =  json.DATA || [];
+              console.log("LOAD DATE",data);
+              this.setState({tableData: data});
             }
           } else {
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -677,44 +445,33 @@ class F211Form extends Component {
     switch (name) {
       case "academicSessionId":
         this.setState({
-          termId:"",
-          termMenuItems:[],
-          assessmentNo:"",
-          totalNoOfAssessment:"",
-          sectionId:"",
+          academicSessionId:value,
+          programmeGroupId:"",
+          programmeGroupIdMenuItems:[],
+          programmeId :"",
+          programmeMenuItems:[],
           tableData:[]
         });
         this.loadProgrammeGroups(value);
-        this.getTerms(value);
+        
       break;
       case "programmeGroupId":
         this.setState({
-          termId: "",
-          totalNoOfAssessment:"",
-          assessmentNo:"",
-          sectionMenuItems: [],
-          sectionId:"",
+          programmeGroupId :value,
+          programmeId :"",
+          programmeMenuItems:[],
           tableData:[]
         });
-        this.getSections(this.state.academicSessionId, value);
+        this.loadProgrammes(value);
       break;
-      case "termId":
+      case "programmeId":
         this.setState({
-          totalNoOfAssessment:"",
-          assessmentNo:"",
-          sectionId:"",
+          programmeId :value,
           tableData:[]
         });
-        this.getTotalNoOfAssessment(this.state.academicSessionId, this.state.programmeGroupId, value);
+        
       break;
-      case "sectionId":
-        this.setState({
-          assessmentNo:"",
-          sectionId:"",
-          tableData:[]
-        });
-        this.getMaxAssessmentNo(this.state.academicSessionId, this.state.programmeGroupId, this.state.termId, value);
-      break;
+     
       default:
     }
     this.setState({
@@ -792,7 +549,7 @@ class F211Form extends Component {
     this.getAcademicSessions();
     if (this.state.recordId != 0) {
       this.setState({isEditMode:true});
-      this.loadData(0,this.state.recordId);
+    
     }
   }
 
@@ -831,7 +588,7 @@ class F211Form extends Component {
                 fontSize: "1.5rem"
               }}
             >
-              Physical Assignments Evaluation
+              Student's Parent Contact
             </Typography>
             <Divider
               style={{
@@ -843,8 +600,7 @@ class F211Form extends Component {
               container
               spacing={2}
             >
-              <TextField type="hidden" name="assessmentNo" value={this.state.assessmentNo}/>
-              <TextField type="hidden" name="assignmentTypeId" defaultValue={2}/>
+              
               <Grid item xs={12} md={2}>
                 <TextField
                   id="academicSessionId"
@@ -901,84 +657,41 @@ class F211Form extends Component {
                   )}
                 </TextField>
               </Grid>
-              <Grid item xs={12} md={2}>
-                <TextField
-                  id="termId"
-                  name="termId"
-                  variant="outlined"
-                  label="Term"
-                  onChange={this.onHandleChange}
-                  value={this.state.termId}
-                  error={!!this.state.termIdError}
-                  helperText={this.state.termIdError}
-                  disabled={!this.state.academicSessionId || !this.state.programmeGroupId || this.state.isEditMode}
-                  required
-                  fullWidth
-                  select
-                >
-                  {this.state.termMenuItems ? (
-                    this.state.termMenuItems.map((dt, i) => (
-                      <MenuItem
-                        key={"termMenuItems"+dt.id}
-                        value={dt.id}
-                      >
-                        {dt.label}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem>
-                      <CircularProgress size={24} />
-                    </MenuItem>
-                  )}
-                </TextField>
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <TextField
-                  id="sectionId"
-                  name="sectionId"
-                  variant="outlined"
-                  label="Section"
-                  onChange={this.onHandleChange}
-                  value={this.state.sectionId}
-                  error={!!this.state.sectionIdError}
-                  helperText={this.state.sectionIdError}
-                  disabled={!this.state.academicSessionId || !this.state.programmeGroupId || !this.state.termId || this.state.isEditMode}
-                  required
-                  fullWidth
-                  select
-                >
-                  {this.state.sectionMenuItems ? (
-                    this.state.sectionMenuItems.map((dt, i) => (
-                      <MenuItem
-                        key={"sectionMenuItems"+dt.id}
-                        value={dt.id}
-                      >
-                        {dt.label}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem>
-                      <CircularProgress size={24} />
-                    </MenuItem>
-                  )}
-                </TextField>
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <Card>
-                  <CardContent style={{height:14}}>
-                    <Typography 
-                      variant="body2" 
-                      color="primary"
-                      style={{
-                        textAlign:"center", 
-                        fontWeight:"bold",
-                        color: this.state.isEditMode ? "gray" : "" 
-                      }}
+              
+              <Grid item xs={12} md={4}>
+                    <TextField
+                      id="programmeId"
+                      name="programmeId"
+                      variant="outlined"
+                      label="Programme"
+                      onChange={this.onHandleChange}
+                      value={this.state.programmeId}
+                      error={!!this.state.programmeIdError}
+                      helperText={this.state.programmeIdError}
+                      fullWidth
+                      select
                     >
-                      No. of Assessment&nbsp;:&nbsp;&nbsp;{this.state.assessmentNo?(this.state.assessmentNo):"_ "}/{this.state.totalNoOfAssessment?this.state.totalNoOfAssessment:"_"}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                      {this.state.programmeMenuItems.map((dt, i) => (
+                          <MenuItem
+                            key={"programmeMenuItems"+dt.ID}
+                            value={dt.ID}
+                          >
+                            {dt.Label}
+                          </MenuItem>
+                      ))}
+                    </TextField>
+                   
+              </Grid>
+              <Grid item xs={12} md={1}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={this.state.isLoading || (!this.state.programmeId)}
+                      onClick={() => this.loadData()}
+                      style={{width:"100%", height:54, marginBottom:24}}
+                    > 
+                      {this.state.isLoading ? <CircularProgress style={{color:'white'}} size={36}/> : "Search"}
+                    </Button>
               </Grid>
               <Grid item xs={12}>
                 <Divider
@@ -993,9 +706,14 @@ class F211Form extends Component {
                   <TableHead>
                     <TableRow>
                       <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)', width:"10%"}}>SR#</StyledTableCell>
-                      <StyledTableCell align="center">Student</StyledTableCell>
-                      <StyledTableCell align="center" style={{borderRight:'1px solid rgb(29, 95, 152)', minWidth:120, width:"20%"}}>Marks</StyledTableCell>
-                      <StyledTableCell align="center" style={{borderRight:'1px solid rgb(29, 95, 152)', minWidth:120, width:"15%"}}>Action</StyledTableCell>
+                      <StyledTableCell align="center">Nucleus ID</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Name</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Programme</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Pathway</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Student Phone</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Father Phone</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Mother Phone</StyledTableCell>
+                      <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)', minWidth:120, width:"10%"}}>Guardian Phone</StyledTableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -1012,11 +730,11 @@ class F211Form extends Component {
                   ) : 
                   this.state.isLoading ? 
                     <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={3}><center><CircularProgress disableShrink/></center></StyledTableCell>
+                      <StyledTableCell component="th" scope="row" colSpan={9}><center><CircularProgress disableShrink/></center></StyledTableCell>
                     </StyledTableRow>
                     :
                     <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={3}><center><b>No Data</b></center></StyledTableCell>
+                      <StyledTableCell component="th" scope="row" colSpan={9}><center><b>No Data</b></center></StyledTableCell>
                     </StyledTableRow>
                   }
                   </TableBody>
@@ -1029,16 +747,18 @@ class F211Form extends Component {
             </Grid>
           </Grid>
         </form>
-        <BottomBar
+        {/* <BottomBar
           left_button_text="View"
-          left_button_hide={false}
+          left_button_hide={true}
+        
           bottomLeftButtonAction={this.viewReport}
           right_button_text="Save"
           bottomRightButtonAction={this.clickOnFormSubmit}
           loading={this.state.isLoading}
           disableRightButton={this.state.tableData.length<1}
           isDrawerOpen={this.props.isDrawerOpen}
-        /> 
+          right_button_hide={true}
+        />  */}
         <CustomizedSnackbar
           isOpen={this.state.isOpenSnackbar}
           message={this.state.snackbarMessage}
@@ -1049,4 +769,4 @@ class F211Form extends Component {
     );
   }
 }
-export default withStyles(styles)(F211Form);
+export default withStyles(styles)(F225Form);

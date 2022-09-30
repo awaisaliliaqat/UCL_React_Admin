@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment,useState } from "react";
 import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button} from "@material-ui/core";
 import {Typography, TextField, MenuItem} from "@material-ui/core";
 import ExcelIcon from "../../../../assets/Images/excel.png";
@@ -13,6 +13,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import { useDropzone } from "react-dropzone";
 
 function isEmpty(obj) {
   if (obj == null) return true;
@@ -23,6 +24,62 @@ function isEmpty(obj) {
     if (hasOwnProperty.call(obj, key)) return false;
   }
   return true;
+}
+
+function MyDropzone(props) {
+
+  const [isFileSelected, setIsFileSelected] = useState(false);
+ 
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document', multiple:false });
+
+  const files = acceptedFiles.map((file, index) => {
+    const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
+    if(!isFileSelected){ 
+      setIsFileSelected(true);
+      setTimeout(()=>{
+        props.onFormSubmit("form"+props.index);
+      }, 250);
+    }
+    return (
+        <Typography key={index} variant="subtitle1" color="primary">
+            {/* {file.path} - {size} Kb */}
+            <input type="hidden" name="file_name" value={file.path}></input>
+        </Typography>
+    );
+  });
+
+  let msg = files || [];
+  if(msg.length<=0) {
+      //msg = <Typography variant="subtitle1">Please click here to  select and upload an file</Typography>;
+      msg = (
+              <Button 
+                variant="outlined" 
+                color="primary" 
+                size="small"
+              >
+                Submit
+              </Button>
+           
+      );
+  }
+  
+  return (
+      <Fragment>
+        {isFileSelected && <Fragment><CircularProgress size={24} /></Fragment>}
+        <form id={"form"+props.index} hidden={isFileSelected} style={{display:"inline-block"}}>
+          <div
+            style={{ textAlign: "center"}}
+            {...getRootProps({ className: "dropzone", onChange: event => props.onChange(event) })}
+          >
+            <input name="assignmentId" type="hidden" value={props.assignmentId} />
+            <input name="sectionId" type="hidden" value={props.sectionId} />
+            <input name="studentId" type="hidden" value={props.studentId} />
+            <input name="contained-button-file" {...getInputProps()} disabled={props.disabled} />
+            {msg}
+          </div>
+        </form>
+      </Fragment>
+  );
 }
 
 class R41Reports extends Component {
@@ -50,7 +107,8 @@ class R41Reports extends Component {
       sectionsMenuItems: [],
       assignmentId:"",
       assignmentIdError:"",
-      sectionId:""
+      sectionId:"",
+      files: [],
     };
   }
 
@@ -196,6 +254,59 @@ class R41Reports extends Component {
     this.setState({isLoading: false});
   };
 
+  isFileValid = () => {
+    let isValid = true;
+    if (this.state.files.length<1 && this.state.recordId==0) {
+      this.handleOpenSnackbar("Please select file.","error");
+      isValid = false;
+    } else {
+      this.setState({ filesError: "" });
+    }
+    return isValid;
+  };
+
+  onFormSubmit = async (formId) => {
+    if ( !this.isFileValid() ) { return; }
+    let myForm = document.getElementById(formId);
+    const data = new FormData(myForm);
+    this.setState({ isExamLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C41CommonAcademicsAssignmentsStudentsSave`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({Authorization:"Bearer "+localStorage.getItem("uclAdminToken")}),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+            this.getData(this.state.sectionId, this.state.assignmentId);
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}+<br/>+{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isExamLoading: false });
+  };
+
   getData = async (sectionId, assignmentId) => {
     this.setState({isLoading: true});
     let data = new FormData();
@@ -218,6 +329,38 @@ class R41Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            let data = json.DATA || [];
+            let dataLength = data.length;
+            for (let i=0; i<dataLength; i++) {
+              let studentId = data[i].studentId;
+              data[i].answerSheet = (
+                <Fragment>
+                  {//isValidEndDate && !isAnswerSheetUploaded ?
+                  true ?
+                      <MyDropzone
+                        index={i}
+                        files={this.state.files} 
+                        onChange={event => this.handleFileChange(event)} 
+                        disabled={this.state.uploadLoading}
+                        onFormSubmit={this.onFormSubmit}
+                        sectionId={this.state.sectionId}
+                        assignmentId={this.state.assignmentId}
+                        studentId={studentId}
+                      />
+                    :
+                    <Fragment>
+                      <Button 
+                        variant="outlined" 
+                        size="small"
+                        disabled={true}
+                      >
+                        Submit
+                      </Button>
+                    </Fragment>
+                  }
+                </Fragment>
+              )
+            }
             this.setState({assignmentsData: json.DATA || []});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
@@ -404,6 +547,23 @@ class R41Reports extends Component {
     return isValid;
   }
 
+
+  handleFileChange = event => {
+    const { files = [] } = event.target;
+    if (files.length==1) {
+        if ( (files[0].type === "application/pdf" || files[0].type === "application/msword" || files[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && files[0].size/1000<10000) {
+            this.setState({
+                files,
+                filesError: ""
+            });
+        }else {
+            this.handleOpenSnackbar("Please select only pdf, doc or docx file with size less than 10 MBs.","error");
+        }
+    } else {
+      this.handleOpenSnackbar("Please select only one file at a time.","error");
+    }
+  }
+
   isSectionValid = () => {
     let isValid = true;        
     if (!this.state.sectionId) {
@@ -457,6 +617,7 @@ class R41Reports extends Component {
       { name: "SRNo", title: "SR#" },
       { name: "nucleusId", title: "NucleusID" },
       { name: "studentName", title: "Student\xa0Name" },
+      { name: "answerSheet", title: "Answer\xa0Sheet" },
       { name: "assignmentSubmitted", title: "Submitted On" },
       { name: "obtainedMarks", title: "Obtained Marks" },
       { name: "totalMarks", title: "Total\xa0Marks" },

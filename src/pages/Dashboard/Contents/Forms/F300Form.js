@@ -24,8 +24,8 @@ import FilterIcon from "mdi-material-ui/FilterOutline";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import F30FormFilter from "./F30FormFilter";
-import F30FormTableComponent from "./F30FormTableComponent";
-import F30FormPopupComponent from "./F30FormPopupComponent";
+import F300FormTableComponent from "./F300FormTableComponent";
+import F300FormPopupComponent from "./F300FormPopupComponent";
 
 const styles = () => ({
   root: {
@@ -53,7 +53,7 @@ const styles = () => ({
   },
 });
 
-class F30Form extends Component {
+class F300Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -332,7 +332,7 @@ class F30Form extends Component {
           if (json.CODE === 1) {
             for (var i = 0; i < json.DATA[0].students.length; i++) {
               json.DATA[0].students[i].action = (
-                <F30FormPopupComponent
+                <F300FormPopupComponent
                   academicSessionId={this.state.academicSessionId}
                   dialogTitle={json.DATA[0].students[i].nucleusId+" - "+json.DATA[0].students[i].studentName+" - "+json.DATA[0].students[i].programmeLabel}
                   studentId={json.DATA[0].students[i].ID}
@@ -340,6 +340,7 @@ class F30Form extends Component {
                   preCourseMenuItems={this.state.preCourseMenuItems}
                   clickOnFormSubmit={() => this.clickOnFormSubmit}
                   handleOpenSnackbar={this.handleOpenSnackbar}
+                  programmeId={programmeId}
                 />
               );
             }
@@ -449,16 +450,17 @@ class F30Form extends Component {
 
     let myForm = document.getElementById("myForm");
     let data = new FormData(myForm);
+    data.append("academicSessionId",this.state.academicSessionId);
     data.append("studentId", studentId);
-    if (moduleNumber != null) {
-      for (let i = 0; i < moduleNumber.length; i++) {
-        data.append("moduleNumber", moduleNumber[i].value);
-        data.append("programmeCourseId", programmeCourseId[i].value);
-        data.append("marks", marks[i].value);
-      }
-    }
+    // if (moduleNumber != null) {
+    //   for (let i = 0; i < moduleNumber.length; i++) {
+    //     data.append("moduleNumber", moduleNumber[i].value);
+    //     data.append("programmeCourseId", programmeCourseId[i].value);
+    //     data.append("marks", marks[i].value);
+    //   }
+    // }
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C30CommonAcademicsCoursesStudentsAchievementsSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C300CommonAcademicsCoursesStudentsAchievementsSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -534,7 +536,7 @@ class F30Form extends Component {
           open={this.state.isLoginMenu}
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
-        <form id="myForm" onSubmit={this.isFormValid}>
+        <form id="myForm2" onSubmit={this.isFormValid}>
           <TextField type="hidden" name="id" value={this.state.recordId} />
           <Grid container component="main" className={classes.root}>
             <Typography
@@ -548,7 +550,7 @@ class F30Form extends Component {
               }}
               variant="h5"
             >
-              Student Achievement
+              Student Achievement With Programme
               {/* 
               <div style={{ float: "right" }}>
                 <Tooltip title="Table Filter">
@@ -669,9 +671,10 @@ class F30Form extends Component {
               )} 
               */}
               {this.state.studentListArray.length > 0 ? (
-                <F30FormTableComponent
+                <F300FormTableComponent
                   rows={this.state.studentListArray}
                   showFilter={this.state.showTableFilter}
+
                 />
               ) : this.state.isLoading ? (
                 <Grid
@@ -709,4 +712,4 @@ class F30Form extends Component {
     );
   }
 }
-export default withStyles(styles)(F30Form);
+export default withStyles(styles)(F300Form);

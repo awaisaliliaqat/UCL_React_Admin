@@ -55,7 +55,7 @@ const AttendanceFilter = (props) => {
     values,
     handleDateChange,
     onHandleChange,
-    getDataByStatus,
+    getDataByTeacherIdAndDate,
     onClearFilters,
     onAutoCompleteChange,
     isLoading,
@@ -90,46 +90,31 @@ const AttendanceFilter = (props) => {
             )}
           />
         </div>
-        <div
-          className={classes.item}
-          style={{
-            width: "30%",
-          }}
-        >
-           <span className={classes.label}>Month *</span>
-              <TextField
-                id="monthId"
-                name="monthId"
-                variant="outlined"
-                placeholder="Month"
-                // label="Month"
-                size="small"
-                onChange={onHandleChange}
-                value={values.monthId}
-                required
-                fullWidth
-                select
-                // disabled={!values.sectionId}
-              >
-                {values.monthsMenuItems && !values.isLoading ? 
-                  values.monthsMenuItems.map((dt, i) => (
-                    <MenuItem
-                      key={"monthsMenuItems"+dt.id}
-                      value={dt.id}
-                    >
-                      {dt.label}
-                    </MenuItem>
-                  ))
-                :
-                  <Grid 
-                    container 
-                    justify="center">
-                      <CircularProgress />
-                    </Grid>
-                }
-              </TextField> 
-           
-        </div> 
+        <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Year and Month</span>
+                    <DatePicker
+                        autoOk
+                        invalidDateMessage=""
+                        placeholder="Date"
+                        variant="inline"
+                        inputVariant="outlined"
+                        views={['year', 'month']}
+                        
+                        format="yyyy-MMM"
+                        fullWidth
+                        value={values.fromDate}
+                        InputProps={{
+
+                            classes: { input: classes.resize }
+                        }}
+                        onChange={(date) => {
+                            handleDateChange(date, "fromDate");
+                        }}
+
+                    />
+        </div>
 
         {/* <div
           className={classes.item}
@@ -159,7 +144,7 @@ const AttendanceFilter = (props) => {
                 )}
               />
            </div> */}
-           <div
+           {/* <div
           className={classes.item}
           style={{
             width: "30%",
@@ -187,7 +172,7 @@ const AttendanceFilter = (props) => {
                   />
                 )}
               />
-          </div>
+          </div> */}
         
 
         <div className={classes.actions}>
@@ -196,9 +181,9 @@ const AttendanceFilter = (props) => {
             color="primary"
             className={classes.button}
             disabled={isLoading || !values.teacherId}
-            onClick={() => getDataByStatus(values.teacherId)}
+            onClick={() => getDataByTeacherIdAndDate(values.teacherId,values.fromDate)}
           >
-            {" "}
+            {""}
             {isLoading ? (
               <CircularProgress style={{ color: "white" }} size={24} />
             ) : (
@@ -230,7 +215,7 @@ const AttendanceFilter = (props) => {
 
 AttendanceFilter.defaultProps = {
   onHandleChange: (fn) => fn,
-  getDataByStatus: (fn) => fn,
+  getDataByTeacherIdAndDate: (fn) => fn,
   onAutoCompleteChange: (fn) => fn,
   values: {},
   onClearFilters: (fn) => fn,
@@ -243,7 +228,7 @@ AttendanceFilter.propTypes = {
   onHandleChange: PropTypes.func,
   onAutoCompleteChange: PropTypes.func,
   values: PropTypes.object,
-  getDataByStatus: PropTypes.func,
+  getDataByTeacherIdAndDate: PropTypes.func,
   onClearFilters: PropTypes.func,
   handleDateChange: PropTypes.func,
   getDataFilters: PropTypes.func,

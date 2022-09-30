@@ -128,7 +128,7 @@ function CourseRow(props) {
   );
 }
 
-class F30FormPopupComponent extends Component {
+class F300FormPopupComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -144,19 +144,128 @@ class F30FormPopupComponent extends Component {
       preModuleMenuItems: [],
       preModuleId: "",
       preModuleIdError: "",
+      // preCourseMenuItems: [],
+      // preCourses: {},
       preCourseMenuItems: [],
-      preCourses: {},
+      programmeCoursesArray: [],
+      programmeCoursesListArray: [],
+      programmeCoursesArraySelected: null,
       courseRowDataArray: [],
+      // courseRowDataArray: [],
+      programmeIdMenuItems: [],
+      programmeId: "",
+      programmeIdError: "",
       
     };
   }
 
-  loadData = async (studentId,academicSessionId) => {
+
+  loadProgrammes = async () => {
+    let data = new FormData();
+    // data.append("academicsSessionId", academicsSessionId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C300CommonProgrammesWithoutSessionView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ programmeIdMenuItems: json.DATA });
+          } else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log("loadProgrammes", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+
+  loadProgrammeCourses = async (programmeId) => {
+    let data = new FormData();
+   
+    data.append("programmeId", programmeId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C300CommonProgrammeCoursesView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ preCourseMenuItems: json.DATA || [] });
+          } else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log("loadProgrammeCourses", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+
+  loadData = async (studentId,academicSessionId,programmeId) => {
     const data = new FormData();
     data.append("studentId", studentId);
     data.append("academicSessionId", academicSessionId);
+    data.append("programmeId", programmeId);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C30CommonAcademicsCoursesStudentsAchievementsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C300CommonAcademicsCoursesStudentsAchievementsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -207,12 +316,18 @@ class F30FormPopupComponent extends Component {
   };
 
   handleClickOpen = () => {
-    this.loadData(this.props.studentId,this.props.academicSessionId);
-    this.setState({ popupBoxOpen: true });
+   
+    this.setState({ recordId:1, popupBoxOpen: true });
+    this.loadProgrammes();
+    this.loadProgrammeCourses(this.props.programmeId);
+    //this.loadData(this.state.recordId,this.props.academicSessionId,this.props.programmeId);
+    this.loadData(this.props.studentId,this.props.academicSessionId,this.props.programmeId);
+    
   };
 
   handleClose = () => {
     this.setState({
+      recordId:0,
       popupBoxOpen: false,
       preModuleId: "",
       preCourses: {},
@@ -355,6 +470,19 @@ class F30FormPopupComponent extends Component {
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
+
+    switch (name) {
+      case "programmeId":
+        this.loadProgrammeCourses(value);
+        this.loadData(this.props.studentId,this.props.academicSessionId,value);
+        break;
+      case "mobileNo":
+     
+        break;
+     
+      default:
+        break;
+    }
     this.setState({
       [name]: value,
       [errName]: "",
@@ -376,14 +504,19 @@ class F30FormPopupComponent extends Component {
   };
 
   componentDidMount() {
-    //console.log("F30PopUp: ", this.props);
+   
     this.setState({
-      preCourseMenuItems: this.props.preCourseMenuItems,
+      // preCourseMenuItems: this.props.preCourseMenuItems,
       preModuleMenuItems: this.props.preModuleMenuItems,
+      programmeId:this.props.programmeId
     });
+    
     if (this.state.recordId != 0) {
-      this.loadData(this.state.recordId,this.props.academicSessionId);
+      // this.loadProgrammes();
+      // this.loadProgrammeCourses(this.props.programmeId);
+      // this.loadData(this.state.recordId,this.props.academicSessionId,this.props.programmeId);
     }
+   
   }
 
   render() {
@@ -443,6 +576,8 @@ class F30FormPopupComponent extends Component {
           </DialogTitle>
           <DialogContent>
             {/* <DialogContentText> */}
+            <form id="myForm" >
+            <TextField type="hidden" name="id" value={this.state.recordId} />
               <Grid
                 container
                 direction="row"
@@ -450,13 +585,78 @@ class F30FormPopupComponent extends Component {
                 alignItems="center"
                 spacing={2}
               >
+           
                 <TextField
                   type="hidden"
                   id="studentId"
                   name="studentId"
                   value={this.props.studentId}
                 />
-                <Grid item xs={12} md={3}>
+
+                {/* <Grid item xs={12} md={4}>
+                <TextField
+                  id="programmeId"
+                  name="programmeId"
+                  variant="outlined"
+                  label="Programme"
+                  value={this.state.programmeId}
+                  onChange={this.onHandleChange}
+                  error={!!this.state.programmeIdError}
+                  helperText={this.state.programmeIdError}
+                  // disabled={!this.state.academicSessionId}
+                  required
+                  fullWidth
+                  select
+                >
+                  {this.state.programmeIdMenuItems ? (
+                    this.state.programmeIdMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"programmeIdMenuItems" + dt.ID}
+                        value={dt.ID}
+                      >
+                        {dt.Label}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem>
+                      <CircularProgress size={24} />
+                    </MenuItem>
+                  )}
+                </TextField>
+              </Grid> */}
+
+              <Grid item xs={12} md={4}>
+                  <TextField
+                   id="programmeId"
+                   name="programmeId"
+                   variant="outlined"
+                   label="Programme"
+                   value={this.state.programmeId}
+                   onChange={this.onHandleChange}
+                   error={!!this.state.programmeIdError}
+                   helperText={
+                     this.state.programmeIdError
+                       ? this.state.programmeIdError
+                       : " "
+                   }
+                    required
+                    fullWidth
+                    select
+                  >
+                    {this.state.programmeIdMenuItems ? (
+                      this.state.programmeIdMenuItems.map((dt, i) => (
+                        <MenuItem key={"PCGIDDD" + dt.ID} value={dt.ID}>
+                          {dt.Label}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem>
+                        <CircularProgress size={24} />
+                      </MenuItem>
+                    )}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} md={1}>
                   <TextField
                     id="preModuleId"
                     name="preModuleId"
@@ -487,7 +687,7 @@ class F30FormPopupComponent extends Component {
                     )}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={5}>
+                <Grid item xs={12} md={4}>
                   <Autocomplete
                     //multiple
                     fullWidth
@@ -541,14 +741,14 @@ class F30FormPopupComponent extends Component {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={1}>
                   <TextField
                     id="preMarks"
                     name="preMarks"
                     label="Marks"
                     type="number"
                     required
-                    fullWidth
+                    
                     variant="outlined"
                     onChange={this.onHandleChange}
                     value={this.state.preMarks}
@@ -656,7 +856,9 @@ class F30FormPopupComponent extends Component {
                   ))} */}
                 <br />
                 <br />
+                
               </Grid>
+              </form>
             {/* </DialogContentText> */}
           </DialogContent>
           <Divider
@@ -682,4 +884,4 @@ class F30FormPopupComponent extends Component {
     );
   }
 }
-export default withStyles(styles)(F30FormPopupComponent);
+export default withStyles(styles)(F300FormPopupComponent);

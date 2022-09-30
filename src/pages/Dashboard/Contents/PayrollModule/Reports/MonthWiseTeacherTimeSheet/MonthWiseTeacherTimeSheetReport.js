@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
+import { withStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
 import MonthWiseTeacherTimeSheetReportFilter from './Chunks/MonthWiseTeacherTimeSheetReportFilter';
 import TablePanel from '../../../../../../components/ControlledTable/RerenderTable/TablePanel';
@@ -10,111 +11,6 @@ import BottomBar from "../../../../../../components/BottomBar/BottomBar";
 import { Checkbox } from "@material-ui/core";
 
 
-
-// function FeatureDetail(props){
-//     const handleCheckBoxChange=(target) =>{
-//     console.log(target.checked);
-    
-//     if(target.checked==false){
-//      // console.log("UNCHECKED");
-//       setIsEnabled(true);
-  
-//     }else if(target.checked==true){
-//      // console.log("CHECKED");
-//       setIsEnabled(false);
-//     }
-//     //console.log("isDisabled =>> ",isDisabled);
-//    }
-  
-//     const userSelected = (option) => {
-//       return selectedMenuItems.some((selectedOption) => selectedOption.Id == option.Id);
-//     };
-  
-//     useEffect(() => {
-//       handleSetUserId(selectedMenuItems);
-//     });
-  
-  
-//     return (
-//       <StyledTableRow key={"row"+data.typeLabel+i}>
-//       <StyledTableCell component="th" scope="row" align="center" style={{width:"30%",borderColor:"#fff"}}>{featureLabel}</StyledTableCell>
-//       <StyledTableCell component="th" scope="row" align="center" style={{width:"10%",borderColor:"#fff"}}> 
-//         <FormControlLabel
-//           control={
-//             <Checkbox
-//               // checked={dt.is}
-//               onChange={(e)=>handleCheckBoxChange(e.target)}
-//               value={featureId}
-//               defaultChecked={isChecked}
-//               id={"checkBox_"+featureId}
-//               // name={"checkBox_"+data.typeLabel}
-//               name={"featureId"}
-//               color="primary"
-//             />
-//           }
-//           label="Assigned"
-//       />
-//       </StyledTableCell>
-  
-//         <StyledTableCell style={{width:"60%"}}>
-        
-//         <Grid item xs={12} md={12}>
-//           { <Autocomplete
-//             multiple
-//             fullWidth
-//             id={"userId_"+featureId}
-//             options={GroupMenuItems}
-//             value={selectedMenuItems}
-//             //value={[{id: 1471, label: "Rizwan Ahmed"}]}
-//             //options={[{id: 1471, label: "Rizwan Ahmed"}]}
-//             onChange={(event, value) =>
-//               handleSetUserId(value)
-//             }
-//             disabled={isDisabled}
-//             disableCloseOnSelect
-//             getOptionLabel={(option) => option.Label}
-//             getOptionSelected={(option) => userSelected(option)}
-//             renderTags={(tagValue, getTagProps) =>
-//               tagValue.map((option, index) => (
-//                 <Chip
-//                   label={option.Label}
-//                   color="primary"
-//                   variant="outlined"
-//                   {...getTagProps({ index })}
-//                 />
-//               ))
-//             }
-//             renderOption={(option, {selected}) => (
-//               <Fragment>
-//                 <Checkbox
-//                   icon={icon}
-//                   checkedIcon={checkedIcon}
-//                   style={{ marginRight: 8 }}
-//                   checked={selected}
-//                   color="primary"
-//                 />
-//                 {option.Label}
-//               </Fragment>
-//             )}
-//             renderInput={(params) => (
-//               <TextField
-//                 {...params}
-//                 variant="outlined"
-//                 label="Programme Groups"
-//                 placeholder="Search and Select"
-//                 // error={!!this.state.userIdError}
-//                 // helperText={this.state.userIdError}
-//               />
-//             )}
-//           /> }
-//           { <TextField type="hidden"  disabled={isDisabled}  name="programGroupIds" value={programmeGroupIds}/> }
-//         </Grid>
-  
-//         </StyledTableCell>
-    
-//       </StyledTableRow>
-//     );
-//   }
 class MonthWiseTeacherTimeSheetReport extends Component {
 
     constructor(props) {
@@ -123,7 +19,10 @@ class MonthWiseTeacherTimeSheetReport extends Component {
             isLoading: false,
 
             attendanceData: [],
-
+            statusId:0,
+            status:"",
+            reason:"",
+            flagId:0,
             selectedData: {},
             lastDateOfMonth : new Date(new Date().getFullYear(),
             new Date().getMonth(), this.daysInMonth(new Date().getMonth()+1,
@@ -160,6 +59,8 @@ class MonthWiseTeacherTimeSheetReport extends Component {
     componentDidMount() {
         this.getData();
         this.getLastDate();
+        alert("LAST DATE"+this.state.lastDateOfMonth);
+        alert("LAST DATE"+this.state.fromDate);
     }
 
     daysInMonth (month, year) {
@@ -224,8 +125,18 @@ class MonthWiseTeacherTimeSheetReport extends Component {
                 json => {
                     if (json.CODE === 1) {
                         this.setState({
-                            attendanceData: json.DATA || []
-                        })
+                            attendanceData: json.DATA || [],
+                           
+                        });
+                        if(json.DATA.length>0){
+                            this.setState({
+                                status:json.DATA[0].status || 0,
+                                statusId:json.DATA[0].statusId || 0,
+                                reason:json.DATA[0].reason  || "", 
+                               
+                            });
+                          
+                        }
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
                     }
@@ -291,7 +202,7 @@ class MonthWiseTeacherTimeSheetReport extends Component {
    
 
     
-    clickOnApprove() {
+    clickOnApprove =()=> {
 
         let IDs = document.getElementsByName("timeTableId");
         let isAllowed=false;
@@ -304,12 +215,15 @@ class MonthWiseTeacherTimeSheetReport extends Component {
              }
         }
         if(isAllowed){
-            this.onFormSubmit("1");
+            this.setState({
+                flagId:1
+            });
+            this.onFormSubmit();
         }
         
       };
 
-      clickOnSubmitChange() {
+      clickOnSubmitChange =()=>  {
         let IDs = document.getElementsByName("timeTableId");
         let isAllowed=false;
         if(IDs.length>0 ){ 
@@ -321,18 +235,21 @@ class MonthWiseTeacherTimeSheetReport extends Component {
              }
         }
         if(isAllowed){
-            this.onFormSubmit("2");
+            this.setState({
+                flagId:2
+            });
+            this.onFormSubmit();
         }
         
 
       };
     
-      onFormSubmit = async (flagId) => {
+      onFormSubmit = async () => {
 
-        console.log(flagId);
+        console.log(this.state.flagId);
         let myForm = document.getElementById("myForm");
         const data = new FormData(myForm);
-        data.append("actionId",flagId);
+        data.append("actionId",this.state.flagId);
         this.setState({ isLoading: true });
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C302MonthWiseTeacherTimeSheet`;
         await fetch(url, {
@@ -354,9 +271,7 @@ class MonthWiseTeacherTimeSheetReport extends Component {
                 this.handleOpenSnackbar(json.USER_MESSAGE, "success");
                 setTimeout(() => {
                   if (this.state.recordId != 0) {
-                    window.location = "#/dashboard/month-wise-teacher-time-sheet-report";
-                  } else {
-                     window.location.reload();
+                    window.location.reload();
                   }
                 }, 2000);
               } else {
@@ -379,6 +294,7 @@ class MonthWiseTeacherTimeSheetReport extends Component {
         this.setState({ isLoading: false });
       };
 
+    
     render() {
         const columns = [
             { name: "Section", dataIndex: "sectionLabel", sortIndex: "sectionLabel", sortable: true, customStyleHeader: { width: '17%' } },
@@ -406,10 +322,10 @@ class MonthWiseTeacherTimeSheetReport extends Component {
                         <Fragment>
                      
                                 <Checkbox
-                                    //checked={true}
-                                   // onChange={(e)=>handleCheckBoxChange(e.target)}
+                                    //checked={rowData.marked==1?true:false}
+                                   //onChange={(e)=>this.handleCheckBoxChange(e.target)}
                                     value={rowData.id}
-                                    defaultChecked={false}
+                                    defaultChecked={rowData.marked==1?true:false}
                                     id={"checkBox_"+rowData.id}
                                     name={"timeTableId"}
                                     //name={"featureId"}
@@ -452,21 +368,34 @@ class MonthWiseTeacherTimeSheetReport extends Component {
                     }}>
                     </div>
                     <form id="myForm" onSubmit={this.isFormValid}>
+                         
+                         {this.state.statusId!=0?
+                            <Typography style={{ color: '#1d5f98',fontSize:16 , fontWeight: 300, textTransform: 'capitalize' }} variant="h6">
+                            Status : {this.state.status}
+                            </Typography>:""
+                        }               
+                         {this.state.status=="Rejected" ? <Typography style={{ color: '#1d5f98',fontSize:14 , fontWeight: 100, textTransform: 'capitalize' }} variant="h6">
+                            
+                           
+                           Reason : {this.state.reason}
+                         </Typography>:""}
+                         
                         <input name="monthYearDate" type="hidden" value={ format(this.state.fromDate, "dd-MM-yyyy")}/>
                         <TablePanel isShowIndexColumn data={this.state.attendanceData} isLoading={this.state.isLoading} sortingEnabled columns={columns} />
 
                     </form>
                 </div>
                 <BottomBar
-                    left_button_text="Send Coordinator For Change"
-                    bottomLeftButtonAction={e=>this.clickOnSubmitChange()}
                     
-                    right_button_text="Approve"
+                    left_button_text="Add Class"
+                    bottomLeftButtonAction={()=>{window.location = "#/dashboard/F229Form/0"}}
+                    right_button_text="Send For Approval"
                     bottomRightButtonAction={this.clickOnApprove}
-                    disableRightButton={this.state.fromDate===this.state.lastDateOfMonth? false : false }
+                    disableRightButton={(this.state.fromDate===this.state.lastDateOfMonth) || this.state.statusId!=1 ? false : true }
                     loading={this.state.isLoading}
                     isDrawerOpen={this.props.isDrawerOpen}
                 />
+               
                 <CustomizedSnackbar
                     isOpen={this.state.isOpenSnackbar}
                     message={this.state.snackbarMessage}

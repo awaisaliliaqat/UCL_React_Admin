@@ -67,9 +67,10 @@ import F36Form from "./Contents/Forms/F36Form";
 import ControlledDialog from "../../components/ControlledDialog/ControlledDialog";
 import TeacherAttendance from "./Contents/LMS/TeacherAttendance/TeacherAttendance";
 import MonthWiseTeacherTimeSheetReport from "./Contents/PayrollModule/Reports/MonthWiseTeacherTimeSheet/MonthWiseTeacherTimeSheetReport";
+import StudentBritishCouncilReports from "./Contents/Reports/StudentBritishCouncilReports/StudentBritishCouncilReports";
 import StudentReports from "./Contents/Reports/StudentReports/StudentReports";
 import TeacherAttendanceReports from "./Contents/Reports/TeacherAttendanceReports/AttendanceReports";
-//import A from "./Contents/PayrollModule/Reports/MonthWiseTeachersTimeSheetReports/MonthWiseTeachersTimeSheetAdminReports";
+import MonthWiseTeachersTimeSheetCoordinatorReport from "./Contents/PayrollModule/Reports/MonthWiseTeachersTimeSheetCoordinatorReport/MonthWiseTeachersTimeSheetCoordinatorReport";
 import StudentAttendanceReports from "./Contents/Reports/StudentAttendanceReports/AttendanceReports";
 import F39Form from "./Contents/Forms/F39Form";
 import F39Reports from "./Contents/Forms/F39Reports";
@@ -149,6 +150,7 @@ import R217FeedbackReports from "./Contents/Forms/R217FeedbackReports";
 import R217Reports from "./Contents/Forms/R217Reports";
 import R218Reports from "./Contents/Forms/R218Reports";
 import F219Form from "./Contents/Forms/F219Form";
+import R222Reports from "./Contents/Forms/R222Reports";
 import F219Reports from "./Contents/Forms/F219Reports";
 import R220Reports from "./Contents/Forms/R220Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
@@ -156,6 +158,14 @@ import AllActiveClasses from "./Contents/Reports/AllActiveClasses/AllActiveClass
 import R80Reports from "./Contents/Forms/R80Reports";
 import StudentDynamicColumnsReports  from "./Contents/Reports/StudentDynamicColumnsReports/StudentDynamicColumnsReports";
 import R244Report from "./Contents/Reports/AllGraduatedStudents/R224Report";
+import F225Form from "./Contents/Forms/F225Form";
+import F227UserLoginAs from "./Contents/Forms/F227UserLoginAs";
+import F228StudentLoginAs from "./Contents/Forms/F228StudentLoginAs";
+import F229Form from "./Contents/Forms/F229Form";
+import F230Form from "./Contents/Forms/F230Form";
+import F231Form from "./Contents/Forms/F231Form";
+import F300Form from "./Contents/Forms/F300Form";
+
 
 const drawerWidth = 283;
 
@@ -1511,8 +1521,25 @@ const Dashboard = (props) => {
                 name="month-wise-teacher-time-sheet-report"
                 exact
                 path="/dashboard/month-wise-teacher-time-sheet-report"
-                component={MonthWiseTeacherTimeSheetReport}
+                // component={MonthWiseTeacherTimeSheetReport}
+                render={(props) => {
+                  return (
+                    <MonthWiseTeacherTimeSheetReport
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
               />
+                <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="month-wise-teacher-time-sheet-coordinator-report"
+                exact
+                path="/dashboard/month-wise-teacher-time-sheet-coordinator-report"
+                component={MonthWiseTeachersTimeSheetCoordinatorReport}
+              />
+
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="students-excel-report"
@@ -1520,6 +1547,15 @@ const Dashboard = (props) => {
                 path="/dashboard/students-excel-report"
                 component={StudentReports}
               />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="students-british-council-excel-report"
+                exact
+                path="/dashboard/students-british-council-excel-report"
+                component={StudentBritishCouncilReports}
+              /> 
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="students-dynamic-excel-report"
@@ -2037,6 +2073,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+              
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="R220Reports"
@@ -2045,6 +2082,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R220Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+               <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R222Reports"
+                exact
+                path="/dashboard/R222Reports"
+                render={(props) => {
+                  return (
+                    <R222Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -2127,6 +2179,99 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F225Form"
+                exact
+                path="/dashboard/F225Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F225Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F227Form"
+                exact
+                path="/dashboard/F227Form/0"
+                render={(props) => {
+                  return (
+                    <F227UserLoginAs
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+               <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F228Form"
+                exact
+                path="/dashboard/F228Form/0"
+                render={(props) => {
+                  return (
+                    <F228StudentLoginAs
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+            <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F229Form"
+                exact
+                path="/dashboard/F229Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F229Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+            <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F230Form"
+                exact
+                path="/dashboard/F230Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F230Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F231Form"
+                exact
+                path="/dashboard/F231Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F231Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
               
               {/* Payroll Module */}
               {/* <SetRoute
@@ -2145,7 +2290,21 @@ const Dashboard = (props) => {
                 }}
               /> */}
 
-
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F300Form"
+                exact
+                path="/dashboard/F300Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F300Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

@@ -301,7 +301,7 @@ class F212FormPopupComponent extends Component {
   };
   loadProgrammeCoursesSelction = async (academicSessionId=0, programmeGroupId=0, studentId=0) => {
     let data = new FormData();
-    data.append("academicsSessionId", 16);
+    data.append("academicsSessionId", academicSessionId);
     data.append("programmeGroupId", programmeGroupId);
     data.append("studentId", studentId);
     this.setState({ isLoading: true });
@@ -586,10 +586,15 @@ class F212FormPopupComponent extends Component {
   isMarksValid = () => {
     let isValid = true;
     if (!this.state.preMarks) {
-      this.setState({ preMarksError: "Please enter marks." });
-      document.getElementById("preMarks").focus();
-      isValid = false;
+      //if orignal marks and resit marks bht are not
+      if(!this.state.preResetMarks){
+        this.setState({ preMarksError: "Please enter marks." });
+        document.getElementById("preMarks").focus();
+        isValid = false;
+      }
+      
     } else {
+      
       this.setState({ preMarksError: "" });
     }
     return isValid;
@@ -683,24 +688,24 @@ class F212FormPopupComponent extends Component {
 
   };
 
-  onHandleChange = (e) => {
-    const { name, value } = e.target;
-    const errName = `${name}Error`;
-    switch (name) {
-      case "academicSessionId":
-        this.setState({
-          courseId: "",
-          tableData:[]
-        });
-        this.loadData(value, this.props.data.studentId);
-      break;
-      default:
-    }
-    this.setState({
-      [name]: value,
-      [errName]: "",
-    });
-  };
+  // onHandleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   const errName = `${name}Error`;
+  //   switch (name) {
+  //     case "academicSessionId":
+  //       this.setState({
+  //         courseId: "",
+  //         tableData:[]
+  //       });
+  //       this.loadData(value, this.props.data.studentId);
+  //     break;
+  //     default:
+  //   }
+  //   this.setState({
+  //     [name]: value,
+  //     [errName]: "",
+  //   });
+  // };
 
 
   onHandleChange = (e) => {
@@ -713,6 +718,7 @@ class F212FormPopupComponent extends Component {
           courseId: "",
           tableData:[]
         });
+        this.loadProgrammeCoursesSelction(value, this.props.data.programmeGroupId, this.props.data.studentId);
         this.loadData(value, this.props.data.studentId);
       break;
       case "endYearAchievementId":

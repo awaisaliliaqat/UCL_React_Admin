@@ -644,9 +644,9 @@ class F56Form extends Component {
                     >
                       Day
                     </StyledTableCell>
-                    {this.state.changeTypeId === 1 && (
+                    {this.state.changeTypeId == 1? (
                       <StyledTableCell align="center">Date</StyledTableCell>
-                    )}
+                    ):""}
                     <StyledTableCell align="center">Time</StyledTableCell>
                     <StyledTableCell
                       align="center"
@@ -667,11 +667,11 @@ class F56Form extends Component {
                         >
                           {row.dayLabel}
                         </StyledTableCell>
-                        {this.state.changeTypeId === 1 && (
+                        {this.state.changeTypeId == 1 ? (
                           <StyledTableCell align="center">
                             {row.date}
                           </StyledTableCell>
-                        )}
+                        ):""}
                         <StyledTableCell align="center">
                           {row.startTime}
                         </StyledTableCell>

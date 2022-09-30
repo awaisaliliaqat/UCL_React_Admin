@@ -996,9 +996,9 @@ class DisplayAdmissionApplications extends Component {
                                 Admission Session
                            </div>
                             <div style={{
-                                textAlign: `${data.sessionLabel ? 'left' : 'center'}`
+                                textAlign: `${data.admissionSessionLabel ? 'left' : 'center'}`
                             }} className={classes.value}>
-                                {data.sessionLabel || "-"}
+                                {data.admissionSessionLabel || "-"}
                             </div>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',

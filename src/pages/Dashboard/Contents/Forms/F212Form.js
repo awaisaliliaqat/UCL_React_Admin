@@ -1144,7 +1144,7 @@ class F212Form extends Component {
             component="span"
             style={{padding:5}}
           >
-            <Tooltip title="Add / Change">
+            <Tooltip title="Add1 / Change1">
               <Fab 
                 color="primary" 
                 aria-label="add" 
@@ -1288,7 +1288,7 @@ class F212Form extends Component {
             component="span"
             style={{padding:5}}
           >
-            <Tooltip title="Add / Change">
+            <Tooltip title="Add2 / Change">
               <Fab 
                 color="primary" 
                 aria-label="add" 

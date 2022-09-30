@@ -323,7 +323,7 @@ onHandleChangeDegreeClassification = e => {
         name: "Nucleus Id",
         dataIndex: "studentId",
         sortable: false,
-        customStyleHeader: { width: "13%", textAlign: "center" },
+        customStyleHeader: { width: "10%", textAlign: "center" },
       },
       {
         name: "Name",
@@ -347,46 +347,28 @@ onHandleChangeDegreeClassification = e => {
         dataIndex: "degreeLabel",
         sortIndex: "degreeLabel",
         sortable: true,
-        customStyleHeader: { width: "20%", textAlign: "center" },
+        customStyleHeader: { width: "15%", textAlign: "center" },
         align: "center",
       },
       {
         name: "Mobile No",
         dataIndex: "mobileNo",
         sortable: false,
-        customStyleHeader: { width: "15%" },
+        customStyleHeader: { width: "10%" },
       },
       {
         name: "Email",
         dataIndex: "email",
         sortable: false,
+        customStyleHeader: { width: "10%" },
+      },
+      {
+        name: "Address",
+        dataIndex: "address",
+        sortable: false,
         customStyleHeader: { width: "20%" },
       },
-      // {
-      //   name: "Action",
-      //   renderer: (rowData) => {
-      //     console.log(rowData);
-      //     return (
-      //       <Button
-      //         style={{
-      //           fontSize: 12,
-      //           textTransform: "capitalize",
-      //         }}
-      //         variant="outlined"
-      //         onClick={() =>
-      //           window.open(
-      //             `#/view-student-profile/${rowData.studentId}`,
-      //             "_blank"
-      //           )
-      //         }
-      //       >
-      //         View Profile
-      //       </Button>
-      //     );
-      //   },
-      //   sortable: false,
-      //   customStyleHeader: { width: "21%" },
-      // },
+     
     ];
 
     return (

@@ -50,10 +50,11 @@ class AdmissionApplicationReports extends Component {
     }
 
     componentDidMount() {
+        this.loadAcademicSessions();
         this.getGenderData();
         this.getDegreesData();
-        this.getData(this.state.applicationStatusId);
-        this.loadAcademicSessions();
+        
+       
     }
 
     getGenderData = async () => {
@@ -109,13 +110,13 @@ class AdmissionApplicationReports extends Component {
               if (json.CODE === 1) {
                 let array = json.DATA || [];
                 // let arrayLength = array.length;
-                let res = array.find( (obj) => obj.isActive === 1 );
+                let res = array.find( (obj) => obj.isAdmissionActive === 1 );
                 console.log(res);
                 if(res){
                   this.setState({academicSessionId:res.ID});
                 }
                 this.setState({ academicSessionMenuItems: array });
-                
+                this.getData(this.state.applicationStatusId);
               } else {
                 this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
               }
