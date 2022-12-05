@@ -121,7 +121,7 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-class R218StudentProgressReport extends Component {
+class R232StudentProgressReport extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -183,7 +183,7 @@ class R218StudentProgressReport extends Component {
     data.append("academicsSessionId", sessionId);
     data.append("sectionId", sectionId);
     data.append("termId", sessionTermId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C218CommonStudentProgressReportView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C232CommonStudentProgressReportView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -492,8 +492,8 @@ class R218StudentProgressReport extends Component {
   }
 }
 
-R218StudentProgressReport.propTypes = {
+R232StudentProgressReport.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(R218StudentProgressReport);
+export default withStyles(styles)(R232StudentProgressReport);

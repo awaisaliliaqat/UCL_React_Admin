@@ -621,6 +621,7 @@ class R41Reports extends Component {
       { name: "assignmentSubmitted", title: "Submitted On" },
       { name: "obtainedMarks", title: "Obtained Marks" },
       { name: "totalMarks", title: "Total\xa0Marks" },
+      { name: "assignmentPercentage", title: "Percentage"},
       { name: "remarks", title: "Remarks" }
     ];
 

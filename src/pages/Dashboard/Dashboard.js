@@ -164,6 +164,7 @@ import F228StudentLoginAs from "./Contents/Forms/F228StudentLoginAs";
 import F229Form from "./Contents/Forms/F229Form";
 import F230Form from "./Contents/Forms/F230Form";
 import F231Form from "./Contents/Forms/F231Form";
+import R232Reports from "./Contents/Forms/R232Reports";
 import F300Form from "./Contents/Forms/F300Form";
 
 
@@ -2289,6 +2290,21 @@ const Dashboard = (props) => {
                   );
                 }}
               /> */}
+               <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R232Reports"
+                exact
+                path="/dashboard/R232Reports"
+                render={(props) => {
+                  return (
+                    <R232Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

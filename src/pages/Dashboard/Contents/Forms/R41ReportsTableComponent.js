@@ -81,6 +81,7 @@ class R41ReportsTableComponent extends Component {
         { columnName: "studentName", wordWrapEnabled: true },
         { columnName: "assignmentSubmitted", width: 100 },
         { columnName: "obtainedMarks", width: 150 },
+        { columnName: "assignmentPercentage", width: 150 },
         { columnName: "remarks", wordWrapEnabled: true},
       ],
       defaultColumnWidths: [],

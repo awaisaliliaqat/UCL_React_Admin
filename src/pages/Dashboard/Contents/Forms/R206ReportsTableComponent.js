@@ -83,6 +83,7 @@ class R206ReportsTableComponent extends Component {
         { columnName: "answerSheet", width: 100, align:"center" },
         { columnName: "examSubmitted", width: 100 },
         { columnName: "obtainedMarks", width: 150 },
+        { name: "examPercentage",  width: 150},
         { columnName: "remarks", wordWrapEnabled: true},
       ],
       defaultColumnWidths: [],

@@ -622,6 +622,7 @@ class R206Reports extends Component {
       { name: "examSubmitted", title: "Submitted On" },
       { name: "obtainedMarks", title: "Obtained Marks" },
       { name: "totalMarks", title: "Total\xa0Marks" },
+      { name: "examPercentage", title: "Percentage" },
       { name: "remarks", title: "Remarks" }
     ];
 

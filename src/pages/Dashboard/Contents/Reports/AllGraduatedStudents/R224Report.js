@@ -368,6 +368,12 @@ onHandleChangeDegreeClassification = e => {
         sortable: false,
         customStyleHeader: { width: "20%" },
       },
+      {
+        name: "Degree Classification", 
+        dataIndex: "degreeClassification",
+        sortable: false,
+        customStyleHeader: { width: "20%" },
+      },
      
     ];
 
