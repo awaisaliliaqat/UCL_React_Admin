@@ -19,12 +19,9 @@ import InputLabel from "@material-ui/core/InputLabel";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-import {
-  alphabetExp,
-  numberExp,
-  emailExp,
-} from "../../../../../../utils/regularExpression";
+import { alphabetExp, numberExp, emailExp} from "../../../../../../utils/regularExpression";
 import CustomizedSnackbar from "../../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const styles = () => ({
   root: {
@@ -49,7 +46,22 @@ const styles = () => ({
     width: "100%",
     textAlign: "center",
   },
+  image: {
+    height: 140,
+    width: 130,
+    border: '1px solid',
+    marginLeft: 50,
+    textAlign: 'center',
+    marginTop: '-25px',
+    backgroundSize: 'cover',
+    backgroundpPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    'WebkitPrintColorAdjust': 'exact',
+    'colorAdjust': 'exact',
+}
 });
+
+const Input = ({ Autocomplete, ...props }) => <Component.Input {...props} autoComplete="new-password" />;
 
 function isEmpty(obj) {
   if (obj == null) return true;
@@ -62,6 +74,9 @@ function isEmpty(obj) {
 
   return true;
 }
+
+
+
 
 class DocumentRequestAction extends Component {
   constructor(props) {
@@ -88,12 +103,32 @@ class DocumentRequestAction extends Component {
       middleNameError: "",
       lastName: "",
       lastNameError: "",
+      imageName: "",
       dateOfBirth: null,
       dateOfBirthError: "",
       mobileNo: "",
       mobileNoError: "",
       email: "",
       emailError: "",
+
+      /////////////////Permanent Address Information State///////////////////
+
+      permanentAddress: "",
+      permanentAddressError: "",
+      permanentPostalCode: "",
+      permanentPostalCodeError: "",
+      countriesData: [],
+      permanentCountryId: "",
+      permanentCountryIdObject: {},
+      permanentCountryIdError: "",
+      permanentProvinceData: [],
+      permanentProvinceId: "",
+      permanentProvinceIdObject: {},
+      permanentProviceIdError: "",
+      permanentCitiesData: [],
+      permanentCityId: "",
+      permanentCityIdObject: {},
+      permanentCityIdError: "",
 
       /////////////////Father Information State///////////////////
 
@@ -122,20 +157,12 @@ class DocumentRequestAction extends Component {
     };
   }
 
-  componentDidMount() {
-    this.loadData();
-  }
-
   loadData = async () => {
-    this.setState({
-      isLoading: true,
-    });
+    this.setState({isLoading: true});
     this.getDegreesData();
     this.getChessSubDegreeData();
     await this.getData();
-    this.setState({
-      isLoading: false,
-    });
+    this.setState({isLoading: false});
   };
 
   getDegreesData = async () => {
@@ -237,6 +264,105 @@ class DocumentRequestAction extends Component {
       );
   };
 
+  getCountriesData = async () => {
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonCountriesView`;
+    await fetch(url, {
+        method: "GET",
+        headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+        })
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw res;
+        }
+        return res.json();
+    })
+    .then(
+      async json => {
+          const countryObject = json.DATA.find(item => item.ID === 165);
+          this.setState({
+              permanentCountryId: 165,
+              permanentCountryIdObject: countryObject,
+              countriesData: json.DATA || []
+          })
+          await this.getProvinceData(165, "permanent", '');
+      },
+      error => {
+          console.log(error);
+      });
+  }
+
+  getProvinceData = async (id, type, value='') => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonCountriesProvincesView?countryId=${id}`;
+    const name = `${type}ProvinceData`
+    await fetch(url, {
+        method: "GET",
+        headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+        })
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw res;
+        }
+        return res.json();
+    })
+    .then(
+      json => {
+        const valueName = `${type}ProvinceId`;
+        const valueObjName = `${type}ProvinceIdObject`;
+        const data = json.DATA || [];
+        const id = value || '';
+        const obj = value ? data.find(item => item.ID === value) : {};
+        this.setState({
+            [name]: data,
+            [valueName]: id,
+            [valueObjName]: obj
+        });
+    },
+    error => {
+        console.log(error);
+    });
+    this.setState({isLoading: false});
+  }
+
+getCitiesData = async (id, type, value='') => {
+  this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonCitiesView?provinceId=${id}`;
+    const name = `${type}CitiesData`
+    await fetch(url, {
+        method: "GET",
+        headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+        })
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw res;
+        }
+        return res.json();
+    })
+    .then(
+      json => {
+          const valueName = `${type}CityId`;
+          const valueObjName = `${type}CityIdObject`;
+          const data = json.DATA || [];
+          const id = value || '';
+          const obj = value ? data.find(item => item.ID === value) : {};
+          this.setState({
+              [name]: data,
+              [valueName]: id,
+              [valueObjName]: obj
+          });
+      },
+      error => {
+          console.log(error);
+    });
+    this.setState({isLoading: false});
+  }
+
   handleOpenSnackbar = (msg, severity) => {
     this.setState({
       isOpenSnackbar: true,
@@ -255,8 +381,10 @@ class DocumentRequestAction extends Component {
   };
 
   isFormValid = () => {
+
     let isValid = true;
     let regex = "";
+
     let {
       guardianMobileNoError,
       motherMobileNoError,
@@ -269,7 +397,13 @@ class DocumentRequestAction extends Component {
       chessSubDegreeError,
       yearAlevelError,
       appliedForError,
+      permanentAddressError, 
+      permanentCityIdError,
+      permanentCountryIdError, 
+      permanentPostalCodeError, 
+      permanentProvinceIdError
     } = this.state;
+
     if (!this.state.guardianMobileNo) {
       // guardianMobileNoError = "Please enter a valid mobile number e.g 03001234567"
       // document.getElementById("guardianMobileNo").focus();
@@ -420,6 +554,46 @@ class DocumentRequestAction extends Component {
       appliedForError = "";
     }
 
+    if (!this.state.permanentPostalCode) {
+      permanentPostalCodeError = "Please enter postal code."
+      document.getElementById("permanentPostalCode").focus();
+      isValid = false;
+    } else {
+        permanentPostalCodeError = "";
+    }
+    if (!this.state.permanentCityId) {
+        permanentCityIdError = "Please select city."
+        document.getElementById("permanentCityId").focus();
+        isValid = false;
+    } else {
+        permanentCityIdError = "";
+    }
+
+    if (!this.state.permanentProvinceId) {
+        permanentProvinceIdError = "Please select province."
+        document.getElementById("permanentProvinceId").focus();
+        isValid = false;
+    } else {
+        permanentProvinceIdError = "";
+    }
+
+    if (!this.state.permanentCountryId) {
+        permanentCountryIdError = "Please select country."
+        document.getElementById("permanentCountryId").focus();
+        isValid = false;
+    } else {
+        permanentCountryIdError = "";
+    }
+
+    if (!this.state.permanentAddress) {
+        permanentAddressError = "Please enter address."
+        document.getElementById("permanentAddress").focus();
+        document.body.scrollTop = 10;
+        isValid = false;
+    } else {
+        permanentAddressError = "";
+    }
+
     this.setState({
       guardianMobileNoError,
       motherMobileNoError,
@@ -432,6 +606,11 @@ class DocumentRequestAction extends Component {
       yearAlevelError,
       appliedForError,
       emailError,
+      permanentAddressError,
+      permanentCityIdError,
+      permanentCountryIdError,
+      permanentPostalCodeError,
+      permanentProvinceIdError
     });
 
     return isValid;
@@ -443,57 +622,6 @@ class DocumentRequestAction extends Component {
     }
   };
 
-  onFormSubmit = async (e) => {
-    e.preventDefault();
-    const data = new FormData(e.target);
-    this.setState({
-      isLoading: true,
-    });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonStudentsSave`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.handleOpenSnackbar("Saved", "success");
-            document.documentElement.scrollTop = 0;
-            document.getElementById("back-button").click();
-          } else {
-            this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.handleOpenSnackbar("Faild to save data", "error");
-          }
-        }
-      );
-    this.setState({
-      isLoading: false,
-    });
-  };
-
   StopEnter(e) {
     if (e.keyCode === 13) {
       e.preventDefault();
@@ -501,9 +629,19 @@ class DocumentRequestAction extends Component {
   }
 
   setData = (data = {}) => {
-    const dob = data.dateOfBirthWithoutConversion
-      ? new Date(data.dateOfBirthWithoutConversion)
-      : new Date();
+
+    
+
+    const dob = data.dateOfBirthWithoutConversion ? new Date(data.dateOfBirthWithoutConversion) : new Date();
+    const permanentCountriesObject = this.state.countriesData.find(item => item.ID === data.permanentAddressCountryId);
+    if(permanentCountriesObject){
+      this.getProvinceData(permanentCountriesObject.ID, "permanent", data.permanentAddressProvinceId);
+      this.getCitiesData(data.permanentAddressProvinceId, "permanent", data.permanentAddressCityId);
+    }else{
+      // window.location.reload();
+    }
+    console.log("ddddd",data);
+    
 
     this.setState({
       appliedFor: data.degreeId || "",
@@ -512,11 +650,17 @@ class DocumentRequestAction extends Component {
       chessSubDegree: data.chessDegreeTransferId || "",
 
       firstName: data.firstName || "",
+      imageName: data.imageName || "",
       middleName: data.middleName || "",
       lastName: data.lastName || "",
       dateOfBirth: dob,
       mobileNo: data.mobileNo || "",
       email: data.email || "",
+
+      permanentAddress: data.permanentAddress || "",
+      permanentPostalCode: data.permanentAddressPostalCode || "",
+      permanentCountryId: data.permanentAddressCountryId || "",
+      permanentCountryIdObject: permanentCountriesObject || {},
 
       fatherMobileNo: data.fatherMobileNo || "",
 
@@ -562,7 +706,7 @@ class DocumentRequestAction extends Component {
           if (error.status == 401) {
             this.setState({
               isLoginMenu: true,
-              isReload: true,
+              isReload: false,
             });
           } else {
             this.handleOpenSnackbar("Faild to load Aplication Data", "error");
@@ -612,6 +756,121 @@ class DocumentRequestAction extends Component {
     });
   };
 
+  handleAutoComplete = (name) => (e, value) => {
+    const errName = `${name}Error`;
+    const objState = `${name}Object`;
+    if (isEmpty(value)) {
+        switch (name) {
+            case "permanentCountryId":
+                this.setState({
+                    permanentProvinceData: [],
+                    permanentProviceIdError: "",
+                    permanentProvinceIdObject: {},
+                    permanentProvinceId: "",
+
+                    permanentCitiesData: [],
+                    permanentCityId: "",
+                    permanentCityIdError: "",
+                    permanentCityIdObject: {}
+                });
+                break;
+            case "permanentProvinceId":
+                this.setState({
+                    permanentCitiesData: [],
+                    permanentCityId: "",
+                    permanentCityIdError: "",
+                    permanentCityIdObject: {}
+                });
+                break;
+            case "presentCountryId":
+                this.setState({
+                    presentProvinceData: [],
+                    presentProviceIdError: "",
+                    presentProvinceIdObject: {},
+                    presentProvinceId: "",
+
+                    presentCitiesData: [],
+                    presentCityId: "",
+                    presentCityIdError: "",
+                    presentCityIdObject: {}
+                });
+                break;
+            case "presentProvinceId":
+                this.setState({
+                    presentCitiesData: [],
+                    presentCityId: "",
+                    presentCityIdError: "",
+                    presentCityIdObject: {}
+                });
+                break;
+            default:
+                break;
+        }
+        this.setState({
+            [name]: "",
+            [errName]: "",
+            [objState]: {}
+        })
+    } else {
+        const { ID } = value;
+        switch (name) {
+            case "permanentCountryId":
+                this.setState({
+                    permanentProvinceData: [],
+                    permanentProviceIdError: "",
+                    permanentProvinceIdObject: {},
+                    permanentProvinceId: "",
+
+                    permanentCitiesData: [],
+                    permanentCityId: "",
+                    permanentCityIdError: "",
+                    permanentCityIdObject: {}
+                });
+                this.getProvinceData(ID, "permanent", "");
+                break;
+            case "permanentProvinceId":
+                this.setState({
+                    permanentCitiesData: [],
+                    permanentCityId: "",
+                    permanentCityIdError: "",
+                    permanentCityIdObject: {}
+                });
+                this.getCitiesData(ID, "permanent", '');
+                break;
+            case "presentCountryId":
+                this.setState({
+                    presentProvinceData: [],
+                    presentProviceIdError: "",
+                    presentProvinceIdObject: {},
+                    presentProvinceId: "",
+
+                    presentCitiesData: [],
+                    presentCityId: "",
+                    presentCityIdError: "",
+                    presentCityIdObject: {}
+                });
+                this.getProvinceData(ID, "present", "");
+                break;
+            case "presentProvinceId":
+                this.setState({
+                    presentCitiesData: [],
+                    presentCityId: "",
+                    presentCityIdError: "",
+                    presentCityIdObject: {}
+                });
+                this.getCitiesData(ID, "present", '');
+                break;
+            default:
+                break;
+        }
+        this.setState({
+            [name]: ID,
+            [errName]: "",
+            [objState]: value
+        });
+      }
+    }
+
   handleDateChange = (date) => {
     this.setState({
       dateOfBirth: date,
@@ -619,11 +878,63 @@ class DocumentRequestAction extends Component {
     });
   };
 
+  onFormSubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C21CommonStudentsSave`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.handleOpenSnackbar("Saved", "success");
+            document.documentElement.scrollTop = 0;
+            document.getElementById("back-button").click();
+          } else {
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Faild to save data", "error");
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
+    });
+  };
+
+  componentDidMount() {
+    this.getCountriesData();
+    this.loadData();
+  }
+
   render() {
-    const userDob = format(
-      this.state.dateOfBirth || new Date("2000-01-01"),
-      "dd/MM/yyyy"
-    );
+
+    const userDob = format(this.state.dateOfBirth || new Date("2000-01-01"),"dd/MM/yyyy");
     const { classes } = this.props;
 
     return (
@@ -666,6 +977,7 @@ class DocumentRequestAction extends Component {
             paddingRight: 30,
           }}
         >
+          
           <Typography
             style={{
               color: "#1d5f98",
@@ -681,6 +993,7 @@ class DocumentRequestAction extends Component {
               }}
               aria-label="Back"
             >
+              
               <Link
                 id="back-button"
                 style={{
@@ -691,8 +1004,15 @@ class DocumentRequestAction extends Component {
               >
                 <ArrowBackIcon />
               </Link>
+              
             </IconButton>{" "}
             Nucleus ID: {this.state.data.studentId}
+            <div className={classes.image} style={{
+              float: "right",
+              marginTop : 30,
+              backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${this.state.imageName})`,
+                }}>
+                </div>
           </Typography>
 
           <Divider
@@ -701,15 +1021,18 @@ class DocumentRequestAction extends Component {
               opacity: "0.3",
             }}
           />
+          <form autoComplete="off">
+           
           <Grid container component="main" className={classes.root}>
             <Grid container spacing={2}>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <span className={classes.sectionTitle}>Course Applied For</span>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <FormControl
                   error={!!this.state.appliedForError}
                   className={classes.formControl}
+                  aria-autocomplete='off'
                 >
                   <InputLabel htmlFor="appliedFor">Programme</InputLabel>
                   <Select
@@ -799,7 +1122,7 @@ class DocumentRequestAction extends Component {
                 </FormControl>
               </Grid>
 
-              <Grid style={{ paddingTop: 10 }} xs={12}>
+              <Grid item style={{ paddingTop: 10 }} xs={12}>
                 <span className={classes.sectionTitle}>
                   Personal Information
                 </span>
@@ -810,6 +1133,8 @@ class DocumentRequestAction extends Component {
                   id="firstName"
                   name="firstName"
                   label="First Name"
+                  autoComplete="new-password"
+              
                   required
                   fullWidth
                   onKeyDown={this.StopEnter}
@@ -823,6 +1148,7 @@ class DocumentRequestAction extends Component {
                   id="middleName"
                   name="middleName"
                   label="Middle Name"
+                  autoComplete="new-password"
                   fullWidth
                   onKeyDown={this.StopEnter}
                   onChange={this.handleChange}
@@ -835,6 +1161,7 @@ class DocumentRequestAction extends Component {
                   id="lastName"
                   name="lastName"
                   label="Last Name"
+                  autoComplete="new-password"
                   required
                   fullWidth
                   onKeyDown={this.StopEnter}
@@ -868,6 +1195,7 @@ class DocumentRequestAction extends Component {
                   id="mobileNo"
                   name="mobileNo"
                   label="Mobile No"
+                  autoComplete="new-password"
                   type="text"
                   inputProps={{
                     maxLength: 11,
@@ -891,6 +1219,7 @@ class DocumentRequestAction extends Component {
                   id="email"
                   name="email"
                   label="Email"
+                  autoComplete="new-password"
                   type="email"
                   onChange={this.handleChange}
                   placeholder="e.g name@domain.com"
@@ -902,7 +1231,97 @@ class DocumentRequestAction extends Component {
                 />
               </Grid>
 
-              <Grid xs={12} style={{ paddingTop: 20 }}>
+              <Grid item xs={12} style={{ paddingTop: 20}}>
+                <span style={{ fontSize: 16 }} className={classes.sectionTitle}>Permanent Address</span>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                    id="permanentAddress"
+                    name="permanentAddress"
+                    label="Address"
+                    autoComplete="new-password"
+                    value={this.state.permanentAddress}
+                    error={!!this.state.permanentAddressError}
+                    onChange={this.handleChange}
+                    type="text"
+                    onKeyDown={this.keyPress}
+                    fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Autocomplete
+                
+                  id="permanentCountryId"
+                  getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
+                  fullWidth
+                  aria-autocomplete="none"
+                  options={this.state.countriesData}
+                  onChange={this.handleAutoComplete("permanentCountryId")}
+                  value={this.state.permanentCountryIdObject}
+                  //autocomplete="chrome-off"
+              
+                  renderInput={(params) =>{
+                    const inputProps = params.inputProps;
+                    inputProps.autocomplete="new-password";
+                    return (
+                    <TextField 
+                    inputProps={inputProps}
+                      //autoComplete="false"
+                     
+                                        
+                     label="Country" error={!!this.state.permanentCountryIdError} {...params}
+                      />
+                    );
+                  }
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                  <Autocomplete
+                      id="permanentProvinceId"
+                      getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
+                      fullWidth
+                      options={this.state.permanentProvinceData}
+                      onChange={this.handleAutoComplete("permanentProvinceId")}
+                      value={this.state.permanentProvinceIdObject}
+                      renderInput={(params) =>{ 
+                        const inputProps = params.inputProps;
+                        inputProps.autocomplete="new-password";
+                         return ( <TextField label="Province" inputProps={{autoComplete:"chrome-off"}} error={!!this.state.permanentProvinceIdError} {...params}
+                      />);}
+                    }
+                  />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Autocomplete
+                  id="permanentCityId"
+                  getOptionLabel={(option) => typeof option.Label === "string" ? option.Label : ""}
+                  fullWidth
+                  options={this.state.permanentCitiesData}
+                  onChange={this.handleAutoComplete("permanentCityId")}
+                  value={this.state.permanentCityIdObject}
+                  renderInput={(params) =>{const inputProps = params.inputProps;
+                    inputProps.autocomplete="new-password";
+                     return ( <TextField label="City" error={!!this.state.permanentCityIdError} {...params}/>);}}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  id="permanentPostalCode"
+                  name="permanentPostalCode"
+                  autoComplete="new-password"
+                  autoComplete="new-password"
+                  label="Postal Code"
+                  value={this.state.permanentPostalCode}
+                  error={!!this.state.permanentPostalCodeError}
+                  onChange={this.handleChange}
+                  type="text"
+                  onKeyDown={this.keyPress}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid item xs={12} style={{ paddingTop: 20 }}>
                 <span className={classes.sectionTitle}>
                   Father&apos;s Information
                 </span>
@@ -912,6 +1331,7 @@ class DocumentRequestAction extends Component {
                 <TextField
                   id="fatherMobileNo"
                   name="fatherMobileNo"
+                  autoComplete="new-password"
                   value={this.state.fatherMobileNo}
                   onChange={this.handleChange}
                   error={!!this.state.fatherMobileNoError}
@@ -931,7 +1351,7 @@ class DocumentRequestAction extends Component {
                 />
               </Grid>
 
-              <Grid xs={12} style={{ paddingTop: 20 }}>
+              <Grid item xs={12} style={{ paddingTop: 20 }}>
                 <span className={classes.sectionTitle}>
                   Mother&apos;s Information
                 </span>
@@ -946,6 +1366,7 @@ class DocumentRequestAction extends Component {
                   onChange={this.handleChange}
                   label="Mobile Number"
                   placeholder="e.g 03XXXXXXXXX"
+                  autoComplete="new-password"
                   helperText={
                     this.state.motherMobileNo
                       ? this.state.motherMobileNoError
@@ -960,7 +1381,7 @@ class DocumentRequestAction extends Component {
                 />
               </Grid>
 
-              <Grid xs={12} style={{ paddingTop: 20 }}>
+              <Grid item xs={12} style={{ paddingTop: 20 }}>
                 <span className={classes.sectionTitle}>
                   Guardian&apos;s Information
                 </span>
@@ -972,6 +1393,7 @@ class DocumentRequestAction extends Component {
                   name="guardianMobileNo"
                   label="Mobile Number"
                   placeholder="e.g 03XXXXXXXXX"
+                  autoComplete="new-password"
                   helperText={
                     this.state.guardianMobileNo
                       ? this.state.guardianMobileNoError
@@ -993,7 +1415,6 @@ class DocumentRequestAction extends Component {
                 item
                 xs={12}
                 style={{ paddingTop: 30, display: "flex" }}
-                justify="center"
               >
                 <Button
                   disabled={this.state.isLoading}
@@ -1011,6 +1432,7 @@ class DocumentRequestAction extends Component {
               </Grid>
             </Grid>
           </Grid>
+          </form>
         </div>
         <CustomizedSnackbar
           isOpen={this.state.isOpenSnackbar}
@@ -1052,6 +1474,13 @@ class DocumentRequestAction extends Component {
           <input type="hidden" value={userDob} name="dateOfBirth" />
           <input type="hidden" value={this.state.mobileNo} name="mobileNo" />
           <input type="hidden" value={this.state.email} name="email" />
+
+          <input type="hidden" value={this.state.permanentAddress} name="permanentAddress" />
+          <input type="hidden" value={this.state.permanentCountryId} name="permanentCountryId" />
+          <input type="hidden" value={this.state.permanentProvinceId} name="permanentProvinceId" />
+          <input type="hidden" value={this.state.permanentCityId} name="permanentCityId" />
+          <input type="hidden" value={this.state.permanentPostalCode} name="permanentPostalCode" />
+
 
           <input
             type="hidden"

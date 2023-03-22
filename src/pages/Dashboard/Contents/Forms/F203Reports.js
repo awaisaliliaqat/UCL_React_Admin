@@ -194,6 +194,7 @@ class F203Reports extends Component {
 
     const columns = [
       { name: "academicsSessionLabel", title: "Session" },
+      { name: "programmeGroupLabel", title: "Programme Group" },
       { name: "sessionTermLabel", title: "Term" },
       { name: "sectionLabel", title: "Section" },
       { name: "noOfAssessment", title: "Assessment#" },

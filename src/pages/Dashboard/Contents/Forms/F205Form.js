@@ -33,6 +33,9 @@ class F205Form extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
+      sectionId:"",
+      studentId:"",
+      examId:"",
       popupTitle:"",
       recordId:"",
       fileName:"",
@@ -58,8 +61,11 @@ class F205Form extends Component {
     });
   };
 
-  handlePopupOpen = (popupTitle, recordId, fileName, fileUrl, totalMarks, examGradedData) => {
+  handlePopupOpen = (studentId,sectionId,examId,popupTitle, recordId, fileName, fileUrl, totalMarks, examGradedData) => {
     this.setState({ 
+      sectionId:sectionId,
+      studentId:studentId,
+      examId:examId,
       popupTitle: popupTitle,
       recordId: recordId,
       fileName: fileName,
@@ -73,6 +79,9 @@ class F205Form extends Component {
   handlePopupClose = () => {
     this.setState({
       popupBoxOpen: false,
+      sectionId:"",
+      studentId:"",
+      examId:"",
       popupTitle:"",
       recordId:"",
       fileName:"",
@@ -113,6 +122,9 @@ class F205Form extends Component {
             let data = json.DATA || [];
             let dataLength = data.length;
             for (let i=0; i<dataLength; i++) {
+              let sectionId= data[i].sectionId;
+              let studentId= data[i].studentId;
+              let examId = data[i].id;
               let recordId = data[i].studentExamId;
               let popupTitle = data[i].nucleusId+" - "+data[i].studentName+" - "+data[i].sectionLabel+"\xa0\xa0\xa0("+data[i].label+")";
               let fileName = data[i].examFileName;
@@ -145,7 +157,7 @@ class F205Form extends Component {
                           :
                           {height:36, width:36, backgroundColor:"rgb(29, 95, 152)"}
                       }
-                      onClick={() => this.handlePopupOpen(popupTitle, recordId, fileName, fileUrl, totalMarks, examGradedData)}
+                      onClick={() => this.handlePopupOpen(studentId,sectionId,examId,popupTitle, recordId, fileName, fileUrl, totalMarks, examGradedData)}
                     >
                       <EditIcon fontSize="small"/>
                     </Fab>
@@ -158,6 +170,7 @@ class F205Form extends Component {
                     <IconButton 
                       onClick={(e)=>this.downloadFile(e, fileUrl, fileName)}
                       aria-label="download"
+                      disabled={fileName=== ""|| fileName===null? true:false}
                       color="primary"
                     >
                       <CloudDownloadIcon />
@@ -350,6 +363,9 @@ class F205Form extends Component {
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
         <F205FormPopupComponent
+          sectionId={this.state.sectionId}
+          studentId={this.state.studentId}
+          examId={this.state.examId}
           recordId={this.state.recordId}
           fileName={this.state.fileName}
           fileUrl={this.state.fileUrl}

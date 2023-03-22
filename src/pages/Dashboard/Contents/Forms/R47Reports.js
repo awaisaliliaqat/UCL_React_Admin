@@ -18,6 +18,7 @@ import {
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { format } from "date-fns";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -265,6 +266,11 @@ class R46Reports extends Component {
     let regex = "";
     switch (name) {
       case "effectiveDates":
+       // const userDate = format(new Date(value),"dd-MM-yyyy");
+        this.setState({
+          effectiveDatesId: value,
+          [errName]: "",
+        });
         this.getData(this.state.programGroupId.Id, value);
         break;
       default:

@@ -29,7 +29,8 @@ class ChangeStatusTableComponent extends Component {
                 { columnName: 'action', filteringEnabled: false },
             ],
             tableColumnExtensions: [
-                { columnName: 'studentId', width: 120 },
+                { columnName: 'studentId', width: 100 },
+                { columnName: 'accountsId', width: 80 },
                 { columnName: 'firstName', wordWrapEnabled: true },
                 { columnName: 'middleName', wordWrapEnabled: true },
                 { columnName: 'lastName', wordWrapEnabled: true },
@@ -38,7 +39,9 @@ class ChangeStatusTableComponent extends Component {
                 { columnName: 'mobileNo', wordWrapEnabled: true },
                 { columnName: 'email', wordWrapEnabled: true, width: 200 },
                 { columnName: 'sessionLabel', wordWrapEnabled: true },
-                { columnName: 'action', width: 130, align:"center" },
+                { columnName: 'uolNumber', wordWrapEnabled: true },
+                // { columnName: 'action', width: 130, align:"center" },
+                { columnName: 'statusChangeDate', width: 130, wordWrapEnabled: true },
             ],
             defaultSorting: [],
             sortingStateColumnExtensions: [

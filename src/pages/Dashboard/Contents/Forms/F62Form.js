@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import {Typography, TextField, MenuItem, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Paper, Divider, CircularProgress, Grid, Button, Checkbox} from "@material-ui/core";
+  TableHead, TableRow, Paper, Divider, CircularProgress, Grid, Button, Checkbox,
+  FormGroup, FormControlLabel, FormControl} from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
@@ -61,6 +62,9 @@ class R46Reports extends Component {
       coursesMenuItems: [],
       courseId: "",
       courseIdError: "",
+      academicSessionMenuItems: [],
+      academicSessionId: "",
+      academicSessionIdError: "",
       sectionsMenuItems: [],
       sectionId: {},
       sectionIdError:"",
@@ -70,6 +74,7 @@ class R46Reports extends Component {
       startTimes: [],
       startTime: "",
       startTimeError: "",
+      isTeacherOnly: false
     };
   }
 
@@ -92,10 +97,14 @@ class R46Reports extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getCourses = async () => {
+  getCourses = async (sessionId) => {
+    let data = new FormData();
+    
+    data.append("sessionId", sessionId);
     this.setState({isLoading: true});
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C62CommonSessionOfferedProgrammeCoursesView`;
     await fetch(url, {
+      body:data,
       method: "POST",
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
@@ -136,6 +145,7 @@ class R46Reports extends Component {
   getSections = async (courseId) => {
     let data = new FormData();
     data.append("courseId", courseId);
+    data.append("sessionId", this.state.academicSessionId);
     this.setState({isLoading: true});
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C62CommonAcademicsSectionsView`;
     await fetch(url, {
@@ -229,17 +239,61 @@ class R46Reports extends Component {
     this.setState({ isLoading: false });
   };
 
+  loadAcademicSessions = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonAcademicSessionsViewV2`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let array = json.DATA || [];
+            let arrayLength = array.length;
+            let res = array.find( (obj) => obj.isActive === 1 );
+            if(res){
+              this.setState({academicSessionId:res.ID});
+              this.getCourses(res.ID);
+            }
+            this.setState({ academicSessionMenuItems: array });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadAcademicSessions", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
   getData = async (sectionId,classDate,startTime) => {
-
-
-
-    console.log("startTime"+startTime);
-
-    this.setState({isLoading: true});
     let data = new FormData();
     data.append("sectionId", sectionId);
     data.append("startTime", startTime);
     data.append("classDate", classDate);
+    this.setState({
+      isLoading: true,
+      isTeacherOnly: false
+    });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C62CommonStudentsView`;
     await fetch(url, {
       method: "POST",
@@ -307,7 +361,9 @@ class R46Reports extends Component {
               tableData:[],
               preDate:this.getTodaysDate(),
               sectionId:{},
-              courseId:""
+              courseId:"",
+              startTime:"",
+              startTimes:[]
             });
             setTimeout(() => {
                 //window.location.reload();
@@ -343,6 +399,10 @@ class R46Reports extends Component {
     return today;
   };
 
+
+
+  
+
   handleSetCourse = (value) => {    
     this.setState({
       courseId: value, 
@@ -375,9 +435,17 @@ class R46Reports extends Component {
     const errName = `${name}Error`;
     let regex = "";
     switch (name) {
-        case "monthId":
-            //this.setState({tableData:[]});
-        break;
+      case "academicSessionId":
+        this.setState({
+          courseId:"",
+          coursesMenuItems:[],
+          tableData: []
+        });
+        this.getCourses(value);
+      break;
+      case "startTime":
+        this.setState({tableData:[]});
+      break;
     default:
         break;
     }
@@ -386,6 +454,14 @@ class R46Reports extends Component {
       [errName]: "",
     });
   };
+
+  handleChangeCheckbox = (e) => {
+    const { name, checked } = e.target;
+    this.setState({[name]: checked});
+    if(checked){
+      this.setState({tableData:[]});
+    }
+  }
 
   isCourseValid = () => {
     let isValid = true;        
@@ -406,7 +482,9 @@ class R46Reports extends Component {
  
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.getCourses(); 
+    this.loadAcademicSessions();
+    // this.getCourses(); 
+
   }
 
   render() {
@@ -454,7 +532,40 @@ class R46Reports extends Component {
             justify="center"
             alignItems="center"
             spacing={2}
-          >
+          > 
+            <Grid item xs={12} md={2}>
+                <TextField
+                id="academicSessionId"
+                name="academicSessionId"
+                variant="outlined"
+                label="Academic Session"
+                fullWidth
+                select
+                onChange={this.onHandleChange}
+                value={this.state.academicSessionId}
+                error={!!this.state.academicSessionIdError}
+                helperText={this.state.academicSessionIdError ? this.state.academicSessionIdError : ""}
+                // disabled={!this.state.schoolId}
+              >
+                {this.state.academicSessionMenuItems && !this.state.isLoading ? 
+                  this.state.academicSessionMenuItems.map((dt, i) => (
+                    <MenuItem
+                      key={"academicSessionMenuItems"+dt.ID}
+                      value={dt.ID}
+                    >
+                      {dt.Label}
+                    </MenuItem>
+                  ))
+                :
+                  <Grid 
+                    container 
+                    justify="center"
+                  >
+                    <CircularProgress />
+                  </Grid>
+                }
+              </TextField>
+            </Grid> 
             <Grid item xs={4} md={3}>
               <Autocomplete
                 fullWidth
@@ -522,7 +633,7 @@ class R46Reports extends Component {
                 disabled={this.state.sectionId!=null?!this.state.sectionId.id:false}
               />
             </Grid>
-            <Grid item xs={3} md={2}>
+            <Grid item xs={3} md={1}>
                 <TextField
                   id="startTime"
                   name="startTime"
@@ -533,7 +644,7 @@ class R46Reports extends Component {
                   variant="outlined"
                   onChange={this.onHandleChange}
                   value={this.state.startTime}
-                  error={this.state.startTimeError}
+                  error={!!this.state.startTimeError}
                   select
                 >
                   {this.state.startTimes.map((item) => (
@@ -571,9 +682,20 @@ class R46Reports extends Component {
             <Grid item xs={12}>
               <form id="myForm">
                 <TextField type="hidden" name="classDate" value={this.getDateInString(this.state.preDate)}/>
-               
                 <TextField type="hidden" name="sectionId" value={this.state.sectionId.id}/>
                 <TextField type="hidden" name="startTime" value={this.state.startTime}/>
+                <FormControl component="fieldset">
+                  <FormGroup aria-label="position" row>
+                    <FormControlLabel
+                      name="isTeacherOnly"
+                      value="1"
+                      control={<Checkbox color="primary" checked={this.state.isTeacherOnly} onChange={this.handleChangeCheckbox} name="isTeacherOnly" />}
+                      label="Teacher Only"
+                      labelPlacement="end"
+                      disabled={!this.state.startTime}
+                    />
+                  </FormGroup>
+                </FormControl>
                 <TableContainer component={Paper} style={{overflowX:"inherit"}}>
                   <Table size="small" className={classes.table} aria-label="customized table">
                       <TableHead>
@@ -628,7 +750,7 @@ class R46Reports extends Component {
             bottomRightButtonAction={this.onFormSubmit}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
-            disableRightButton={!this.state.tableData.length}
+            disableRightButton={!this.state.tableData.length && !this.state.isTeacherOnly}
           />
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}

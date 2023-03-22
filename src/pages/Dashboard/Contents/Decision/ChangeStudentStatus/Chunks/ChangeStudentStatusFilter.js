@@ -4,6 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Divider from "@material-ui/core/Divider";
 import { TextField, Button, MenuItem } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { DatePicker } from "@material-ui/pickers";
+
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -48,8 +50,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 const ChangeStudentStatusFilter = (props) => {
+  
   const classes = useStyles();
-  const {values, onHandleChange, getDataByStatus, onClearFilters, isLoading} = props;
+  const {values, onHandleChange, getDataByStatus, isLoading, handleDateChange  } = props;
 
   return (
     <Fragment>
@@ -79,6 +82,34 @@ const ChangeStudentStatusFilter = (props) => {
               onHandleChange(e);
             }}
           />
+        </div>
+        <div className={classes.item} style={{
+                    width: '20%'
+                }}>
+                    <span className={classes.label}>Academic Session</span>
+                    <TextField
+                      id="academicSessionId"
+                      name="academicSessionId"
+                      variant="outlined"
+                      value={values.academicSessionId}
+                      InputProps={{ classes: { input: classes.resize } }}
+                      onChange={e => {
+                        onHandleChange(e);
+                    }}
+                    //   error={!!values.academicSessionIdError}
+                    //   helperText={values.academicSessionIdError}
+                      select
+                    >
+                      {values.academicSessionMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"academicSessionMenuItems"+dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    
         </div>
         <div className={classes.item} style={{ width: "20%" }}>
           <span className={classes.label}>Programme Group</span>
@@ -113,6 +144,7 @@ const ChangeStudentStatusFilter = (props) => {
             }}
             select
           >
+            <MenuItem value={2}>All</MenuItem>
             <MenuItem value={0}>Deactive</MenuItem>
             <MenuItem value={1} selected={true}>
               Active
@@ -157,7 +189,7 @@ const ChangeStudentStatusFilter = (props) => {
         className={classes.item}
         style={{
           width: "20%",
-          float: "right",
+          float: "left",
           marginTop: 10,
           marginBottom: 10,
         }}
@@ -183,6 +215,96 @@ const ChangeStudentStatusFilter = (props) => {
           })}
         </TextField>
       </div>
+      <div
+        className={classes.item}
+        style={{
+          width: "20%",
+          float: "left",
+          marginTop: 10,
+          marginBottom: 10,
+        }}
+      >
+        <span className={classes.label}>Reasons *</span>
+        <TextField
+          placeholder="Reasons"
+          variant="outlined"
+          InputProps={{ classes: { input: classes.resize } }}
+          value={values.reasonId}
+          name="reasonId"
+          disabled={!values.sessionId}
+          onChange={(e) => {
+            onHandleChange(e);
+          }}
+          select
+        >
+          {values.reasonData.map((item) => {
+            return (
+              <MenuItem key={item.id} value={item.id}>
+                {item.label}
+              </MenuItem>
+            );
+          })}
+        </TextField>
+      </div>{
+        values.reasonId==7?
+        <div
+        className={classes.item}
+        style={{
+          width: "20%",
+          float: "left",
+          marginTop: 10,
+          marginBottom: 10,
+        }}>
+        <span className={classes.label}>Other Reasons *</span>
+        <TextField
+          placeholder="otherReasonId"
+          variant="outlined"
+          InputProps={{ classes: { input: classes.resize } }}
+          value={values.otherReasonId}
+          name="otherReasonId"
+          onChange={(e) => {
+            onHandleChange(e);
+          }}
+          select
+        >
+          {values.otherReasonData.map((item) => {
+            return (
+              <MenuItem key={item.id} value={item.id}>
+                {item.label}
+              </MenuItem>
+            );
+          })}
+        </TextField>
+      </div>:
+      ""
+      }
+                <div className={classes.item} style={{
+                   width: "20%",
+                   float: "left",
+                   marginTop: 10,
+                   marginBottom: 10,
+                }}>
+                    <span className={classes.label}>User Date</span>
+                    <DatePicker
+                        // autoOk
+                        invalidDateMessage=""
+                        placeholder="User Date"
+                        disableFuture
+                        variant="inline"
+                        inputVariant="outlined"
+                        format="dd-MMM-yyyy"
+                        name="userDate"
+                        value={values.userDate}
+                        InputProps={{
+                            classes: { input: classes.resize }
+                        }}
+                        onChange={(event) => {
+                          handleDateChange(event);
+                        }}
+
+                    />
+                </div>
+      
       <Divider
         style={{
           backgroundColor: "rgb(58, 127, 187)",

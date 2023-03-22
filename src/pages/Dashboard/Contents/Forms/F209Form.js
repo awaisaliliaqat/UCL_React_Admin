@@ -68,7 +68,7 @@ function TermRow (props) {
 			<Grid item xs={12} md={3}>
 				<Card style={{height:55}}>
 					<CardContent>
-						<Typography variant="body2" color="primary" style={{textAlign:"center", fontWeight:"bold"}}>
+						<Typography variant="body2" color="primary" style={{fontWeight:"bold"}}>
 							{label}
 						</Typography>
 					</CardContent>
@@ -139,6 +139,9 @@ class F209Form extends Component {
 			academicSessionMenuItems: [],
 			academicSessionId: "",
 			academicSessionIdError: "",
+			programmeGroupIdMenuItems: [],
+      programmeGroupId: "",
+      programmeGroupIdError: "",
 			rubricsMenuItems: [],
     }
 	}
@@ -179,7 +182,7 @@ class F209Form extends Component {
 						for (var i=0;	i<dataLength;	i++) {
 							if (data[i].isActive == "1") {
 								this.setState({academicSessionId: data[i].ID});
-								this.loadRubrics(data[i].ID);
+								this.loadProgrammeGroups(data[i].ID);
 							}
 						}
 						this.setState({ academicSessionMenuItems: data });
@@ -203,9 +206,52 @@ class F209Form extends Component {
 		this.setState({ isLoading: false });
 	};
 
-	loadRubrics = async (academicSessionId) => {
+	loadProgrammeGroups = async (AcademicSessionId) => {
+    this.setState({ isLoading: true });
+    let data = new FormData();
+    data.append("academicsSessionId", AcademicSessionId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C209CommonAcademicsSessionsOfferedProgrammesGroupView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ programmeGroupIdMenuItems: json.DATA });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadProgrammeGroups", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+	loadRubrics = async (academicSessionId, programmeGroupId) => {
 		let data =  new FormData();
 		data.append("academicSessionId", academicSessionId);
+		data.append("programmeGroupId", programmeGroupId);
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C209CommonAcademicSessionsRubricsView`;
 		await fetch(url, {
@@ -225,7 +271,12 @@ class F209Form extends Component {
 				(json) => {
 					if (json.CODE === 1) {
 						let data =  json.DATA || [];
-						this.setState({ rubricsMenuItems : data });
+						let G = data.length;
+						if(G==0){
+							this.handleOpenSnackbar(<span>Define session term for this academic session first.</span>,"error");
+						}else{
+							this.setState({ rubricsMenuItems : data });
+						}
 					} else {
 						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 					}
@@ -252,11 +303,18 @@ class F209Form extends Component {
 		let regex = "";
 		switch (name) {
 				case "academicSessionId":
+					this.setState({ 
+						programmeGroupIdMenuItems: [],
+						programmeGroupId: "",
+						rubricsMenuItems : [],
+					});
+					this.loadProgrammeGroups(value);
+				break;
+				case "programmeGroupId":
 					this.setState({ rubricsMenuItems : [] });
-					this.loadRubrics(value);
+					this.loadRubrics(this.state.academicSessionId, value);
 				break;
-		default:
-				break;
+			default:
 		}
 		this.setState({
 				[name]: value,
@@ -317,7 +375,7 @@ class F209Form extends Component {
 						if (json.CODE === 1) {
 								//alert(json.USER_MESSAGE);
 								this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-								this.loadRubrics(this.state.academicSessionId);
+								this.loadRubrics(this.state.academicSessionId, this.state.programmeGroupId);
 								// setTimeout(()=>{
 								// 		if(this.state.recordId!=0){
 								// 				window.location="#/dashboard/F209Reports";
@@ -353,9 +411,6 @@ class F209Form extends Component {
 	componentDidMount() {
 		this.props.setDrawerOpen(false);
 		this.loadAcademicSession();
-		// if(this.state.recordId!=0){
-		
-		// }
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -397,7 +452,7 @@ class F209Form extends Component {
 							</Typography>
 						</Grid>
 						<TextField type="hidden" name="recordId" value={this.state.recordId}/>
-						<Grid item xs={12} md={12}>
+						<Grid item xs={12} md={6}>
 							<TextField
 								id="academicSessionId"
 								name="academicSessionId"
@@ -410,7 +465,7 @@ class F209Form extends Component {
 								required
 								fullWidth
 								select
-							>
+							> 
 								{this.state.academicSessionMenuItems.map((dt, i) => (
 									<MenuItem
 										key={"academicSessionMenuItems" + dt.ID}
@@ -421,6 +476,37 @@ class F209Form extends Component {
 								))}
 							</TextField>
 						</Grid>
+						<Grid item xs={12} md={6}>
+              <TextField
+                id="programmeGroupId"
+                name="programmeGroupId"
+                variant="outlined"
+                label="Programme Group"
+                onChange={this.onHandleChange}
+                value={this.state.programmeGroupId}
+                error={!!this.state.programmeGroupIdError}
+                helperText={this.state.programmeGroupIdError}
+                disabled={!this.state.academicSessionId}
+                required
+                fullWidth
+                select
+              >
+                {this.state.programmeGroupIdMenuItems ? (
+                  this.state.programmeGroupIdMenuItems.map((dt, i) => (
+                    <MenuItem
+                      key={"programmeGroupIdMenuItems" + dt.Id}
+                      value={dt.Id}
+                    >
+                      {dt.Label}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem>
+                    <CircularProgress size={24} />
+                  </MenuItem>
+                )}
+              </TextField>
+            </Grid>
 						{this.state.rubricsMenuItems.length > 0 ?
 							this.state.rubricsMenuItems.map( (headerRow, HeaderIndex) => 
 								<Fragment key={"HeaderRow"+HeaderIndex}>

@@ -80,6 +80,12 @@ const Attendances = (props) => {
             <Link style={{ textDecoration: 'none' }} to="/dashboard/teacher-attendance-report" target="_blank">
               <IconButton aria-label="View More">
                 <VisibilityIcon />
+                <Typography
+                      variant="subtitle2"
+                      style={{marginLeft: 10}}
+                    >
+                      View Attendance
+                    </Typography>
               </IconButton>
             </Link>
           </Tooltip>

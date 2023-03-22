@@ -126,7 +126,14 @@ const VirtulaClasses = (props) => {
               target="_blank"
             >
               <IconButton aria-label="View">
-                <VisibilityIcon />
+                <VisibilityIcon
+                />
+                <Typography
+                      variant="subtitle2"
+                      style={{marginLeft: 10}}
+                    >
+                      View Calendar
+                    </Typography>
               </IconButton>
             </Link>
           </Tooltip>

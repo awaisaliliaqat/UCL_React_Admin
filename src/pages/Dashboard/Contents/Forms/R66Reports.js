@@ -12,6 +12,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 class R66Reports extends Component {
   constructor(props) {
@@ -34,12 +35,25 @@ class R66Reports extends Component {
       programmeGroupId: "",
       programmeGroupIdError: "",
       programmeGroupsMenuItems: [],
+      programmeId: "",
+      programmeIdError: "",
+      programmeMenuItems: [],
       programId:"",
       programIdError:"",
-      programmeGroupId:"",
+      totalCourseStudent:"",
+      totalGroupStudent:"",
+      totalProgrammeStudent:"",
+      totalSchoolStudent:"",
       coursesMenuItems: [],
       courseId: "",
       courseIdError: "",
+      totalStudents:[],
+      academicSessionMenuItems: [],
+      academicSessionId: "",
+      academicSessionIdError: "",
+      pathwayMenuItems: [],
+      pathwayId: "",
+      pathwayIdError: "",
     };
   }
 
@@ -138,6 +152,94 @@ class R66Reports extends Component {
       );
     this.setState({isLoading: false});
   };
+  loadAcademicSessions = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonAcademicSessionsViewV2`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let array = json.DATA || [];
+            let arrayLength = array.length;
+            let res = array.find( (obj) => obj.isActive === 1 );
+            if(res){
+              this.setState({academicSessionId:res.ID});
+            }
+            this.setState({ academicSessionMenuItems: array });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadAcademicSessions", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  getProgrammes = async (programmeGroupId) => {
+    this.setState({isLoading: true});
+    let data = new FormData();
+    data.append("programmeGroupId", programmeGroupId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammesView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({programmeMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getCourse", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
 
   getCourse = async (programmeGroupId) => {
     this.setState({isLoading: true});
@@ -183,12 +285,61 @@ class R66Reports extends Component {
     this.setState({isLoading: false});
   };
 
+  loadPathway = async () => {
+    this.setState({isLoading: true});
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonUolEnrollmentPathwayView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({pathwayMenuItems: json.DATA || []});
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadPathway", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({isLoading: false});
+  };
+
   getData = async () => {
     this.setState({isLoading: true});
     let data = new FormData();
     data.append("schoolId", this.state.schoolId);
     data.append("programmeGroupId", this.state.programmeGroupId);
-    data.append("courseId", this.state.courseId);
+    data.append("programmeId", this.state.programmeId);
+    data.append("academicSessionId", this.state.academicSessionId);
+    if(this.state.courseId!=""){
+      data.append("courseId", this.state.courseId.id);
+    }else{
+      data.append("courseId", "0");
+    }
+    
+    data.append("pathwayId", this.state.pathwayId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsView`;
     await fetch(url, {
       method: "POST",
@@ -206,7 +357,13 @@ class R66Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({tableData: json.DATA || []});
+            this.setState({tableData: json.DATA[0].StudentsDetail || []});
+            let totalStudents = this.state.tableData.length;
+            this.setState({totalStudents: totalStudents});
+            this.state.totalCourseStudent= json.DATA[0].totalCourseStudent;
+            this.state.totalGroupStudent= json.DATA[0].totalGroupStudent;
+            this.state.totalSchoolStudent= json.DATA[0].totalSchoolStudent;
+            this.state.totalProgrammeStudent=json.DATA[0].totalProgrammeStudent;
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -233,7 +390,7 @@ class R66Reports extends Component {
     if( !this.isSchoolValid() ) {return;}
       if (this.state.isDownloadPdf === false) {
           this.setState({isDownloadPdf: true})
-          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsPdfDownload?schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${this.state.courseId}`;
+          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsPdfDownload?academicSessionId=${this.state.academicSessionId}&schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${this.state.courseId}&pathwayId=${this.state.pathwayId}`;
         //const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
           await fetch(url, {
               method: "GET",
@@ -252,7 +409,7 @@ class R66Reports extends Component {
                     if(json){
                       var csvURL = window.URL.createObjectURL(json);
                       var tempLink = document.createElement("a");
-                      tempLink.setAttribute("download", `Students_List.pdf`);
+                      tempLink.setAttribute("download", `Students_List.xlsx`);
                       tempLink.href = csvURL;
                       tempLink.click();
                       console.log("downloadPDFData:", json);
@@ -276,6 +433,25 @@ class R66Reports extends Component {
       }
   }
 
+  handleSetUserId = (value) => {
+    
+    this.setState({
+      courseId: value,
+      courseIdError: "",
+      tableData:[]
+    });
+
+    console.log("value",value);
+    if(value!=null && value!="undefined"){
+     
+      this.setState({userIds:value.id});
+    // }
+    }
+    
+   
+  };
+
+
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -286,6 +462,8 @@ class R66Reports extends Component {
               programmeGroupId: "",
               courseId:"",
               coursesMenuItems:[],
+              programmeMenuItems:[],
+              programmeId:"",
               tableData: []
             });
             this.getProgramGroup(value);
@@ -295,12 +473,25 @@ class R66Reports extends Component {
               programmeGroupId: "",
               courseId:"",
               coursesMenuItems:[],
-              tableData: []
+              tableData: [],
+              programmeMenuItems:[],
+              programmeId:""
             });
+            this.getProgrammes(value);
             this.getCourse(value);
+        break;
+        case "programmeId":
+            this.setState({
+              tableData: [],
+            });
+            
         break;
         case "courseId":
           this.setState({tableData: []});
+        break;
+        case "pathwayId":
+          this.setState({[name]: value});
+          console.log("pathway", value);
         break;
     default:
         break;
@@ -368,6 +559,8 @@ class R66Reports extends Component {
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.getSchools();
+    this.loadAcademicSessions();
+    this.loadPathway();
   }
 
   render() {
@@ -376,10 +569,12 @@ class R66Reports extends Component {
       { name: "SRNo", title: "SR#" },
       { name: "nucluesId", title: "NucleusID" },
       { name: "studentName", title: "Student\xa0Name" },
-      { name: "schoolLabel", title: "School" },
-      { name: "programmeGroupLabel", title: "Program Group" },
+      { name: "uolNumber", title: "Uol #" },
+      { name: "pathway", title: "Pathway" },
+      // { name: "schoolLabel", title: "School" },
+      // { name: "programmeGroupLabel", title: "Program Group" },
       //{ name: "dateOfAdmission", title: "Date of Admission" },
-      { name: "statusLabel", title: "Status" }
+      // { name: "statusLabel", title: "Status" }
     ];
 
     return (
@@ -416,7 +611,9 @@ class R66Reports extends Component {
               </Tooltip> 
               */}
               Students List
+              <br/>
             </Typography>
+            
             <div style={{ float: "right" }}>
               {/* 
               <Tooltip title="Search Bar">
@@ -427,6 +624,7 @@ class R66Reports extends Component {
                   </IconButton>
               </Tooltip> 
               */}
+              
               <Tooltip title="Table Filter">
                 <IconButton
                   style={{ marginLeft: "-10px" }}
@@ -435,8 +633,10 @@ class R66Reports extends Component {
                   <FilterIcon fontSize="default" color="primary" />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Export PDF">
+              {this.state.programmeGroupId ?
+              <Tooltip title="Export PDF" >
                 {this.state.isDownloadPdf ?
+
                   <CircularProgress 
                     size={14}
                     style={{cursor: `${this.state.isDownloadPdf ? 'wait' : 'pointer'}`}}
@@ -444,8 +644,9 @@ class R66Reports extends Component {
                   :
                   <img 
                     alt="" 
-                    src={PDFIcon} 
+                    src={ExcelIcon} 
                     onClick={() => this.downloadPDFData()} 
+                    disabled="false"
                     style = {{
                       height: 22, 
                       width: 22,
@@ -455,6 +656,8 @@ class R66Reports extends Component {
                   />
                 }
               </Tooltip> 
+              :""
+            }
             </div>
           </div>
           <Divider
@@ -466,11 +669,44 @@ class R66Reports extends Component {
           <br/>
           <Grid 
             container 
-            justify="center"
-            alignItems="center"
+            justify="left"
+            alignItems="left"
             spacing={2}
           >
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={2}>
+              <TextField
+                id="academicSessionId"
+                name="academicSessionId"
+                variant="outlined"
+                label="Academic Session"
+                fullWidth
+                select
+                onChange={this.onHandleChange}
+                value={this.state.academicSessionId}
+                error={!!this.state.academicSessionIdError}
+                helperText={this.state.academicSessionIdError ? this.state.academicSessionIdError : " "}
+                // disabled={!this.state.schoolId}
+              >
+                {this.state.academicSessionMenuItems && !this.state.isLoading ? 
+                  this.state.academicSessionMenuItems.map((dt, i) => (
+                    <MenuItem
+                      key={"academicSessionMenuItems"+dt.ID}
+                      value={dt.ID}
+                    >
+                      {dt.Label}
+                    </MenuItem>
+                  ))
+                :
+                  <Grid 
+                    container 
+                    justify="center"
+                  >
+                    <CircularProgress />
+                  </Grid>
+                }
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={2}>
               <TextField
                 id="schoolId"
                 name="schoolId"
@@ -502,7 +738,7 @@ class R66Reports extends Component {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={2}>
               <TextField
                 id="programmeGroupId"
                 name="programmeGroupId"
@@ -535,59 +771,226 @@ class R66Reports extends Component {
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={2}>
               <TextField
-                id="courseId"
-                name="courseId"
+                id="programmeId"
+                name="programmeId"
                 variant="outlined"
-                label="Course"
-                onChange={this.onHandleChange}
-                value={this.state.courseId}
-                error={!!this.state.courseIdError}
-                helperText={this.state.courseIdError ? this.state.courseIdError : " "}
+                label="Programme "
                 fullWidth
                 select
+                onChange={this.onHandleChange}
+                value={this.state.programmeId}
+                error={!!this.state.programmeIdError}
+                helperText={this.state.programmeIdError ? this.state.programmeIdError : " "}
+                disabled={!this.state.programmeGroupId}
               >
-                {this.state.coursesMenuItems && !this.state.isLoading ? 
-                  this.state.coursesMenuItems.map((dt, i) => (
+                {this.state.programmeMenuItems && !this.state.isLoading ? 
+                  this.state.programmeMenuItems.map((dt, i) => (
                     <MenuItem
-                      key={"coursesMenuItems"+dt.id}
-                      value={dt.id}
+                      key={"programmeMenuItems"+dt.ID}
+                      value={dt.ID}
                     >
-                      {dt.label}
+                      {dt.Label}
                     </MenuItem>
                   ))
                 :
                   <Grid 
                     container 
-                    justify="center">
-                      <CircularProgress />
-                    </Grid>
+                    justify="center"
+                  >
+                    <CircularProgress />
+                  </Grid>
                 }
               </TextField>
             </Grid>
-            <Grid item xs={12} md={1}>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={this.state.isLoading || !this.state.schoolId}
-                onClick={() => this.handleGetData()}
-                style={{width:"100%", height:54, marginBottom:24}}
-              > 
-                {this.state.isLoading ? 
-                    <CircularProgress style={{color:'white'}} size={36}/>
-                    : 
-                    "Search"
-                }
-              </Button>
-            </Grid>
+              {/* <Grid item xs={12} md={3}>
+                <TextField
+                  id="courseId"
+                  name="courseId"
+                  variant="outlined"
+                  label="Course"
+                  onChange={this.onHandleChange}
+                  value={this.state.courseId}
+                  error={!!this.state.courseIdError}
+                  helperText={this.state.courseIdError ? this.state.courseIdError : " "}
+                  fullWidth
+                  select
+                >
+                  {this.state.coursesMenuItems && !this.state.isLoading ? 
+                    this.state.coursesMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"coursesMenuItems"+dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))
+                  :
+                    <Grid 
+                      container 
+                      justify="center">
+                        <CircularProgress />
+                      </Grid>
+                  }
+                </TextField>
+              </Grid> */}
+
+              
+              <Grid item xs={12} md={3}>
+                <Autocomplete
+
+                  fullWidth
+                  id="courseId"
+                  options={this.state.coursesMenuItems}
+                  value={this.state.courseId}
+                  onChange={(event, value) =>
+                    this.handleSetUserId(value)
+                  }
+                  disabled={this.state.isEditMode}
+                  // disableCloseOnSelect
+                  getOptionLabel={(option) => option.label}
+                  
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Course"
+                      placeholder="Search and Select"
+                      error={!!this.state.courseIdError}
+                      helperText={this.state.courseIdError}
+                    />
+                  )}
+                />
+                <TextField type="hidden" name="userId" value={this.state.userIds}/>
+              </Grid>
+              
+             
+           
+           
           </Grid>
+          <Grid
+            container 
+            justify="left"
+            alignItems="left"
+            spacing={2}
+          >
+           
+              <Grid item xs={12} md={2}>
+                <TextField
+                  id="pathwayId"
+                  name="pathwayId"
+                  variant="outlined"
+                  label="Pathway"
+                  onChange={this.onHandleChange}
+                  value={this.state.pathwayId}
+                  disabled={!this.state.schoolId}
+                  error={!!this.state.pathwayIdError}
+                  helperText={this.state.pathwayIdError ? this.state.pathwayIdError : " "}
+                  fullWidth
+                  select
+                >
+                  {this.state.pathwayMenuItems && !this.state.isLoading ? 
+                    this.state.pathwayMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"pathwayMenuItems"+dt.id}
+                        value={dt.id}
+                      >
+                        {dt.label}
+                      </MenuItem>
+                    ))
+                  :
+                    <Grid 
+                      container 
+                      justify="center">
+                        <CircularProgress />
+                      </Grid>
+                  }
+                </TextField>
+              </Grid>
+              <Grid item xs={12} md={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={this.state.isLoading ||(!this.state.programmeGroupId)}
+                  onClick={() => this.handleGetData()}
+                  style={{width:"100%", height:54, marginBottom:24}}
+                > 
+                  {this.state.isLoading ? 
+                      <CircularProgress style={{color:'white'}} size={36}/>
+                      : 
+                      "Search"
+                  }
+                </Button>
+              </Grid>
+          </Grid>
+          {this.state.schoolId? 
+              <Typography
+                style={{
+                   color: "#1d5f98",
+                   fontWeight: 600,
+                   textTransform: "capitalize",
+                   textAlign: "left"
+                       }}
+                   variant="subtitle1"
+               >
+                 {this.state.totalSchoolStudent}
+               </Typography>
+               :
+               ""
+          }
+          {this.state.totalGroupStudent!="Total Students OF 0"? 
+              <Typography
+                style={{
+                   color: "#1d5f98",
+                   fontWeight: 600,
+                   textTransform: "capitalize",
+                   textAlign: "left"
+                       }}
+                   variant="subtitle1"
+               >
+                 {this.state.totalGroupStudent}
+               </Typography>
+               :
+               ""
+          }
+          {this.state.totalProgrammeStudent!="Total Students OF 0"? 
+              <Typography
+                style={{
+                   color: "#1d5f98",
+                   fontWeight: 600,
+                   textTransform: "capitalize",
+                   textAlign: "left"
+                       }}
+                   variant="subtitle1"
+               >
+                 {this.state.totalProgrammeStudent}
+               </Typography>
+               :
+               ""
+          }
+          {this.state.totalCourseStudent!="Total Students OF 0"? 
+              <Typography
+                style={{
+                   color: "#1d5f98",
+                   fontWeight: 600,
+                   textTransform: "capitalize",
+                   textAlign: "left"
+                       }}
+                   variant="subtitle1"
+               >
+                 {this.state.totalCourseStudent}
+               </Typography>
+               :
+               ""
+          }
           <Divider
             style={{
               backgroundColor: "rgb(58, 127, 187)",
               opacity: "0.3",
             }}
           />
+          
           {this.state.tableData && !this.state.isLoading ? (
             <R66ReportsTableComponent
               data={this.state.tableData}

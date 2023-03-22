@@ -190,7 +190,7 @@ class DisplayAdmissionApplications extends Component {
     render() {
         const { classes } = this.props;
         const { tableData } = this.state;
-        const { sessionLabel = "", monthName="", courseLabel="", totalStudents="", noOfDays = [], studentNamesList=[] } = tableData;
+        const { sessionLabel = "", monthName="", courseLabel="", totalStudents="", sectionLabel="", sectionTeacher="",noOfDays = [], studentNamesList=[] } = tableData;
         let noOfDays1 = [1,2,3,4,5,6,7,8,9,10,11];
         return (
             <Fragment>
@@ -206,20 +206,20 @@ class DisplayAdmissionApplications extends Component {
 									className={classes.mainDiv}
 								>
                     <IconButton onClick={() => window.close()} aria-label="close" className={classes.closeButton}>
-                        <CloseIcon color="secondary"/>
+                      <CloseIcon color="secondary"/>
                     </IconButton>
                     <div className={classes.headerContainer}>
-                        <div className={classes.titleContainer}>
-                            <span className={classes.title}>University College Lahore&emsp;&emsp;&emsp;&emsp;{sessionLabel}</span>
-														<br/>
-														<span className={classes.subTitle}>Attandance Sheet for the Month of&nbsp;&nbsp;{monthName}</span>
-														<br/>
-                            <span className={classes.subTitle2}>SUBJECT :&emsp;&emsp;{courseLabel}</span><span className={classes.subTitle2} style={{float:"right"}}>&nbsp;</span>
-														<br/>
-														<span className={classes.subTitle2}>LECTUREGROUP :&emsp;&emsp;1</span>
-														<br/>
-                            <span className={classes.subTitle2}>TEACHERS NAME :&emsp;&emsp;</span><span className={classes.subTitle2} style={{float:"right"}}>TOTAL&nbsp;STRENGTH :&nbsp;{totalStudents}</span>
-                        </div>
+                      <div className={classes.titleContainer}>
+                        <span className={classes.title}>Universal College Lahore&emsp;&emsp;&emsp;&emsp;{sessionLabel}</span>
+                        <br/>
+                        <span className={classes.subTitle}>Attandance Sheet for the Month of&nbsp;&nbsp;{monthName}</span>
+                        <br/>
+                        <span className={classes.subTitle2}>SUBJECT :&emsp;{courseLabel}</span><span className={classes.subTitle2} style={{float:"right"}}>&nbsp;</span>
+                        <br/>
+                        <span className={classes.subTitle2}>LECTUREGROUP :&emsp;{sectionLabel}</span>
+                        <br/>
+                        <span className={classes.subTitle2}>TEACHERS NAME :&emsp;{sectionTeacher}</span><span className={classes.subTitle2} style={{float:"right"}}>TOTAL&nbsp;STRENGTH :&nbsp;{totalStudents}</span>
+                      </div>
                     </div>
                     <div className={classes.flexColumn}>
 											<br/>

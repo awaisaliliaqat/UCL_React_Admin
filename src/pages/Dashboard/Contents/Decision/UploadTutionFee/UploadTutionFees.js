@@ -16,19 +16,25 @@ class DocumentRequest extends Component {
             documentData: [],
             isLoginMenu: false,
             isReload: false,
+            academicSessionMenuItems: [],
+            academicSessionId: 0,
+            academicSessionIdError: ""
 
         }
     }
 
     componentDidMount() {
-        this.getData();
+        this.loadAcademicSessions();
+        
+        
     }
 
-    getData = async () => {
+    getData = async (academicsSessionIdd) => {
         this.setState({
             isLoading: true
         });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C11FinanceStudentsLegacyFeeVouchersDocumentsView`;
+         
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C11FinanceStudentsLegacyFeeVouchersDocumentsView?academicSessionId=${academicsSessionIdd}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -71,6 +77,13 @@ class DocumentRequest extends Component {
 
 
     }
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+          isOpenSnackbar: true,
+          snackbarMessage: msg,
+          snackbarSeverity: severity,
+        });
+      };
 
     deleteFile = (id) => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C01AdmissionsProspectApplicationDocumentsDelete?documentTypeId=${id}`;
@@ -210,10 +223,64 @@ class DocumentRequest extends Component {
         }
 
     }
+    onHandleChange = e => {
+        const { name, value } = e.target;
+        this.setState({
+            [name]: value
+        })
+        this.getData(value);
+    }
+    loadAcademicSessions = async () => {
+        this.setState({ isLoading: true });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C11CommonAcademicSessionsView`;
+        await fetch(url, {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+          }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+          })
+          .then(
+            (json) => {
+              if (json.CODE === 1) {
+                let array = json.DATA || [];
+                let arrayLength = array.length;
+                let res = array.find( (obj) => obj.isActive === 1 );
+                console.log("RES",res);
+                if(res){
+                  this.setState({academicSessionId:res.ID});
+                  this.getData(res.ID);
+                 
+                }
+                this.setState({ academicSessionMenuItems: array });
+                
+                
+              } else {
+                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+              }
+            },
+            (error) => {
+              if (error.status == 401) {
+                this.setState({
+                  isLoginMenu: true,
+                  isReload: false,
+                });
+              } else {
+                console.log(error);
+                this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+              }
+            }
+          );
+        this.setState({ isLoading: false });
+      };
 
     handleSubmit = async (e) => {
         console.log(e);
-
         e.preventDefault();
         const data = new FormData(e.target);
         this.setState({
@@ -236,7 +303,7 @@ class DocumentRequest extends Component {
             .then((result) => {
                 if (result.CODE === 1) {
                     alert('File Uploaded');
-                    this.getData();
+                    this.getData(this.state.academicSessionId);
                 } else {
                     alert(result.CODE + ":" + result.USER_MESSAGE + "\n" + result.SYSTEM_MESSAGE);
                 }
@@ -277,8 +344,10 @@ class DocumentRequest extends Component {
                         backgroundColor: 'rgb(58, 127, 187)',
                         opacity: '0.3',
                     }} />
+                   
                     <UploadTutionFessAction values={this.state} handleUploadButtonClick={() => this.handleUploadButtonClick()}
                         handleFileChange={e => this.handleFileChange(e)} handleSubmit={e => this.handleSubmit(e)}
+                        handleAcademicSessionChange={e => this.onHandleChange(e)} onHandleChange={e => this.onHandleChange(e)}
                         downloadFile={name => this.DownloadFile(name)} deleteFile={id => this.deleteFile(id)} />
                 </div>
             </Fragment>

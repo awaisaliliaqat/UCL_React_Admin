@@ -147,12 +147,14 @@ class F30FormPopupComponent extends Component {
       preCourseMenuItems: [],
       preCourses: {},
       courseRowDataArray: [],
+      
     };
   }
 
-  loadData = async (studentId) => {
+  loadData = async (studentId,academicSessionId) => {
     const data = new FormData();
     data.append("studentId", studentId);
+    data.append("academicSessionId", academicSessionId);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C30CommonAcademicsCoursesStudentsAchievementsView`;
     await fetch(url, {
@@ -205,7 +207,7 @@ class F30FormPopupComponent extends Component {
   };
 
   handleClickOpen = () => {
-    this.loadData(this.props.studentId);
+    this.loadData(this.props.studentId,this.props.academicSessionId);
     this.setState({ popupBoxOpen: true });
   };
 
@@ -380,7 +382,7 @@ class F30FormPopupComponent extends Component {
       preModuleMenuItems: this.props.preModuleMenuItems,
     });
     if (this.state.recordId != 0) {
-      this.loadData(this.state.recordId);
+      this.loadData(this.state.recordId,this.props.academicSessionId);
     }
   }
 

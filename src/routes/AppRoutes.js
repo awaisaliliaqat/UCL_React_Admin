@@ -15,7 +15,15 @@ import DisplayStudentProfile from '../pages/Dashboard/Contents/Reports/StudentPr
 import R59ReportsAttendanceSheet from '../pages/Dashboard/Contents/Forms/R59ReportsAttendanceSheet';
 import R68ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R68ReportsAttendanceRecordSheet';
 import R71ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R71ReportsAttendanceRecordSheet';
+import R74ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R74ReportsAttendanceRecordSheet';
 import R210StudentProgressReport from '../pages/Dashboard/Contents/Forms/R210StudentProgressReport';
+import R217FeedbackReports from '../pages/Dashboard/Contents/Forms/R217FeedbackReports';
+import R216Reports from '../pages/Dashboard/Contents/Forms/R216Reports';
+import R218StudentProgressReport from '../pages/Dashboard/Contents/Forms/R218StudentProgressReport';
+import R232StudentProgressReport from '../pages/Dashboard/Contents/Forms/R232StudentProgressReport';
+import R220StudentProgressReport from '../pages/Dashboard/Contents/Forms/R220StudentProgressReport';
+import PayrollDashboard from "../pages/PayrollModule/PayrollDashboard";
+
 
 const CheckLogin = () => {
   const uclAdminToken = localStorage.getItem("uclAdminToken");
@@ -41,7 +49,14 @@ const AppRoute = () => {
             <PrivateRoutes exact path="/R59ReportsAttendanceSheet/:id" component={R59ReportsAttendanceSheet} />
             <PrivateRoutes exact path="/R68ReportsAttendanceRecordSheet/:id" component={R68ReportsAttendanceRecordSheet} />
             <PrivateRoutes exact path="/R71ReportsAttendanceRecordSheet/:id" component={R71ReportsAttendanceRecordSheet} />
+            <PrivateRoutes exact path="/R74ReportsAttendanceRecordSheet/:id" component={R74ReportsAttendanceRecordSheet} />
             <PrivateRoutes exact path="/R210StudentProgressReport/:id" component={R210StudentProgressReport} />
+            <PrivateRoutes exact path="/R216Reports/:id" component={R216Reports} />
+            <PrivateRoutes exact path="/R217FeedbackReports/:id" component={R217FeedbackReports} />
+            <PrivateRoutes exact path="/R218StudentProgressReport/:id" component={R218StudentProgressReport} />
+            <PrivateRoutes exact path="/R220StudentProgressReport/:id" component={R220StudentProgressReport} />
+            <PrivateRoutes exact path="/R232StudentProgressReport/:id" component={R232StudentProgressReport} />
+            <PrivateRoutes exact path="/PayrollDashboard" component={PayrollDashboard} />
             <PrivateRoutes exact path="*" component={Dashboard} />
           </Switch>
         </Suspense>

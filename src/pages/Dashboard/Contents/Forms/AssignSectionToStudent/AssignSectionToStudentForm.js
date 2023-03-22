@@ -56,7 +56,8 @@ class AssignSectionToStudentForm extends Component {
             isOpenSnackbar: false,
             snackbarMessage: "",
             snackbarSeverity: "",
-            isDownloadExcel: false
+            isDownloadExcel: false,
+            totalStudents:[]
         }
     }
 
@@ -264,6 +265,8 @@ class AssignSectionToStudentForm extends Component {
                         this.setState({
                             studentsData: data,
                         });
+                        let totalStudents = this.state.studentsData.length;
+                        this.setState({totalStudents: totalStudents});
                     } else {
                         this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
                     }
@@ -440,7 +443,7 @@ class AssignSectionToStudentForm extends Component {
         }
     }
     onFormSubmit = async (e) => {
-        e.preventDefault();
+         e.preventDefault();
         const data = new FormData(e.target);
         this.setState({ isLoading: true });
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C28CommonAcademicsSectionsStudentsSave`;
@@ -651,7 +654,7 @@ class AssignSectionToStudentForm extends Component {
                                 })}
                             </TextField>
                         </Grid>
-
+                              
                         <Grid item xs={4}>
                             <TextField
                                 id="programmeId"
@@ -762,6 +765,23 @@ class AssignSectionToStudentForm extends Component {
                         }}
                     >
                         <Grid item xs={4}>
+                        {this.state.totalStudents>1? 
+                         <Typography
+                           style={{
+                              color: "#1d5f98",
+                              fontWeight: 600,
+                              textTransform: "capitalize",
+                              textAlign: "left"
+                                  }}
+                              variant="h6"
+                          >
+                              Total Students: {this.state.totalStudents}
+                          </Typography>
+                          :
+                          ""
+                          }
+                        </Grid>
+                        <Grid item xs={4}>
                             <TextField
                                 id="assigneLectureSectionId"
                                 name="assigneLectureSectionId"
@@ -868,6 +888,7 @@ class AssignSectionToStudentForm extends Component {
                     <input type="hidden" name="courseId" value={this.state.offeredCoursesId} />
                     <input type="hidden" name="lectureSectionId" value={this.state.assigneLectureSectionId} />
                     <input type="hidden" name="tutorialSectionId" value={this.state.assigneTutorialSectionId} />
+                    <input type="hidden" name="sessionId" value={this.state.sessionId} />
                     {this.state.studentsData.map(item => {
                         if (item.isChecked) {
                             return (

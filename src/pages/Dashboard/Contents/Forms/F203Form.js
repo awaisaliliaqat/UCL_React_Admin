@@ -110,7 +110,7 @@ function TableRowWithData(props) {
   );
 }
 
-class F201Form extends Component {
+class F203Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -128,6 +128,9 @@ class F201Form extends Component {
       academicSessionIdMenuItems: [],
       academicSessionId: "",
       academicSessionIdError: "",
+      programmeGroupIdMenuItems: [],
+      programmeGroupId: "",
+      programmeGroupIdError: "",
       sectionMenuItems: [],
       sectionId: "",
       sectionIdError: "",
@@ -182,6 +185,7 @@ class F201Form extends Component {
             for (let i=0; i<arrayLength; i++) {
               if (array[i].isActive == "1") {
                 this.setState({academicSessionId:array[i].ID});
+                this.loadProgrammeGroups(array[i].ID);
                 this.getTerms(array[i].ID);
               }
             }
@@ -195,6 +199,48 @@ class F201Form extends Component {
             this.setState({
               isLoginMenu: true,
               isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  loadProgrammeGroups = async (academicSessionId) => {
+    this.setState({ isLoading: true });
+    let data = new FormData();
+    data.append("academicsSessionId", academicSessionId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSessionsOfferedProgrammesGroupView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ programmeGroupIdMenuItems: json.DATA });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadProgrammeGroups", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
             });
           } else {
             console.log(error);
@@ -247,10 +293,11 @@ class F201Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  getTotalNoOfAssessment = async (academicsSessionId, termId) => {
+  getTotalNoOfAssessment = async (academicsSessionId, programmeGroupId, termId) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
+    data.append("programmeGroupId", programmeGroupId);
     data.append("termId", termId);
     data.append("rubricId", 4);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSessionsEvaluationsTotalNoOfAssessmentView`;
@@ -295,11 +342,12 @@ class F201Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  getSections = async (AcademicSessionId) => {
+  getSections = async (academicsSessionId=0, programmeGroupId=0) => {
     this.setState({ isLoading: true });
     let data = new FormData();
-    data.append("academicsSessionId", AcademicSessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsTeacherSectionsView`;
+    data.append("academicsSessionId", academicsSessionId);
+    data.append("programmeGroupId", programmeGroupId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C203CommonAcademicsSectionsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -337,7 +385,7 @@ class F201Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  getMaxAssessmentNo = async (academicsSessionId, termId, sectionId) => {
+  getMaxAssessmentNo = async (academicsSessionId, programmeGroupId, termId, sectionId) => {
     this.setState({ 
       isLoading: true,
       isLoadingData: false
@@ -345,6 +393,7 @@ class F201Form extends Component {
     this.setState({  });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
+    data.append("programmeGroupId", programmeGroupId);
     data.append("termId", termId);
     data.append("sectionId", sectionId);
     data.append("examTypeId", 2);
@@ -373,7 +422,7 @@ class F201Form extends Component {
                 this.loadData(sectionId);
                 this.setState({isLoadingData: true});
               }else{
-                this.handleOpenSnackbar(<span>All Assessments complated.</span>,"error");
+                this.handleOpenSnackbar(<span>All assessments complete.</span>,"error");
               }
               this.setState({assessmentNo: data[0].maxAssessmentNo});
             }
@@ -403,6 +452,7 @@ class F201Form extends Component {
     const data = new FormData();
     data.append("id", id);
     data.append("academicSessionId", this.state.academicSessionId);
+    data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("termId", this.state.termId);
     data.append("sectionId", sectionId);
     data.append("examTypeId", 2);
@@ -427,9 +477,10 @@ class F201Form extends Component {
             if (json.DATA.length) {
               let data =  json.DATA[0] || [];
               if(data && id!=0){
-                this.getTotalNoOfAssessment(data.academicSessionId, data.sessionTermId);
+                this.getTotalNoOfAssessment(data.academicSessionId, data.programmeGroupId, data.sessionTermId);
                 this.setState({
                   academicSessionId: data.academicSessionId,
+                  programmeGroupId : data.programmeGroupId,
                   termId: data.sessionTermId,
                   sectionId: data.sectionId,
                   assessmentNo: data.assessmentNo,
@@ -471,6 +522,18 @@ class F201Form extends Component {
       isValid = false;
     } else {
       this.setState({ academicSessionIdError: "" });
+    }
+    return isValid;
+  };
+
+  isProgrammeGroupValid = () => {
+    let isValid = true;
+    if (!this.state.programmeGroupId) {
+      this.setState({ programmeGroupIdError: "Please select programme group." });
+      document.getElementById("programmeGroupId").focus();
+      isValid = false;
+    } else {
+      this.setState({ programmeGroupIdError: "" });
     }
     return isValid;
   };
@@ -536,7 +599,19 @@ class F201Form extends Component {
           sectionId:"",
           tableData:[]
         });
+        this.loadProgrammeGroups(value);
         this.getTerms(value);
+      break;
+      case "programmeGroupId":
+        this.setState({
+          termId: "",
+          totalNoOfAssessment:"",
+          assessmentNo:"",
+          sectionMenuItems: [],
+          sectionId:"",
+          tableData:[]
+        });
+        this.getSections(this.state.academicSessionId, value);
       break;
       case "termId":
         this.setState({
@@ -545,7 +620,7 @@ class F201Form extends Component {
           sectionId:"",
           tableData:[]
         });
-        this.getTotalNoOfAssessment(this.state.academicSessionId, value);
+        this.getTotalNoOfAssessment(this.state.academicSessionId, this.state.programmeGroupId, value);
       break;
       case "sectionId":
         this.setState({
@@ -553,7 +628,7 @@ class F201Form extends Component {
           sectionId:"",
           tableData:[]
         });
-        this.getMaxAssessmentNo(this.state.academicSessionId, this.state.termId, value);
+        this.getMaxAssessmentNo(this.state.academicSessionId, this.state.programmeGroupId, this.state.termId, value);
       break;
       default:
     }
@@ -570,6 +645,7 @@ class F201Form extends Component {
   onFormSubmit = async () => {
     if (
       !this.isAcademicSessionValid()
+      || !this.isProgrammeGroupValid()
       || !this.isTermValid()
       || !this.isSectionValid()
       || !this.isTableDataValid()
@@ -627,7 +703,6 @@ class F201Form extends Component {
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.getAcademicSessions();
-    this.getSections();
     if (this.state.recordId != 0) {
       this.setState({isEditMode:true});
       this.loadData(0,this.state.recordId);
@@ -683,7 +758,7 @@ class F201Form extends Component {
             >
               <TextField type="hidden" name="assessmentNo" value={this.state.assessmentNo}/>
               <TextField type="hidden" name="examTypeId" defaultValue={2}/>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
                 <TextField
                   id="academicSessionId"
                   name="academicSessionId"
@@ -710,6 +785,37 @@ class F201Form extends Component {
               </Grid>
               <Grid item xs={12} md={3}>
                 <TextField
+                  id="programmeGroupId"
+                  name="programmeGroupId"
+                  variant="outlined"
+                  label="Programme Group"
+                  onChange={this.onHandleChange}
+                  value={this.state.programmeGroupId}
+                  error={!!this.state.programmeGroupIdError}
+                  helperText={this.state.programmeGroupIdError}
+                  disabled={!this.state.academicSessionId || this.state.isEditMode}
+                  required
+                  fullWidth
+                  select
+                >
+                  {this.state.programmeGroupIdMenuItems ? (
+                    this.state.programmeGroupIdMenuItems.map((dt, i) => (
+                      <MenuItem
+                        key={"programmeGroupIdMenuItems" + dt.Id}
+                        value={dt.Id}
+                      >
+                        {dt.Label}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem>
+                      <CircularProgress size={24} />
+                    </MenuItem>
+                  )}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <TextField
                   id="termId"
                   name="termId"
                   variant="outlined"
@@ -718,7 +824,7 @@ class F201Form extends Component {
                   value={this.state.termId}
                   error={!!this.state.termIdError}
                   helperText={this.state.termIdError}
-                  disabled={!this.state.academicSessionId || this.state.isEditMode}
+                  disabled={!this.state.academicSessionId || !this.state.programmeGroupId || this.state.isEditMode}
                   required
                   fullWidth
                   select
@@ -749,7 +855,7 @@ class F201Form extends Component {
                   value={this.state.sectionId}
                   error={!!this.state.sectionIdError}
                   helperText={this.state.sectionIdError}
-                  disabled={!this.state.academicSessionId || !this.state.termId || this.state.isEditMode}
+                  disabled={!this.state.academicSessionId || !this.state.programmeGroupId || !this.state.termId || this.state.isEditMode}
                   required
                   fullWidth
                   select
@@ -770,7 +876,7 @@ class F201Form extends Component {
                   )}
                 </TextField>
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
                 <Card>
                   <CardContent style={{height:14}}>
                     <Typography 
@@ -854,4 +960,4 @@ class F201Form extends Component {
     );
   }
 }
-export default withStyles(styles)(F201Form);
+export default withStyles(styles)(F203Form);

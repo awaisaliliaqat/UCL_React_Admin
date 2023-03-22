@@ -113,35 +113,81 @@ class F204Form extends Component {
       sectionIdError:"",
       sectionIdMenuItems:[],
       timeSlotMenuItems:[
-        {id:"00:00:00",label:"12:00 AM"},
-        {id:"01:00:00",label:"01:00 AM"},
-        {id:"02:00:00",label:"02:00 AM"},
-        {id:"03:00:00",label:"03:00 AM"},
-        {id:"04:00:00",label:"04:00 AM"},
-        {id:"05:00:00",label:"05:00 AM"},
+        // {id:"00:00:00",label:"12:00 AM"},
+        // {id:"01:00:00",label:"01:00 AM"},
+        // {id:"02:00:00",label:"02:00 AM"},
+        // {id:"03:00:00",label:"03:00 AM"},
+        // {id:"04:00:00",label:"04:00 AM"},
+        // {id:"05:00:00",label:"05:00 AM"},
         {id:"06:00:00",label:"06:00 AM"},
+        {id:"06:15:00",label:"06:15 AM"},
+        {id:"06:30:00",label:"06:30 AM"},
+        {id:"06:45:00",label:"06:45 AM"},
         {id:"07:00:00",label:"07:00 AM"},
+        {id:"07:15:00",label:"07:15 AM"},
+        {id:"07:30:00",label:"07:30 AM"},
+        {id:"07:45:00",label:"07:45 AM"},
         {id:"08:00:00",label:"08:00 AM"},
+        {id:"08:15:00",label:"08:15 AM"},
+        {id:"08:30:00",label:"08:30 AM"},
+        {id:"08:45:00",label:"08:45 AM"},
         {id:"09:00:00",label:"09:00 AM"},
+        {id:"09:15:00",label:"09:15 AM"},
+        {id:"09:30:00",label:"09:30 AM"},
+        {id:"09:45:00",label:"09:45 AM"},
         {id:"10:00:00",label:"10:00 AM"},
+        {id:"10:15:00",label:"10:15 AM"},
+        {id:"10:30:00",label:"10:30 AM"},
+        {id:"10:45:00",label:"10:45 AM"},
         {id:"11:00:00",label:"11:00 AM"},
+        {id:"11:15:00",label:"11:15 AM"},
+        {id:"11:30:00",label:"11:30 AM"},
+        {id:"11:45:00",label:"11:45 AM"},
         {id:"12:00:00",label:"12:00 PM"},
+        {id:"12:15:00",label:"12:15 PM"},
+        {id:"12:30:00",label:"12:30 PM"},
+        {id:"12:45:00",label:"12:45 PM"},
         {id:"13:00:00",label:"01:00 PM"},
+        {id:"13:15:00",label:"01:15 PM"},
+        {id:"13:30:00",label:"01:30 PM"},
+        {id:"13:45:00",label:"01:45 PM"},
         {id:"14:00:00",label:"02:00 PM"},
+        {id:"14:15:00",label:"02:15 PM"},
+        {id:"14:30:00",label:"02:30 PM"},
+        {id:"14:45:00",label:"02:45 PM"},
         {id:"15:00:00",label:"03:00 PM"},
+        {id:"15:15:00",label:"03:15 PM"},
+        {id:"15:30:00",label:"03:30 PM"},
+        {id:"15:45:00",label:"03:45 PM"},
         {id:"16:00:00",label:"04:00 PM"},
+        {id:"16:15:00",label:"04:15 PM"},
+        {id:"16:30:00",label:"04:30 PM"},
+        {id:"16:45:00",label:"04:45 PM"},
         {id:"17:00:00",label:"05:00 PM"},
+        {id:"17:15:00",label:"05:15 PM"},
+        {id:"17:30:00",label:"05:30 PM"},
+        {id:"17:45:00",label:"05:45 PM"},
         {id:"18:00:00",label:"06:00 PM"},
+        {id:"18:15:00",label:"06:15 PM"},
+        {id:"18:30:00",label:"06:30 PM"},
+        {id:"18:45:00",label:"06:45 PM"},
         {id:"19:00:00",label:"07:00 PM"},
+        {id:"19:15:00",label:"07:15 PM"},
+        {id:"19:30:00",label:"07:30 PM"},
+        {id:"19:45:00",label:"07:45 PM"},
         {id:"20:00:00",label:"08:00 PM"},
-        {id:"21:00:00",label:"09:00 PM"},
-        {id:"22:00:00",label:"10:00 PM"},
-        {id:"23:00:00",label:"11:00 PM"}
+        {id:"20:15:00",label:"08:15 PM"},
+        {id:"20:30:00",label:"08:30 PM"},
+        {id:"20:45:00",label:"08:45 PM"},
+        {id:"21:00:00",label:"09:00 PM"}
       ],
       startTime:"",
       startTimeError:"",
       endTime:"",
       endTimeError:"",
+      sessionTermMenuItems: [],
+      sessionTermId: "",
+      sessionTermIdError: "",
     };
   }
 
@@ -304,6 +350,49 @@ class F204Form extends Component {
           } else {
             console.log(error);
             this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+
+  loadTerms = async () => {
+    this.setState({ isLoading: true });
+    let data = new FormData();
+    
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lsm/C204CommonAcademicsSessionsTermsView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({sessionTermMenuItems: json.DATA || [] });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("getTerms", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
           }
         }
       );
@@ -481,6 +570,13 @@ class F204Form extends Component {
         this.setState({sectionId:""});
         this.getSectionsData(value);
         break;
+      case "sessionTermId":
+        let termMenuItems = this.state.sessionTermMenuItems;
+        // let res = termMenuItems.find((obj) => obj.id === value);
+        // if(res){
+        //   this.setState({endDate:res.endDate});
+        // }
+      break;  
       default:
         break;
     }
@@ -562,6 +658,7 @@ class F204Form extends Component {
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.getCoursesData();
+    this.loadTerms();
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
     }
@@ -621,6 +718,31 @@ class F204Form extends Component {
                 marginRight: 10,
               }}
             >
+              <Grid item xs={12} md={12}>
+              <TextField
+                id="sessionTermId"
+                name="sessionTermId"
+                variant="outlined"
+                label="Term"
+                onChange={this.onHandleChange}
+                value={this.state.sessionTermId}
+                error={!!this.state.sessionTermIdError}
+                helperText={this.state.sessionTermIdError}
+                // disabled={!this.state.academicSessionId || !this.state.programmeId}
+                required
+                fullWidth
+                select
+              >
+                {this.state.sessionTermMenuItems.map((dt, i) => (
+                  <MenuItem
+                    key={"sessionTermMenuItems"+ dt.termId}
+                    value={dt.termId}
+                  >
+                    {dt.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
                   id="courseId"
@@ -752,7 +874,7 @@ class F204Form extends Component {
                         label="End Date"
                         invalidDateMessage=""
                         disablePast
-                        minDate={this.getTomorrowDate()}
+                        //minDate={this.getTomorrowDate()}
                         placeholder=""
                         variant="inline"
                         inputVariant="outlined"

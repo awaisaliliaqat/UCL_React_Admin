@@ -1,6 +1,6 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
 import { useTheme } from "@material-ui/styles";
-import { numberExp } from "../../../../utils/regularExpression";
+import { numberExp,numberWithDecimalExp } from "../../../../utils/regularExpression";
 import {TextField, Grid, CircularProgress, Divider, Typography, Button, IconButton,
   Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, Card, 
   CardContent } from "@material-ui/core";
@@ -63,6 +63,9 @@ class F205FormPopupComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      sectionId:"",
+      studentId:"",
+      examId:0,
       recordId: 0,
       isLoading: false,
       isReload: false,
@@ -74,7 +77,7 @@ class F205FormPopupComponent extends Component {
       isReload: false,
       files: [],
       filesError: "",
-      obtainedMarks: "",
+      obtainedMarks: 0.0,
       obtainedMarksError: "",
       remarks:"",
       remarksError:"",
@@ -91,7 +94,7 @@ class F205FormPopupComponent extends Component {
     this.setState({
       files: [],
       filesError: "",
-      obtainedMarks: "",
+      obtainedMarks: 0.0,
       obtainedMarksError: "",
       remarks:"",
       remarksError:""
@@ -120,15 +123,18 @@ class F205FormPopupComponent extends Component {
     let regex = "";
     switch (name) {
         case "obtainedMarks":
-            regex = new RegExp(numberExp);
+            regex = new RegExp(numberWithDecimalExp);
+            console.log(regex);
             if (value && !regex.test(value)) {
+            
                 return;
             }
             break;
-    default:
+        default:
         break;
     }
     this.setState({
+
       [name]: value,
       [errName]: "",
     });
@@ -148,6 +154,7 @@ class F205FormPopupComponent extends Component {
 
   isobtainedMarksValid = () => {
     let isValid = true;
+    console.log(this.state.obtainedMarks);
     if (!this.state.obtainedMarks) {
       this.setState({ obtainedMarksError: "Please enter marks." });
       document.getElementById("obtainedMarks").focus();
@@ -316,6 +323,27 @@ class F205FormPopupComponent extends Component {
                   name="id"
                   defaultValue={this.props.recordId}
                 />
+                <TextField
+                  type="hidden"
+                  id="examId"
+                  name="examId"
+                  defaultValue={this.props.examId}
+                />
+                 <TextField
+                  type="hidden"
+                  id="sectionId"
+                  name="sectionId"
+                  defaultValue={this.props.sectionId}
+                />
+
+                <TextField
+                  type="hidden"
+                  id="studentId"
+                  name="studentId"
+                  defaultValue={this.props.studentId}
+                />
+
+
                 <Grid item xs={12} md={6}>
                   <MyDropzone files={this.state.files} onChange={event => this.handleFileChange(event)} disabled={this.state.uploadLoading} />
                   <div style={{textAlign:'left', marginTop:5, fontSize:"0.8rem"}}>
@@ -327,6 +355,7 @@ class F205FormPopupComponent extends Component {
                     id="obtainedMarks"
                     name="obtainedMarks"
                     label="Obtained Marks"
+                   // inputProps={{ }}
                     type="number"
                     length="10"
                     required

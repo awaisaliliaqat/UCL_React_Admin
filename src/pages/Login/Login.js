@@ -8,9 +8,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Copyright from '../../components/Copyrights/copyrights';
-import Background from '../../assets/Images/background.jpg';
-import Logo from '../../assets/Images/logo.png';
-import NavBar from '../../components/NavBar/NavBar';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -18,6 +15,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { Link } from 'react-router-dom';
 import BackgroundUcl from '../../assets/Images/bg_ucl2.gif';
 import NucleusLogo from '../../assets/Images/nUCLeus_logo.jpg';
+import ControlledDialog from '../../components/ControlledDialog/ControlledDialog';
 
 // const useStyles = makeStyles((theme) => ({
 //   root: {
@@ -137,6 +135,11 @@ const Login = () => {
   const [show, setShow] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [deactiveDialog, setDeactiveDialog] = React.useState({
+    open: false,
+    title: "",
+    content: ""
+  });
 
   const onFormSubmit = async e => {
     setError('');
@@ -153,14 +156,18 @@ const Login = () => {
       })
       .then(
         json => {
-          if (json.success === 1) {
+          if (json.success === 1 && json.isActive === 1) {
             window.localStorage.setItem("adminData", JSON.stringify(json));
             window.localStorage.setItem("uclAdminToken", json.jwttoken);
             window.localStorage.setItem("isViewDialog", 0);
             window.localStorage.setItem("userTypeId", json.userTypeId);
             window.location.replace("#/dashboard");
           } else {
-            setError('Invalid Email or Password');
+            setDeactiveDialog({
+              open: true,
+              title: "Account Deactivated",
+              content: json.deactiveMessage
+            })
           }
         },
         error => {
@@ -183,6 +190,7 @@ const Login = () => {
 
   return (
     <Fragment>
+      <ControlledDialog open={deactiveDialog.open} title={deactiveDialog.title} content={deactiveDialog.content} handleClose={() => setDeactiveDialog({ open: false, title: "", content: "" })} />
       <Grid container component="main" className={classes.root}>
         {/* <NavBar logo={Logo} title="University College London" /> */}
       
@@ -191,7 +199,7 @@ const Login = () => {
           <Grid item xs={false} sm={5} md={6} justify="space-between"   elevation={6} square style={{ textAlign:'center',marginLeft:'2%',marginTop:'9%' }}>
            
             <Typography variant="h2" style={{ textAlign:'left',color:'white',textShadow:'1px 1px 2px black' }} component="h2" gutterBottom>
-              WELCOME TO NUCLEUS <br/> THE UNIVERSITY COLLEGE LAHORE PORTAL
+              WELCOME TO NUCLEUS <br/> THE UNIVERSAL COLLEGE LAHORE PORTAL
            </Typography>
             
 

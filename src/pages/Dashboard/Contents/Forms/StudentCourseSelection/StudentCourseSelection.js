@@ -10,6 +10,8 @@ import ExcelIcon from "../../../../../assets/Images/excel.png";
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 
+
+
 class StudentCourseSelection extends Component {
   constructor(props) {
     super(props);
@@ -17,9 +19,14 @@ class StudentCourseSelection extends Component {
       isLoading: false,
       admissionData: [],
       coursesData: [],
+      previousCoursesData: [],
+      selectedCoursesDataV2: [],
       selectedCoursesData: [],
+      
       achivementsData: [],
       moduleData: [],
+      moduleDropDownData: [],
+      moduleId:"",
       isOpenActionMenu: false,
       readOnly: false,
       selectedData: {},
@@ -32,8 +39,10 @@ class StudentCourseSelection extends Component {
       programmeData: [],
       regStatusId: 1,
       studentId: "",
+      studentIddToSend: "",
       studentName: "",
-      isDownloadExcel: false
+      isDownloadExcel: false,
+      totalStudents: []
     };
   }
 
@@ -88,11 +97,139 @@ class StudentCourseSelection extends Component {
       );
   };
 
-  getCouresData = async (rowData) => {
+ 
+
+  getCouresData = async (moduleId) => {
     this.setState({
       viewLoading: true,
     });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsOfferedCoursesView?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&studentId=${rowData.id}`;
+    this.setState({
+      selectedCoursesDataV2: [],
+    });
+    if(moduleId!=0){
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsOfferedCoursesView?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&studentId=${this.state.studentIddToSend}&moduleId=${moduleId}&programmeId=${this.state.selectedData.programmeId}`;
+      await fetch(url, {
+        method: "GET",
+        headers: new Headers({
+          Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw res;
+          }
+          return res.json();
+        })
+        .then(
+          (json) => {
+            if (json.CODE === 1) {
+              // let coursesData = json.DATA || [];
+              
+              // let selectedData=this.state.selectedData;
+              this.setState({
+                coursesData: json.DATA || [],
+                isOpenActionMenu: true,
+                //comented By Farhan ON SUNDAY
+                
+              });
+            } else {
+              alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
+            }
+          },
+          (error) => {
+            if (error.status === 401) {
+              this.setState({
+                isLoginMenu: true,
+                isReload: true,
+              });
+            } else {
+              alert("Failed to fetch, Please try again later.");
+              console.log(error);
+            }
+          }
+        );
+      this.setState({
+        viewLoading: false,
+      });
+    }
+    
+  };
+
+  getRegisteredCoursesData = async (rowData) => {
+    this.setState({
+      viewLoading: true,
+    });
+   
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsOfferedCoursesRegisteredView?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&studentId=${rowData.id}&programmeId=${rowData.programmeId}`;
+      await fetch(url, {
+        method: "GET",
+        headers: new Headers({
+          Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw res;
+          }
+          return res.json();
+        })
+        .then(
+          (json) => {
+            if (json.CODE === 1) {
+              let coursesData = json.DATA || [];
+              let selectedCoursesData=[];
+             
+              console.log(selectedCoursesData);
+            //  let selectedCoursesData = [];
+              for (let i = 0; i < coursesData.length; i++) {
+                if (coursesData[i].isRegistered) {
+                   selectedCoursesData.push(coursesData[i]);
+                  //selectedCoursesData.push(coursesData[i]);
+                  // console.log("selectedCoursesData.indexOf(coursesData[i]) ==>> ",selectedCoursesData.indexOf(coursesData[i]));
+                  // if(selectedCoursesData.indexOf(coursesData[i]) == -1 ){
+                   
+                  // }else{
+                  //   console.log("THIS DOESNT EXISTS");
+                  // }
+                  
+                }
+              }
+              let selectedData=this.state.selectedData;
+              this.setState({
+                // coursesData: json.DATA || [],
+                isOpenActionMenu: true,
+                //comented By Farhan ON SUNDAY
+                //selectedData: selectedData,
+                selectedCoursesData: selectedCoursesData
+              });
+            } else {
+              alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
+            }
+          },
+          (error) => {
+            if (error.status === 401) {
+              this.setState({
+                isLoginMenu: true,
+                isReload: true,
+              });
+            } else {
+              alert("Failed to fetch, Please try again later.");
+              console.log(error);
+            }
+          }
+        );
+      this.setState({
+        viewLoading: false,
+      });
+   
+    
+  };
+
+  getPreviousCouresData = async (rowData) => {
+    this.setState({
+      viewLoading: true,
+    });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsPreviousOfferedCoursesView?sessionId=${this.state.sessionId}&programmeGroupId=${this.state.programmeId}&studentId=${rowData.id}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -108,18 +245,13 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let coursesData = json.DATA || [];
-            let selectedCoursesData = [];
-            for (let i = 0; i < coursesData.length; i++) {
-              if (coursesData[i].isRegistered) {
-                selectedCoursesData.push(coursesData[i]);
-              }
-            }
+            let previousCoursesData = json.DATA || [];
+            
             this.setState({
-              coursesData: json.DATA || [],
+               previousCoursesData: json.DATA || [],
               isOpenActionMenu: true,
-              selectedData: rowData,
-              selectedCoursesData: selectedCoursesData
+              // selectedData: rowData,
+              // selectedCoursesData: selectedCoursesData
             });
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
@@ -183,6 +315,49 @@ class StudentCourseSelection extends Component {
             }
             this.setState({
               moduleData: json.DATA || [],
+            });
+          } else {
+            alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            alert("Failed to fetch, Please try again later.");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      viewLoading: false,
+    });
+  };
+
+  getModulesDropDownData = async (rowData) => {
+    this.setState({ viewLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonProgrammeModulesDropDownView?academicsSessionId=${this.state.sessionId}&programmeId=${rowData.programmeId}`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+           
+            this.setState({
+              moduleDropDownData: json.DATA || [],
             });
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
@@ -319,6 +494,8 @@ class StudentCourseSelection extends Component {
             this.setState({
               admissionData: json.DATA || [],
             });
+            let totalStudents = this.state.admissionData.length;
+            this.setState({totalStudents: totalStudents});
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
           }
@@ -420,7 +597,8 @@ class StudentCourseSelection extends Component {
             this.getData();
             this.setState({
               readOnly: false,
-              isOpenActionMenu: false
+              isOpenActionMenu: false,
+              selectedCoursesDataV2:[]
             });
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
@@ -472,37 +650,75 @@ class StudentCourseSelection extends Component {
   handleCheckboxChange = (e, value = {}, type = 0) => {
     const { checked } = e.target;
     const { id } = value;
-    const { coursesData } = this.state;
-    const index = coursesData.findIndex((item) => item.id === id);
+    const { selectedCoursesData } = this.state;
+    const index = selectedCoursesData.findIndex((item) => item.id === id);
     if (index >= 0) {
       if (type === 0) {
-        coursesData[index].isRegistered = checked ? 1 : 0;
-        coursesData[index].isRepeat = 0;
+        selectedCoursesData[index].isRegistered = checked ? 1 : 0;
+        selectedCoursesData[index].isRepeat = 0;
       } else {
-        coursesData[index].isRepeat = checked ? 1 : 0;
+        selectedCoursesData[index].isRepeat = checked ? 1 : 0;
       }
     }
     this.setState({
-      coursesData,
+      selectedCoursesData,
     });
   };
 
   onCheckClear = () => {
-    const { coursesData } = this.state;
-    for (let i = 0; i < coursesData.length; i++) {
-      coursesData[i].isRegistered = 0;
-      coursesData[i].isRepeat = 0;
+    const { selectedCoursesData } = this.state;
+    for (let i = 0; i < selectedCoursesData.length; i++) {
+      selectedCoursesData[i].isRegistered = 0;
+      selectedCoursesData[i].isRepeat = 0;
     }
     this.setState({
-      coursesData,
+      selectedCoursesData,
     });
   };
 
+
+  handleChangeModuleDropDown = (e) => {
+      console.log("handleChangeModuleDropDown",e.target);
+
+        this.setState({ moduleId: e.target.value,selectedCoursesDataV2:[] });
+       
+         let moduleId=e.target.value;
+        //  for(let i=0;i<this.state.moduleDropDownData.length;i++){
+        //   console.log("MODULEEE",this.state.moduleDropDownData[i]);
+        //  }
+        this.getCouresData(moduleId);
+
+  }
+
   handleSetCourses = (value = []) => {
+    
     for (let i = 0; i < value.length; i++) {
       value[i].isRegistered = 1;
     }
-    this.setState({ selectedCoursesData: value });
+    
+     let Dv1 =this.state.selectedCoursesData;
+     let Dv2 =value;
+     
+    
+     for(let x=0; x<Dv2.length;x++){
+       
+        let res=Dv1.find((obj) => obj.id==Dv2[x].id);
+        if(!res){
+         
+          const index = this.state.moduleDropDownData.findIndex((item) => item.id === this.state.moduleId);
+          Dv2[x].moduleNumber=this.state.moduleDropDownData[index].moduleNumber;
+          Dv1.push(Dv2[x]);
+        }
+
+     }
+    this.setState({ selectedCoursesDataV2: value, selectedCoursesData: Dv1});
+
+
+    
+  
+    console.log("value",value);
+    console.log("value2", this.state.selectedCoursesData);
+    
   }
 
   render() {
@@ -552,9 +768,17 @@ class StudentCourseSelection extends Component {
                 aria-label="View"
                 disabled={this.state.viewLoading}
                 onClick={() => {
+                
+                  this.setState({
+                    studentIddToSend:rowData.id,
+                    selectedData:rowData
+                  });
                   this.onReadOnly();
-                  this.getCouresData(rowData);
+                  this.getCouresData(0);
+                  this.getRegisteredCoursesData(rowData);
+                  this.getPreviousCouresData(rowData)
                   this.getModulesData(rowData);
+                  this.getModulesDropDownData(rowData);
                   this.getStudentAchivementsData(rowData);
                 }}
               >
@@ -584,9 +808,18 @@ class StudentCourseSelection extends Component {
                 aria-label="View"
                 disabled={this.state.viewLoading}
                 onClick={() => {
-                  this.getCouresData(rowData);
+                  
+                  this.setState({
+                    studentIddToSend:rowData.id,
+                    selectedData:rowData
+                  });
+                  this.getCouresData(0);
+                  this.getRegisteredCoursesData(rowData);
+                  this.getPreviousCouresData(rowData);
                   this.getModulesData(rowData);
+                  this.getModulesDropDownData(rowData);
                   this.getStudentAchivementsData(rowData);
+                  
                 }}
               >
                 <EditOutlinedIcon />
@@ -630,8 +863,11 @@ class StudentCourseSelection extends Component {
           open={this.state.isOpenActionMenu}
           handleClose={() => this.setState({ isOpenActionMenu: false, readOnly: false })}
           selectedData={this.state.selectedData}
+          previousCoursesData={this.state.previousCoursesData}
           coursesData={this.state.coursesData}
           moduleData={this.state.moduleData}
+          moduleId={this.state.moduleId}
+          moduleDropDownData={this.state.moduleDropDownData}
           achivementsData={this.state.achivementsData}
           onClear={() => this.onCheckClear()}
           handleCheckboxChange={(e, value, type) =>
@@ -640,6 +876,8 @@ class StudentCourseSelection extends Component {
           selectedCoursesData={this.state.selectedCoursesData}
           handleSetCourses={(value) => this.handleSetCourses(value)}
           readOnly={this.state.readOnly}
+          handleChangeModuleDropDown={ (value) => this.handleChangeModuleDropDown(value)}
+          selectedCoursesDataV2={this.state.selectedCoursesDataV2}
         />
 
         <div
@@ -664,10 +902,33 @@ class StudentCourseSelection extends Component {
               Student Course Selection
             </Typography>
             <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
-              height: 30, width: 32,
-              cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
-            }}
+                      height: 30, width: 32,
+                      cursor: `${this.state.isDownloadExcel ? 'wait' : 'pointer'}`,
+                    }}
             />
+            
+          </div>
+          <div>
+          {this.state.totalStudents>1? 
+              <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                textTransform: "capitalize",
+                textAlign: "left",
+                display: "inline"
+                    }}
+                   variant="h6"
+               >
+                   Total Students: {this.state.totalStudents}
+                   
+               </Typography>
+               :
+               ""
+               }
+
+          
+
           </div>
           <Divider
             style={{
@@ -715,6 +976,7 @@ class StudentCourseSelection extends Component {
                   <Fragment key={"coursesData" + i + item}>
                     <input name="courseId" value={item.id} type="hidden" />
                     <input name="isRepeat" value={item.isRepeat || 0} type="hidden" />
+                    <input name="moduleNumber" value={item.moduleNumber || 0} type="hidden" />
                   </Fragment>
                 );
               }
