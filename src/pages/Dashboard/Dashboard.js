@@ -166,6 +166,9 @@ import F230Form from "./Contents/Forms/F230Form";
 import F231Form from "./Contents/Forms/F231Form";
 import R232Reports from "./Contents/Forms/R232Reports";
 import F300Form from "./Contents/Forms/F300Form";
+import R302Reports from "./Contents/Forms/R302Reports";
+import F302Form from "./Contents/Forms/F302Form";
+
 
 
 const drawerWidth = 283;
@@ -2321,6 +2324,39 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+
+          <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F302Form"
+                exact
+                path="/dashboard/F302Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F302Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+               <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R302Reports"
+                exact
+                path="/dashboard/R302Reports"
+                render={(props) => {
+                  return (
+                    <R302Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

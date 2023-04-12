@@ -1,11 +1,13 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, createRef} from "react";
+
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Logo from "../../../../assets/Images/logo.png";
 import UniversityLogo from "../../../../assets/Images/logo_ucl_one.png";
 import CloseIcon from "@material-ui/icons/Close";
-import { IconButton, Typography, CircularProgress, Grid } from "@material-ui/core";
+import { IconButton, Typography, CircularProgress, Grid,TextField } from "@material-ui/core";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import BottomBar from "../../../../components/BottomBar/BottomBar";
 import {
   Table,
   TableBody,
@@ -16,15 +18,29 @@ import {
   Paper,
 } from "@material-ui/core";
 import { color } from "highcharts";
+import { format } from 'date-fns';
+
+import { DatePicker } from "@material-ui/pickers";
+import Pdf from "react-to-pdf";
+import PDFButton from "./ProgressReportHelperPDF/generatePdf"
+
+const ref = React.createRef();
+// const Button = React.forwardRef((props, ref) => {
+//   return (
+//     <React.Fragment>
+//       <Pdf targetRef={ref} filename="code-example.pdf">
+//         {({ toPdf }) => <button onClick={toPdf}>Generate Pdf</button>}
+//       </Pdf>
+//     </React.Fragment>
+//   );
+// });
 
 
 export const LandscapeOrientation = () => (
   <style type="text/css">
-    {"@media print{@page {size: landscape}}"}
+    {"@media print{@page {size: landscape},@body{-webkit-print-color-adjust: exact}}"}
   </style>
 );
-
-
 const styles = (theme) => ({
   mainDiv: {
     margin: "50px 10px 0px 10px",
@@ -49,6 +65,12 @@ const styles = (theme) => ({
     marginBottom: 40,
     "@media print": {
       display: "none",
+    },
+  },
+  bottomBar: {
+    //marginBottom: 40,
+    "@media print": {
+      visibility: "hidden"
     },
   },
   overlay: {
@@ -123,7 +145,7 @@ const StyledTableRow = withStyles((theme) => ({
     },
   },
 }))(TableRow);
-
+const pdfRef = createRef(); 
 class DisplayAdmissionApplications extends Component {
   constructor(props) {
     super(props);
@@ -152,11 +174,31 @@ class DisplayAdmissionApplications extends Component {
       resultClassification: "_ _ _",
       endDate:"",
       studentId: "",
+      textAreaValue: "",
+      academicSessionId:0,
+      programmeId:0,
+      sessionTermId:0,
+      studentId:0,
       sessionTermLabel:"",
-      alevelYear:""
+      anouncementDate: new Date(),
+      anouncementDateError: "",
+      alevelYear:"",
+     
+     
+      
     };
   }
 
+  handleDateChange = (name, date) => {
+    const errorName = `${name}Error`;
+    this.setState({
+      [name]: date,
+      [errorName]: ""
+    });
+  };
+  handleChange=(event) => {
+    this.setState({ textAreaValue: event.target.value });
+  }
   getDateInString = () => {
     let today = new Date();
     let dd = today.getDate();
@@ -170,6 +212,26 @@ class DisplayAdmissionApplications extends Component {
     }
     today = dd + "/" + mm + "/" + yyyy;
     return today;
+  };
+
+  handleGenerateAndApprove = (typeId) => {
+    let academicSessionId = this.state.academicSessionId;
+    let programmeId = this.state.programmeId;
+    let sessionTermId = this.state.sessionTermId;
+    let studentId = this.state.studentId;
+    let comments=this.state.textAreaValue;
+    let dateToShow=this.state.anouncementDate;
+    if(comments==""){
+      this.handleOpenSnackbar(<span>"Please Add Comments."</span>,"error");
+      return false;
+    }
+    if(dateToShow==null && typeId==1){
+      this.handleOpenSnackbar(<span>"Please Select Date."</span>,"error");
+      return false;
+    }
+    
+    this.approveData(academicSessionId,programmeId,sessionTermId,studentId,comments,dateToShow,typeId);
+    
   };
 
   handleOpenSnackbar = (msg, severity) => {
@@ -194,6 +256,7 @@ class DisplayAdmissionApplications extends Component {
     data.append("programmeId", programmeId);
     data.append("termId", sessionTermId);
     data.append("studentId", studentId);
+    //data.append("type", 1);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonStudentProgressReportView`;
     await fetch(url, {
       method: "POST",
@@ -233,7 +296,8 @@ class DisplayAdmissionApplications extends Component {
                 totalAchieved: data[0].totalAchieved,
                 totalPercentage: data[0].totalPercentage,
                 resultClassification:  data[0].resultClassification,
-                alevelYear:data[0].year
+                alevelYear:data[0].year,
+                textAreaValue:data[0].comments
               });
 
               /*
@@ -267,7 +331,7 @@ class DisplayAdmissionApplications extends Component {
               Total Number Of Seminar Header Columns
               */
 
-             let totalSeminarLength = 0;
+              let totalSeminarLength = 0;
              if(data[0].totalSeminarColumns>0){
               console.log("HELOOOOO")
                 totalSeminarLength=data[0].totalSeminarColumns+1 || [];
@@ -291,7 +355,6 @@ class DisplayAdmissionApplications extends Component {
                 
                 }
              }
-              
 
                 /*
               Total Number Of Subjective Header Columns
@@ -363,13 +426,14 @@ class DisplayAdmissionApplications extends Component {
                   assignment.map((data, index) =>
                     data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.credit) // col-6 => col-14
                   );
-                  let seminarEvaluation = coursesData[i].seminarEvaluation;
+                  
+                   let seminarEvaluation = coursesData[i].seminarEvaluation;
+                  
                   if(this.state.tableSeminarHeaderColumn>0){
                     seminarEvaluation.map((data, index) =>
                     data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-15 => col-17
                   );
                   }
-                  
                   let subjectiveEvaluation = coursesData[i].subjectiveEvaluation;
                   subjectiveEvaluation.map((data, index) =>
                     data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-18 => col-22
@@ -411,7 +475,58 @@ class DisplayAdmissionApplications extends Component {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
           }
-          console.log("getData", this.state.tableHeaderData);
+          console.log("getData", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            console.log(error);
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+
+  approveData = async (sessionId=0, programmeId=0, sessionTermId=0, studentId=0,comments="",dateToShow,isApproved) => {
+    this.setState({ isLoading: true ,studentId:studentId});
+    let data = new FormData();
+    data.append("academicsSessionId", sessionId);
+    data.append("programmeId", programmeId);
+    data.append("termId", sessionTermId);
+    data.append("studentId", studentId);
+    data.append("comments", comments);
+    data.append("isApproved", isApproved);
+
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C301CommonStudentGradeBookReportView?dateToShow=${format(dateToShow, "dd-MM-yyyy")}`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.handleOpenSnackbar(<span>"Approved"</span>,"success");
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("approveData", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -432,8 +547,9 @@ class DisplayAdmissionApplications extends Component {
   componentDidMount() {
     const { id = "0&0&0&0" } = this.props.match.params;
     let ids = id.split("&");
-    //this.setState({endDate:ids[4]});
-    //this.setState({endDate:this.getDateInString()});
+    this.setState({academicSessionId:ids[0],programmeId:ids[1],sessionTermId:ids[2],studentId:ids[3]});
+    this.setState({endDate:this.getDateInString()});
+    // this.props.setDrawerOpen(false);
     
     this.getData(ids[0], ids[1], ids[2], ids[3]);
   }
@@ -462,19 +578,30 @@ class DisplayAdmissionApplications extends Component {
         >
           <CloseIcon color="secondary" />
         </IconButton>
-        <div className={classes.mainDiv}>
-          <div style={{display: "inlineBlock"}}>
-            <div 
-              style={{
-                display: "inline-block"
-              }}
-            >
-             <Grid  
-                  container 
-                  direction="row"
-                  justify="center"
-                  alignItems="center">
-                 {this.state.programmeLabel=="GCE A Level" ?
+
+
+        {/* <PDFButton
+        fileName="grade_book.pdf"
+        targetRef={pdfRef}
+      >
+        Save to PDF!
+      </PDFButton>
+         */}
+       
+        <div className={classes.mainDiv}  >
+        <div style={{display: "inlineBlock"}}>
+          <div 
+            style={{
+              display: "inline-block"
+            }}
+          >
+           <Grid  
+                container 
+                direction="row"
+                justify="center"
+                alignItems="center">
+
+                {this.state.programmeLabel=="GCE A Level" ?
                   <Fragment>
                       <Grid><img src={UniversityLogo} alt="Logo" height={50} /> </Grid> 
                       <Grid><span className={classes.title}>University College Lahore</span></Grid>
@@ -485,35 +612,29 @@ class DisplayAdmissionApplications extends Component {
                       <Grid><span className={classes.title}>Universal College Lahore</span></Grid>
                   </Fragment>
                  }
-                 
 
-                
-
-             </Grid>
-            
-              <br />
-            <span className={classes.subTitle}>{this.state.programmeLabel}</span>
-              <br/>
-              <br/>
-            <span className={classes.subTitle}>{this.state.studentLabel}</span>
-            {/* {this.state.studentId==5794 &&
+           </Grid>
+          
+            <br />
+          <span className={classes.subTitle}>{this.state.programmeLabel}</span>
+            <br/>
+            <br/>
+          <span className={classes.subTitle}>{this.state.studentLabel}</span>
+          {this.state.programmeLabel=="GCE A Level" ?
+            <>
+            <br/>
+            <br/>
+            <span className={classes.subTitle}>{this.state.alevelYear}</span>
+            </>
+            :
+            <Fragment>
               
-            } */}
-             {this.state.programmeLabel=="GCE A Level" ?
-                  <>
-                  <br/>
-                  <br/>
-                  <span className={classes.subTitle}>{this.state.alevelYear}</span>
-                  </>
-                  :
-                  <Fragment>
-                      
-                  </Fragment>
-                 }
-            
-              <br/>
-            </div>
-            <div style={{display: "inline"}}>
+            </Fragment>
+          }
+          
+            <br/>
+          </div>
+          <div style={{display: "inline"}}>
               <span
                 style={{
                   fontSize: "1em",
@@ -531,24 +652,24 @@ class DisplayAdmissionApplications extends Component {
              Progress Report<br/>Academic Year<br/>{this.state.academicSessionLabel}<br/>{this.state.sessionTermLabel=="1st Term"?"First Term":"Second Term"}<br/>Up to<br/>{this.state.uptoDate}
              
               </span>
-            </div>
           </div>
-          <div className={classes.flexColumn}>
-            <br/>
-            <TableContainer 
-              component={Paper} 
-              style={{ 
-                overflowX: "inherit" 
-              }}
+        </div>
+        <div className={classes.flexColumn}>
+          <br/>
+          <TableContainer 
+            component={Paper} 
+            style={{ 
+              overflowX: "inherit" 
+            }}
+          >
+            <Table
+              size="small"
+              className={classes.table}
+              aria-label="customized table"
+              size="small"
             >
-              <Table
-                size="small"
-                className={classes.table}
-                aria-label="customized table"
-                size="small"
-              >
-                <TableHead>
-                  <TableRow>
+              <TableHead>
+              <TableRow>
                   <StyledTableCell align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
                     <StyledTableCell align="center" colSpan="4">Attendance Record</StyledTableCell>
                     <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn}>Assessment Grades</StyledTableCell>
@@ -572,13 +693,13 @@ class DisplayAdmissionApplications extends Component {
                     {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                     { this.state.tableHeaderData && 
                       this.state.tableHeaderData.map((data, index)=> 
-                        <StyledTableCell key={data+index} style={data=='Credits'?{width:84}:{width:"unset"}} align="center" >{data}</StyledTableCell>
+                        <StyledTableCell key={data+index} style={data=='Credits'?{width:40}:{width:"unset"}} align="center" >{data}</StyledTableCell>
                       )
                     }
                     {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                   </TableRow>
-                </TableHead>
-                <TableBody>
+              </TableHead>
+              <TableBody>
                   <Fragment>
                     <TableRow>
                       <StyledTableCell colSpan={this.state.tableAssignmentHeaderColumn+this.state.tableSeminarHeaderColumn+this.state.tableSubjectiveHeaderColumn+this.state.tableExamHeaderColumn+9} style={{ backgroundColor: "#e1e3e8" }}>&nbsp;</StyledTableCell>
@@ -615,32 +736,170 @@ class DisplayAdmissionApplications extends Component {
                     )}
                    </Fragment>
                 </TableBody>
-              </Table>
-            </TableContainer>
+            </Table>
+          </TableContainer>
+          
+          <br/>
+         
+          <>
+            <Grid container direction="row"
+              justify="left"
+              alignItems="left">
+              <Grid item xs={10}>
+                <TextField
+                  id="comments"
+                  name="comments"
+                  label="Comments"
+                  multiline
+                  rows="4"
+                  variant="outlined"
+                  style={{width:"95%"}}
+                  required
+                  placeholder={"Comments"}
+                  value={this.state.textAreaValue}
+                  onChange={this.handleChange}
+                />
+              
+              </Grid>
+              <Grid item xs={2}>
+              
+              
+              <DatePicker
+                autoOk
+                name="anouncementDate"
+                id="anouncementDate"
+                label="Date to Show Student"
+                invalidDateMessage=""
+                disablePast
+                placeholder=""
+                variant="inline"
+                inputVariant="outlined"
+                format="dd-MM-yyyy"
+                required
+                value={this.state.anouncementDate}
+                onChange={date => this.handleDateChange("anouncementDate",date)}
+                error={!!this.state.anouncementDateError}
+                helperText={this.state.anouncementDateError ? this.state.anouncementDateError : " "}
+              />
             
+            
+            </Grid>
+            {/* <Grid item xs={3}>
+            <span style={{fontSize:12, fontWeight:"600"}}>This document is digitally signed by Program Coordinatory on {this.getDateInString()}</span>
+              
+            </Grid> */}
             <br/>
-            
-              {/* <Grid container direction="row"
-                justify="left"
-                alignItems="left">
-                <Grid item xs={9}>
-                    <span style={{fontSize:18, fontWeight:"600"}}>Good Work Keep It Up.</span>
-                </Grid>
-                <Grid item xs={3}>
-                <span style={{fontSize:18, fontWeight:"600"}}>This document is electronically signed.</span>
-                  <br/>
-                  <span ><small>Date of printing&emsp; : {this.getDateInString()}</small></span>
-                </Grid>
-              </Grid>    */}
+
+            <br/>
+            <br/>
+            <br/>
+
+           <div style={{display: "block", float:"right",width: "18%",marginLeft:"82%",marginTop:"2%"}}>
+                 <span
+                      style={{
+                        fontSize:11, fontWeight:"600",
+                        width:200,
+                        textAlign: "left",
+                        float:"left",
+                        
+                      }}
+                    >
+                        <b> Issuing Authority: </b>
+                      
                   
+                  </span>
+                  <br/>
+                  <span
+                    style={{
+                      fontSize:11, fontWeight:"600",
+                      width:180,
+                      textAlign: "left",
+                      float:"right",
+                      
+                    }}
+                  >
+                      <b>Programme Coordinator</b>
+                      <br/>
+                      <b>This is a system generated report</b>
+                      <br/>
+                      <b>No signature required</b>
+                      
+                
+                  </span>
+           </div> 
+              {/* <Grid
+                  container
+                  direction="column"
+                  justifyContent="flex-end"
+                  alignItems="flex-end"
+                   xs={12}
+                   alignContent="right"
+                >
+
+                    <Grid item xs={3}>
+                     
+                    </Grid>
+                    
+                    <Grid item xs={6}>
+                    
+                    
+                    
+                  <br/>
+                  
+                </Grid>
+                  <br/>
+                  
+                </Grid> */}
+
+            </Grid>
+            <br/>
+            {/* <Grid
+                  container
+                  direction="row"
+                  justifyContent="flex-end"
+                  alignItems="flex-end"
+                   xs={3}
+                >
+
+                    
+                    
+
+            </Grid>
+             */}
+            
+            </>
                    
+                 
+
+      
+          
 
         
-           
-           
-          </div>
-          <div className={classes.bottomSpace}></div>
+         <CustomizedSnackbar
+          isOpen={this.state.isOpenSnackbar}
+          message={this.state.snackbarMessage}
+          severity={this.state.snackbarSeverity}
+          handleCloseSnackbar={() => this.handleCloseSnackbar()}
+        />
         </div>
+        <div className={classes.bottomBar}>
+        <BottomBar
+          
+            left_button_text="Save"
+            left_button_hide={false}
+            bottomLeftButtonAction={() =>this.handleGenerateAndApprove(0)}
+            right_button_text="Approve"
+            bottomRightButtonAction={ () =>this.handleGenerateAndApprove(1)}
+            loading={this.state.isLoading}
+            isDrawerOpen={false}
+          //  disableRightButton={this.state.studentId}
+        />
+        </div>
+       </div>
+  
+
+
+      
       </Fragment>
     );
   }

@@ -5,6 +5,29 @@ import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Collapse from '@material-ui/core/Collapse';
+import Avatar from '@material-ui/core/Avatar';
+
+
+import red from '@material-ui/core/colors/red';
+import PreviewIcon from '@material-ui/icons/ViewModule';
+import ShareIcon from '@material-ui/icons/Share';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import IconButton from '@material-ui/core/IconButton';
+import { Pageview, Report } from "@material-ui/icons";
+import Button from '@material-ui/core/Button';
 
 const styles = {};
 
@@ -36,7 +59,10 @@ class R210Reports extends Component {
       studentMenuItems: [],
       studentObj: "",
       studentObjError: "",
-      endData: ""
+      endData: "",
+      dense: false,
+      secondary: false,
+      studentReportItems: [],
     };
   }
 
@@ -230,11 +256,59 @@ class R210Reports extends Component {
     this.setState({ isLoading: false });
   };
 
+
+  loadPreviousReports = async (academicSessionId,programmeId,studentId,termId) => {
+    let data = new FormData();
+    data.append("academicsSessionId", academicSessionId);
+    data.append("programmeId", programmeId);
+    data.append("studentId", studentId);
+    data.append("termId", termId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonStudentsApprovedReportsView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ studentReportItems: json.DATA });
+          } else {
+            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+          }
+          console.log("loadUsers", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
   handleSetUserId = (value) => {
+   // alert(value)
     this.setState({
       studentObj: value,
       studentObjError: "",
     });
+    this.loadPreviousReports(this.state.academicSessionId,this.state.programmeId,value.id,this.state.sessionTermId);
   }
 
   onHandleChange = (e) => {
@@ -261,12 +335,19 @@ class R210Reports extends Component {
           this.setState({endDate:res.endDate});
         }
       break;
+      
       default:
     }
     this.setState({
       [name]: value,
       [errName]: "",
     });
+  };
+
+
+  handleGenerateApprovedReport = (id) => {
+  
+    window.open(`#/R301StudentProgressApprovedReport/${id}`,"_blank");
   };
 
   handleGenerate = () => {
@@ -277,6 +358,14 @@ class R210Reports extends Component {
     window.open(`#/R210StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId+"&"+this.state.endDate}`,"_blank");
   };
 
+  handleGenerateAndApprove = () => {
+    let academicSessionId = this.state.academicSessionId;
+    let programmeId = this.state.programmeId;
+    let sessionTermId = this.state.sessionTermId;
+    let studentId = this.state.studentObj.id;
+    window.open(`#/R301StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId+"&"+this.state.endDate}`,"_blank");
+  };
+
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.loadAcademicSession();
@@ -285,7 +374,7 @@ class R210Reports extends Component {
   render() {
 
     const { classes } = this.props;
-
+    const { dense, secondary } = this.state;
     return (
       <Fragment>
         <LoginMenu
@@ -424,13 +513,71 @@ class R210Reports extends Component {
                 )}
               />
             </Grid>
+
+           
+              
+                
+                <div style={{width:"95%",marginTop:"2%"}}>
+                  
+                  {this.state.studentReportItems.map((dt, i) => (
+                 
+                      <>
+                      <Card  style={{marginTop:"2%"}} fullWidth className={classes.card}>
+                        <CardHeader
+                          title="Progress Report"
+                          
+                          
+                        />
+                        
+                        <CardContent>
+                        <Typography component="p">
+                           <b>Approved on :</b>{dt.createdOn}
+                          </Typography>
+                        <Typography component="p">
+                        <b>Show to student on :</b>{  dt.dateToShow}
+                          </Typography>
+                        <Typography component="h">
+                        <b> Comments :</b>
+                          </Typography>
+                          <Typography component="p">
+                            {dt.comments}
+                          </Typography>
+                        </CardContent>
+                        <CardActions className={classes.actions}>
+                        <Grid container
+                          direction="row"
+                          justify="flex-end"
+                          alignItems="baseline">
+                          <Button  style={{textAlign:"right"}} onClick={event =>{this.handleGenerateApprovedReport(dt.reportId)}}  color="primary" className={classes.button}>
+                            View
+                          </Button>
+                        </Grid>
+                         
+                        </CardActions>
+                        
+                      
+                      </Card>   
+                       
+                      </>
+                 
+                   ))}
+                    
+                
+                </div>
+             
+           
+
+
+
           </Grid>
           <BottomBar
-            left_button_text="View"
-            left_button_hide={true}
-            bottomLeftButtonAction={this.viewReport}
-            right_button_text="Genrate"
-            bottomRightButtonAction={this.handleGenerate}
+            left_button_text="Genrate & Approve"
+            left_button_hide={false}
+            bottomLeftButtonAction={this.handleGenerateAndApprove}
+            right_button_text="Genrate & Approve"
+            bottomRightButtonAction={this.handleGenerateAndApprove}
+           // bottomRightButtonAction={this.handleGenerate}
+           hideRightButton={true}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
             disableRightButton={!this.state.studentObj}

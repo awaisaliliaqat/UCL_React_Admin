@@ -167,13 +167,16 @@ class F205FormPopupComponent extends Component {
 
   isFileValid = () => {
     let isValid = true;
-    if (this.state.files.length<1 && this.state.recordId==0) {
-      this.setState({ filesError: "Please select file." });
-      document.getElementById("contained-button-file-div").focus();
-      isValid = false;
-    } else {
-      this.setState({ filesError: "" });
-    }
+
+    //Commented on 23/12/2022 
+    //On the order of Dr.Asad Shb
+    // if (this.state.files.length<1 && this.state.recordId==0) {
+    //   this.setState({ filesError: "Please select file." });
+    //   document.getElementById("contained-button-file-div").focus();
+    //   isValid = false;
+    // } else {
+    //   this.setState({ filesError: "" });
+    // }
     return isValid;
   };
 

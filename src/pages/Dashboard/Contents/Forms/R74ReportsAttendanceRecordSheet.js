@@ -300,7 +300,7 @@ class R74ReportsAttendanceRecordSheet extends Component {
                   <TableRow>
                     {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                     <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>STUDENTS</StyledTableCell>
-                    <StyledTableCell align="center">Schedule</StyledTableCell>
+                    <StyledTableCell align="center">Delivered</StyledTableCell>
                     <StyledTableCell align="center">Attended</StyledTableCell>
                     <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
                     {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
