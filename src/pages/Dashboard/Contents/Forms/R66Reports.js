@@ -387,10 +387,16 @@ class R66Reports extends Component {
   };
 
   downloadPDFData = async () => {
+    console.log("Yooo")
+    alert(this.state.courseId.id)
     if( !this.isSchoolValid() ) {return;}
       if (this.state.isDownloadPdf === false) {
+        let courseId="0";
+        if(this.state.courseId!=""){
+          courseId=this.state.courseId.id;
+        }
           this.setState({isDownloadPdf: true})
-          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsPdfDownload?academicSessionId=${this.state.academicSessionId}&schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${this.state.courseId}&pathwayId=${this.state.pathwayId}`;
+          const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonStudentsPdfDownload?academicSessionId=${this.state.academicSessionId}&schoolId=${this.state.schoolId}&programmeGroupId=${this.state.programmeGroupId}&courseId=${courseId}&pathwayId=${this.state.pathwayId}`;
         //const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C02AdmissionsProspectApplication${type}ApplicationsExcelDownload?applicationId=${this.state.applicationId}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${eventDataQuery}`;
           await fetch(url, {
               method: "GET",
@@ -634,7 +640,7 @@ class R66Reports extends Component {
                 </IconButton>
               </Tooltip>
               {this.state.programmeGroupId ?
-              <Tooltip title="Export PDF" >
+              <Tooltip title="Export PDFD" >
                 {this.state.isDownloadPdf ?
 
                   <CircularProgress 

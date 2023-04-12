@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Logo from "../../../../assets/Images/logo.png";
 import UniversityLogo from "../../../../assets/Images/logo_ucl_one.png";
 import CloseIcon from "@material-ui/icons/Close";
-import { IconButton, Typography, CircularProgress, Grid } from "@material-ui/core";
+import { IconButton, Typography, CircularProgress, Grid ,TextField} from "@material-ui/core";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import {
   Table,
@@ -17,13 +17,11 @@ import {
 } from "@material-ui/core";
 import { color } from "highcharts";
 
-
 export const LandscapeOrientation = () => (
   <style type="text/css">
-    {"@media print{@page {size: landscape}}"}
+    {"@media print{@page {size: landscape},@body{-webkit-print-color-adjust: exact}}"}
   </style>
 );
-
 
 const styles = (theme) => ({
   mainDiv: {
@@ -153,6 +151,9 @@ class DisplayAdmissionApplications extends Component {
       endDate:"",
       studentId: "",
       sessionTermLabel:"",
+      comments:"",
+      approvedOn:"",
+      dateToShowReport:"",
       alevelYear:""
     };
   }
@@ -187,14 +188,12 @@ class DisplayAdmissionApplications extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  getData = async (sessionId=0, programmeId=0, sessionTermId=0, studentId=0) => {
-    this.setState({ isLoading: true ,studentId:studentId});
+  getData = async (recordId=0) => {
+    this.setState({ isLoading: true });
     let data = new FormData();
-    data.append("academicsSessionId", sessionId);
-    data.append("programmeId", programmeId);
-    data.append("termId", sessionTermId);
-    data.append("studentId", studentId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonStudentProgressReportView`;
+    data.append("recordId", recordId);
+  
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C301CommonStudentProgressApprovedReportView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -224,6 +223,9 @@ class DisplayAdmissionApplications extends Component {
             let dataLength = data.length;
             if(dataLength){
               this.setState({
+                dateToShow:data[0].dateToShow,
+                approvedOn:data[0].approvedOn,
+                comments:data[0].comments,
                 studentLabel: data[0].studentLabel,
                 programmeLabel: data[0].programmeLabel,
                 academicSessionLabel: data[0].academicsSessionLabel,
@@ -432,10 +434,10 @@ class DisplayAdmissionApplications extends Component {
   componentDidMount() {
     const { id = "0&0&0&0" } = this.props.match.params;
     let ids = id.split("&");
-    //this.setState({endDate:ids[4]});
-    //this.setState({endDate:this.getDateInString()});
+    // this.setState({endDate:ids[4]});
+    this.setState({endDate:this.getDateInString()});
     
-    this.getData(ids[0], ids[1], ids[2], ids[3]);
+    this.getData(ids[0]);
   }
 
   render() {
@@ -474,7 +476,8 @@ class DisplayAdmissionApplications extends Component {
                   direction="row"
                   justify="center"
                   alignItems="center">
-                 {this.state.programmeLabel=="GCE A Level" ?
+
+                {this.state.programmeLabel=="GCE A Level" ?
                   <Fragment>
                       <Grid><img src={UniversityLogo} alt="Logo" height={50} /> </Grid> 
                       <Grid><span className={classes.title}>University College Lahore</span></Grid>
@@ -485,9 +488,6 @@ class DisplayAdmissionApplications extends Component {
                       <Grid><span className={classes.title}>Universal College Lahore</span></Grid>
                   </Fragment>
                  }
-                 
-
-                
 
              </Grid>
             
@@ -496,24 +496,40 @@ class DisplayAdmissionApplications extends Component {
               <br/>
               <br/>
             <span className={classes.subTitle}>{this.state.studentLabel}</span>
-            {/* {this.state.studentId==5794 &&
-              
-            } */}
-             {this.state.programmeLabel=="GCE A Level" ?
-                  <>
-                  <br/>
-                  <br/>
-                  <span className={classes.subTitle}>{this.state.alevelYear}</span>
-                  </>
-                  :
-                  <Fragment>
-                      
-                  </Fragment>
-                 }
+            {this.state.programmeLabel=="GCE A Level" ?
+                <>
+                <br/>
+                <br/>
+                <span className={classes.subTitle}>{this.state.alevelYear}</span>
+                </>
+                :
+                <Fragment>
+                  
+                </Fragment>
+              }
             
               <br/>
             </div>
-            <div style={{display: "inline"}}>
+            {/* <div style={{display: "inline"}}>
+              <span
+                style={{
+                  fontSize: "1em",
+                  fontWeight:700,
+                  textAlign: "center",
+                  color: "#2f57a5",
+                  width: 160,
+                  padding: 5,
+                  border: "solid 2px #2f57a5",
+                  display: "block",
+                  float:"right",
+                  marginRight: 56
+                }}
+              >
+             Progress Report<br/>Academic Year<br/>{this.state.academicSessionLabel}<br/>{this.state.sessionTermLabel}<br/>Upto<br/>{this.state.uptoDate}
+             
+              </span>
+            </div> */}
+               <div style={{display: "inline"}}>
               <span
                 style={{
                   fontSize: "1em",
@@ -536,19 +552,19 @@ class DisplayAdmissionApplications extends Component {
           <div className={classes.flexColumn}>
             <br/>
             <TableContainer 
-              component={Paper} 
-              style={{ 
-                overflowX: "inherit" 
-              }}
+            component={Paper} 
+            style={{ 
+              overflowX: "inherit" 
+            }}
+          >
+            <Table
+              size="small"
+              className={classes.table}
+              aria-label="customized table"
+              size="small"
             >
-              <Table
-                size="small"
-                className={classes.table}
-                aria-label="customized table"
-                size="small"
-              >
-                <TableHead>
-                  <TableRow>
+              <TableHead>
+              <TableRow>
                   <StyledTableCell align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
                     <StyledTableCell align="center" colSpan="4">Attendance Record</StyledTableCell>
                     <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn}>Assessment Grades</StyledTableCell>
@@ -572,13 +588,13 @@ class DisplayAdmissionApplications extends Component {
                     {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                     { this.state.tableHeaderData && 
                       this.state.tableHeaderData.map((data, index)=> 
-                        <StyledTableCell key={data+index} style={data=='Credits'?{width:84}:{width:"unset"}} align="center" >{data}</StyledTableCell>
+                        <StyledTableCell key={data+index} style={data=='Credits'?{width:40}:{width:"unset"}} align="center" >{data}</StyledTableCell>
                       )
                     }
                     {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
                   </TableRow>
-                </TableHead>
-                <TableBody>
+              </TableHead>
+              <TableBody>
                   <Fragment>
                     <TableRow>
                       <StyledTableCell colSpan={this.state.tableAssignmentHeaderColumn+this.state.tableSeminarHeaderColumn+this.state.tableSubjectiveHeaderColumn+this.state.tableExamHeaderColumn+9} style={{ backgroundColor: "#e1e3e8" }}>&nbsp;</StyledTableCell>
@@ -615,25 +631,85 @@ class DisplayAdmissionApplications extends Component {
                     )}
                    </Fragment>
                 </TableBody>
-              </Table>
-            </TableContainer>
+            </Table>
+          </TableContainer>
             
             <br/>
-            
-              {/* <Grid container direction="row"
+
+            <Grid container direction="row"
                 justify="left"
                 alignItems="left">
-                <Grid item xs={9}>
-                    <span style={{fontSize:18, fontWeight:"600"}}>Good Work Keep It Up.</span>
+                <Grid item xs={12}>
+                    
+                    
+                      <TextField
+                        id="comments"
+                        name="comments"
+                        label="Comments"
+                        multiline
+                        rows="3"
+                        variant="outlined"
+                        style={{width:"100%"}}
+                        
+                        placeholder={"Comments"}
+                        value={this.state.comments}
+                        onChange={this.handleChange}
+                        disabled={true}
+                      />
+                    
+                   
                 </Grid>
-                <Grid item xs={3}>
-                <span style={{fontSize:18, fontWeight:"600"}}>This document is electronically signed.</span>
-                  <br/>
-                  <span ><small>Date of printing&emsp; : {this.getDateInString()}</small></span>
+              </Grid>  
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+              {/* <Grid container direction="row"
+                justify="flex-end"
+                alignItems="flex-end"
+                xs={12}
+                >
+                <Grid item xs={4}>
+                  <span style={{fontSize:12, fontWeight:"600"}}>This document is digitally signed by Program Coordinatory on {this.state.approvedOn}</span>
+                 
                 </Grid>
               </Grid>    */}
+                    
+                    <div style={{display: "block", float:"right",width: "18%",marginLeft:"82%",marginTop:"2%"}}>
+                 <span
+                      style={{
+                        fontSize:11, fontWeight:"600",
+                        width:200,
+                        textAlign: "left",
+                        float:"left",
+                        
+                      }}
+                    >
+                        <b> Issuing Authority: </b>
+                      
                   
-                   
+                  </span>
+                  <br/>
+                  <span
+                    style={{
+                      fontSize:11, fontWeight:"600",
+                      width:180,
+                      textAlign: "left",
+                      float:"right",
+                      
+                    }}
+                  >
+                      <b>Programme Coordinator</b>
+                      <br/>
+                      <b>This is a system generated report</b>
+                      <br/>
+                      <b>No signature required</b>
+                      
+                
+                  </span>
+           </div>   
 
         
            

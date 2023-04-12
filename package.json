@@ -30,6 +30,7 @@
     "react-dropzone": "^11.0.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
+    "react-to-pdf": "^0.0.14",
     "react-widgets": "^4.5.0",
     "seamless-immutable": "^7.1.4"
   },

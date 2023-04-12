@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Logo from "../../../../assets/Images/logo.png";
 import CloseIcon from "@material-ui/icons/Close";
+import UniversityLogo from "../../../../assets/Images/logo_ucl_one.png";
 import { IconButton, Typography, CircularProgress, Grid } from "@material-ui/core";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import {
@@ -15,10 +16,14 @@ import {
   Paper,
 } from "@material-ui/core";
 import { color } from "highcharts";
-
+export const LandscapeOrientation = () => (
+  <style type="text/css">
+    {"@media print{@page {size: landscape},@body{-webkit-print-color-adjust: exact}}"}
+  </style>
+);
 const styles = (theme) => ({
   mainDiv: {
-    margin: "10px 10px 0px 10px",
+    margin: "50px 10px 0px 10px",
     "@media print": {
       minWidth: "7.5in",
       maxWidth: "11in",
@@ -40,6 +45,12 @@ const styles = (theme) => ({
     marginBottom: 40,
     "@media print": {
       display: "none",
+    },
+  },
+  bottomBar: {
+    //marginBottom: 40,
+    "@media print": {
+      visibility: "hidden"
     },
   },
   overlay: {
@@ -69,6 +80,7 @@ const styles = (theme) => ({
     fontFamily: "sans-serif",
     color: "#2f57a5",
     letterSpacing: 1,
+    marginLeft:10
   },
   subTitle: {
     fontSize: 22,
@@ -92,10 +104,10 @@ const styles = (theme) => ({
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: "rgb(162 162 177)", //theme.palette.common.black,
-    color: 'black',
-    fontWeight: 900,
-    border: "1px solid white",
+    backgroundColor: "rgb(189 214 228)",//"rgb(47, 87, 165)", //theme.palette.common.black,
+    color: theme.palette.common.black,
+    fontWeight: 800,
+    border: "1px solid rgb(47, 87, 165)",
     fontSize: 13,
     padding: 5
   },
@@ -127,6 +139,9 @@ class R218StudentProgressReport extends Component {
       toDateLabel: "",
       tableHeaderData: [],
       tableAssignmentHeaderColumn: "",
+      tableSeminarHeaderColumn: "",
+      tableSubjectiveHeaderColumn: "",
+      tableExamHeaderColumn: "",
       tableBottomFirstColumn: "",
       tableData: [],
       academicSessionLabel: "____-____",
@@ -140,7 +155,14 @@ class R218StudentProgressReport extends Component {
       allStudentData:[],
       endDate:"",
       pathwayLabel: "",
-      totalStudents:[]
+      totalStudents:[],
+      sessionTermLabel:"",
+      anouncementDate: new Date(),
+      anouncementDateError: "",
+      alevelYear:"",
+      programmeId:0,
+      sessionTermId:0,
+      studentId:0,
     };
   }
 
@@ -197,10 +219,13 @@ class R218StudentProgressReport extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-
             let tableHeaderData = [];
-
+           
             let assignmentGraders = null;
+            let seminarGrades= null;
+            let subjectiveEvalGradesCol=null;
+            let examMarksCol=null; 
+
 
            
            
@@ -212,41 +237,133 @@ class R218StudentProgressReport extends Component {
               this.setState({
                 //studentLabel: data[0].studentLabel,
                 programmeLabel: data[0].programmeLabel,
-                //pathwayLabel : data[0].pathwayLabel,
                 academicSessionLabel: data[0].academicsSessionLabel,
-                uptoDate: this.getDateInString(),
+                //uptoDate: this.getDateInString(),
+                sessionTermLabel: data[0].sessionTermLabel,
+                uptoDate: data[0].uptoDate,
                 // totalPOS: data[0].totalPOS,
                 // totalAchieved: data[0].totalAchieved,
                 // totalPercentage: data[0].totalPercentage,
                 // resultClassification:  data[0].resultClassification,
               });
-
-              /*
-              Total Number Of Assignment Header Columns
+/*Total Number Of Assignment Header Columns
               */
 
-              let totalColumnsLength = data[0].totalColumns+1 || [];
-              if(totalColumnsLength){
-                assignmentGraders=[totalColumnsLength];
-                for(let i=0; i<totalColumnsLength; i++){
-                  let columnIndex=i+1;
-                  if(columnIndex==totalColumnsLength){
-                    assignmentGraders[i]="Credits";
-                  }else{
-                    assignmentGraders[i]=columnIndex+"";
-                  }
-                }
+let totalAssignmentLength = data[0].totalAssignmentColumns+1 || [];
+             
+if(totalAssignmentLength){
+  assignmentGraders=[totalAssignmentLength];
+  for(let i=0; i<totalAssignmentLength; i++){
+    let columnIndex=i+1;
+    if(columnIndex==totalAssignmentLength){
 
-                this.setState({tableAssignmentHeaderColumn: totalColumnsLength});
-                this.setState({tableBottomFirstColumn:(totalColumnsLength+20)-4});
-              }
+      assignmentGraders[i]="Credits";
+
+    }else{
+
+      assignmentGraders[i]=columnIndex+"";
+
+    }
+    
+  }
+
+  this.setState({tableAssignmentHeaderColumn: totalAssignmentLength});
+ 
+}
+
+  /*
+Total Number Of Seminar Header Columns
+*/
+
+let totalSeminarLength = 0;
+if(data[0].totalSeminarColumns>0){
+console.log("HELOOOOO")
+  totalSeminarLength=data[0].totalSeminarColumns+1 || [];
+  if(totalSeminarLength){
+    seminarGrades=[totalSeminarLength];
+    for(let i=0; i<totalSeminarLength; i++){
+      let columnIndex=i+1;
+      if(columnIndex==totalSeminarLength){
+
+        seminarGrades[i]="Credits";
+
+      }else{
+
+        seminarGrades[i]=columnIndex+"";
+
+      }
+      
+    }
+
+    this.setState({tableSeminarHeaderColumn: totalSeminarLength});
+  
+  }
+}
+
+  /*
+Total Number Of Subjective Header Columns
+*/
+
+let totalSubjectiveLength = data[0].totalSubjectiveColumns+1 || [];
+
+if(totalSubjectiveLength){
+  subjectiveEvalGradesCol=[totalSubjectiveLength];
+  for(let i=0; i<totalSubjectiveLength; i++){
+    let columnIndex=i+1;
+    if(columnIndex==totalSubjectiveLength){
+
+      subjectiveEvalGradesCol[i]="Credits";
+
+    }else{
+
+      subjectiveEvalGradesCol[i]=columnIndex+"";
+
+    }
+    
+  }
+
+  this.setState({tableSubjectiveHeaderColumn: totalSubjectiveLength});
+ 
+}
+
+/*
+Total Number Of Exams Header Columns
+*/
+
+let totalExamsLength = data[0].totalExamColumns+1 || [];
+
+if(totalExamsLength){
+  examMarksCol=[totalExamsLength];
+  for(let i=0; i<totalExamsLength; i++){
+    let columnIndex=i+1;
+    if(columnIndex==totalExamsLength){
+
+      examMarksCol[i]="Credits";
+
+    }else{
+
+      examMarksCol[i]=columnIndex+"";
+
+    }
+    
+  }
+
+  this.setState({tableExamHeaderColumn: totalExamsLength});
+ 
+}
+
+this.setState({tableBottomFirstColumn:(totalSubjectiveLength+totalExamsLength+totalSeminarLength+totalAssignmentLength+9)-4});
               
-              let allStudentData = [];
+             let allStudentData = [];
               for(let j=0; j<dataLength; j++){
                 let tableData = [];
                 let coursesData = data[j].studentCoursesData || [];
                 let coursesDataLength = coursesData.length;
                 if(coursesDataLength){
+
+                  this.setState({
+                    subjectName:coursesData[0].courseLabel
+                  });
                   for(let i=0; i<coursesDataLength; i++){
                     let tableDataRow = [];
                     tableDataRow.push(coursesData[i].courseLabel);  // col-1
@@ -260,9 +377,14 @@ class R218StudentProgressReport extends Component {
                       data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.credit) // col-6 => col-14
                     );
                     let seminarEvaluation = coursesData[i].seminarEvaluation;
-                    seminarEvaluation.map((data, index) =>
+                    // seminarEvaluation.map((data, index) =>
+                    //   data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-15 => col-17
+                    // );
+                    if(this.state.tableSeminarHeaderColumn>0){
+                      seminarEvaluation.map((data, index) =>
                       data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-15 => col-17
                     );
+                    }
                     let subjectiveEvaluation = coursesData[i].subjectiveEvaluation;
                     subjectiveEvaluation.map((data, index) =>
                       data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-18 => col-22
@@ -282,7 +404,6 @@ class R218StudentProgressReport extends Component {
                 }
             
                 allStudentData[j] = {
-                  "pathwayLabel":data[j].pathwayLabel,
                   "studentName":data[j].studentLabel,
                   "totalPOS": data[j].totalPOS,
                   "totalAchieved": data[j].totalAchieved,
@@ -295,40 +416,32 @@ class R218StudentProgressReport extends Component {
 
               this.setState({allStudentData: allStudentData});
 
-            } 
+            }
             
             
-            // let tableHeaderData = [];
             let attendanceRecordCol = ["Del", "Att", "%Att", "Credits"];
             tableHeaderData = tableHeaderData.concat(attendanceRecordCol);
-            //let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
+           // let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
             tableHeaderData = tableHeaderData.concat(assignmentGraders);
-            let seminarGrades = ["1", "2", "Credits"];
-            tableHeaderData = tableHeaderData.concat(seminarGrades);
-            let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
+            
+            // let seminarGrades = ["1", "2", "Credits"];
+            if(seminarGrades!=null){
+              tableHeaderData = tableHeaderData.concat(seminarGrades);
+            }
+           
+            // let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
             tableHeaderData = tableHeaderData.concat(subjectiveEvalGradesCol);
-            let examMarksCol = ["1", "2", "Credits"];
+            // let examMarksCol = ["1", "2", "Credits"];
             tableHeaderData = tableHeaderData.concat(examMarksCol);
             let creditsCol = ["Poss", "Ach", "%Age"];
             tableHeaderData = tableHeaderData.concat(creditsCol);
             this.setState({tableHeaderData: tableHeaderData});
 
-          } else {
-            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
-          }
-          console.log("getData", json);
-        },
-        (error) => {
-          if (error.status === 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
+
           } else {
             //alert('Failed to fetch, Please try again later.');
             this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
-            console.log(error);
+           
           }
         }
       );
@@ -375,7 +488,7 @@ class R218StudentProgressReport extends Component {
               {this.state.allStudentData.map((d, i) => 
               <div className={classes.flexColumn}>
                 <br/>
-                <TableContainer component={Paper} style={{overflowX: "inherit"}}>
+                <TableContainer  component={Paper} style={{overflowX: "inherit"}}>
 
                   <div style={{display: "inlineBlock"}}>
                 <div 
@@ -383,11 +496,41 @@ class R218StudentProgressReport extends Component {
                     display: "inline-block"
                   }}
                 >
-                  <span className={classes.title} style={{padding:8}}>Universal College Lahore</span>
+                 <Grid  
+                container 
+                direction="row"
+                justify="left"
+                alignItems="left">
+
+                {this.state.programmeLabel=="GCE A Level" ?
+                  <Fragment>
+                      <Grid><img src={UniversityLogo} alt="Logo" height={50} /> </Grid> 
+                      <Grid><span className={classes.title}>University College Lahore</span></Grid>
+                  </Fragment>
+                  :
+                  <Fragment>
+                      <Grid><img src={Logo} alt="Logo" height={50} /> </Grid> 
+                      <Grid><span className={classes.title}>Universal College Lahore</span></Grid>
+                  </Fragment>
+                 }
+
+           </Grid>
                       <br/>
                   <span className={classes.subTitle} style={{padding:8}}>{d.studentName}</span>
                 <span className={classes.subTitle} style={{padding:8}}>{this.state.studentLabel}</span>
-                  <br/>
+                  
+                  {this.state.programmeLabel=="GCE A Level" ?
+            <>
+            <br/>
+           
+            <span className={classes.subTitle}>{this.state.alevelYear}</span>
+            </>
+            :
+            <Fragment>
+              
+            </Fragment>
+          }
+            <br/>
                 <span className={classes.subTitle} style={{padding:8}}>{this.state.programmeLabel}</span>
                 <br/>
                 <span className={classes.subTitle} style={{padding:8}}>{d.pathwayLabel}</span>
@@ -421,35 +564,47 @@ class R218StudentProgressReport extends Component {
               </div>
                   <Table size="small" className={classes.table} aria-label={"customized table"+i} size="small">
                     <TableHead>
-                      <TableRow>
-                        <StyledTableCell align="center" rowSpan="2" style={{border: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="4" style={{border: "1px solid rgb(47, 87, 165)" }}>Attendance Record</StyledTableCell>
-                        <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn} style={{border: "1px solid rgb(47, 87, 165)" }}>Assignment Graders</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="3" style={{border: "1px solid rgb(47, 87, 165)" }}>Seminar Grades</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="5" style={{border: "1px solid rgb(47, 87, 165)" }}>Subjective Eval Grades</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="3" style={{border: "1px solid rgb(47, 87, 165)" }}>Exam Marks</StyledTableCell>
-                        <StyledTableCell align="center" colSpan="3" style={{border: "1px solid rgb(47, 87, 165)" }}>Credits</StyledTableCell>
-                        <StyledTableCell rowSpan="2" align="center" style={{ border: "1px solid rgb(47, 87, 165)", width:60 }}>Internal<br/>Transcript<br/>Grade</StyledTableCell>
-                      </TableRow>
-                      <TableRow>
-                        { this.state.tableHeaderData && 
-                          this.state.tableHeaderData.map((data, index)=> 
-                            <StyledTableCell style={{border: "1px solid rgb(47, 87, 165)" }} key={data+index} align="center" >{data}</StyledTableCell>
-                          )
-                        }
-                      </TableRow>
+                    <TableRow>
+                      <StyledTableCell align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
+                      <StyledTableCell align="center" colSpan="4">Attendance Record</StyledTableCell>
+                      <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn}>Assessment Grades</StyledTableCell>
+                      {this.state.tableSeminarHeaderColumn>0 && 
+                        <StyledTableCell align="center" colSpan={this.state.tableSeminarHeaderColumn}>Seminar Grades</StyledTableCell>
+                      }
+                      <StyledTableCell align="center" colSpan={this.state.tableSubjectiveHeaderColumn}>Subjective Eval Grades</StyledTableCell>
+                      <StyledTableCell align="center" colSpan={this.state.tableExamHeaderColumn}>Examinations</StyledTableCell>
+                      <StyledTableCell align="center" colSpan="3">Credits</StyledTableCell>
+                      <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)", width:60 }}>Overall <br/>Grade</StyledTableCell>
+                      {/* <StyledTableCell align="center" rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Subject</StyledTableCell>
+                      <StyledTableCell align="center" colSpan="4">Attendance Record</StyledTableCell>
+                      <StyledTableCell align="center" colSpan={this.state.tableAssignmentHeaderColumn}>Assignment Grades</StyledTableCell>
+                      <StyledTableCell align="center" colSpan="3">Seminar Grades</StyledTableCell>
+                      <StyledTableCell align="center" colSpan="5">Subjective Eval Grades</StyledTableCell>
+                      <StyledTableCell align="center" colSpan="3">Exam Marks</StyledTableCell>
+                      <StyledTableCell align="center" colSpan="3">Credits</StyledTableCell>
+                      <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)", width:60 }}>Internal<br/>Transcript<br/>Grade</StyledTableCell> */}
+                  </TableRow>
+                  <TableRow>
+                    {/* <StyledTableCell style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+                    { this.state.tableHeaderData && 
+                      this.state.tableHeaderData.map((data, index)=> 
+                        <StyledTableCell key={data+index} style={data=='Credits'?{width:40}:{width:"unset"}} align="center" >{data}</StyledTableCell>
+                      )
+                    }
+                    {/* <StyledTableCell align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>&nbsp;</StyledTableCell> */}
+                  </TableRow>
                     </TableHead>
                     <TableBody>
                       <Fragment>
                         <TableRow>
-                          <StyledTableCell colSpan={this.state.tableAssignmentHeaderColumn+20} style={{ backgroundColor: "#e1e3e8" }}>&nbsp;</StyledTableCell>
+                          <StyledTableCell colSpan={this.state.tableAssignmentHeaderColumn+this.state.tableSeminarHeaderColumn+this.state.tableSubjectiveHeaderColumn+this.state.tableExamHeaderColumn+9} style={{ backgroundColor: "#e1e3e8" }}>&nbsp;</StyledTableCell>
                         </TableRow>
                         {d.tableData.length > 0 ? (
                           <Fragment>
                           {d.tableData.map((row, index) => (
                             <StyledTableRow key={"row"+index}>
                             {row.map((cellData, callIndex) => (
-                                <StyledTableCell key={i+"["+index+"]["+callIndex+"]"} align="center">{cellData}</StyledTableCell>
+                                <StyledTableCell key={"["+index+"]["+callIndex+"]"} style={callIndex==0?{paddingLeft:"1%"}:{paddingLeft:"0%"}} align={callIndex==0?"left":"center"}>{cellData}</StyledTableCell>
                             ))}
                             </StyledTableRow>
                           ))}
@@ -462,12 +617,12 @@ class R218StudentProgressReport extends Component {
                           </TableRow>
                           <TableRow>
                             <StyledTableCell colSpan={this.state.tableBottomFirstColumn} align="right" style={{borderRight:"none", borderTop:"none", fontWeight:600}}>Result Classification:&emsp;</StyledTableCell>
-                            <StyledTableCell colSpan="4" style={{borderLeft:"none", borderTop:"none", fontWeight:600}}>&emsp;{d.resultClassification}</StyledTableCell>
+                            <StyledTableCell colSpan="4" align="center" style={{borderLeft:"none", borderTop:"none", fontWeight:600}}>&emsp;{d.resultClassification}</StyledTableCell>
                           </TableRow>
                           </Fragment>
                         ):(
-                        <TableRow>
-                          <StyledTableCell colSpan={this.state.tableAssignmentHeaderColumn+20}>&nbsp;</StyledTableCell>
+                          <TableRow>
+                          <StyledTableCell colSpan={this.state.tableAssignmentHeaderColumn+this.state.tableSeminarHeaderColumn+this.state.tableSubjectiveHeaderColumn+this.state.tableExamHeaderColumn+9}>&nbsp;</StyledTableCell>
                         </TableRow>
                         )}
                       </Fragment>
