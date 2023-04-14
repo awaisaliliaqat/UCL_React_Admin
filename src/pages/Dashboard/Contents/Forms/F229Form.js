@@ -253,7 +253,7 @@ loadProgrammeGroups = async (academicsSessionId) => {
   let data = new FormData();
   data.append("academicsSessionId", academicsSessionId);
   this.setState({ isLoading: true });
-  const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsSessionsOfferedProgrammesView`;
+  const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C229CommonProgrammeGroupView`;
   await fetch(url, {
     method: "POST",
     body: data,
