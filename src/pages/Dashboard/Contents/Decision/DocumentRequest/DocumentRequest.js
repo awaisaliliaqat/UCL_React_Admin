@@ -33,6 +33,8 @@ class DocumentRequest extends Component {
             admissionData: [],
             genderData: [],
             degreeData: [],
+            academicSessionMenuItems: [],
+            academicSessionId: "",
             studentName: "",
             genderId: 0,
             degreeId: 0,
@@ -42,12 +44,68 @@ class DocumentRequest extends Component {
             isReload: false,
             eventDate: null,
 
+            isOpenSnackbar: false,
+            snackbarMessage: "",
+            snackbarSeverity: ""
+
         }
     }
 
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar: true,
+            snackbarMessage: msg,
+            snackbarSeverity: severity
+        });
+    };
+
     componentDidMount() {
-        this.getData();
+        this.loadAcademicSessions();
+        
     }
+
+    loadAcademicSessions = async () => {
+        this.setState({ isLoading: true });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonAcademicSessionsViewV2`;
+        await fetch(url, {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+          }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+          })
+          .then(
+            (json) => {
+              if (json.CODE === 1) {
+                let array = json.DATA || [];
+                let res = array.find( (obj) => obj.isActive === 1 );
+                if(res){
+                  this.setState({academicSessionId:res.ID}, () => this.getData());
+                }
+                this.setState({ academicSessionMenuItems: array });
+              } else {
+                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+              }
+            },
+            (error) => {
+              if (error.status == 401) {
+                this.setState({
+                  isLoginMenu: true,
+                  isReload: false,
+                });
+              } else {
+                console.log(error);
+                this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+              }
+            }
+          );
+        this.setState({ isLoading: false });
+      };
 
     getGenderData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonGendersView`;
@@ -165,7 +223,7 @@ class DocumentRequest extends Component {
         })
         const applicationId = this.state.applicationId ? this.state.applicationId : 0;
         const reload = applicationId === 0 && this.state.applicationStatusId === 0;
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C17AdmissionsProspectApplicationView?statusId=${this.state.applicationStatusId}&applicationId=${applicationId}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C17AdmissionsProspectApplicationView?academicSessionId=${this.state.academicSessionId}&statusId=${this.state.applicationStatusId}&applicationId=${applicationId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
