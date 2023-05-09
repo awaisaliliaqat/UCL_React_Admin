@@ -308,7 +308,7 @@ class R210Reports extends Component {
       studentObj: value,
       studentObjError: "",
     });
-    this.loadPreviousReports(this.state.academicSessionId,this.state.programmeId,value.id,this.state.sessionTermId);
+    this.loadPreviousReports(this.state.academicSessionId,this.state.programmeId,value?.id,this.state.sessionTermId);
   }
 
   onHandleChange = (e) => {
@@ -385,6 +385,7 @@ class R210Reports extends Component {
         <div
           style={{
             padding: 20,
+            marginBottom: 50
           }}
         >
           <Grid 
@@ -494,13 +495,13 @@ class R210Reports extends Component {
               <Autocomplete
                 fullWidth
                 id="studentObj"
-                options={this.state.studentMenuItems}
-                value={this.state.studentObj}
+                options={this.state.studentMenuItems || []}
+                value={this.state.studentObj || {}}
                 onChange={(event, value) =>
                   this.handleSetUserId(value)
                 }
                 disabled={!this.state.programmeId}
-                getOptionLabel={(option) =>  typeof option.label === "string" ? option.label : ""}
+                getOptionLabel={(option) =>  option.label ? option.label : ""}
                 renderInput={(params) => (
                   <TextField
                     {...params}
