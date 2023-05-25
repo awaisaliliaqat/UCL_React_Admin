@@ -107,6 +107,10 @@ function TableRowWithData(props) {
           
         </StyledTableCell>
         <StyledTableCell align="left">
+          {rowData.studentEmail}
+          
+        </StyledTableCell>
+        <StyledTableCell align="left">
           {rowData.mobileNo}
           
         </StyledTableCell>
@@ -705,15 +709,16 @@ class F225Form extends Component {
                 <Table className={classes.table} size="small" aria-label="customized table">
                   <TableHead>
                     <TableRow>
-                      <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)', width:"10%"}}>SR#</StyledTableCell>
-                      <StyledTableCell align="center">Nucleus ID</StyledTableCell>
-                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Name</StyledTableCell>
-                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Programme</StyledTableCell>
-                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Pathway</StyledTableCell>
-                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Student Phone</StyledTableCell>
-                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Father Phone</StyledTableCell>
-                      <StyledTableCell align="center" style={{ minWidth:120, width:"10%"}}>Mother Phone</StyledTableCell>
-                      <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)', minWidth:120, width:"10%"}}>Guardian Phone</StyledTableCell>
+                      <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)', minWidth: 80, width:"8%"}}>SR#</StyledTableCell>
+                      <StyledTableCell align="center" style={{minWidth: 80, width:"8%"}}>Nucleus ID</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:100, width:"10%"}}>Name</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:100, width:"10%"}}>Programme</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:100, width:"10%"}}>Pathway</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:100, width:"10%"}}>Student Email</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:100, width:"10%"}}>Student Phone</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:100, width:"10%"}}>Father Phone</StyledTableCell>
+                      <StyledTableCell align="center" style={{ minWidth:100, width:"10%"}}>Mother Phone</StyledTableCell>
+                      <StyledTableCell align="center" style={{borderRight: '1px solid rgb(29, 95, 152)', minWidth:100, width:"10%"}}>Guardian Phone</StyledTableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -730,11 +735,11 @@ class F225Form extends Component {
                   ) : 
                   this.state.isLoading ? 
                     <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={9}><center><CircularProgress disableShrink/></center></StyledTableCell>
+                      <StyledTableCell component="th" scope="row" colSpan={10}><center><CircularProgress disableShrink/></center></StyledTableCell>
                     </StyledTableRow>
                     :
                     <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={9}><center><b>No Data</b></center></StyledTableCell>
+                      <StyledTableCell component="th" scope="row" colSpan={10}><center><b>No Data</b></center></StyledTableCell>
                     </StyledTableRow>
                   }
                   </TableBody>
