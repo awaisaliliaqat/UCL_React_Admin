@@ -195,7 +195,8 @@ function CourseRow(props) {
         </StyledTableCell>
         <StyledTableCell align="center">
           {rowData.preResetMarks}
-          <TextField type="hidden" name="resetMarks" value={rowData.preResetMarks} />
+
+          <TextField type="hidden" name="resetMarks" value={rowData.preResetMarks || 0} />
         </StyledTableCell>
         <StyledTableCell align="center">
             <Tooltip title="Delete">
