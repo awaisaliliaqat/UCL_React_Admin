@@ -54,7 +54,8 @@ class RegistrationFeeApprovel extends Component {
             methodIdError: "",
             academicSessionMenuItems: [],
             academicSessionId: 0,
-            academicSessionIdError: ""
+            academicSessionIdError: "",
+            academicsDataLoading: false,
 
         }
     }
@@ -63,7 +64,7 @@ class RegistrationFeeApprovel extends Component {
         // this.getGenderData();
         // this.getDegreesData();
         this.getMethodData();
-        this.getData();
+        // this.getData();
         this.loadAcademicSessions();
     }
 
@@ -136,7 +137,7 @@ class RegistrationFeeApprovel extends Component {
             );
     };
     loadAcademicSessions = async () => {
-        this.setState({ isLoading: true });
+        this.setState({ academicsDataLoading: true });
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C12CommonAcademicSessionsView`;
         await fetch(url, {
           method: "POST",
@@ -157,7 +158,7 @@ class RegistrationFeeApprovel extends Component {
                 // let arrayLength = array.length;
                 let res = array.find( (obj) => obj.isActive === 1 );
                 if(res){
-                  this.setState({academicSessionId:res.ID});
+                  this.setState({academicSessionId:res.ID}, () => this.getData());
                 }
                 this.setState({ academicSessionMenuItems: array });
                 
@@ -177,7 +178,7 @@ class RegistrationFeeApprovel extends Component {
               }
             }
           );
-        this.setState({ isLoading: false });
+        this.setState({ academicsDataLoading: false });
       };
 
     getDegreesData = async () => {
