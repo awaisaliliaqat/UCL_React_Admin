@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/styles';
 import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
-import { TextField, Grid, Divider, Typography, MenuItem } from '@material-ui/core';
+import { TextField, Grid, Divider, Typography, MenuItem, IconButton } from '@material-ui/core';
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import PropTypes from "prop-types";
@@ -11,6 +11,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import AssignSectionToTeacherFormTableComponent from './Chunks/AssignSectionToTeacherFormTableComponent';
 import ScrollToTop from '../../../../../components/ScrollToTop/ScrollToTop';
 import AssignSectionToTeacherFormDialog from './Chunks/AssignSectionToTeacherFormDialog';
+import { Delete } from '@material-ui/icons';
 
 const styles = () => ({
     root: {
@@ -407,6 +408,49 @@ class AssignSectionToTeacherForm extends Component {
         this.setState({ isLoading: false })
     }
 
+    onDeleteSubmit = async (e, id) => {
+        e.preventDefault();
+        const data = new FormData();
+        data.append("id", id);
+        this.setState({ isLoading: true });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C29CommonAcademicsSectionsTeachersDelete`;
+        await fetch(url, {
+            method: "POST",
+            body: data,
+            headers: new Headers({
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
+                }
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                        this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+                        this.getData(this.state.offeredCoursesId);
+                    } else {
+                        this.handleOpenSnackbar(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE, "error");
+                    }
+                    console.log(json);
+                },
+                error => {
+                    if (error.status == 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: false
+                        })
+                    } else {
+                        console.log(error);
+                        this.handleOpenSnackbar("Failed to Save ! Please try Again later.", "error");
+                    }
+                });
+        this.setState({ isLoading: false })
+    }
+
 
     viewReport = () => {
         window.location = "#/dashboard/assign-section-to-teacher-reports";
@@ -517,6 +561,13 @@ class AssignSectionToTeacherForm extends Component {
             { name: "assignedOn", title: "Assigned Date" },
             { name: "teacherName", title: "Teacher Name" },
             { name: "teacherContact", title: "Teacher Contact" },
+            { name: "action", title: "Action", getCellValue: row => {
+                return(
+                    <IconButton onClick={(e) => this.onDeleteSubmit(e, row.teacherSectionId)} disabled={row.isSectionAssigned != 1} color='secondary'>
+                        <Delete />
+                    </IconButton>
+                )
+            } },
         ]
         return (
             <Fragment>
