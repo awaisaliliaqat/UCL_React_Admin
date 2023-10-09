@@ -26,6 +26,7 @@ import OfferLetter from "./Contents/Decision/OfferLetter/OfferLetter";
 import AssignAcccountId from "./Contents/Decision/AssignAccountId/AssignAcccountId";
 import UploadTutionFees from "./Contents/Decision/UploadTutionFee/UploadTutionFees";
 import TutionFeeApproval from "./Contents/Decision/TutionFeeApproval/TutionFeeApproval";
+import R303DueTuitionFee from "./Contents/Decision/R303DueTuitionFee/R303DueTuitionFee";
 import UploadDocuments from "./Contents/Decision/DocumentRequest/DocumentRequest";
 import DocumentRequestAction from "./Contents/Decision/DocumentRequest/Chunks/DocumentRequestAction";
 import EditStudentInformation from "./Contents/Decision/EditStudentInformation/EditStudentInformation";
@@ -1406,6 +1407,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/upload-tuition-fees"
                 component={UploadTutionFees}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="tuition-fee-approval-By-Program"
+                exact
+                path="/dashboard/R303Due-Tuition-Fee"
+                component={R303DueTuitionFee}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
