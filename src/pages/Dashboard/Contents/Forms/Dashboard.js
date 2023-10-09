@@ -1354,6 +1354,13 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="tuition-fee-approval-By-Program"
+                exact
+                path="/dashboard/tuition-fee-approval-By-Program"
+                component={TutionFeeApprovalByProgramme}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="edit-student-information"
                 exact
                 path="/dashboard/edit-student-information"
