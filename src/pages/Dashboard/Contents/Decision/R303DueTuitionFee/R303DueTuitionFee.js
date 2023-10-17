@@ -68,22 +68,24 @@ class R303DueTuitionFee extends Component {
       programId: "",
       programIdError: "",
       coursesMenuItems: [],
-      courseId: "",
-      courseIdError: "",
+
+      courseObject: {},
+      courseObjectError: "",
       pathwayMenuItems: [],
       pathwayId: "",
       pathwayIdError: "",
+
+      isActiveMenuItems: [{id: 1, label: "Active"}, { id: 0, label: "Inactive"}],
+      isActive: 1,
+      isActiveError: "",
     };
   }
 
   componentDidMount() {
-    // this.getGenderData();
-    // this.getDegreesData();
     this.getMethodData();
-    // this.getData();
     this.loadAcademicSessions();
     this.getSchools();
-    this.getDegreesData();
+    this.loadPathway();
   }
 
   getGenderData = async () => {
@@ -113,7 +115,11 @@ class R303DueTuitionFee extends Component {
               isReload: true,
             });
           } else {
-            alert("Failed to fetch, Please try again later.");
+            // alert("Failed to fetch, Please try again later.");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
@@ -148,7 +154,11 @@ class R303DueTuitionFee extends Component {
               isReload: true,
             });
           } else {
-            alert("Failed to fetch, Please try again later.");
+            // alert("Failed to fetch, Please try again later.");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
@@ -210,67 +220,44 @@ class R303DueTuitionFee extends Component {
     this.setState({ academicsDataLoading: false });
   };
 
-  getDegreesData = async () => {
-    let data = [];
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C303CommonAcademicsDegreeProgramsView`;
-    await fetch(url, {
-      method: "GET",
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          const resData = json.DATA || [];
-          if (resData.length > 0) {
-            for (let i = 0; i < resData.length; i++) {
-              if (!isEmpty(resData[i])) {
-                data.push({ id: "", label: resData[i].department });
-              }
-              for (let j = 0; j < resData[i].degrees.length; j++) {
-                if (!isEmpty(resData[i].degrees[j])) {
-                  data.push({
-                    id: resData[i].degrees[j].id,
-                    label: resData[i].degrees[j].label,
-                  });
-                }
-              }
-            }
-          }
-        },
-        (error) => {
-          if (error.status === 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            alert("Failed to fetch, Please try again later.");
-            console.log(error);
-          }
-        }
-      );
-    this.setState({
-      degreeData: data,
-    });
-  };
-
   onClearFilters = () => {
+const {academicSessionMenuItems=[] } = this.state;
+
+    let res = academicSessionMenuItems.find((obj) => obj.isActive === 1);
+    let sessionId = 0;
+    if (res) {
+      sessionId = res.ID;
+    }
+
     this.setState({
-      studentName: "",
-      genderId: 0,
-      degreeId: 0,
-      applicationId: "",
-      referenceNo: "",
-      applicationStatusId: 1,
-      eventDate: null,
-    });
+      academicSessionId: sessionId,
+      academicSessionIdError: "",
+      academicsDataLoading: false,
+
+      schoolId: "",
+      schoolIdError: "",
+      
+      programmeGroupId: "",
+      programmeGroupIdError: "",
+      programmeGroupsMenuItems: [],
+      
+      programmeId: "",
+      programmeIdError: "",
+      programmeMenuItems: [],
+      
+      programId: "",
+      programIdError: "",
+      
+      coursesMenuItems: [],
+      courseObject: {},
+      courseObjectError: "",
+      
+      pathwayId: "",
+      pathwayIdError: "",
+
+      isActive: 1,
+      isActiveError: "",
+    }, () => this.getData());
   };
 
   handleDateChange = (date) => {
@@ -326,7 +313,11 @@ class R303DueTuitionFee extends Component {
                 isReload: false,
               });
             } else {
-              alert("Failed to fetch, Please try again later.");
+              // alert("Failed to fetch, Please try again later.");
+              this.handleOpenSnackbar(
+                "Failed to fetch, Please try again later.",
+                "error"
+              );
               console.log(error);
             }
           }
@@ -348,26 +339,23 @@ class R303DueTuitionFee extends Component {
     this.setState({
       isLoading: true,
     });
-    const academicSessionId = this.state.academicSessionId
-      ? this.state.academicSessionId
-      : 0;
-    const paymentDate = this.state.eventDate
-      ? `&paymentDate=${format(this.state.eventDate, "dd-MMM-yyyy")}`
-      : "";
-    const reload =
-      this.state.applicationStatusId === 0 &&
-      this.state.applicationId === "" &&
-      this.state.genderId === 0 &&
-      this.state.degreeId === 0 &&
-      this.state.referenceNo === "" &&
-      this.state.studentName === "" &&
-      this.state.eventDate === null;
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C303FinanceStudentsLegacyFeeVouchersView?paymentStatusId=${this.state.applicationStatusId}&studentId=${this.state.applicationId}&referenceNo=${this.state.referenceNo}&genderId=${this.state.genderId}&degreeId=${this.state.degreeId}&studentName=${this.state.studentName}${paymentDate}&academicSessionId=${academicSessionId}`;
+    const reload = true;
+    let data = new FormData();
+    data.append("studentId", this.state.applicationId || 0);
+    data.append("academicSessionId", this.state.academicSessionId || 0);
+    data.append("schoolId", this.state.schoolId || 0);
+    data.append("programmeGroupId", this.state.programmeGroupId || 0);
+    data.append("programmeId", this.state.programmeId || 0);
+    data.append("courseId", this.state.courseObject.id || 0);
+    data.append("pathwayId", this.state.pathwayId || 0);
+    data.append("isActive", this.state.isActive);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C303FinanceStudentsLegacyFeeVouchersView`;
     await fetch(url, {
-      method: "GET",
+      method: "Post",
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
+      body: data,
     })
       .then((res) => {
         if (!res.ok) {
@@ -382,7 +370,11 @@ class R303DueTuitionFee extends Component {
               admissionData: json.DATA || [],
             });
           } else {
-            alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
+            // alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
+            this.handleOpenSnackbar(
+              `${json.SYSTEM_MESSAGE} + "\n" + ${json.USER_MESSAGE}`,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -393,63 +385,17 @@ class R303DueTuitionFee extends Component {
               isReload: reload,
             });
           } else {
-            alert("Failed to fetch, Please try again later.");
+            // alert("Failed to fetch, Please try again later.");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
     this.setState({
       isLoading: false,
-    });
-  };
-
-  getDegreesData = async () => {
-    let data = [];
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C303CommonAcademicsDegreeProgramsView`;
-    await fetch(url, {
-      method: "GET",
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          const resData = json.DATA || [];
-          if (resData.length > 0) {
-            for (let i = 0; i < resData.length; i++) {
-              if (!isEmpty(resData[i])) {
-                data.push({ id: "", label: resData[i].department });
-              }
-              for (let j = 0; j < resData[i].degrees.length; j++) {
-                if (!isEmpty(resData[i].degrees[j])) {
-                  data.push({
-                    id: resData[i].degrees[j].id,
-                    label: resData[i].degrees[j].label,
-                  });
-                }
-              }
-            }
-          }
-        },
-        (error) => {
-          if (error.status === 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            alert("Failed to fetch, Please try again later.");
-          }
-        }
-      );
-    this.setState({
-      degreeData: data,
     });
   };
 
@@ -474,7 +420,11 @@ class R303DueTuitionFee extends Component {
           });
           return {};
         } else {
-          alert("Operation Failed, Please try again later.");
+          // alert("Operation Failed, Please try again later.");
+          this.handleOpenSnackbar(
+            "Failed to fetch, Please try again later.",
+            "error"
+          );
           return {};
         }
       })
@@ -488,25 +438,45 @@ class R303DueTuitionFee extends Component {
         if (result.CODE === 1) {
           //Code
         } else if (result.CODE === 2) {
-          alert(
+          // alert(
+          //   "SQL Error (" +
+          //     result.CODE +
+          //     "): " +
+          //     result.USER_MESSAGE +
+          //     "\n" +
+          //     result.SYSTEM_MESSAGE
+          // );
+          this.handleOpenSnackbar(
             "SQL Error (" +
               result.CODE +
               "): " +
               result.USER_MESSAGE +
               "\n" +
-              result.SYSTEM_MESSAGE
+              result.SYSTEM_MESSAGE,
+            "error"
           );
         } else if (result.CODE === 3) {
-          alert(
-            "Other Error (" +
+          // alert(
+          //   "Other Error (" +
+          //     result.CODE +
+          //     "): " +
+          //     result.USER_MESSAGE +
+          //     "\n" +
+          //     result.SYSTEM_MESSAGE
+          // );
+          this.handleOpenSnackbar(
+            "SQL Error (" +
               result.CODE +
               "): " +
               result.USER_MESSAGE +
               "\n" +
-              result.SYSTEM_MESSAGE
+              result.SYSTEM_MESSAGE,
+            "error"
           );
         } else if (result.error === 1) {
-          alert(result.error_message);
+          // alert(result.error_message);
+
+          this.handleOpenSnackbar(result.error_message, "error");
         } else if (result.success === 0 && result.redirect_url !== "") {
           window.location = result.redirect_url;
         }
@@ -538,7 +508,6 @@ class R303DueTuitionFee extends Component {
         .then(
           (json) => {
             if (json.CODE === 1) {
-              alert("confirmed");
               this.setState({
                 isOpenApprovelMenu: false,
                 methodId: 0,
@@ -546,7 +515,11 @@ class R303DueTuitionFee extends Component {
               });
               this.getData();
             } else {
-              alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
+              // alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
+              this.handleOpenSnackbar(
+                json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+                "error"
+              );
             }
             console.log(json);
           },
@@ -557,7 +530,11 @@ class R303DueTuitionFee extends Component {
                 isReload: false,
               });
             } else {
-              alert("Failed to fetch, Please try again later.");
+              // alert("Failed to fetch, Please try again later.");
+              this.handleOpenSnackbar(
+                "Failed to fetch, Please try again later.",
+                "error"
+              );
               console.log(error);
             }
           }
@@ -573,7 +550,7 @@ class R303DueTuitionFee extends Component {
   getProgramGroup = async (schoolId) => {
     let data = new FormData();
     data.append("schoolId", schoolId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeGroupsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C303CommonProgrammeGroupsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -625,7 +602,7 @@ class R303DueTuitionFee extends Component {
   getProgrammes = async (programmeGroupId) => {
     let data = new FormData();
     data.append("programmeGroupId", programmeGroupId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C303CommonProgrammesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -677,7 +654,7 @@ class R303DueTuitionFee extends Component {
   getCourse = async (programmeGroupId) => {
     let data = new FormData();
     data.append("programmeGroupId", programmeGroupId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeCoursesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C303CommonProgrammeCoursesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -727,7 +704,7 @@ class R303DueTuitionFee extends Component {
   };
 
   loadPathway = async () => {
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonUolEnrollmentPathwayView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C303CommonUolEnrollmentPathwayView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -777,6 +754,8 @@ class R303DueTuitionFee extends Component {
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
+    const errName = `${name}Error`;
+    let errMsg = "";
     let { methodIdError } = this.state;
     if (name === "methodId") {
       methodIdError = "";
@@ -786,7 +765,8 @@ class R303DueTuitionFee extends Component {
       case "schoolId":
         this.setState({
           programmeGroupId: "",
-          courseId: "",
+
+          courseObject: {},
           coursesMenuItems: [],
           programmeMenuItems: [],
           programmeId: "",
@@ -796,7 +776,8 @@ class R303DueTuitionFee extends Component {
       case "programmeGroupId":
         this.setState({
           programmeGroupId: "",
-          courseId: "",
+
+          courseObject: {},
           coursesMenuItems: [],
           programmeMenuItems: [],
           programmeId: "",
@@ -810,13 +791,14 @@ class R303DueTuitionFee extends Component {
 
     this.setState({
       [name]: value,
+      [errName]: errMsg,
       methodIdError,
     });
   };
 
   getSchools = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonSchoolsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C303CommonSchoolsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -874,12 +856,6 @@ class R303DueTuitionFee extends Component {
         customStyleHeader: { width: "10%", textAlign: "center" },
       },
       {
-        name: "Account Id",
-        dataIndex: "accountId",
-        sortable: false,
-        customStyleHeader: { width: "10%", textAlign: "center" },
-      },
-      {
         name: "Name",
         renderer: (rowData) => {
           return (
@@ -890,11 +866,11 @@ class R303DueTuitionFee extends Component {
         customStyleHeader: { width: "12%" },
       },
       {
-        name: "Gender",
-        dataIndex: "genderLabel",
-        sortIndex: "genderLabel",
+        name: "Session On",
+        dataIndex: "sessionLabel",
+        sortIndex: "sessionLabel",
         sortable: true,
-        customStyleHeader: { width: "13%" },
+        customStyleHeader: { width: "15%" },
       },
       {
         name: "Degree Programme",
@@ -909,17 +885,9 @@ class R303DueTuitionFee extends Component {
         sortable: false,
         customStyleHeader: { width: "13%" },
       },
-
       {
-        name: "DOB",
-        dataIndex: "dateOfBirth",
-        sortIndex: "dateOfBirth",
-        sortable: true,
-        customStyleHeader: { width: "15%" },
-      },
-      {
-        name: "Email",
-        dataIndex: "email",
+        name: "Pathway",
+        dataIndex: "pathwayLabel",
         sortable: false,
         customStyleHeader: { width: "15%" },
       },
