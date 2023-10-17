@@ -169,6 +169,7 @@ import R232Reports from "./Contents/Forms/R232Reports";
 import F300Form from "./Contents/Forms/F300Form";
 import R302Reports from "./Contents/Forms/R302Reports";
 import F302Form from "./Contents/Forms/F302Form";
+import F304Form from "./Contents/Forms/DegreeProgrammesActivation/F304Form";
 
 
 
@@ -1410,7 +1411,7 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="tuition-fee-approval-By-Program"
+                name="R303Due-Tuition-Fee"
                 exact
                 path="/dashboard/R303Due-Tuition-Fee"
                 component={R303DueTuitionFee}
@@ -2362,6 +2363,13 @@ const Dashboard = (props) => {
                     />
                   );
                 }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F304Form"
+                exact
+                path="/dashboard/F304Form/0"
+                component={F304Form}
               />
 
               
