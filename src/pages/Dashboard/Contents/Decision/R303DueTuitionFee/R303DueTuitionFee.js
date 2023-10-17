@@ -978,7 +978,7 @@ const {academicSessionMenuItems=[] } = this.state;
               }}
               variant="h5"
             >
-              Tuition Fee Approval Dashboard
+              Tuition Fee Report
             </Typography>
             {/* 
 												<img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
