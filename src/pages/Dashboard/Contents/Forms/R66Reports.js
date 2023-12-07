@@ -470,7 +470,6 @@ class R66Reports extends Component {
 
   downloadPDFData = async () => {
     console.log("Yooo");
-    alert(this.state.courseId.id);
     if (!this.isSchoolValid()) {
       return;
     }
