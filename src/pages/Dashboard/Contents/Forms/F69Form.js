@@ -53,8 +53,13 @@ class F69Form extends Component {
       programmeGroupId: [],
       programmeGroupIds: "",
       programmeGroupIdError: "",
+
       preDate: this.getTomorrowDate(),
       preDateError: "",
+
+      toDate: this.getTomorrowDate(),
+      toDateError: "",
+
       noOfDays:"",
       noOfDaysError:""
     };
@@ -238,6 +243,11 @@ class F69Form extends Component {
     this.setState({preDate: date});
   };
 
+  handleChangeToDate = (date) => {
+    this.setState({toDate: date});
+  };
+
+
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
@@ -401,7 +411,7 @@ class F69Form extends Component {
                 marginRight: 10,
               }}
             >
-              <Grid item xs={12} md={12}>
+              <Grid item xs={6} md={6}>
                 <TextField
                   id="label"
                   name="label"
@@ -467,7 +477,7 @@ class F69Form extends Component {
                   autoOk
                   name="effectiveDate"
                   id="effectiveDate"
-                  label="Effective Date"
+                  label="Effective From Date"
                   invalidDateMessage=""
                   disablePast
                   minDate={Date.parse(this.getTomorrowDate())}
@@ -481,6 +491,28 @@ class F69Form extends Component {
                   onChange={this.handleChangePreDate}
                   error={!!this.state.preDateError}
                   helperText={this.state.preDateError ? this.state.preDateError : " "}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <DatePicker
+                  autoOk
+                  name="effectiveToDate"
+                  id="effectiveToDate"
+                  label="Effective To Date"
+                  invalidDateMessage=""
+                  disablePast
+                  minDate={Date.parse(this.getTomorrowDate())}
+                  placeholder=""
+                  variant="inline"
+                  inputVariant="outlined"
+                  format="dd-MM-yyyy"
+                  fullWidth
+                  required
+                  disabled={this.state.recordId && this.state.recordId != 0}
+                  value={this.state.toDate}
+                  onChange={this.handleChangeToDate}
+                  error={!!this.state.toDateError}
+                  helperText={this.state.toDateError ? this.state.toDateError : " "}
                 />
               </Grid>
               {/* 
