@@ -558,7 +558,7 @@ this.setState({tableBottomFirstColumn:(totalSubjectiveLength+totalExamsLength+to
                       // marginTop: 40
                     }}
                   >
-                    Progress Report<br/>Academic Year<br/>{this.state.academicSessionLabel}<br/>Upto<br/>{this.state.endDate}
+                    Progress Report<br/>Academic Year<br/>{this.state.academicSessionLabel}<br/>Upto<br/>{this.state.uptoDate}
                   </span>
                 </div>
               </div>
