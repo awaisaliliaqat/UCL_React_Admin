@@ -1,33 +1,39 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import {Typography, TextField, MenuItem, Divider, CircularProgress, Grid} from "@material-ui/core";
+import {
+  Typography,
+  TextField,
+  MenuItem,
+  Divider,
+  CircularProgress,
+  Grid,
+} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
-import Avatar from '@material-ui/core/Avatar';
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardMedia from "@material-ui/core/CardMedia";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
+import Collapse from "@material-ui/core/Collapse";
+import Avatar from "@material-ui/core/Avatar";
 
-
-import red from '@material-ui/core/colors/red';
-import PreviewIcon from '@material-ui/icons/ViewModule';
-import ShareIcon from '@material-ui/icons/Share';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import IconButton from '@material-ui/core/IconButton';
+import red from "@material-ui/core/colors/red";
+import PreviewIcon from "@material-ui/icons/ViewModule";
+import ShareIcon from "@material-ui/icons/Share";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import IconButton from "@material-ui/core/IconButton";
 import { Pageview, Report } from "@material-ui/icons";
-import Button from '@material-ui/core/Button';
+import Button from "@material-ui/core/Button";
 
 const styles = {};
 
@@ -100,17 +106,24 @@ class R210Reports extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
-            let dataLength =  data.length || 0;
-            let res = data.find( (option) => option.isActive == 1);
-            if(res){
-              this.setState({academicSessionLabel:data.Label});
+            let dataLength = data.length || 0;
+            let res = data.find((option) => option.isActive == 1);
+            if (res) {
+              this.setState({ academicSessionLabel: data.Label });
               this.loadProgrammes(res.ID);
               this.loadTerms(res.ID);
-              this.setState({academicSessionId:res.ID});
+              this.setState({ academicSessionId: res.ID });
             }
-            this.setState({ academicSessionIdMenuItems:data});
+            this.setState({ academicSessionIdMenuItems: data });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadAcademicSession", json);
         },
@@ -122,7 +135,10 @@ class R210Reports extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -150,9 +166,16 @@ class R210Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({sessionTermMenuItems: json.DATA || [] });
+            this.setState({ sessionTermMenuItems: json.DATA || [] });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("getTerms", json);
         },
@@ -164,7 +187,10 @@ class R210Reports extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -194,7 +220,14 @@ class R210Reports extends Component {
           if (json.CODE === 1) {
             this.setState({ programmeIdMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadProgrammes", json);
         },
@@ -206,7 +239,10 @@ class R210Reports extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -237,7 +273,14 @@ class R210Reports extends Component {
           if (json.CODE === 1) {
             this.setState({ studentMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadUsers", json);
         },
@@ -249,15 +292,22 @@ class R210Reports extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
     this.setState({ isLoading: false });
   };
 
-
-  loadPreviousReports = async (academicSessionId,programmeId,studentId,termId) => {
+  loadPreviousReports = async (
+    academicSessionId,
+    programmeId,
+    studentId,
+    termId
+  ) => {
     let data = new FormData();
     data.append("academicsSessionId", academicSessionId);
     data.append("programmeId", programmeId);
@@ -283,7 +333,14 @@ class R210Reports extends Component {
           if (json.CODE === 1) {
             this.setState({ studentReportItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadUsers", json);
         },
@@ -295,7 +352,10 @@ class R210Reports extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -303,39 +363,92 @@ class R210Reports extends Component {
   };
 
   handleSetUserId = (value) => {
-   // alert(value)
+    // alert(value)
     this.setState({
       studentObj: value,
       studentObjError: "",
     });
-    this.loadPreviousReports(this.state.academicSessionId,this.state.programmeId,value?.id,this.state.sessionTermId);
-  }
+    if(value){
+
+    
+    this.loadPreviousReports(
+      this.state.academicSessionId,
+      this.state.programmeId,
+      value?.id,
+      this.state.sessionTermId
+    );
+    } else {
+      this.setState({
+        studentReportItems: [],
+      })
+    }
+  };
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
     switch (name) {
       case "academicSessionId":
+        if(value){
+          this.setState({
+            programmeId: "",
+            termId: "",
+            sessionTermId: "",
+            sessionTermIdError: "",
+            programmeGroupLabel: "",
+            programmeIdError: "",
+            studentMenuItems: [],
+            studentReportItems: [],
+            studentObj: "",
+            studentObjError: "",
+          });
+          this.loadTerms(value);
+          this.loadProgrammes(value);
+        } else {
         this.setState({
           programmeIdMenuItems: [],
-          programmeId:"",
-          termId:"",
-          termMenuItems:[],
+          programmeId: "",
+          termId: "",
+          termMenuItems: [],
+          sessionTermMenuItems: [],
+          studentReportItems: [],
+          sessionTermId: "",
+          sessionTermIdError: "",
+          programmeGroupLabel: "",
+          programmeIdError: "",
+          studentMenuItems: [],
+          studentObj: "",
+          studentObjError: "",
         });
-        this.loadTerms(value);
-        this.loadProgrammes(value);
+      }
+        
         break;
       case "programmeId":
+        
+        if(value){
+          this.setState({
+            studentObj: "",
+            studentObjError: "",
+            studentReportItems: [],
+          });
         this.loadUsers(value);
-      break;
+        } else {
+          this.setState({
+            studentReportItems: [],
+            studentMenuItems: [],
+            studentObj: "",
+            studentObjError: "",
+          });
+        }
+        break;
       case "sessionTermId":
         let termMenuItems = this.state.sessionTermMenuItems;
         let res = termMenuItems.find((obj) => obj.id === value);
-        if(res){
-          this.setState({endDate:res.endDate});
+        if (res) {
+          this.setState({ endDate: res.endDate });
         }
-      break;
-      
+        break;
+
       default:
     }
     this.setState({
@@ -344,10 +457,8 @@ class R210Reports extends Component {
     });
   };
 
-
   handleGenerateApprovedReport = (id) => {
-  
-    window.open(`#/R301StudentProgressApprovedReport/${id}`,"_blank");
+    window.open(`#/R301StudentProgressApprovedReport/${id}`, "_blank");
   };
 
   handleGenerate = () => {
@@ -355,7 +466,20 @@ class R210Reports extends Component {
     let programmeId = this.state.programmeId;
     let sessionTermId = this.state.sessionTermId;
     let studentId = this.state.studentObj.id;
-    window.open(`#/R210StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId+"&"+this.state.endDate}`,"_blank");
+    window.open(
+      `#/R210StudentProgressReport/${
+        academicSessionId +
+        "&" +
+        programmeId +
+        "&" +
+        sessionTermId +
+        "&" +
+        studentId +
+        "&" +
+        this.state.endDate
+      }`,
+      "_blank"
+    );
   };
 
   handleGenerateAndApprove = () => {
@@ -363,7 +487,20 @@ class R210Reports extends Component {
     let programmeId = this.state.programmeId;
     let sessionTermId = this.state.sessionTermId;
     let studentId = this.state.studentObj.id;
-    window.open(`#/R301StudentProgressReport/${academicSessionId+"&"+programmeId+"&"+sessionTermId+"&"+studentId+"&"+this.state.endDate}`,"_blank");
+    window.open(
+      `#/R301StudentProgressReport/${
+        academicSessionId +
+        "&" +
+        programmeId +
+        "&" +
+        sessionTermId +
+        "&" +
+        studentId +
+        "&" +
+        this.state.endDate
+      }`,
+      "_blank"
+    );
   };
 
   componentDidMount() {
@@ -372,7 +509,6 @@ class R210Reports extends Component {
   }
 
   render() {
-
     const { classes } = this.props;
     const { dense, secondary } = this.state;
     return (
@@ -385,14 +521,10 @@ class R210Reports extends Component {
         <div
           style={{
             padding: 20,
-            marginBottom: 50
+            marginBottom: 50,
           }}
         >
-          <Grid 
-            container 
-            justify="space-between"
-            spacing={2}
-          >
+          <Grid container justify="space-between" spacing={2}>
             <Grid item xs={12}>
               <Typography
                 style={{
@@ -476,16 +608,15 @@ class R210Reports extends Component {
                 value={this.state.sessionTermId}
                 error={!!this.state.sessionTermIdError}
                 helperText={this.state.sessionTermIdError}
-                disabled={!this.state.academicSessionId || !this.state.programmeId}
+                disabled={
+                  !this.state.academicSessionId || !this.state.programmeId
+                }
                 required
                 fullWidth
                 select
               >
                 {this.state.sessionTermMenuItems.map((dt, i) => (
-                  <MenuItem
-                    key={"sessionTermMenuItems"+ dt.id}
-                    value={dt.id}
-                  >
+                  <MenuItem key={"sessionTermMenuItems" + dt.id} value={dt.id}>
                     {dt.label}
                   </MenuItem>
                 ))}
@@ -497,11 +628,9 @@ class R210Reports extends Component {
                 id="studentObj"
                 options={this.state.studentMenuItems || []}
                 value={this.state.studentObj || {}}
-                onChange={(event, value) =>
-                  this.handleSetUserId(value)
-                }
+                onChange={(event, value) => this.handleSetUserId(value)}
                 disabled={!this.state.programmeId}
-                getOptionLabel={(option) =>  option.label ? option.label : ""}
+                getOptionLabel={(option) => (option.label ? option.label : "")}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -515,61 +644,53 @@ class R210Reports extends Component {
               />
             </Grid>
 
-           
-              
-                
-                <div style={{width:"95%",marginTop:"2%"}}>
-                  
-                  {this.state.studentReportItems.map((dt, i) => (
-                 
-                      <>
-                      <Card  style={{marginTop:"2%"}} fullWidth className={classes.card}>
-                        <CardHeader
-                          title="Progress Report"
-                          
-                          
-                        />
-                        
-                        <CardContent>
-                        <Typography component="p">
-                           <b>Approved on :</b>{dt.createdOn}
-                          </Typography>
-                        <Typography component="p">
-                        <b>Show to student on :</b>{  dt.dateToShow}
-                          </Typography>
-                        <Typography component="h">
+            <div style={{ width: "95%", marginTop: "2%" }}>
+              {this.state.studentReportItems.map((dt, i) => (
+                <>
+                  <Card
+                    style={{ marginTop: "2%" }}
+                    fullWidth
+                    className={classes.card}
+                  >
+                    <CardHeader title="Progress Report" />
+
+                    <CardContent>
+                      <Typography component="p">
+                        <b>Approved on :</b>
+                        {dt.createdOn}
+                      </Typography>
+                      <Typography component="p">
+                        <b>Show to student on :</b>
+                        {dt.dateToShow}
+                      </Typography>
+                      <Typography component="h">
                         <b> Comments :</b>
-                          </Typography>
-                          <Typography component="p">
-                            {dt.comments}
-                          </Typography>
-                        </CardContent>
-                        <CardActions className={classes.actions}>
-                        <Grid container
-                          direction="row"
-                          justify="flex-end"
-                          alignItems="baseline">
-                          <Button  style={{textAlign:"right"}} onClick={event =>{this.handleGenerateApprovedReport(dt.reportId)}}  color="primary" className={classes.button}>
-                            View
-                          </Button>
-                        </Grid>
-                         
-                        </CardActions>
-                        
-                      
-                      </Card>   
-                       
-                      </>
-                 
-                   ))}
-                    
-                
-                </div>
-             
-           
-
-
-
+                      </Typography>
+                      <Typography component="p">{dt.comments}</Typography>
+                    </CardContent>
+                    <CardActions className={classes.actions}>
+                      <Grid
+                        container
+                        direction="row"
+                        justify="flex-end"
+                        alignItems="baseline"
+                      >
+                        <Button
+                          style={{ textAlign: "right" }}
+                          onClick={(event) => {
+                            this.handleGenerateApprovedReport(dt.reportId);
+                          }}
+                          color="primary"
+                          className={classes.button}
+                        >
+                          View
+                        </Button>
+                      </Grid>
+                    </CardActions>
+                  </Card>
+                </>
+              ))}
+            </div>
           </Grid>
           <BottomBar
             left_button_text="Genrate & Approve"
@@ -577,8 +698,8 @@ class R210Reports extends Component {
             bottomLeftButtonAction={this.handleGenerateAndApprove}
             right_button_text="Genrate & Approve"
             bottomRightButtonAction={this.handleGenerateAndApprove}
-           // bottomRightButtonAction={this.handleGenerate}
-           hideRightButton={true}
+            // bottomRightButtonAction={this.handleGenerate}
+            hideRightButton={true}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
             disableRightButton={!this.state.studentObj}

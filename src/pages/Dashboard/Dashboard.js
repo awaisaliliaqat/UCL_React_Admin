@@ -170,6 +170,7 @@ import F300Form from "./Contents/Forms/F300Form";
 import R302Reports from "./Contents/Forms/R302Reports";
 import F302Form from "./Contents/Forms/F302Form";
 import F304Form from "./Contents/Forms/DegreeProgrammesActivation/F304Form";
+import F306AnnouncementForEmployeeForm from "./Contents/LMS/AnnouncementForEmployee/F306AnnouncementForEmployeeForm";
 
 
 
@@ -1708,6 +1709,7 @@ const Dashboard = (props) => {
                 path="/dashboard/announcements"
                 component={AnnouncementReports}
               />
+              
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="announcements"
@@ -1716,6 +1718,17 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <AnnouncementForm {...props} isDrawerOpen={isDrawerOpen} />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="announcements for employee"
+                exact
+                path="/dashboard/F306Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F306AnnouncementForEmployeeForm {...props} isDrawerOpen={isDrawerOpen} />
                   );
                 }}
               />
