@@ -361,7 +361,7 @@ class F204Form extends Component {
     this.setState({ isLoading: true });
     let data = new FormData();
     
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lsm/C204CommonAcademicsSessionsTermsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C204CommonAcademicsSessionsTermsView`;
     await fetch(url, {
       method: "POST",
       body: data,
