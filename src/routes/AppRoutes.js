@@ -19,7 +19,7 @@ import R74ReportsAttendanceRecordSheet from '../pages/Dashboard/Contents/Forms/R
 import R210StudentProgressReport from '../pages/Dashboard/Contents/Forms/R210StudentProgressReport';
 import R301StudentProgressReport from '../pages/Dashboard/Contents/Forms/R301StudentProgressReport';
 import R301StudentProgressApprovedReport from '../pages/Dashboard/Contents/Forms/R301StudentProgressApprovedReport';
-
+import R307ApprovedStudentProgressReports from '../pages/Dashboard/Contents/Forms/ApprovedStudentsProgressReports/R307ApprovedStudentProgressReports';
 import R217FeedbackReports from '../pages/Dashboard/Contents/Forms/R217FeedbackReports';
 import R216Reports from '../pages/Dashboard/Contents/Forms/R216Reports';
 import R218StudentProgressReport from '../pages/Dashboard/Contents/Forms/R218StudentProgressReport';
@@ -60,6 +60,7 @@ const AppRoute = () => {
             <PrivateRoutes exact path="/R217FeedbackReports/:id" component={R217FeedbackReports} />
             <PrivateRoutes exact path="/R218StudentProgressReport/:id" component={R218StudentProgressReport} />
             <PrivateRoutes exact path="/R220StudentProgressReport/:id" component={R220StudentProgressReport} />
+            <PrivateRoutes exact path="/R307ApprovedStudentProgressReports/:id" component={R307ApprovedStudentProgressReports} />
             <PrivateRoutes exact path="/R232StudentProgressReport/:id" component={R232StudentProgressReport} />
             <PrivateRoutes exact path="/PayrollDashboard" component={PayrollDashboard} />
             <PrivateRoutes exact path="*" component={Dashboard} />

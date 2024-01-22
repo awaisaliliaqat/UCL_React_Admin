@@ -171,6 +171,7 @@ import R302Reports from "./Contents/Forms/R302Reports";
 import F302Form from "./Contents/Forms/F302Form";
 import F304Form from "./Contents/Forms/DegreeProgrammesActivation/F304Form";
 import F306AnnouncementForEmployeeForm from "./Contents/LMS/AnnouncementForEmployee/F306AnnouncementForEmployeeForm";
+import R307ApprovedProgressReportsFilter from './Contents/Forms/ApprovedStudentsProgressReports/R307ApprovedProgressReportsFilter';
 
 
 
@@ -2108,6 +2109,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R220Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R307ApprovedProgressReportsFilter"
+                exact
+                path="/dashboard/R307ApprovedProgressReportsFilter"
+                render={(props) => {
+                  return (
+                    <R307ApprovedProgressReportsFilter
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
