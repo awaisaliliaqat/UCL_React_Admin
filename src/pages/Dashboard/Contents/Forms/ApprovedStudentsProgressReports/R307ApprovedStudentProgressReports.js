@@ -15,7 +15,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TextField
+  TextField,
 } from "@material-ui/core";
 
 export const LandscapeOrientation = () => (
@@ -481,316 +481,207 @@ Total Number Of Exams Header Columns
             <thead></thead>
             <tbody>
               {this.state.allStudentData.map((d, i) => (
-                <div key={d} className={classes.flexColumn}>
-                  <br />
-                  <TableContainer
-                    component={Paper}
-                    style={{ overflowX: "inherit" }}
-                  >
-                    <div style={{ display: "inlineBlock" }}>
-                      <div
-                        style={{
-                          display: "inline-block",
-                        }}
-                      >
-                        <Grid
-                          container
-                          direction="row"
-                          justify="left"
-                          alignItems="left"
-                        >
-                          {this.state.programmeLabel == "GCE A Level" ? (
-                            <Fragment>
-                              <Grid>
-                                <img
-                                  src={UniversityLogo}
-                                  alt="Logo"
-                                  height={50}
-                                />{" "}
-                              </Grid>
-                              <Grid>
-                                <span className={classes.title}>
-                                  University College Lahore
-                                </span>
-                              </Grid>
-                            </Fragment>
-                          ) : (
-                            <Fragment>
-                              <Grid>
-                                <img src={Logo} alt="Logo" height={50} />{" "}
-                              </Grid>
-                              <Grid>
-                                <span className={classes.title}>
-                                  Universal College Lahore
-                                </span>
-                              </Grid>
-                            </Fragment>
-                          )}
-                        </Grid>
-                        <br />
-                        <span
-                          className={classes.subTitle}
-                          style={{ padding: 8 }}
-                        >
-                          {d.studentName}
-                        </span>
-                        <span
-                          className={classes.subTitle}
-                          style={{ padding: 8 }}
-                        >
-                          {this.state.studentLabel}
-                        </span>
-
-                        {this.state.programmeLabel == "GCE A Level" ? (
-                          <>
-                            <br />
-
-                            <span className={classes.subTitle}>
-                              {this.state.alevelYear}
-                            </span>
-                          </>
-                        ) : (
-                          <Fragment></Fragment>
-                        )}
-                        <br />
-                        <span
-                          className={classes.subTitle}
-                          style={{ padding: 8 }}
-                        >
-                          {this.state.programmeLabel}
-                        </span>
-                        <br />
-                        <span
-                          className={classes.subTitle}
-                          style={{ padding: 8 }}
-                        >
-                          {d.pathwayLabel}
-                        </span>
-                        {/* <br/>
-                  <span className={classes.subTitle}>Total Students: {this.state.totalStudents}</span> */}
-                        {/* <br/> */}
-                      </div>
-                      {/* <div>
-                
-                </div> */}
-                      <div style={{ display: "inline" }}>
-                        <span
+                <>
+                  <div key={d} className={classes.flexColumn}>
+                    <br />
+                    <TableContainer
+                      component={Paper}
+                      style={{ overflowX: "inherit" }}
+                    >
+                      <div style={{ display: "inlineBlock" }}>
+                        <div
                           style={{
-                            fontSize: "1em",
-                            fontWeight: 700,
-                            textAlign: "center",
-                            color: "#2f57a5",
-                            width: 160,
-                            padding: 10,
-                            border: "solid 2px #2f57a5",
-                            display: "block",
-                            float: "right",
-                            marginBottom: 7,
-                            // marginRight: 56,
-                            // marginTop: 40
+                            display: "inline-block",
                           }}
                         >
-                          Progress Report
-                          <br />
-                          Academic Year
-                          <br />
-                          {this.state.academicSessionLabel}
-                          <br />
-                          Upto
-                          <br />
-                          {this.state.uptoDate}
-                        </span>
-                      </div>
-                    </div>
-                    <Table
-                      size="small"
-                      className={classes.table}
-                      aria-label={"customized table" + i}
-                    >
-                      <TableHead>
-                        <TableRow>
-                          <StyledTableCell
-                            align="center"
-                            rowSpan="2"
-                            style={{ borderLeft: "1px solid rgb(47, 87, 165)" }}
+                          <Grid
+                            container
+                            direction="row"
+                            justify="left"
+                            alignItems="left"
                           >
-                            Subject
-                          </StyledTableCell>
-                          <StyledTableCell align="center" colSpan="4">
-                            Attendance Record
-                          </StyledTableCell>
-                          <StyledTableCell
-                            align="center"
-                            colSpan={this.state.tableAssignmentHeaderColumn}
+                            {this.state.programmeLabel == "GCE A Level" ? (
+                              <Fragment>
+                                <Grid>
+                                  <img
+                                    src={UniversityLogo}
+                                    alt="Logo"
+                                    height={50}
+                                  />{" "}
+                                </Grid>
+                                <Grid>
+                                  <span className={classes.title}>
+                                    University College Lahore
+                                  </span>
+                                </Grid>
+                              </Fragment>
+                            ) : (
+                              <Fragment>
+                                <Grid>
+                                  <img src={Logo} alt="Logo" height={50} />{" "}
+                                </Grid>
+                                <Grid>
+                                  <span className={classes.title}>
+                                    Universal College Lahore
+                                  </span>
+                                </Grid>
+                              </Fragment>
+                            )}
+                          </Grid>
+                          <br />
+                          <span
+                            className={classes.subTitle}
+                            style={{ padding: 8 }}
                           >
-                            Assessment Grades
-                          </StyledTableCell>
-                          {this.state.tableSeminarHeaderColumn > 0 && (
-                            <StyledTableCell
-                              align="center"
-                              colSpan={this.state.tableSeminarHeaderColumn}
-                            >
-                              Seminar Grades
-                            </StyledTableCell>
+                            {d.studentName}
+                          </span>
+                          <span
+                            className={classes.subTitle}
+                            style={{ padding: 8 }}
+                          >
+                            {this.state.studentLabel}
+                          </span>
+
+                          {this.state.programmeLabel == "GCE A Level" ? (
+                            <>
+                              <br />
+
+                              <span className={classes.subTitle}>
+                                {this.state.alevelYear}
+                              </span>
+                            </>
+                          ) : (
+                            <Fragment></Fragment>
                           )}
-                          <StyledTableCell
-                            align="center"
-                            colSpan={this.state.tableSubjectiveHeaderColumn}
+                          <br />
+                          <span
+                            className={classes.subTitle}
+                            style={{ padding: 8 }}
                           >
-                            Subjective Eval Grades
-                          </StyledTableCell>
-                          <StyledTableCell
-                            align="center"
-                            colSpan={this.state.tableExamHeaderColumn}
+                            {this.state.programmeLabel}
+                          </span>
+                          <br />
+                          <span
+                            className={classes.subTitle}
+                            style={{ padding: 8 }}
                           >
-                            Examinations
-                          </StyledTableCell>
-                          <StyledTableCell align="center" colSpan="3">
-                            Credits
-                          </StyledTableCell>
-                          <StyledTableCell
-                            rowSpan="2"
-                            align="center"
+                            {d.pathwayLabel}
+                          </span>
+                          {/* <br/>
+                  <span className={classes.subTitle}>Total Students: {this.state.totalStudents}</span> */}
+                          {/* <br/> */}
+                        </div>
+                        {/* <div>
+                
+                </div> */}
+                        <div style={{ display: "inline" }}>
+                          <span
                             style={{
-                              borderRight: "1px solid rgb(47, 87, 165)",
-                              width: 60,
+                              fontSize: "1em",
+                              fontWeight: 700,
+                              textAlign: "center",
+                              color: "#2f57a5",
+                              width: 160,
+                              padding: 10,
+                              border: "solid 2px #2f57a5",
+                              display: "block",
+                              float: "right",
+                              marginBottom: 7,
+                              // marginRight: 56,
+                              // marginTop: 40
                             }}
                           >
-                            Overall <br />
-                            Grade
-                          </StyledTableCell>
-                        </TableRow>
-                        <TableRow>
-                          {this.state.tableHeaderData &&
-                            this.state.tableHeaderData.map((data, index) => (
-                              <StyledTableCell
-                                key={data + index}
-                                style={
-                                  data == "Credits"
-                                    ? { width: 40 }
-                                    : { width: "unset" }
-                                }
-                                align="center"
-                              >
-                                {data}
-                              </StyledTableCell>
-                            ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <Fragment>
+                            Progress Report
+                            <br />
+                            Academic Year
+                            <br />
+                            {this.state.academicSessionLabel}
+                            <br />
+                            Upto
+                            <br />
+                            {this.state.uptoDate}
+                          </span>
+                        </div>
+                      </div>
+                      <Table
+                        size="small"
+                        className={classes.table}
+                        aria-label={"customized table" + i}
+                      >
+                        <TableHead>
                           <TableRow>
                             <StyledTableCell
-                              colSpan={
-                                this.state.tableAssignmentHeaderColumn +
-                                this.state.tableSeminarHeaderColumn +
-                                this.state.tableSubjectiveHeaderColumn +
-                                this.state.tableExamHeaderColumn +
-                                9
-                              }
-                              style={{ backgroundColor: "#e1e3e8" }}
+                              align="center"
+                              rowSpan="2"
+                              style={{
+                                borderLeft: "1px solid rgb(47, 87, 165)",
+                              }}
                             >
-                              &nbsp;
+                              Subject
+                            </StyledTableCell>
+                            <StyledTableCell align="center" colSpan="4">
+                              Attendance Record
+                            </StyledTableCell>
+                            <StyledTableCell
+                              align="center"
+                              colSpan={this.state.tableAssignmentHeaderColumn}
+                            >
+                              Assessment Grades
+                            </StyledTableCell>
+                            {this.state.tableSeminarHeaderColumn > 0 && (
+                              <StyledTableCell
+                                align="center"
+                                colSpan={this.state.tableSeminarHeaderColumn}
+                              >
+                                Seminar Grades
+                              </StyledTableCell>
+                            )}
+                            <StyledTableCell
+                              align="center"
+                              colSpan={this.state.tableSubjectiveHeaderColumn}
+                            >
+                              Subjective Eval Grades
+                            </StyledTableCell>
+                            <StyledTableCell
+                              align="center"
+                              colSpan={this.state.tableExamHeaderColumn}
+                            >
+                              Examinations
+                            </StyledTableCell>
+                            <StyledTableCell align="center" colSpan="3">
+                              Credits
+                            </StyledTableCell>
+                            <StyledTableCell
+                              rowSpan="2"
+                              align="center"
+                              style={{
+                                borderRight: "1px solid rgb(47, 87, 165)",
+                                width: 60,
+                              }}
+                            >
+                              Overall <br />
+                              Grade
                             </StyledTableCell>
                           </TableRow>
-                          {d.tableData.length > 0 ? (
-                            <Fragment>
-                              {d.tableData.map((row, index) => (
-                                <StyledTableRow key={"row" + index}>
-                                  {row.map((cellData, callIndex) => (
-                                    <StyledTableCell
-                                      key={"[" + index + "][" + callIndex + "]"}
-                                      style={
-                                        callIndex == 0
-                                          ? { paddingLeft: "1%" }
-                                          : { paddingLeft: "0%" }
-                                      }
-                                      align={callIndex == 0 ? "left" : "center"}
-                                    >
-                                      {cellData}
-                                    </StyledTableCell>
-                                  ))}
-                                </StyledTableRow>
+                          <TableRow>
+                            {this.state.tableHeaderData &&
+                              this.state.tableHeaderData.map((data, index) => (
+                                <StyledTableCell
+                                  key={data + index}
+                                  style={
+                                    data == "Credits"
+                                      ? { width: 40 }
+                                      : { width: "unset" }
+                                  }
+                                  align="center"
+                                >
+                                  {data}
+                                </StyledTableCell>
                               ))}
-                              <TableRow>
-                                <StyledTableCell
-                                  colSpan={this.state.tableBottomFirstColumn}
-                                  align="right"
-                                  style={{
-                                    borderRight: "none",
-                                    borderBottom: "none",
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  Accumulated Credit:&emsp;
-                                </StyledTableCell>
-                                <StyledTableCell
-                                  align="center"
-                                  style={{
-                                    borderRight: "none",
-                                    borderLeft: "none",
-                                    borderBottom: "none",
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {d.totalPOS}
-                                </StyledTableCell>
-                                <StyledTableCell
-                                  align="center"
-                                  style={{
-                                    borderRight: "none",
-                                    borderLeft: "none",
-                                    borderBottom: "none",
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {d.totalAchieved}
-                                </StyledTableCell>
-                                <StyledTableCell
-                                  align="center"
-                                  style={{
-                                    borderRight: "none",
-                                    borderLeft: "none",
-                                    borderBottom: "none",
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {d.totalPercentage}
-                                </StyledTableCell>
-                                <StyledTableCell
-                                  style={{
-                                    borderLeft: "none",
-                                    borderBottom: "none",
-                                    fontWeight: 600,
-                                  }}
-                                ></StyledTableCell>
-                              </TableRow>
-                              <TableRow>
-                                <StyledTableCell
-                                  colSpan={this.state.tableBottomFirstColumn}
-                                  align="right"
-                                  style={{
-                                    borderRight: "none",
-                                    borderTop: "none",
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  Result Classification:&emsp;
-                                </StyledTableCell>
-                                <StyledTableCell
-                                  colSpan="4"
-                                  align="center"
-                                  style={{
-                                    borderLeft: "none",
-                                    borderTop: "none",
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  &emsp;{d.resultClassification}
-                                </StyledTableCell>
-                              </TableRow>
-                            </Fragment>
-                          ) : (
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          <Fragment>
                             <TableRow>
                               <StyledTableCell
                                 colSpan={
@@ -800,53 +691,207 @@ Total Number Of Exams Header Columns
                                   this.state.tableExamHeaderColumn +
                                   9
                                 }
+                                style={{ backgroundColor: "#e1e3e8" }}
                               >
                                 &nbsp;
                               </StyledTableCell>
                             </TableRow>
-                          )}
-                        </Fragment>
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                            {d.tableData.length > 0 ? (
+                              <Fragment>
+                                {d.tableData.map((row, index) => (
+                                  <StyledTableRow key={"row" + index}>
+                                    {row.map((cellData, callIndex) => (
+                                      <StyledTableCell
+                                        key={
+                                          "[" + index + "][" + callIndex + "]"
+                                        }
+                                        style={
+                                          callIndex == 0
+                                            ? { paddingLeft: "1%" }
+                                            : { paddingLeft: "0%" }
+                                        }
+                                        align={
+                                          callIndex == 0 ? "left" : "center"
+                                        }
+                                      >
+                                        {cellData}
+                                      </StyledTableCell>
+                                    ))}
+                                  </StyledTableRow>
+                                ))}
+                                <TableRow>
+                                  <StyledTableCell
+                                    colSpan={this.state.tableBottomFirstColumn}
+                                    align="right"
+                                    style={{
+                                      borderRight: "none",
+                                      borderBottom: "none",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    Accumulated Credit:&emsp;
+                                  </StyledTableCell>
+                                  <StyledTableCell
+                                    align="center"
+                                    style={{
+                                      borderRight: "none",
+                                      borderLeft: "none",
+                                      borderBottom: "none",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {d.totalPOS}
+                                  </StyledTableCell>
+                                  <StyledTableCell
+                                    align="center"
+                                    style={{
+                                      borderRight: "none",
+                                      borderLeft: "none",
+                                      borderBottom: "none",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {d.totalAchieved}
+                                  </StyledTableCell>
+                                  <StyledTableCell
+                                    align="center"
+                                    style={{
+                                      borderRight: "none",
+                                      borderLeft: "none",
+                                      borderBottom: "none",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {d.totalPercentage}
+                                  </StyledTableCell>
+                                  <StyledTableCell
+                                    style={{
+                                      borderLeft: "none",
+                                      borderBottom: "none",
+                                      fontWeight: 600,
+                                    }}
+                                  ></StyledTableCell>
+                                </TableRow>
+                                <TableRow>
+                                  <StyledTableCell
+                                    colSpan={this.state.tableBottomFirstColumn}
+                                    align="right"
+                                    style={{
+                                      borderRight: "none",
+                                      borderTop: "none",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    Result Classification:&emsp;
+                                  </StyledTableCell>
+                                  <StyledTableCell
+                                    colSpan="4"
+                                    align="center"
+                                    style={{
+                                      borderLeft: "none",
+                                      borderTop: "none",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    &emsp;{d.resultClassification}
+                                  </StyledTableCell>
+                                </TableRow>
+                              </Fragment>
+                            ) : (
+                              <TableRow>
+                                <StyledTableCell
+                                  colSpan={
+                                    this.state.tableAssignmentHeaderColumn +
+                                    this.state.tableSeminarHeaderColumn +
+                                    this.state.tableSubjectiveHeaderColumn +
+                                    this.state.tableExamHeaderColumn +
+                                    9
+                                  }
+                                >
+                                  &nbsp;
+                                </StyledTableCell>
+                              </TableRow>
+                            )}
+                          </Fragment>
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
 
-                  <br />
+                    <br />
 
-                  <Grid
-                    container
-                    direction="row"
-                    justify="left"
-                    alignItems="left"
-                  >
-                    <Grid item xs={12}>
-                      <TextField
-                        id="comments"
-                        name="comments"
-                        label={
-                          <div
-                            style={{
-                              fontWeight: 600,
-                              color: "black",
-                            }}
-                          >
-                            Comments
-                          </div>
-                        }
-                        multiline
-                        rows="3"
-                        variant="outlined"
-                        style={{ width: "100%" }}
-                        aria-readonly
-                        placeholder={"Comments"}
-                        value={d.comments}
-                        inputProps={{ style: { fontWeight: 600 } }}
-                        // onChange={this.handleChange}
-                      />
+                    <Grid
+                      container
+                      direction="row"
+                      justify="left"
+                      alignItems="left"
+                    >
+                      <Grid item xs={12}>
+                        <TextField
+                          id="comments"
+                          name="comments"
+                          label={
+                            <div
+                              style={{
+                                fontWeight: 600,
+                                color: "black",
+                              }}
+                            >
+                              Comments
+                            </div>
+                          }
+                          multiline
+                          rows="3"
+                          variant="outlined"
+                          style={{ width: "100%" }}
+                          aria-readonly
+                          placeholder={"Comments"}
+                          value={d.comments}
+                          inputProps={{ style: { fontWeight: 600 } }}
+                          // onChange={this.handleChange}
+                        />
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </div>
+                    <div
+                      style={{
+                        display: "block",
+                        float: "right",
+                        width: "18%",
+                        marginLeft: "82%",
+                        marginTop: "2%",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 11,
+                          fontWeight: "600",
+                          width: 200,
+                          textAlign: "left",
+                          float: "left",
+                        }}
+                      >
+                        <b> Issuing Authority: </b>
+                      </span>
+                      <br />
+                      <span
+                        style={{
+                          fontSize: 11,
+                          fontWeight: "600",
+                          width: 180,
+                          textAlign: "left",
+                          float: "right",
+                        }}
+                      >
+                        <b>Programme Coordinator</b>
+                        <br />
+                        <b>This is a system generated report</b>
+                        <br />
+                        <b>No signature required</b>
+                      </span>
+                    </div>
+                  </div>
+                  <div className={classes.bottomSpace}></div>
+                </>
               ))}
-              <div className={classes.bottomSpace}></div>
             </tbody>
           </table>
         </div>
