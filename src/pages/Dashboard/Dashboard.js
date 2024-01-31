@@ -172,6 +172,7 @@ import F302Form from "./Contents/Forms/F302Form";
 import F304Form from "./Contents/Forms/DegreeProgrammesActivation/F304Form";
 import F306AnnouncementForEmployeeForm from "./Contents/LMS/AnnouncementForEmployee/F306AnnouncementForEmployeeForm";
 import R307ApprovedProgressReportsFilter from './Contents/Forms/ApprovedStudentsProgressReports/R307ApprovedProgressReportsFilter';
+import DefineEmployeeForm from "./Contents/Forms/Define Employee/DefineEmployeeForm";
 
 
 
@@ -1447,6 +1448,17 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <DefineTeacherFrom {...props} isDrawerOpen={isDrawerOpen} />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="define-employees"
+                exact
+                path="/dashboard/define-employees/:recordId"
+                render={(props) => {
+                  return (
+                    <DefineEmployeeForm {...props} isDrawerOpen={isDrawerOpen} />
                   );
                 }}
               />
