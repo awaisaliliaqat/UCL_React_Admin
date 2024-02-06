@@ -24,7 +24,7 @@ import DefineEmployeeRolesSection from "./Chunks/DefineEmployeeRolesSection";
 
 const styles = () => ({
   root: {
-    paddingBottom: 20,
+    paddingBottom: 50,
     paddingLeft: 20,
     paddingRight: 20,
   },
@@ -92,12 +92,12 @@ class DefineEmployeeForm extends Component {
   }
 
   componentDidMount() {
-    if (this.state.recordId != 0) {
-      this.loadData(this.state.recordId);
-    }
     this.getEmployeesJobStatusData();
     this.getEmployeesRolesData();
     this.getEmployeesDesignationsData([], [], []);
+    if (this.state.recordId != 0) {
+      this.loadData(this.state.recordId);
+    }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -134,7 +134,7 @@ class DefineEmployeeForm extends Component {
     const data = new FormData();
     data.append("id", index);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersViewV2`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -163,7 +163,17 @@ class DefineEmployeeForm extends Component {
                   jobStatusId,
                   address,
                   password,
+                  employeesRolesArray = [],
+                  employeesEntitiesArray = [],
+                  employeesDepartmentsArray = [],
+                  employeesSubDepartmentsArray = [],
+                  employeesDesignationsArray = [],
                 } = json.DATA[0];
+
+                this.getEmployeesEntitiesData(employeesRolesArray);
+                this.getEmployeesDepartmentsData(employeesEntitiesArray);
+                this.getEmployeesSubDepartmentsData(employeesEntitiesArray, employeesDepartmentsArray);
+
                 this.setState({
                   firstName,
                   lastName,
@@ -174,6 +184,11 @@ class DefineEmployeeForm extends Component {
                   jobStatusId,
                   address,
                   password,
+                  employeesRolesArray,
+                  employeesEntitiesArray,
+                  employeesDepartmentsArray,
+                  employeesSubDepartmentsArray,
+                  employeesDesignationsArray,
                 });
               }
             }
@@ -257,7 +272,10 @@ class DefineEmployeeForm extends Component {
           employeesSubDepartmentsArray: [],
           employeesSubDepartmentsArrayError: "",
         });
-        this.getEmployeesSubDepartmentsData(this.state.employeesEntitiesArray||[], value || []);
+        this.getEmployeesSubDepartmentsData(
+          this.state.employeesEntitiesArray || [],
+          value || []
+        );
         break;
       default:
         break;
@@ -282,6 +300,9 @@ class DefineEmployeeForm extends Component {
       jobStatusIdError,
       addressError,
       passwordError,
+      employeesRolesArrayError,
+      employeesEntitiesArrayError,
+      employeesDesignationsArrayError,
     } = this.state;
 
     if (!this.state.firstName) {
@@ -361,6 +382,27 @@ class DefineEmployeeForm extends Component {
       passwordError = "";
     }
 
+    if (!(this.state.employeesRolesArray?.length > 0)) {
+      isValid = false;
+      employeesRolesArrayError = "Please select roles";
+    } else {
+      employeesRolesArrayError = "";
+    }
+
+    if (!(this.state.employeesEntitiesArray?.length > 0)) {
+      isValid = false;
+      employeesEntitiesArrayError = "Please select entities";
+    } else {
+      employeesEntitiesArrayError = "";
+    }
+
+    if (!(this.state.employeesDesignationsArray?.length > 0)) {
+      isValid = false;
+      employeesDesignationsArrayError = "Please select designations";
+    } else {
+      employeesDesignationsArrayError = "";
+    }
+
     this.setState({
       firstNameError,
       lastNameError,
@@ -371,6 +413,9 @@ class DefineEmployeeForm extends Component {
       jobStatusIdError,
       addressError,
       passwordError,
+      employeesRolesArrayError,
+      employeesEntitiesArrayError,
+      employeesDesignationsArrayError,
     });
 
     return isValid;
@@ -675,10 +720,10 @@ class DefineEmployeeForm extends Component {
       }
     }
     if (departmentIds != null && departmentIds.length > 0) {
-        for (let i = 0; i < departmentIds.length; i++) {
-          data.append("departmentId", departmentIds[i].id);
-        }
+      for (let i = 0; i < departmentIds.length; i++) {
+        data.append("departmentId", departmentIds[i].id);
       }
+    }
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -727,8 +772,34 @@ class DefineEmployeeForm extends Component {
   onFormSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
+
+    const roleIdsArray = this.state.employeesRolesArray || [];
+    for (let i = 0; i < roleIdsArray.length; i++) {
+      data.append("roleIds", roleIdsArray[i]["id"]);
+    }
+
+    const entityIdsArray = this.state.employeesEntitiesArray || [];
+    for (let i = 0; i < entityIdsArray.length; i++) {
+      data.append("entityIds", entityIdsArray[i]["id"]);
+    }
+
+    const departmentIdsArray = this.state.employeesDepartmentsArray || [];
+    for (let i = 0; i < departmentIdsArray.length; i++) {
+      data.append("departmentIds", departmentIdsArray[i]["id"]);
+    }
+
+    const subDepartmentIdsArray = this.state.employeesSubDepartmentsArray || [];
+    for (let i = 0; i < subDepartmentIdsArray.length; i++) {
+      data.append("subDepartmentIds", subDepartmentIdsArray[i]["id"]);
+    }
+
+    const designationIdsArray = this.state.employeesDesignationsArray || [];
+    for (let i = 0; i < designationIdsArray.length; i++) {
+      data.append("designationsIds", designationIdsArray[i]["id"]);
+    }
+
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersSaveV2`;
     await fetch(url, {
       method: "POST",
       body: data,

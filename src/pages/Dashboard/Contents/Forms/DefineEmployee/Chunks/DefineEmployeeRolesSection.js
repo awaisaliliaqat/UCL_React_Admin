@@ -40,6 +40,7 @@ const DefineEmployeeRolesSection = (props) => {
           getOptionLabel={(option) =>
             typeof option.label === "string" ? option.label : ""
           }
+          getOptionSelected={(option, value) => option.id === value.id}
           fullWidth
           aria-autocomplete="none"
           options={props.state.employeesRolesData}
@@ -98,6 +99,7 @@ const DefineEmployeeRolesSection = (props) => {
           }
           limitTags={3}
           fullWidth
+          getOptionSelected={(option, value) => option.id === value.id}
           renderTags={(tagValue, getTagProps) =>
             tagValue.map((option, index) => (
               <Chip
@@ -159,6 +161,7 @@ const DefineEmployeeRolesSection = (props) => {
           options={props.state.employeesDepartmentsData}
           loading={props.state.employeesDepartmentsDataLoading}
           value={props.state.employeesDepartmentsArray}
+          getOptionSelected={(option, value) => option.id === value.id}
           renderTags={(tagValue, getTagProps) =>
             tagValue.map((option, index) => (
               <Chip
@@ -216,6 +219,7 @@ const DefineEmployeeRolesSection = (props) => {
           options={props.state.employeesSubDepartmentsData}
           loading={props.state.employeesSubDepartmentsDataLoading}
           value={props.state.employeesSubDepartmentsArray}
+          getOptionSelected={(option, value) => option.id === value.id}
           onChange={(e, value) =>
             props.onHandleChange({
               target: { name: "employeesSubDepartmentsArray", value },
@@ -274,6 +278,7 @@ const DefineEmployeeRolesSection = (props) => {
           options={props.state.employeesDesignationsData}
           loading={props.state.employeesDesignationsDataLoading}
           value={props.state.employeesDesignationsArray}
+          getOptionSelected={(option, value) => option.id === value.id}
           renderTags={(tagValue, getTagProps) =>
             tagValue.map((option, index) => (
               <Chip

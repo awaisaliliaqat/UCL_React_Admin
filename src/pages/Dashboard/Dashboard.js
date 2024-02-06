@@ -172,7 +172,8 @@ import F302Form from "./Contents/Forms/F302Form";
 import F304Form from "./Contents/Forms/DegreeProgrammesActivation/F304Form";
 import F306AnnouncementForEmployeeForm from "./Contents/LMS/AnnouncementForEmployee/F306AnnouncementForEmployeeForm";
 import R307ApprovedProgressReportsFilter from './Contents/Forms/ApprovedStudentsProgressReports/R307ApprovedProgressReportsFilter';
-import DefineEmployeeForm from "./Contents/Forms/Define Employee/DefineEmployeeForm";
+import DefineEmployeeForm from "./Contents/Forms/DefineEmployee/DefineEmployeeForm";
+import DefineEmployeeReports from "./Contents/Forms/DefineEmployee/DefineEmployeeReports";
 
 
 
@@ -1468,6 +1469,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/teacher-reports"
                 component={DefineTeacherReports}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="define-teachers"
+                exact
+                path="/dashboard/employee-reports"
+                component={DefineEmployeeReports}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

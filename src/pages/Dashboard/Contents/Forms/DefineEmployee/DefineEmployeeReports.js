@@ -8,7 +8,7 @@ import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/Cus
 import EditDeleteTableComponent from "../../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
 import DefineEmployeeReportsTableComponent from "./Chunks/DefineEmployeeReportsTableComponent";
 
-class F06Reports extends Component {
+class DefineEmployeeReports extends Component {
 
     constructor(props) {
         super(props);
@@ -45,7 +45,7 @@ class F06Reports extends Component {
         this.setState({
             isLoading: true
         })
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersViewV2`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -99,7 +99,7 @@ class F06Reports extends Component {
     DeleteData = async (event) => {
         event.preventDefault();
         const data = new FormData(event.target);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersDelete`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersDeleteV2`;
         await fetch(url, {
             method: "POST",
             body: data,
@@ -215,4 +215,4 @@ class F06Reports extends Component {
         );
     }
 }
-export default F06Reports;
+export default DefineEmployeeReports;
