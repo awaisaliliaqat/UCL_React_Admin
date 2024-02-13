@@ -36,6 +36,13 @@ const styles = () => ({
   chip: {
     margin: 2,
   },
+  foundedEmployeesLabel: {
+    fontWeight: 600,
+    display: "flex",
+    alignItems: "center",
+    height: "90%",
+    marginLeft: 10,
+  },
 });
 
 class F306AnnouncementForEmployeeForm extends Component {
@@ -80,6 +87,8 @@ class F306AnnouncementForEmployeeForm extends Component {
       employeesDesignationsDataLoading: false,
       employeesDesignationsArray: [],
       employeesDesignationsArrayError: "",
+
+      totalUsersCount: 0,
     };
   }
 
@@ -124,6 +133,83 @@ class F306AnnouncementForEmployeeForm extends Component {
               "Failed to Get Data ! Please try Again later.",
               "error"
             );
+          }
+        }
+      );
+    this.setState({ employeesRolesDataLoading: false });
+  };
+
+  getEmployeesCounterData = async (
+    roleIds,
+    entityIds,
+    departmentIds,
+    subDepartmentIds,
+    designationsIds
+  ) => {
+    let data = new FormData();
+    const roleIdsArray = roleIds || [];
+    for (let i = 0; i < roleIdsArray.length; i++) {
+      data.append("roleIds", roleIdsArray[i]["id"]);
+    }
+
+    const entityIdsArray = entityIds || [];
+    for (let i = 0; i < entityIdsArray.length; i++) {
+      data.append("entityIds", entityIdsArray[i]["id"]);
+    }
+
+    const departmentIdsArray = departmentIds || [];
+    for (let i = 0; i < departmentIdsArray.length; i++) {
+      data.append("departmentIds", departmentIdsArray[i]["id"]);
+    }
+
+    const subDepartmentIdsArray = subDepartmentIds || [];
+    for (let i = 0; i < subDepartmentIdsArray.length; i++) {
+      data.append("subDepartmentIds", subDepartmentIdsArray[i]["id"]);
+    }
+
+    const designationIdsArray = designationsIds || [];
+    for (let i = 0; i < designationIdsArray.length; i++) {
+      data.append("designationsIds", designationIdsArray[i]["id"]);
+    }
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C306CommonAcademicsAnnouncementsForEmployeesCountView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+      body: data,
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            const data = json.DATA || [];
+            const { totalUsersCount = 0 } = data[0] || {};
+
+            this.setState({
+              totalUsersCount,
+            });
+          } else {
+            this.handleOpenSnackbar(
+              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              "error"
+            );
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
           }
         }
       );
@@ -374,7 +460,7 @@ class F306AnnouncementForEmployeeForm extends Component {
     const data = new FormData();
     data.append("id", index);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C306CommonAcademicsAnouncementsForEmployeesView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C306CommonAcademicsAnnouncementsForEmployeesView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -406,7 +492,17 @@ class F306AnnouncementForEmployeeForm extends Component {
 
               this.getEmployeesEntitiesData(employeesRolesArray);
               this.getEmployeesDepartmentsData(employeesEntitiesArray);
-              this.getEmployeesSubDepartmentsData(employeesEntitiesArray, employeesDepartmentsArray);
+              this.getEmployeesSubDepartmentsData(
+                employeesEntitiesArray,
+                employeesDepartmentsArray
+              );
+              this.getEmployeesCounterData(
+                employeesRolesArray,
+                employeesEntitiesArray,
+                employeesDepartmentsArray,
+                employeesSubDepartmentsArray,
+                employeesDesignationsArray
+              );
 
               this.setState({
                 label,
@@ -539,6 +635,9 @@ class F306AnnouncementForEmployeeForm extends Component {
 
   onFormSubmit = async (e) => {
     e.preventDefault();
+
+    this.setState({ isLoading: true });
+
     const data = new FormData(e.target);
 
     const roleIdsArray = this.state.employeesRolesArray || [];
@@ -565,8 +664,8 @@ class F306AnnouncementForEmployeeForm extends Component {
     for (let i = 0; i < designationIdsArray.length; i++) {
       data.append("designationsIds", designationIdsArray[i]["id"]);
     }
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C306CommonAcademicsAnouncementsForEmployeesSave`;
+
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C306CommonAcademicsAnnouncementsForEmployeesSave`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -619,7 +718,7 @@ class F306AnnouncementForEmployeeForm extends Component {
     this.setState({ isLoading: false });
   };
   viewReport = () => {
-    window.location = "#/dashboard/announcements";
+    window.location = "#/dashboard/announcements-for-employee-reports";
   };
 
   onHandleChange = (e) => {
@@ -643,6 +742,7 @@ class F306AnnouncementForEmployeeForm extends Component {
           employeesSubDepartmentsDataLoading: false,
         });
         this.getEmployeesEntitiesData(value || []);
+        this.getEmployeesCounterData(value || [], [], [], [], []);
         break;
       case "employeesEntitiesArray":
         this.setState({
@@ -654,6 +754,13 @@ class F306AnnouncementForEmployeeForm extends Component {
           employeesSubDepartmentsData: [],
           employeesSubDepartmentsDataLoading: false,
         });
+        this.getEmployeesCounterData(
+          this.state.employeesRolesArray || [],
+          value || [],
+          [],
+          [],
+          []
+        );
         this.getEmployeesDepartmentsData(value || []);
         break;
       case "employeesDepartmentsArray":
@@ -665,7 +772,32 @@ class F306AnnouncementForEmployeeForm extends Component {
           this.state.employeesEntitiesArray || [],
           value || []
         );
+        this.getEmployeesCounterData(
+          this.state.employeesRolesArray || [],
+          this.state.employeesEntitiesArray || [],
+          value || [],
+          [],
+          []
+        );
         break;
+        case "employeesSubDepartmentsArray":
+          this.getEmployeesCounterData(
+            this.state.employeesRolesArray || [],
+            this.state.employeesEntitiesArray || [],
+            this.state.employeesDepartmentsArray || [],
+            value || [],
+            []
+          );
+          break;
+          case "employeesDesignationsArray":
+          this.getEmployeesCounterData(
+            this.state.employeesRolesArray || [],
+            this.state.employeesEntitiesArray || [],
+            this.state.employeesDepartmentsArray || [],
+            this.state.employeesSubDepartmentsArray || [],
+            value || [],
+          );
+          break;
       default:
         break;
     }
@@ -719,7 +851,7 @@ class F306AnnouncementForEmployeeForm extends Component {
           />
           <Grid container component="main" className={classes.root}>
             <Typography className={classes.title} variant="h5">
-              Announcement For Employee Form
+              Announcement For Employee
             </Typography>
             <Grid
               container
@@ -1021,6 +1153,14 @@ class F306AnnouncementForEmployeeForm extends Component {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
+                <Typography
+                  color="primary"
+                  className={classes.foundedEmployeesLabel}
+                >
+                  Total Employees Found: {this.state.totalUsersCount}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
                 <DatePicker
                   autoOk
                   name="announcementDate"
@@ -1048,7 +1188,7 @@ class F306AnnouncementForEmployeeForm extends Component {
                   }
                 />
               </Grid>
-              <Grid item xs={12} sm={12}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   id="label"
                   name="label"
@@ -1093,7 +1233,7 @@ class F306AnnouncementForEmployeeForm extends Component {
         <BottomBar
           left_button_text="View"
           left_button_hide={false}
-          // bottomLeftButtonAction={() => this.viewReport()}
+          bottomLeftButtonAction={() => this.viewReport()}
           right_button_text="Save"
           bottomRightButtonAction={() => this.clickOnFormSubmit()}
           loading={this.state.isLoading}
