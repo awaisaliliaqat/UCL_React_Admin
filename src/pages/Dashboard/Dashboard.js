@@ -174,8 +174,7 @@ import F306AnnouncementForEmployeeForm from "./Contents/LMS/AnnouncementForEmplo
 import R307ApprovedProgressReportsFilter from './Contents/Forms/ApprovedStudentsProgressReports/R307ApprovedProgressReportsFilter';
 import DefineEmployeeForm from "./Contents/Forms/DefineEmployee/DefineEmployeeForm";
 import DefineEmployeeReports from "./Contents/Forms/DefineEmployee/DefineEmployeeReports";
-
-
+import AnnouncementForEmployeeReports from "./Contents/LMS/AnnouncementForEmployee/AnnouncementForEmployeeReports";
 
 const drawerWidth = 283;
 
@@ -1741,6 +1740,13 @@ const Dashboard = (props) => {
                     <AnnouncementForm {...props} isDrawerOpen={isDrawerOpen} />
                   );
                 }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="announcements"
+                exact
+                path="/dashboard/announcements-for-employee-reports"
+                component={AnnouncementForEmployeeReports}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

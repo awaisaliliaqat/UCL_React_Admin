@@ -3,14 +3,13 @@ import PropTypes from 'prop-types';
 import { Divider, IconButton, Tooltip } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import AnnoucementReportsTableComponent from "./Chunks/AnnoucementReportsTableComponent";
+import AnnouncementReportsTableComponent from "./Chunks/AnnouncementReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import EditDeleteTableComponent from "../../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
-class AnnouncementReports extends Component {
+class AnnouncementForEmployeeReports extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -48,7 +47,7 @@ class AnnouncementReports extends Component {
     this.setState({
       isLoading: true,
     });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C58CommonAcademicsAnouncementsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C306CommonAcademicsAnnouncementsForEmployeesView`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -66,28 +65,13 @@ class AnnouncementReports extends Component {
           if (json.CODE === 1) {
             this.setState({admissionData: json.DATA || []});
             for (var i = 0; i < json.DATA.length; i++) {
-              let GroupAnouncementArray = json.DATA[i].GroupAnouncementArray || [];
-              json.DATA[i].groupAnouncement = (GroupAnouncementArray.map((item, index) => <Fragment key={item.Label+index}>{index ?<br/>:""}<span>{item.Label}</span></Fragment>));
-              let SectionAnouncementArray = json.DATA[i].SectionAnouncementArray || [];
-              json.DATA[i].sectionAnouncement = (SectionAnouncementArray.map((item, index) =>  <Fragment key={item.label+index}>{index ?<br/>:""}<span>{item.label}</span></Fragment>));
               const id = json.DATA[i].id;
               json.DATA[i].action = (
                 <EditDeleteTableComponent
                   recordId={id}
                   deleteRecord={this.DeleteData}
-                  editRecord={() => window.location.replace(`#/dashboard/announcements/${id}`)}
+                  editRecord={() => window.location.replace(`#/dashboard/F306Form/${id}`)}
                 />
-              );
-              let fileName = json.DATA[i].fileName;
-              json.DATA[i].fileDownload = (
-                <Fragment>
-                  <IconButton
-                    onClick={(e) => this.DownloadFile(e, fileName)}
-                    aria-label="download"
-                  >
-                    <CloudDownloadIcon />
-                  </IconButton>
-                </Fragment>
               );
             }
           } else {
@@ -115,7 +99,7 @@ class AnnouncementReports extends Component {
   DeleteData = async (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C58CommonAcademicsAnouncementsDelete`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C306CommonAcademicsAnnouncementsForEmployeeDelete`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -168,12 +152,10 @@ class AnnouncementReports extends Component {
   render() {
 
     const columns = [
-      { name: "groupAnouncement", title: "Groups" },
-      { name: "sectionAnouncement", title: "Sections" },
       { name: "label", title: "Title" },
-      { name: "anouncementDate", title: "Announcement\xa0Date" },
-      { name: "anouncementDetails", title: "Announcements" },
-      { name: "anouncementTypeLabel", title: "Announcements For" },
+      { name: "announcementDate", title: "Announcement\xa0Date" },
+      { name: "announcementDetails", title: "Announcements" },
+      { name: "announcementTypeLabel", title: "Announcements For" },
       { name: "createdOn", title: "Created On" },
       { name: "action", title: "Action" },
     ];
@@ -205,11 +187,11 @@ class AnnouncementReports extends Component {
               variant="h5"
             >
               <Tooltip title="Back">
-                <IconButton onClick={() => window.location.replace('#/dashboard/announcements/0')}>
+                <IconButton onClick={() => window.location.replace('#/dashboard/F306Form/0')}>
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              Announcement Reports
+              Announcement For Employees Reports
             </Typography>
             <div style={{ float: "right" }}>
               <Tooltip title="Table Filter">
@@ -229,7 +211,7 @@ class AnnouncementReports extends Component {
             }}
           />
           <div style={{ marginTop: 20 }} />
-          <AnnoucementReportsTableComponent
+          <AnnouncementReportsTableComponent
             data={this.state.admissionData}
             columns={columns}
             showFilter={this.state.showTableFilter}
@@ -246,12 +228,12 @@ class AnnouncementReports extends Component {
   }
 }
 
-AnnouncementReports.propTypes = {
+AnnouncementForEmployeeReports.propTypes = {
   setDrawerOpen: PropTypes.func
 }
 
-AnnouncementReports.defaultProps = {
+AnnouncementForEmployeeReports.defaultProps = {
   setDrawerOpen: fn => fn
 }
 
-export default AnnouncementReports;
+export default AnnouncementForEmployeeReports;

@@ -18,7 +18,7 @@ import {
 } from "@devexpress/dx-react-grid-material-ui";
 
 
-class AnnoucementReportsTableComponent extends Component {
+class AnnouncementReportsTableComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -39,15 +39,11 @@ class AnnoucementReportsTableComponent extends Component {
       defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
-        { columnName: "groupAnouncement", sortingEnabled: false },
-        { columnName: "sectionAnouncement", sortingEnabled: false },
       ],
       tableColumnExtensions: [
-        { columnName: "groupAnouncement", wordWrapEnabled: true },
-        { columnName: "sectionAnouncement", wordWrapEnabled: true },
         { columnName: "label", wordWrapEnabled: true, width: 200 },
-        { columnName: "anouncementDate", width: 200 },
-        { columnName: "anouncementDetails", wordWrapEnabled: true },
+        { columnName: "announcementDate", width: 200 },
+        { columnName: "announcementDetails", wordWrapEnabled: true },
         { columnName: "createdOn", width: 200 },
         { columnName: "action", width: 110 },
       ],
@@ -56,20 +52,18 @@ class AnnoucementReportsTableComponent extends Component {
       defaultFilters: [],
       filteringStateColumnExtensions: [
         { columnName: "action", filteringEnabled: false },
-        { columnName: "groupAnouncement", filteringEnabled: false },
-        { columnName: "sectionAnouncement", filteringEnabled: false },
       ],
     };
   }
 
   render() {
     const {
-      tableColumnExtensions,
       defaultSorting,
       sortingStateColumnExtensions,
       filteringStateColumnExtensions,
       defaultFilters,
       pageSizes,
+      tableColumnExtensions,
     } = this.state;
 
     const rows = this.props.data;
@@ -91,7 +85,7 @@ class AnnoucementReportsTableComponent extends Component {
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
-        
+          <Table columnExtensions={tableColumnExtensions} />
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
@@ -110,16 +104,16 @@ class AnnoucementReportsTableComponent extends Component {
   }
 }
 
-AnnoucementReportsTableComponent.propTypes = {
+AnnouncementReportsTableComponent.propTypes = {
   data: PropTypes.array,
   columns: PropTypes.array,
   showFilter: PropTypes.bool
 }
 
-AnnoucementReportsTableComponent.defaultProps = {
+AnnouncementReportsTableComponent.defaultProps = {
   data: [],
   columns: [],
   showFilter: false
 }
 
-export default AnnoucementReportsTableComponent;
+export default AnnouncementReportsTableComponent;
