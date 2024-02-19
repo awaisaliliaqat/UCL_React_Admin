@@ -172,7 +172,10 @@ class DefineEmployeeForm extends Component {
 
                 this.getEmployeesEntitiesData(employeesRolesArray);
                 this.getEmployeesDepartmentsData(employeesEntitiesArray);
-                this.getEmployeesSubDepartmentsData(employeesEntitiesArray, employeesDepartmentsArray);
+                this.getEmployeesSubDepartmentsData(
+                  employeesEntitiesArray,
+                  employeesDepartmentsArray
+                );
 
                 this.setState({
                   firstName,
@@ -1034,38 +1037,40 @@ class DefineEmployeeForm extends Component {
                                     error={this.state.addressError}
                                 />
                             </Grid> */}
-              <Grid item xs={4}>
-                <TextField
-                  id="password"
-                  name="password"
-                  label="Temporary Password"
-                  required
-                  fullWidth
-                  variant="outlined"
-                  type={this.state.showPass ? "text" : "password"}
-                  onChange={this.onHandleChange}
-                  value={this.state.password}
-                  helperText={this.state.passwordError}
-                  error={this.state.passwordError}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={() => this.handleClickShowPassword()}
-                          onMouseDown={this.handleMouseDownPassword}
-                        >
-                          {this.state.showPass ? (
-                            <Visibility />
-                          ) : (
-                            <VisibilityOff />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+              {(!this.state.recordId || this.state.recordId == 0) && (
+                <Grid item xs={4}>
+                  <TextField
+                    id="password"
+                    name="password"
+                    label="Temporary Password"
+                    required
+                    fullWidth
+                    variant="outlined"
+                    type={this.state.showPass ? "text" : "password"}
+                    onChange={this.onHandleChange}
+                    value={this.state.password}
+                    helperText={this.state.passwordError}
+                    error={this.state.passwordError}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={() => this.handleClickShowPassword()}
+                            onMouseDown={this.handleMouseDownPassword}
+                          >
+                            {this.state.showPass ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+              )}
               <DefineEmployeeRolesSection
                 state={this.state}
                 onHandleChange={(e) => this.onHandleChange(e)}
