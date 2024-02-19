@@ -1069,11 +1069,11 @@ class F70Form extends Component {
     let myForm = document.getElementById("myForm");
     const data = new FormData(myForm);
 
-    if(this.state.userRoles?.length > 0){
-      for(let i=0; i<this.state.userRoles.length; i++){
-        data.append("userRoleId", this.state.userRoles[i]["id"]);
-      }
-    }
+    // if(this.state.userRoles?.length > 0){
+    //   for(let i=0; i<this.state.userRoles.length; i++){
+    //     data.append("userRoleId", this.state.userRoles[i]["id"]);
+    //   }
+    // }
 
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/FormRightsAllocationAllProgrammeGroupsSaveNewV2`;
@@ -1430,7 +1430,7 @@ class F70Form extends Component {
                 )}
               </Grid>
             </Grid>
-            {this.state.userIds != "" && <Grid style={{ marginLeft: 20, marginTop: 20, marginBottom: 20}} xs={11}>
+            {/* {this.state.userIds != "" && <Grid style={{ marginLeft: 20, marginTop: 20, marginBottom: 20}} xs={11}>
             <Autocomplete
                   multiple
                   fullWidth
@@ -1474,7 +1474,7 @@ class F70Form extends Component {
                 ))
               }
                 />
-            </Grid>}
+            </Grid>} */}
 
             <Grid style={{ marginBottom: 50 }} xs={11}>
               {this.state.userDetail.map((data, index) => (
