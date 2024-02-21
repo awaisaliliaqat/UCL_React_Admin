@@ -158,9 +158,12 @@ class DefineEmployeeReports extends Component {
             { name: "displayName", title: "Name" },
             { name: "mobileNo", title: "Mobile No" },
             { name: "email", title: "Email" },
-            { name: "discipline", title: "Discipline" },
             { name: "jobStatusLabel", title: "Job Status" },
-            { name: "address", title: "Present Address" },
+            { name: "rolesLabel", title: "Roles" },
+            { name: "entitiesLabel", title: "Entities" },
+            { name: "departmentsLabel", title: "Departments" },
+            { name: "subDepartmentsLabel", title: "Sub Departments" },
+            { name: "designationsLabel", title: "Designations" },
             { name: "action", title: "Action" }
         ]
 

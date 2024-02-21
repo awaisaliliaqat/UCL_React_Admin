@@ -32,19 +32,17 @@ class DefineEmployeeReportsTableComponent extends Component {
             ],
             pageSizes: [5, 10, 15, 20],
             defaultSorting: [
-                { columnName: 'ID', direction: 'asc' }
+                { columnName: 'id', direction: 'asc' }
             ],
             sortingStateColumnExtensions: [
                 { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions: [
-                { columnName: 'ID', width: 100 },
-                { columnName: 'displayName', wordWrapEnabled: true },
-                { columnName: 'mobileNumber', wordWrapEnabled: true },
-                { columnName: 'email', wordWrapEnabled: true },
-                { columnName: 'discipline', wordWrapEnabled: true },
-                { columnName: 'jobStatus', wordWrapEnabled: true },
-                { columnName: 'presentAddress', wordWrapEnabled: true },
+                { columnName: 'id', width: 80 },
+                { columnName: 'displayName', wordWrapEnabled: true, width: 100 },
+                { columnName: 'mobileNo', wordWrapEnabled: true,  width: 120 },
+                { columnName: 'email', wordWrapEnabled: true, },
+                { columnName: 'jobStatusLabel', wordWrapEnabled: true, width: 120 },
                 { columnName: 'action', width: 120 }
             ],
 
@@ -57,6 +55,11 @@ class DefineEmployeeReportsTableComponent extends Component {
     }
 
     render() {
+
+        // eslint-disable-next-line no-unused-vars
+        const cellComponent = ({ cellProps, ...restProps }) => {
+            return <Table.Cell {...restProps} style={{ wordBreak: "break-word", whiteSpace: "pre-wrap" }} />;
+          };
 
         const {
             tableColumnExtensions,
@@ -78,7 +81,7 @@ class DefineEmployeeReportsTableComponent extends Component {
                     <IntegratedFiltering />
                     <IntegratedSorting />
                     <IntegratedPaging />
-                    <Table columnExtensions={tableColumnExtensions} />
+                    <Table cellComponent={cellComponent} columnExtensions={tableColumnExtensions} />
                     <TableHeaderRow
                         showSortingControls={true}
                         titleComponent={(props) => (
