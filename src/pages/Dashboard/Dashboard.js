@@ -175,6 +175,11 @@ import R307ApprovedProgressReportsFilter from './Contents/Forms/ApprovedStudents
 import DefineEmployeeForm from "./Contents/Forms/DefineEmployee/DefineEmployeeForm";
 import DefineEmployeeReports from "./Contents/Forms/DefineEmployee/DefineEmployeeReports";
 import AnnouncementForEmployeeReports from "./Contents/LMS/AnnouncementForEmployee/AnnouncementForEmployeeReports";
+import F308DefineEmployeeRolesFrom from "./Contents/Forms/DefineEmployeeRoles/F308DefineEmployeeRolesFrom";
+import F309DefineEmployeeEntitiesFrom from "./Contents/Forms/DefineEmployeeEntities/F309DefineEmployeeEntitiesFrom";
+import F310DefineEmployeeDepartmentsFrom from "./Contents/Forms/DefineEmployeeDepartments/F310DefineEmployeeDepartmentsFrom";
+import F311DefineEmployeeSubDepartmentsFrom from "./Contents/Forms/DefineEmployeeSubDepartments/F311DefineEmployeeSubDepartmentsFrom";
+import F312DefineEmployeeDesignationsFrom from "./Contents/Forms/DefineEmployeeDesignations/F312DefineEmployeeDesignationsFrom";
 
 const drawerWidth = 283;
 
@@ -455,6 +460,81 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F06Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F308DefineEmployeeRolesFrom"
+                exact
+                path="/dashboard/F308DefineEmployeeRolesFrom/:recordId"
+                render={(props) => {
+                  return (
+                    <F308DefineEmployeeRolesFrom
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+               <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F309DefineEmployeeEntitiesFrom"
+                exact
+                path="/dashboard/F309DefineEmployeeEntitiesFrom/:recordId"
+                render={(props) => {
+                  return (
+                    <F309DefineEmployeeEntitiesFrom
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F310DefineEmployeeDepartmentsFrom"
+                exact
+                path="/dashboard/F310DefineEmployeeDepartmentsFrom/:recordId"
+                render={(props) => {
+                  return (
+                    <F310DefineEmployeeDepartmentsFrom
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F311DefineEmployeeSubDepartmentsFrom"
+                exact
+                path="/dashboard/F311DefineEmployeeSubDepartmentsFrom/:recordId"
+                render={(props) => {
+                  return (
+                    <F311DefineEmployeeSubDepartmentsFrom
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+             <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F312DefineEmployeeDesignationsFrom"
+                exact
+                path="/dashboard/F312DefineEmployeeDesignationsFrom/:recordId"
+                render={(props) => {
+                  return (
+                    <F312DefineEmployeeDesignationsFrom
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
