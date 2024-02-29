@@ -6,6 +6,7 @@ import {
   Grid,
   Divider,
   Typography,
+  Switch,
   MenuItem,
 } from "@material-ui/core";
 import Visibility from "@material-ui/icons/Visibility";
@@ -27,6 +28,29 @@ const styles = () => ({
     paddingBottom: 50,
     paddingLeft: 20,
     paddingRight: 20,
+  },
+  switch_track: {
+    backgroundColor: "#ff000099",
+  },
+  switch_base: {
+    color: "#ff000099",
+    "&.Mui-disabled": {
+      color: "#e886a9",
+    },
+    "&.Mui-checked": {
+      color: "#95cc97",
+    },
+    "&.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: "#2da758d4",
+    },
+  },
+  switch_primary: {
+    "&.Mui-checked": {
+      color: "#2da758d4",
+    },
+    "&.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: "#2da758d4",
+    },
   },
 });
 
@@ -57,6 +81,18 @@ class DefineEmployeeForm extends Component {
       addressError: "",
       password: "",
       passwordError: "",
+
+      isActive: 1,
+      isActiveError: "",
+
+      inactiveReasonsData: [],
+      inactiveReasonsDataLoading: [],
+
+      inactiveReasonId: "",
+      inactiveReasonIdError: "",
+
+      otherReason: "",
+      otherReasonError: "",
 
       jobStatusIdData: [],
 
@@ -94,6 +130,7 @@ class DefineEmployeeForm extends Component {
   componentDidMount() {
     this.getEmployeesJobStatusData();
     this.getEmployeesRolesData();
+    this.getUserInactiveReasonsData();
     this.getEmployeesDesignationsData([], [], []);
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
@@ -168,6 +205,9 @@ class DefineEmployeeForm extends Component {
                   employeesDepartmentsArray = [],
                   employeesSubDepartmentsArray = [],
                   employeesDesignationsArray = [],
+                  inactiveReasonId,
+                  otherReason,
+                  isActive,
                 } = json.DATA[0];
 
                 this.getEmployeesEntitiesData(employeesRolesArray);
@@ -192,6 +232,9 @@ class DefineEmployeeForm extends Component {
                   employeesDepartmentsArray,
                   employeesSubDepartmentsArray,
                   employeesDesignationsArray,
+                  inactiveReasonId,
+                  otherReason,
+                  isActive,
                 });
               }
             }
@@ -280,6 +323,14 @@ class DefineEmployeeForm extends Component {
           value || []
         );
         break;
+      case "isActive":
+        this.setState({
+          inactiveReasonId: "",
+          inactiveReasonIdError: "",
+          otherReason: "",
+          otherReasonError: "",
+        });
+        break;
       default:
         break;
     }
@@ -306,6 +357,8 @@ class DefineEmployeeForm extends Component {
       employeesRolesArrayError,
       employeesEntitiesArrayError,
       employeesDesignationsArrayError,
+      inactiveReasonIdError,
+      otherReasonError,
     } = this.state;
 
     if (!this.state.firstName) {
@@ -406,6 +459,21 @@ class DefineEmployeeForm extends Component {
       employeesDesignationsArrayError = "";
     }
 
+    if (this.state.isActive == 0) {
+      if (!this.state.inactiveReasonId) {
+        isValid = false;
+        inactiveReasonIdError = "Please select inactive reason";
+      } else {
+        inactiveReasonIdError = "";
+        if (this.state.inactiveReasonId == 1 && !this.state.otherReason) {
+          isValid = false;
+          otherReasonError = "Please enter other reason";
+        } else {
+          otherReasonError = "";
+        }
+      }
+    }
+
     this.setState({
       firstNameError,
       lastNameError,
@@ -419,6 +487,8 @@ class DefineEmployeeForm extends Component {
       employeesRolesArrayError,
       employeesEntitiesArrayError,
       employeesDesignationsArrayError,
+      inactiveReasonIdError,
+      otherReasonError,
     });
 
     return isValid;
@@ -452,6 +522,36 @@ class DefineEmployeeForm extends Component {
       addressError: "",
       password: "",
       passwordError: "",
+
+      isActive: 1,
+      isActiveError: "",
+
+      inactiveReasonId: "",
+      inactiveReasonIdError: "",
+
+      otherReason: "",
+      otherReasonError: "",
+
+      employeesRolesArray: [],
+      employeesRolesArrayError: "",
+
+      employeesEntitiesArray: [],
+      employeesEntitiesArrayError: "",
+      employeesEntitiesData: [],
+      employeesEntitiesDataLoading: false,
+
+      employeesDepartmentsArray: [],
+      employeesDepartmentsArrayError: "",
+      employeesDepartmentsData: [],
+      employeesDepartmentsDataLoading: false,
+
+      employeesSubDepartmentsArray: [],
+      employeesSubDepartmentsArrayError: "",
+      employeesSubDepartmentsData: [],
+      employeesSubDepartmentsDataLoading: false,
+
+      employeesDesignationsArray: [],
+      employeesDesignationsArrayError: "",
     });
   };
 
@@ -500,6 +600,53 @@ class DefineEmployeeForm extends Component {
         }
       );
     this.setState({ isLoading: false });
+  };
+
+  getUserInactiveReasonsData = async () => {
+    this.setState({ inactiveReasonsDataLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersInactiveReasonsTypesView`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({
+              inactiveReasonsData: json.DATA || [],
+            });
+          } else {
+            this.handleOpenSnackbar(
+              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+              "error"
+            );
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleOpenSnackbar(
+              "Failed to Get Data ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ inactiveReasonsDataLoading: false });
   };
 
   getEmployeesRolesData = async () => {
@@ -775,7 +922,7 @@ class DefineEmployeeForm extends Component {
   onFormSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
-
+    data.append("isActive", this.state.isActive);
     const roleIdsArray = this.state.employeesRolesArray || [];
     for (let i = 0; i < roleIdsArray.length; i++) {
       data.append("roleIds", roleIdsArray[i]["id"]);
@@ -1070,6 +1217,83 @@ class DefineEmployeeForm extends Component {
                     }}
                   />
                 </Grid>
+              )}
+              <Grid style={{ display: "flex" }} alignItems="center" item xs={4}>
+                <Grid
+                  component="label"
+                  container
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  spacing={1}
+                >
+                  <Grid item>Inactive</Grid>
+                  <Grid item>
+                    <Switch
+                      classes={{
+                        track: classes.switch_track,
+                        switchBase: classes.switch_base,
+                        colorPrimary: classes.switch_primary,
+                      }}
+                      id="isActive"
+                      color="primary"
+                      checked={this.state.isActive == 1}
+                      onChange={(e, checked) =>
+                        this.onHandleChange({
+                          target: { name: "isActive", value: checked ? 1 : 0 },
+                        })
+                      }
+                    />
+                  </Grid>
+                  <Grid item>Active</Grid>
+                </Grid>
+              </Grid>
+              {!this.state.isActive && (
+                <>
+                  <Grid item xs={4}>
+                    <TextField
+                      id="inactiveReasonId"
+                      name="inactiveReasonId"
+                      label="Inactive Reason"
+                      required
+                      fullWidth
+                      variant="outlined"
+                      onChange={this.onHandleChange}
+                      value={this.state.inactiveReasonId}
+                      helperText={this.state.inactiveReasonIdError}
+                      error={!!this.state.inactiveReasonIdError}
+                      select
+                    >
+                      {this.state.inactiveReasonsData.map((item) => {
+                        return (
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.label}
+                          </MenuItem>
+                        );
+                      })}
+                    </TextField>
+                  </Grid>
+                  {this.state.inactiveReasonId == 1 && (
+                    <Grid item xs={12}>
+                      <TextField
+                        multiline
+                        rows={3}
+                        id="otherReason"
+                        name="otherReason"
+                        label="Other Reason"
+                        required
+                        fullWidth
+                        variant="outlined"
+                        onChange={this.onHandleChange}
+                        value={this.state.otherReason}
+                        helperText={this.state.otherReasonError}
+                        error={!!this.state.otherReasonError}
+                      />
+                    </Grid>
+                  )}
+                </>
               )}
               <DefineEmployeeRolesSection
                 state={this.state}

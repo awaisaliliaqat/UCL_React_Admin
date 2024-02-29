@@ -32,17 +32,24 @@ class DefineEmployeeReportsTableComponent extends Component {
             ],
             pageSizes: [5, 10, 15, 20],
             defaultSorting: [
-                { columnName: 'id', direction: 'asc' }
             ],
             sortingStateColumnExtensions: [
                 { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions: [
-                { columnName: 'id', width: 80 },
+                { columnName: 'id', width: 70 },
                 { columnName: 'displayName', wordWrapEnabled: true, width: 100 },
-                { columnName: 'mobileNo', wordWrapEnabled: true,  width: 120 },
-                { columnName: 'email', wordWrapEnabled: true, },
-                { columnName: 'jobStatusLabel', wordWrapEnabled: true, width: 120 },
+                { columnName: 'mobileNo', wordWrapEnabled: true,  width: 110 },
+                { columnName: 'email', wordWrapEnabled: true, width: 100 },
+                { columnName: 'jobStatusLabel', wordWrapEnabled: true, width: 80 },
+                { columnName: 'createdOn', wordWrapEnabled: true, width: 100 },
+                { columnName: 'statusLabel', wordWrapEnabled: true, width: 80 },
+                { columnName: 'leavingDateLabel', wordWrapEnabled: true, width: 100 },
+                { columnName: 'rolesLabel', wordWrapEnabled: true, width: 80 },
+                { columnName: 'entitiesLabel', wordWrapEnabled: true, width: 130 },
+                { columnName: 'departmentsLabel', wordWrapEnabled: true, width: 130 },
+                { columnName: 'subDepartmentsLabel', wordWrapEnabled: true, width: 130 },
+                { columnName: 'designationsLabel', wordWrapEnabled: true, width: 130 },
                 { columnName: 'action', width: 120 }
             ],
 
