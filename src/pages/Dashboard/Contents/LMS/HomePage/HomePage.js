@@ -53,11 +53,11 @@ class HomePage extends Component {
     // this.getAssignmentsData();
     // this.getGradedDiscussionData();
     this.getAttendancesData();
-    this.getAnnoucementsData();
+    this.getAnnouncementsData();
     this.getMessageCenterData();
   }
 
-  handleAnnouncmentDialog = (anouncementData) => {
+  handleAnnouncementDialog = (anouncementData) => {
     if (anouncementData.length > 0)
       this.setState({
         anouncementDate: anouncementData[0].anouncementDate,
@@ -435,9 +435,9 @@ class HomePage extends Component {
     this.setState({ isLoading: false });
   };
 
-  getAnnoucementsData = async () => {
+  getAnnouncementsData = async () => {
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C110CommonAcademicsAnouncementsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C110CommonAcademicsAnouncementsForEmployeesView`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -456,7 +456,7 @@ class HomePage extends Component {
             this.setState({ anouncementData: json.DATA || [] });
             // alert(localStorage.getItem("announcementReadFlag"));
             if (localStorage.getItem("announcementReadFlag") != 1)
-              this.handleAnnouncmentDialog(this.state.anouncementData);
+              this.handleAnnouncementDialog(this.state.anouncementData);
           } else {
             this.handleOpenSnackbar(
               <span>
