@@ -742,7 +742,7 @@ class F306AnnouncementForEmployeeForm extends Component {
           employeesSubDepartmentsDataLoading: false,
         });
         this.getEmployeesEntitiesData(value || []);
-        this.getEmployeesCounterData(value || [], [], [], [], []);
+        this.getEmployeesCounterData(value || [], [], [], [], this.state.employeesDesignationsArray || []);
         break;
       case "employeesEntitiesArray":
         this.setState({
@@ -759,7 +759,7 @@ class F306AnnouncementForEmployeeForm extends Component {
           value || [],
           [],
           [],
-          []
+          this.state.employeesDesignationsArray || []
         );
         this.getEmployeesDepartmentsData(value || []);
         break;
@@ -777,7 +777,7 @@ class F306AnnouncementForEmployeeForm extends Component {
           this.state.employeesEntitiesArray || [],
           value || [],
           [],
-          []
+          this.state.employeesDesignationsArray || []
         );
         break;
         case "employeesSubDepartmentsArray":
@@ -786,7 +786,7 @@ class F306AnnouncementForEmployeeForm extends Component {
             this.state.employeesEntitiesArray || [],
             this.state.employeesDepartmentsArray || [],
             value || [],
-            []
+            this.state.employeesDesignationsArray || []
           );
           break;
           case "employeesDesignationsArray":

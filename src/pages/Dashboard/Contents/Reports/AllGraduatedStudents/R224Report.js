@@ -329,7 +329,7 @@ onHandleChangeDegreeClassification = e => {
         name: "Name",
         renderer: (rowData) => {
           return (
-            <Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>
+            <Fragment>{`${rowData.firstName} ${rowData.middleName ? rowData.middleName+ " " : ""}${rowData.lastName}`}</Fragment>
           );
         },
         sortable: false,
@@ -367,6 +367,12 @@ onHandleChangeDegreeClassification = e => {
         dataIndex: "address",
         sortable: false,
         customStyleHeader: { width: "20%" },
+      },
+      {
+        name: "City",
+        dataIndex: "cityLabel",
+        sortable: false,
+        customStyleHeader: { width: "10%" },
       },
       {
         name: "Degree Classification", 

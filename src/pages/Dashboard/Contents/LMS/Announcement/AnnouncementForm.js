@@ -1,10 +1,18 @@
 import React, { Component, Fragment } from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import { TextField, Grid, MenuItem, FormControl, InputLabel, Select, Chip, checked, Checkbox, helperText, 
-  FormControlLabel, FormLabel, FormGroup, FormHelperText} from "@material-ui/core";
+import {
+  TextField,
+  Grid,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Chip,
+  Checkbox,
+} from "@material-ui/core";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { DatePicker } from "@material-ui/pickers";
@@ -12,12 +20,12 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 
-const styles = (theme) => ({
+const styles = () => ({
   root: {
-    paddingBottom: 40,
+    // paddingBottom: 40,
     paddingLeft: 20,
     paddingRight: 20,
-    paddingTop: 0
+    paddingTop: 0,
   },
   title: {
     color: "#1d5f98",
@@ -28,22 +36,22 @@ const styles = (theme) => ({
     fontSize: 20,
   },
   formControl: {
-    '& #programmeGroupId':{
-      display:"inline-table",
-      paddingRight:0,
-      paddingLeft:0
-    }
+    "& #programmeGroupId": {
+      display: "inline-table",
+      paddingRight: 0,
+      paddingLeft: 0,
+    },
   },
   chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
     whiteSpace: "break-spaces",
-    paddingRight:22,
-    paddingLeft:5
+    paddingRight: 22,
+    paddingLeft: 5,
   },
   chip: {
     margin: 2,
-  }
+  },
 });
 
 const ITEM_HEIGHT = 48;
@@ -74,16 +82,16 @@ class AnnouncementForm extends Component {
       anouncementDetailsError: "",
       anouncementDate: null,
       anouncementDateError: "",
-      programmeGroupId:[],
-      programmeGroupIdError:"",
-      programmeGroupsMenuItems:[],
-      sectionId:[],
-      sectionIdString:"",
-      sectionIdError:"",
-      sectionsMenuItems:[],
+      programmeGroupId: [],
+      programmeGroupIdError: "",
+      programmeGroupsMenuItems: [],
+      sectionId: [],
+      sectionIdString: "",
+      sectionIdError: "",
+      sectionsMenuItems: [],
       isAnnouncementForTeachers: false,
       isAnnouncementForStudents: false,
-      announcementForError:""
+      announcementForError: "",
     };
   }
 
@@ -104,7 +112,7 @@ class AnnouncementForm extends Component {
     });
   };
 
-  getprogramGroups = async () => {
+  getProgramGroups = async () => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C58CommonActiveSessionProgrammeGroupView`;
     await fetch(url, {
@@ -125,9 +133,16 @@ class AnnouncementForm extends Component {
             this.setState({ programmeGroupsMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
-          console.log("getprogramGroups", json);
+          console.log("getProgramGroups", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -149,7 +164,7 @@ class AnnouncementForm extends Component {
   };
 
   getSections = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C58CommonAcademicsActiveSessionSectionsView`;
     await fetch(url, {
       method: "POST",
@@ -166,10 +181,17 @@ class AnnouncementForm extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({sectionsMenuItems: json.DATA || []});
+            this.setState({ sectionsMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("getSections", json);
         },
@@ -181,12 +203,15 @@ class AnnouncementForm extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   loadData = async (index) => {
@@ -211,25 +236,37 @@ class AnnouncementForm extends Component {
         (json) => {
           if (json.CODE === 1) {
             const data = json.DATA || [];
-            if (data.length > 0) {              
+            if (data.length > 0) {
               this.setState({
-                programmeGroupId: data[0].GroupAnouncementArray.map((item, index)=>item.Id),
+                programmeGroupId: data[0].GroupAnouncementArray.map(
+                  // eslint-disable-next-line no-unused-vars
+                  (item, index) => item.Id
+                ),
                 label: data[0].label,
                 anouncementDetails: data[0].anouncementDetails,
                 anouncementDate: data[0].anouncementDateSimple,
               });
-              if(data[0].anouncementTypeId==1 || data[0].anouncementTypeId==2){
-                this.setState({isAnnouncementForTeachers:true});
+              if (
+                data[0].anouncementTypeId == 1 ||
+                data[0].anouncementTypeId == 2
+              ) {
+                this.setState({ isAnnouncementForTeachers: true });
               }
-              if(data[0].anouncementTypeId==1 || data[0].anouncementTypeId==3){
-                this.setState({isAnnouncementForStudents:true});
+              if (
+                data[0].anouncementTypeId == 1 ||
+                data[0].anouncementTypeId == 3
+              ) {
+                this.setState({ isAnnouncementForStudents: true });
               }
               this.handleSetSection(data[0].SectionAnouncementArray || []);
             } else {
               window.location = "#/dashboard/announcements";
             }
           } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error");
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -253,7 +290,12 @@ class AnnouncementForm extends Component {
 
   isFormValid = () => {
     let isValid = true;
-    let { labelError, anouncementDateError, anouncementDetailsError, announcementForError } = this.state;
+    let {
+      labelError,
+      anouncementDateError,
+      anouncementDetailsError,
+      announcementForError,
+    } = this.state;
 
     if (!this.state.anouncementDate) {
       anouncementDateError = "Please select the announcement date";
@@ -266,7 +308,7 @@ class AnnouncementForm extends Component {
       labelError = "Please enter announcement title";
       isValid = false;
     } else {
-      labelError = ""
+      labelError = "";
     }
 
     if (!this.state.anouncementDetails) {
@@ -276,17 +318,25 @@ class AnnouncementForm extends Component {
       anouncementDetailsError = "";
     }
 
-    if (!this.state.isAnnouncementForTeachers && !this.state.isAnnouncementForStudents) {
+    if (
+      !this.state.isAnnouncementForTeachers &&
+      !this.state.isAnnouncementForStudents
+    ) {
       announcementForError = "Please select";
       isValid = false;
     } else {
       announcementForError = "";
     }
 
-    this.setState({labelError, anouncementDateError, anouncementDetailsError, announcementForError});
+    this.setState({
+      labelError,
+      anouncementDateError,
+      anouncementDetailsError,
+      announcementForError,
+    });
 
     return isValid;
-  }
+  };
 
   resetForm = () => {
     this.setState({
@@ -297,23 +347,22 @@ class AnnouncementForm extends Component {
       anouncementDetailsError: "",
       anouncementDate: null,
       anouncementDateError: "",
-      programmeGroupId:[],
-      programmeGroupIdError:"",
-      sectionId:[],
-      sectionIdString:"",
-      sectionIdError:"",
-      isAnnouncementForStudents:false,
-      isAnnouncementForTeachers:false,
-      announcementForError:""
-    })
-  }
+      programmeGroupId: [],
+      programmeGroupIdError: "",
+      sectionId: [],
+      sectionIdString: "",
+      sectionIdError: "",
+      isAnnouncementForStudents: false,
+      isAnnouncementForTeachers: false,
+      announcementForError: "",
+    });
+  };
 
   clickOnFormSubmit = () => {
     if (this.isFormValid()) {
       document.getElementById("announcementSubmit").click();
     }
   };
-
 
   onFormSubmit = async (e) => {
     e.preventDefault();
@@ -339,11 +388,18 @@ class AnnouncementForm extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             if (this.state.recordId == 0) {
               this.resetForm();
-            }else{
+            } else {
               this.viewReport();
             }
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -355,7 +411,10 @@ class AnnouncementForm extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to Save ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -366,36 +425,40 @@ class AnnouncementForm extends Component {
     window.location = "#/dashboard/announcements";
   };
 
-  getprogramGroupsLabelFromID = (id) => {
-    let res = this.state.programmeGroupsMenuItems.find((obj)=>obj.Id===id);
-    if(res){
+  getProgramGroupsLabelFromID = (id) => {
+    let res = this.state.programmeGroupsMenuItems.find((obj) => obj.Id === id);
+    if (res) {
       return res.Label;
     }
     return "";
-  }
+  };
 
   isSectionSelected = (option) => {
-    return this.state.sectionId.some((obj) => JSON.stringify(obj) == JSON.stringify(option));
+    return this.state.sectionId.some(
+      (obj) => JSON.stringify(obj) == JSON.stringify(option)
+    );
   };
 
   handleDateChange = (name, date) => {
     const errorName = `${name}Error`;
     this.setState({
       [name]: date,
-      [errorName]: ""
+      [errorName]: "",
     });
   };
 
   handleSetSection = (value) => {
     let sectionIdString = "";
-    for(let i=0;i<value.length;i++){
-      if(i!=0){ sectionIdString+=","; }
-      sectionIdString+=value[i].id;
+    for (let i = 0; i < value.length; i++) {
+      if (i != 0) {
+        sectionIdString += ",";
+      }
+      sectionIdString += value[i].id;
     }
     this.setState({
-      sectionId: value, 
-      sectionIdString:sectionIdString,
-      sectionIdError: ""
+      sectionId: value,
+      sectionIdString: sectionIdString,
+      sectionIdError: "",
     });
   };
 
@@ -410,11 +473,11 @@ class AnnouncementForm extends Component {
 
   handleAnnouncementChange = (event) => {
     console.log(event.target);
-    this.setState({[event.target.name]: event.target.checked });
+    this.setState({ [event.target.name]: event.target.checked });
   };
 
   componentDidMount() {
-    this.getprogramGroups();
+    this.getProgramGroups();
     this.getSections();
     this.props.setDrawerOpen(false);
     if (this.state.recordId != 0) {
@@ -428,8 +491,8 @@ class AnnouncementForm extends Component {
         this.props.setDrawerOpen(false);
         this.loadData(nextProps.match.params.recordId);
         this.setState({
-          recordId: nextProps.match.params.recordId
-        })
+          recordId: nextProps.match.params.recordId,
+        });
       } else {
         window.location.reload();
       }
@@ -437,7 +500,6 @@ class AnnouncementForm extends Component {
   }
 
   render() {
-
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
     const { classes } = this.props;
@@ -455,16 +517,9 @@ class AnnouncementForm extends Component {
             name="recordId"
             value={this.state.recordId}
           />
-          <Grid
-            container
-            component="main"
-            className={classes.root}
-          >
-            <Typography
-              className={classes.title}
-              variant="h5"
-            >
-              Announcement Form
+          <Grid container component="main" className={classes.root}>
+            <Typography className={classes.title} variant="h5">
+              Announcement For Student
             </Typography>
             <Grid
               container
@@ -475,8 +530,14 @@ class AnnouncementForm extends Component {
               }}
             >
               <Grid item xs={12} md={6}>
-                <FormControl variant="outlined" fullWidth className={classes.formControl}>
-                  <InputLabel id="programmeGroupId-label">Programme Groups</InputLabel>
+                <FormControl
+                  variant="outlined"
+                  fullWidth
+                  className={classes.formControl}
+                >
+                  <InputLabel id="programmeGroupId-label">
+                    Programme Groups
+                  </InputLabel>
                   <Select
                     multiple
                     labelId="programmeGroupId-label"
@@ -488,13 +549,13 @@ class AnnouncementForm extends Component {
                     renderValue={(selected) => (
                       <div className={classes.chips}>
                         {selected.map((value) => (
-                            <Chip 
-                              key={value} 
-                              label={this.getprogramGroupsLabelFromID(value)} 
-                              className={classes.chip} 
-                              color="primary"
-                              variant="outlined"
-                            />
+                          <Chip
+                            key={value}
+                            label={this.getProgramGroupsLabelFromID(value)}
+                            className={classes.chip}
+                            color="primary"
+                            variant="outlined"
+                          />
                         ))}
                       </div>
                     )}
@@ -504,34 +565,9 @@ class AnnouncementForm extends Component {
                       <MenuItem key={item.Id} value={item.Id}>
                         {item.Label}
                       </MenuItem>
-                    ))} 
+                    ))}
                   </Select>
                 </FormControl>
-                {/* <TextField
-                  id="programmeGroupId"
-                  name="programmeGroupId"
-                  required
-                  fullWidth
-                  select
-                  multiple
-                  input={<Input id="select-multiple-chip" />}
-                  label="Programme Group"
-                  variant="outlined"
-                  onChange={this.onHandleChange}
-                  value={this.state.programmeGroupId}
-                  error={this.state.programmeGroupIdError}
-                  helperText={this.state.programmeGroupIdError}
-                >
-                  <MenuItem value={1}>L1</MenuItem>
-                  <MenuItem value={2}>L2</MenuItem>
-                  {/* 
-                  {this.state.programmeGroupsMenuItems.map((item) => (
-                    <MenuItem key={item.ID} value={item.ID}>
-                      {item.label}
-                    </MenuItem>
-                  ))} 
-                </TextField>
-                */}
               </Grid>
               <Grid item xs={12} md={6}>
                 <Autocomplete
@@ -542,11 +578,14 @@ class AnnouncementForm extends Component {
                   value={this.state.sectionId}
                   onChange={(event, value) => this.handleSetSection(value)}
                   disableCloseOnSelect
-                  getOptionLabel={(option) => typeof option.label === 'string' ? option.label : ""}
+                  getOptionLabel={(option) =>
+                    typeof option.label === "string" ? option.label : ""
+                  }
                   getOptionSelected={(option) => this.isSectionSelected(option)}
                   renderTags={(tagValue, getTagProps) =>
                     tagValue.map((option, index) => (
                       <Chip
+                        key={option}
                         label={option.label}
                         color="primary"
                         variant="outlined"
@@ -554,7 +593,7 @@ class AnnouncementForm extends Component {
                       />
                     ))
                   }
-                  renderOption={(option, {selected}) => (
+                  renderOption={(option, { selected }) => (
                     <Fragment>
                       <Checkbox
                         icon={icon}
@@ -573,11 +612,10 @@ class AnnouncementForm extends Component {
                       label="Sections"
                       placeholder="Search and Select"
                       error={!!this.state.sectionIdError}
-                      helperText={this.state.sectionIdError ? this.state.sectionIdError : "" }
+                      helperText={this.state.sectionIdError}
                     />
                   )}
                 />
-                <TextField type="hidden" name="sectionId" value={this.state.sectionIdString}/>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <DatePicker
@@ -594,9 +632,11 @@ class AnnouncementForm extends Component {
                   fullWidth
                   required
                   value={this.state.anouncementDate}
-                  onChange={date => this.handleDateChange("anouncementDate", date)}
+                  onChange={(date) =>
+                    this.handleDateChange("anouncementDate", date)
+                  }
                   error={!!this.state.anouncementDateError}
-                  helperText={this.state.anouncementDateError ? this.state.anouncementDateError : " "}
+                  helperText={this.state.anouncementDateError}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -610,10 +650,10 @@ class AnnouncementForm extends Component {
                   onChange={this.onHandleChange}
                   value={this.state.label}
                   error={!!this.state.labelError}
-                  helperText={this.state.labelError ? this.state.labelError : ""}
+                  helperText={this.state.labelError}
                 />
               </Grid>
-              <Grid item xs={8} md={10}>
+              <Grid item xs={12} md={12}>
                 <TextField
                   id="anouncementDetails"
                   name="anouncementDetails"
@@ -629,7 +669,7 @@ class AnnouncementForm extends Component {
                   helperText={this.state.anouncementDetailsError}
                 />
               </Grid>
-              <Grid item xs={4} md={2}>
+              {/* <Grid item xs={4} md={2}>
                 <FormControl required error={!!this.state.announcementForError} component="fieldset" className={classes.formControl}>
                   <FormLabel component="legend">Announcement For</FormLabel>
                   <FormGroup style={{marginLeft:"1em"}}>
@@ -645,11 +685,20 @@ class AnnouncementForm extends Component {
                   </FormGroup>
                   <FormHelperText>{this.state.announcementForError}</FormHelperText>
                 </FormControl>
-              </Grid>
+              </Grid> */}
             </Grid>
             <br />
           </Grid>
-          <input type="submit" id="announcementSubmit" style={{ display: 'none' }} />
+          <input
+            type="submit"
+            id="announcementSubmit"
+            style={{ display: "none" }}
+          />
+          <TextField
+                  type="hidden"
+                  name="sectionId"
+                  value={this.state.sectionIdString}
+                />
         </form>
         <BottomBar
           left_button_text="View"
@@ -675,18 +724,18 @@ AnnouncementForm.propTypes = {
   classes: PropTypes.object,
   isDrawerOpen: PropTypes.bool,
   setDrawerOpen: PropTypes.func,
-  match: PropTypes.object
-}
+  match: PropTypes.object,
+};
 
 AnnouncementForm.defaultProps = {
   classes: {},
   isDrawerOpen: true,
-  setDrawerOpen: fn => fn,
+  setDrawerOpen: (fn) => fn,
   match: {
     params: {
-      recordId: 0
-    }
-  }
-}
+      recordId: 0,
+    },
+  },
+};
 
 export default withStyles(styles)(AnnouncementForm);
