@@ -624,6 +624,8 @@ class F306AnnouncementForEmployeeForm extends Component {
       employeesDesignationsDataLoading: false,
       employeesDesignationsArray: [],
       employeesDesignationsArrayError: "",
+
+      totalUsersCount: 0
     });
   };
 
