@@ -1,9 +1,9 @@
+/* eslint-disable react/no-direct-mutation-state */
 import React, { Component, Fragment } from "react";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import R224ReportFilter from "./R224ReportFilter";
 import TablePanel from "../../../../../components/ControlledTable/RerenderTable/TablePanel";
-import Button from "@material-ui/core/Button";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 
 class R224Report extends Component {
@@ -48,6 +48,7 @@ class R224Report extends Component {
       academicSessionId: "",
       degreeClassificationId : "",
       admissionData: [],
+      totalStudents: [],
     });
   };
   handleOpenSnackbar = (msg, severity) => {
@@ -117,7 +118,6 @@ onHandleChangeDegreeClassification = e => {
         (json) => {
           if (json.CODE === 1) {
             let array = json.DATA || [];
-            let arrayLength = array.length;
             let res = array.find( (obj) => obj.isActive === 1 );
             if(res){
               this.setState({academicSessionId:res.ID});
@@ -162,7 +162,6 @@ onHandleChangeDegreeClassification = e => {
         (json) => {
           if (json.CODE === 1) {
             let array = json.DATA || [];
-            let arrayLength = array.length;
             let res = array.find( (obj) => obj.isActive === 1 );
             if(res){
               this.setState({degreeClassificationId:res.id});
