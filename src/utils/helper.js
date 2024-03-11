@@ -1,5 +1,37 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { Fragment } from 'react';
+
+
+export const getHeaders = (type = "") => {
+    const jwtToken = localStorage.getItem("uclAdminToken") || "";
+    switch (type) {
+      case "publicJson":
+        return new Headers({
+          "Content-Type": "application/json",
+        });
+      case "publicMultipart":
+        return new Headers({
+          "Content-Type": "multipart/formdata",
+        });
+      case "authorizeMultipart":
+        return new Headers({
+          Authorization: "Bearer " + jwtToken,
+          "Content-Type": "multipart/formdata",
+        });
+      case "authorizeJson":
+        return new Headers({
+          Authorization: "Bearer " + jwtToken,
+          "Content-Type": "application/json",
+        });
+      case "authorize":
+        return new Headers({
+          Authorization: "Bearer " + jwtToken,
+        });
+      default:
+        return new Headers({});
+    }
+  };
+
 export default function GetRequirementsDetails(num) {
     switch (num) {
         case 1:
