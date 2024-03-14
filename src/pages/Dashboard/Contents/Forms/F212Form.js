@@ -1308,7 +1308,7 @@ class F212Form extends Component {
     }); // tableData.map ends
   
     this.setState({ 
-      tableData: tableDataNewInstance,
+      // tableData: tableDataNewInstance,
       isLoading: true 
     });
 
@@ -1332,6 +1332,9 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            this.setState({
+              tableData: tableDataNewInstance,
+            })
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             this.f212FormPopupClose();
           } else {

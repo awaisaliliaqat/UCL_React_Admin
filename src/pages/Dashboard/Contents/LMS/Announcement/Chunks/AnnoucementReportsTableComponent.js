@@ -91,7 +91,7 @@ class AnnoucementReportsTableComponent extends Component {
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
-        
+          <Table columnExtensions={tableColumnExtensions} />
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
