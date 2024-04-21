@@ -8,12 +8,10 @@ import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {Collapse, Divider, Grid, Table, Typography, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, LinearProgress} from '@material-ui/core';
+import {Collapse, Divider, Grid, Table, Typography, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@material-ui/core';
 // import StudentProgressReport from '../../../../Dashboard/Contents/Reports/StudentProfile/Chunks/StudentProgressReport';
-// import StudentProgressReport from './Chunks/StudentProgressReport';
+import StudentProgressReport from './Chunks/StudentProgressReport';
 import StudentProgressSingleSessionReport from './Chunks/StudentProgressSingleSessionReport';
-import classnames from 'classnames';
-
 const styles = (theme) => ({
     closeButton: {
         top: theme.spacing(1),
@@ -85,9 +83,8 @@ const styles = (theme) => ({
     },
     tagTitleDoubleColumnContainer: {
         display: 'flex',
-        marginTop: "1em",
-        //marginLeft: '20%',
-        justifyContent: 'space-evenly'
+        marginLeft: '20%',
+        justifyContent: 'space-between'
     },
     tagTitle: {
         padding: 6,
@@ -106,13 +103,12 @@ const styles = (theme) => ({
         border: '1px solid',
         marginLeft: 50,
         textAlign: 'center',
-        //marginTop: '-25px',
-        marginTop: '-18px',
+        marginTop: '-25px',
         backgroundSize: 'cover',
         backgroundpPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        webkitPrintColorAdjust: 'exact',
-        colorAdjust: 'exact',
+        'WebkitPrintColorAdjust': 'exact',
+        'colorAdjust': 'exact',
     },
     flexColumn: {
         display: 'flex',
@@ -145,32 +141,10 @@ const styles = (theme) => ({
         wordBreak: 'break-all',
     },
     fieldValuesContainer: {
-        //marginLeft: '3%',
-        margin: "0em 1em",
+        marginLeft: '3%',
         display: 'flex',
         alignItems: 'flex-start',
-    },
-    collapseSectionHeader:{
-        backgroundColor: 'rgb(47, 87, 165)',
-        color: 'white',
-        webkitPrintColorAdjust: 'exact',
-        colorAdjust: 'exact',
-        padding: 6,
-        marginTop: 10,
-        borderTopRightRadius: "0.5em",
-        borderTopLeftRadius: "0.5em"
-    },
-    expand: {
-        color:'white',
-        transform: 'rotate(0deg)',
-        marginLeft: 'auto',
-        transition: theme.transitions.create('transform', {
-          duration: theme.transitions.duration.shortest,
-        }),
-      },
-      expandOpen: {
-        transform: 'rotate(180deg)',
-      },
+    }
 });
 
 
@@ -325,124 +299,117 @@ const StyledTableCell = withStyles((theme) => ({
 
     const { classes, data, isOpen } = props;
   
-    const [state, setState] = useState({expanded: false });
+    const [state, setState] = useState({"expanded": true });
     
     const handleExpandClick = () => {
-      setState({expanded:!state.expanded});
+      //setState({expanded:!state.expanded});
     }
   
     return (
       <Grid item xs={12} >
-        <Typography color="primary" component="div" style={{color:"rgb(47 87 165)"}}>
-          <div className={classes.collapseSectionHeader}>
-            <span style={{fontSize: 'large'}}>
+        <Typography color="primary" component="div" style={{fontWeight: 600,fontSize:18, color:"rgb(47 87 165)"}}>
+          <IconButton
+            className={clsx(classes.expand, {[classes.expandOpen]: state.expanded,})}
+            onClick={handleExpandClick}
+            aria-expanded={state.expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon color="primary" style={{color:"rgb(47 87 165)"}}/>
+          </IconButton>
+          <div className={classes.valuesContainer}>
+            <span style={{
+                fontSize: 'larger'
+            }}>
                {data.sessionLabel}
             </span>
-            <span style={{float:"right"}}>
-                <IconButton
-                    className={clsx(classes.expand, {[classes.expandOpen]: state.expanded,})}
-                    onClick={handleExpandClick}
-                    aria-expanded={state.expanded}
-                    aria-label="show more"
-                    size='small'
-                >
-                    <ExpandMoreIcon />
-                </IconButton>
-            </span>
         </div>
+           
         </Typography>
         <Collapse in={state.expanded} timeout="auto" unmountOnExit>
-          <div 
-            style={{
-                paddingLeft:"1em",
-                marginTop:10
-            }}
-          >
-          {/*
+          <div style={{paddingLeft:50}}>
+
           {data.enrolledCoursesTitle}
+
           <Divider
             style={{
-            backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
-            opacity: "0.3",
-            marginLeft: "1em",
-            marginRight: "1em",
-            marginTop: 10
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: 10
             }}
           />
-            <div 
-                style={{
-                    marginLeft: '3%',
-                    marginTop: 10,
-                    marginBottom: '1%',
-                    display: 'flex'
-                }}
-            >
+
+            <div style={{
+                marginLeft: '3%',
+                marginTop: '2%',
+                marginBottom: '1%',
+                display: 'flex'
+            }}>
+
                 {data.enrolledCourses.map((item, index) => {
                     return (
-                        <span 
-                            key={index} 
-                            className={classes.tagValue} 
-                            style={{
-                                marginRight: 15
-                            }}
-                        >
-                            {item.courseLabel}
-                        </span>
+                        <span key={index} className={classes.tagValue} style={{
+                            marginRight: 15
+                        }}>{item.courseLabel}</span>
                     );
                 })}
             </div>
+
             {data.enrolledSectionsTitle}
-            <Divider
-                style={{
-                backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
-                opacity: "0.3",
-                marginLeft: "1em",
-                marginTop: 10,
-                marginBottom: '1em',
-                }}
-            />
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: '2%',
+              marginBottom: '1%',
+            }}
+          />
             <div style={{
-                marginLeft: '1em',
-                marginTop: '1em',
-                marginBottom: '1em',
+                marginLeft: '3%',
+                marginTop: '2%',
+                marginBottom: '1%',
                 display: 'flex'
             }}>
-            {data.enrolledSections.map((item, index) => {
-                return (
-                    <span key={index} className={classes.tagValue} style={{
-                        marginRight: 15
-                    }}>{item.sectionLabel}</span>
-                );
-            })}
+                {data.enrolledSections.map((item, index) => {
+                    return (
+                        <span key={index} className={classes.tagValue} style={{
+                            marginRight: 15
+                        }}>{item.sectionLabel}</span>
+                    );
+                })}
             </div>
-            */}
+
+
             {data.studentProgressReportTitle}
-            <Divider
-                style={{
-                backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
-                opacity: "0.3",
-                marginLeft: "1em",
-                marginTop: 10
-                }}
-            />
-            {data.studentProgressReport.map((data1, index)=> 
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: 10
+            }}
+          />
+         
+                 { data.studentProgressReport.map((data1, index)=> 
                 <StudentProgressSingleSessionReport 
                     key={"studentProgressReportt"+data1.academicsSessionLabel+index}
                     data={[data1]}
                     //isOpen={ 0==0 ? true : false}
                 />
-            )}
-            {/*
-            {data.achivementDetailTitle}
-            <Divider
-                style={{
-                    backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
-                    opacity: "0.3",
-                    marginLeft: "1em",
-                    marginTop: 10,
-                    marginBottom: '1em',
-                }}
-            />
+                 )}             
+           
+          
+           {data.achivementDetailTitle}
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: '1%',
+              marginBottom: '1%',
+            }}
+          />
              <TableContainer component={Paper}>
               <Table className={classes.table} size="small" aria-label="customized table">
                 <TableHead>
@@ -467,26 +434,25 @@ const StyledTableCell = withStyles((theme) => ({
                     }
                 </TableBody>
               </Table>
-            </TableContainer>
-            */}
-           {/*
+            </TableContainer> 
            <div
-                style={{
-                    marginTop: '1%',
-                    marginBottom: '1%',
-                }}
-            >
-            {data.assignmentSubmittedListTitle}
+           style={{
+           
+            marginTop: '1%',
+            marginBottom: '1%',
+          }}>
+{data.assignmentSubmittedListTitle}
            </div>
-            <Divider
-                style={{
-                    backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
-                    opacity: "0.3",
-                    marginLeft: "1em",
-                    marginTop: '10',
-                    marginBottom: '1em',
-                }}
-            />
+            
+          <Divider
+            style={{
+              backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginLeft: 50,
+              marginTop: '1%',
+              marginBottom: '1%',
+            }}
+          />
             {data.assignmentSubmittedList.length ? 
 				<TableContainer component={Paper}>
 					<Table size="small" aria-label="customized table">
@@ -513,12 +479,13 @@ const StyledTableCell = withStyles((theme) => ({
 				:
 				""
 				}
-            */}
+
           </div>
         </Collapse>
       </Grid>
     );
   }
+
 
   function EnrolledSections(props){
 
@@ -737,17 +704,22 @@ class DisplayAdmissionApplications extends Component {
             uolAllAchived: [],
             yearEndStatus: [],
             achivementDetail: [],
-            isTrue: false,
-            expanded: [false,false,false,false,false,false,false]
+            isTrue: false
         }
     }
 
+
+    componentDidMount() {
+        // eslint-disable-next-line react/prop-types
+        const { id = 0 } = this.props.match.params
+        this.getAddmissionForm(id);
+        this.studentAttendanceData(id);
+    }
     handleChange=()=>{
         this.setState({
             isTrue: !this.state.isTrue,
         });
     }
-
     studentAttendanceData = async (id) => {
         this.setState({ isLoading: true });
         let data = new FormData();
@@ -766,15 +738,23 @@ class DisplayAdmissionApplications extends Component {
             }
             return res.json();
           })
-          .then( (json) => {
+          .then(
+            (json) => {
               if (json.CODE === 1) {
                 this.setState({ tableData: json.DATA || [] });
-                //console.log(this.state.tableData);
+                console.log(this.state.tableData);
               } else {
                 //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+                this.handleOpenSnackbar(
+                  <span>
+                    {json.SYSTEM_MESSAGE}
+                    <br />
+                    {json.USER_MESSAGE}
+                  </span>,
+                  "error"
+                );
               }
-              //console.log("getData", json);
+              console.log("getData", json);
             },
             (error) => {
               if (error.status === 401) {
@@ -784,148 +764,151 @@ class DisplayAdmissionApplications extends Component {
                 });
               } else {
                 //alert('Failed to fetch, Please try again later.');
-                this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+                this.handleOpenSnackbar(
+                  "Failed to fetch, Please try again later.",
+                  "error"
+                );
                 console.log(error);
               }
             }
           );
-        //this.setState({ isLoading: false });
+        this.setState({ isLoading: false });
       };
 
-    getAddmissionForm = async (id) => {
+    getAddmissionForm = async id => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48AdmissionsProspectApplicationSubmittedApplicationsStudentProfileView?studentId=${id}`;
-        this.setState({isLoading: true});
+        this.setState({
+            isLoading: true
+        })
         await fetch(url, {
             method: "GET",
             headers: new Headers({
                 Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
             })
         })
-        .then(res => {
-            if (!res.ok) {
-                throw res;
-            }
-            return res.json();
-        })
-        .then( json => {
-            if (json.CODE === 1) {
-                let studentProgressReport = json.DATA[0].studentProgressAllSessionsReport || [];
-                this.setState({studentProgressReport: studentProgressReport});
-                //console.log("studentProgressReport", studentProgressReport);
-                let uolEnrollmentMarks = json.DATA[0].uolEnrollmentMarks || [];
-                this.setState({uolEnrollmentMarks: uolEnrollmentMarks});
-                //console.log("uolEnrollmentMarks", uolEnrollmentMarks);
-                let uolAllAchived = json.DATA[0].uolAllAchived || [];
-                this.setState({uolAllAchived: uolAllAchived});
-                let yearEndStatus = json.DATA[0].yearEndStatus || [];
-                this.setState({yearEndStatus: yearEndStatus});
-                if (json.DATA) {
-                    if (json.DATA.length > 0) {
-                        this.setState({
-                            data: json.DATA[0] || {},
-                        });
-                    }
+            .then(res => {
+                if (!res.ok) {
+                    throw res;
                 }
-                //Start
-                // let tableHeaderData = [];
-                // let attendanceRecordCol = ["Del", "Att", "%Att", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(attendanceRecordCol);
-                // let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(assignmentGraders);
-                // let seminarGrades = ["1", "2", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(seminarGrades);
-                // let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(subjectiveEvalGradesCol);
-                // let examMarksCol = ["1", "2", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(examMarksCol);
-                // let creditsCol = ["Poss", "Ach", "%Age"];
-                // tableHeaderData = tableHeaderData.concat(creditsCol);
-                // this.setState({tableHeaderData: tableHeaderData});
+                return res.json();
+            })
+            .then(
+                json => {
+                    if (json.CODE === 1) {
+                        let studentProgressReport = json.DATA[0].studentProgressAllSessionsReport || [];
+                        this.setState({studentProgressReport: studentProgressReport});
+                        console.log("studentProgressReport");
+                        let uolEnrollmentMarks = json.DATA[0].uolEnrollmentMarks || [];
+                        this.setState({uolEnrollmentMarks: uolEnrollmentMarks});
+                        console.log("uolEnrollmentMarks");
+                        console.log(uolEnrollmentMarks);
 
-                // let tableData = [];
-                // let data = json.DATA[0].studentProgressReport || [];
-                // let dataLength = data.length;
-                // if(dataLength){
-                //   this.setState({
-                //     studentLabel: data[0].studentLabel,
-                //     programmeLabel: data[0].programmeLabel,
-                //     academicSessionLabel: data[0].academicsSessionLabel,
-                //     // uptoDate: this.getDateInString(),
-                //     totalPOS: data[0].totalPOS,
-                //     totalAchieved: data[0].totalAchieved,
-                //     totalPercentage: data[0].totalPercentage,
-                //     resultClassification:  data[0].resultClassification,
-                //   });
-                //   let coursesData = data[0].studentCoursesData || [];
-                //   let coursesDataLength = coursesData.length;
-                //   if(coursesDataLength){
-                //     for(let i=0; i<coursesDataLength; i++){
-                //       let tableDataRow = [];
-                //       tableDataRow.push(coursesData[i].courseLabel);  // col-1
-                //       let attendance = coursesData[i].attendance[0];
-                //       tableDataRow.push(attendance.deliveredLectures);  // col-2
-                //       tableDataRow.push(attendance.attendenedlectures);  // col-3
-                //       tableDataRow.push(attendance.attandancePercentage);  // col-4
-                //       tableDataRow.push(attendance.attandanceCredit);  // col-5
-                //       let assignment = coursesData[i].assignment;
-                //       assignment.map((data, index) =>
-                //         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.credit) // col-6 => col-14
-                //       );
-                //       let seminarEvaluation = coursesData[i].seminarEvaluation;
-                //       seminarEvaluation.map((data, index) =>
-                //         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-15 => col-17
-                //       );
-                //       let subjectiveEvaluation = coursesData[i].subjectiveEvaluation;
-                //       subjectiveEvaluation.map((data, index) =>
-                //         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-18 => col-22
-                //       );
-                //       let examsEvaluation = coursesData[i].examsEvaluation;
-                //       examsEvaluation.map((data, index) =>
-                //         data.marks ? tableDataRow.push(data.marks) : tableDataRow.push(data.totalCredits) // col-23 => col-25
-                //       );
-                //       let credits = coursesData[i].credits[0];
-                //       tableDataRow.push(credits.poss); // col-26
-                //       tableDataRow.push(credits.achieved); // col-27
-                //       tableDataRow.push(credits.totalCredits); // col-28
-                //       let transcriptGrade = coursesData[i].internalGrade[0].grade;
-                //       tableDataRow.push(transcriptGrade); // col-29
-                //       tableData[i] = tableDataRow; 
-                //     }
-                //   }
-                //   this.setState({tableData: tableData});
-                // }          
-                //End
-            } else {
-                alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
-            }
-            //console.log(json);
-        },
-        error => {
-            if (error.status === 401) {
-                this.setState({
-                    isLoginMenu: true,
-                    isReload: true
-                })
-            } else {
-                alert('Failed to fetch, Please try again later.');
-                console.log(error);
-            }
-        });
+                        let uolAllAchived = json.DATA[0].uolAllAchived || [];
+                        this.setState({uolAllAchived: uolAllAchived});
 
-        this.setState({isLoading: false});
 
-    }
+                        let yearEndStatus = json.DATA[0].yearEndStatus || [];
+                        this.setState({yearEndStatus: yearEndStatus});
+                        
 
-    handleExpandClick = (index) => {
-        let expanded = [...this.state.expanded];
-        expanded[index] = !expanded[index];
-        this.setState({expanded});
-    };
+                        if (json.DATA) {
+                            if (json.DATA.length > 0) {
+                                this.setState({
+                                    data: json.DATA[0] || {},
+                                });
+                            }
+                        }
+                        //Start
+// let tableHeaderData = [];
+// let attendanceRecordCol = ["Del", "Att", "%Att", "Credits"];
+// tableHeaderData = tableHeaderData.concat(attendanceRecordCol);
+// let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
+// tableHeaderData = tableHeaderData.concat(assignmentGraders);
+// let seminarGrades = ["1", "2", "Credits"];
+// tableHeaderData = tableHeaderData.concat(seminarGrades);
+// let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
+// tableHeaderData = tableHeaderData.concat(subjectiveEvalGradesCol);
+// let examMarksCol = ["1", "2", "Credits"];
+// tableHeaderData = tableHeaderData.concat(examMarksCol);
+// let creditsCol = ["Poss", "Ach", "%Age"];
+// tableHeaderData = tableHeaderData.concat(creditsCol);
+// this.setState({tableHeaderData: tableHeaderData});
 
-    componentDidMount() {
-        const { id = 0 } = this.props.match.params;
-        this.getAddmissionForm(id);
-        this.studentAttendanceData(id);
+// let tableData = [];
+// let data = json.DATA[0].studentProgressReport || [];
+// let dataLength = data.length;
+// if(dataLength){
+//   this.setState({
+//     studentLabel: data[0].studentLabel,
+//     programmeLabel: data[0].programmeLabel,
+//     academicSessionLabel: data[0].academicsSessionLabel,
+//     // uptoDate: this.getDateInString(),
+//     totalPOS: data[0].totalPOS,
+//     totalAchieved: data[0].totalAchieved,
+//     totalPercentage: data[0].totalPercentage,
+//     resultClassification:  data[0].resultClassification,
+//   });
+//   let coursesData = data[0].studentCoursesData || [];
+//   let coursesDataLength = coursesData.length;
+//   if(coursesDataLength){
+//     for(let i=0; i<coursesDataLength; i++){
+//       let tableDataRow = [];
+//       tableDataRow.push(coursesData[i].courseLabel);  // col-1
+//       let attendance = coursesData[i].attendance[0];
+//       tableDataRow.push(attendance.deliveredLectures);  // col-2
+//       tableDataRow.push(attendance.attendenedlectures);  // col-3
+//       tableDataRow.push(attendance.attandancePercentage);  // col-4
+//       tableDataRow.push(attendance.attandanceCredit);  // col-5
+//       let assignment = coursesData[i].assignment;
+//       assignment.map((data, index) =>
+//         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.credit) // col-6 => col-14
+//       );
+//       let seminarEvaluation = coursesData[i].seminarEvaluation;
+//       seminarEvaluation.map((data, index) =>
+//         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-15 => col-17
+//       );
+//       let subjectiveEvaluation = coursesData[i].subjectiveEvaluation;
+//       subjectiveEvaluation.map((data, index) =>
+//         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-18 => col-22
+//       );
+//       let examsEvaluation = coursesData[i].examsEvaluation;
+//       examsEvaluation.map((data, index) =>
+//         data.marks ? tableDataRow.push(data.marks) : tableDataRow.push(data.totalCredits) // col-23 => col-25
+//       );
+//       let credits = coursesData[i].credits[0];
+//       tableDataRow.push(credits.poss); // col-26
+//       tableDataRow.push(credits.achieved); // col-27
+//       tableDataRow.push(credits.totalCredits); // col-28
+//       let transcriptGrade = coursesData[i].internalGrade[0].grade;
+//       tableDataRow.push(transcriptGrade); // col-29
+//       tableData[i] = tableDataRow; 
+//     }
+//   }
+//   this.setState({tableData: tableData});
+// }          
+//End
+
+                    } else {
+                        alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+                    }
+                    console.log(json);
+                },
+                error => {
+                    if (error.status === 401) {
+                        this.setState({
+                            isLoginMenu: true,
+                            isReload: true
+                        })
+                    } else {
+                        alert('Failed to fetch, Please try again later.');
+                        console.log(error);
+                    }
+                });
+
+        this.setState({
+            isLoading: false,
+        })
+
     }
 
     render() {
@@ -935,7 +918,6 @@ class DisplayAdmissionApplications extends Component {
         const { allCategoriesYearWise = [],enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], yearEndStatus=[],} = data;
         return (
             <Fragment>
-                {/* 
                 {this.state.isLoading &&
                     <div className={classes.overlay}>
                         <div className={classes.overlayContent}>
@@ -943,13 +925,12 @@ class DisplayAdmissionApplications extends Component {
                             <span>Loading...</span>
                         </div>
                     </div>
-                } 
-                */}
-                <div 
-                    style={{
-                        margin:"10px 10px 0px 10px"
-                    }}
-                >
+                }
+                <div style={{
+                    marginTop: 10,
+                    marginLeft: 10,
+                    marginRight: 10,
+                }}>
                     <IconButton onClick={() => window.close()} aria-label="close" className={classes.closeButton}>
                         <CloseIcon color="secondary"/>
                     </IconButton>
@@ -961,142 +942,52 @@ class DisplayAdmissionApplications extends Component {
                         </div>
                     </div>
                     <div className={classes.tagTitleDoubleColumnContainer}>
-                        <div className={classes.flexColumn} style={this.state.isLoading ? { width:"14em"} : null}>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>{data.degreeLabel || "N/A"}</span> }</span>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Joining Date: {data.joiningDate || "--/--/----" }</span> }</span>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>{data.isActive==1? "Active": "Deactive"}</span> }</span>
-                        </div>
-                        <div className={classes.flexColumn} style={this.state.isLoading ? { width:"14em"} : null}>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Uol #: {data.uolNumber || "N/A"}</span> }</span>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Last Attended Date: {data.lastAttendedDate || "--/--/----" }</span> }</span>
+                        <div className={classes.flexColumn}>
+                            <span className={classes.tagTitle}>{data.degreeLabel || "N/A"}</span>
+                            <span className={classes.tagTitle}>Joining Date: {data.joiningDate || "-"}</span>
+                            <span className={classes.tagTitle}>Uol #: {data.uolNumber || "N/A"}</span>
                             {data.isActive==0 && data.statusChangeReason!==""?
                                 <span className={classes.tagTitle}>Reason: { data.statusChangeReason}</span>
-                                :
-                                ""
+                                :""
                             }
+                            
+                            
                         </div>
-                        <div className={classes.flexColumn} style={this.state.isLoading ? { width:"14em"} : null}>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Nucleus ID: {data.studentId || "N/A"}</span> }</span>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Exit Date: {data.exitDate || "--/--/----"} </span> }</span>
+                        <div className={classes.flexColumn}>
+                            <span className={classes.tagTitle}>Nucleus ID: {data.studentId || "N/A"}</span>
+                            <span className={classes.tagTitle}>Exit Date: {data.exitDate || "-"}</span>
+                            <span className={classes.tagTitle}>{data.isActive==1? "Active": "Deactive"}</span>
+                           
                             {data.isActive==0 && data.statusChangeDate!==""?
                                 <span className={classes.tagTitle}>Deactived On: {data.statusChangeDate}</span>
-                                :
-                                ""
+                                :""
                             }
+                            
+                            
                         </div>
+
                         <div className={classes.image} style={{
                             backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${data.imageName})`,
                         }}>
                         </div>
                     </div>
+
                     <div className={classes.flexColumn}>
-                    <div className={classes.collapseSectionHeader}>
-                            <span style={{
-                                fontSize: 'larger'
-                            }}>
-                                UOL Achievment
-                            </span>
-                            <span
-                                style={{
-                                    float: "right"
-                                }}
-                            >
-                                { 
-                                this.state.isLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
-                                :
-                                <IconButton
-                                    size='small'
-                                    className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[7]})}
-                                    onClick={()=>this.handleExpandClick(7)}
-                                    aria-expanded={this.state.expanded[7]}
-                                    aria-label="Show more"
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                }
-                            </span>
-                        </div>
-                        <Collapse in={this.state.expanded[7]} timeout="auto" unmountOnExit>
-                        <div style={{margin:"1em"}}>
-                            {allCategoriesYearWise.map( (data, index) =>
-                            <Fragment key={"allCategoriesYearWise"+index}>
-                            {/* <div>{data.achivementDetailTitle+" "+data.sessionLabel}</div> */}
-                            <Typography variant='body1' color='primary'>{data.sessionLabel}</Typography>
-                            <Divider
-                              style={{
-                                backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
-                                opacity: "0.3",
-                                marginLeft: "1em",
-                                marginTop: 10,
-                                marginBottom: '1em',
-                              }}
-                            />
-                               <TableContainer component={Paper}>
-                                <Table className={classes.table} size="small" aria-label="customized table">
-                                  <TableHead>
-                                    <TableRow>
-                                      <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Module</StyledTableCell>
-                                      <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Courses</StyledTableCell>
-                                      <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Original Marks</StyledTableCell>
-                                      <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Resit Marks</StyledTableCell>
-                                    </TableRow>
-                                  </TableHead>
-                                  <TableBody>
-                                        {data.achivementDetail.map((dt, i) => (
-                                          <StyledTableRow key={"achivementDetail"+i}>
-                                            <StyledTableCell component="th" scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.moduleNumber}</StyledTableCell>
-                                            <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.coursesObject.Label}</StyledTableCell>
-                                            <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.marks}</StyledTableCell>
-                                            <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.resetMarks}</StyledTableCell>
-                                          </StyledTableRow>
-                                        ))}
-                                  </TableBody>
-                                </Table>
-                              </TableContainer> 
-                              <br/>
-                              </Fragment>
-                            )}
-                        </div>
-                        </Collapse>
-                        <Fragment>
-                          <div>
-                          {allCategoriesYearWise.map( (data, index) =>
-                            <AllCategoriesYearWise 
-                                key={"allCategoriesYearWise"+index}
-                                classes={classes}
-                                data={data}
-                                isOpen={ index==0 ? true : false}
-                            />
-                            )}
-                           </div>     
-                        </Fragment>
-                        <div className={classes.collapseSectionHeader}>
+                        <div style={{
+                            backgroundColor: 'rgb(47, 87, 165)',
+                            color: 'white',
+                            'WebkitPrintColorAdjust': 'exact',
+                            'colorAdjust': 'exact',
+                            padding: 6,
+                            marginTop: 10
+                        }}>
                             <span style={{
                                 fontSize: 'larger'
                             }}>
                                 Personal Information
-                            </span>
-                            <span
-                                style={{
-                                    float: "right"
-                                }}
-                            >
-                                { 
-                                this.state.isLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
-                                :
-                                <IconButton
-                                    size='small'
-                                    className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[0]})}
-                                    onClick={()=>this.handleExpandClick(0)}
-                                    aria-expanded={this.state.expanded[0]}
-                                    aria-label="Show more"
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                }
-                            </span>
+                        </span>
                         </div>
-                        <Collapse in={this.state.expanded[0]} timeout="auto" unmountOnExit>
+
                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
@@ -1121,9 +1012,8 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.sessionLabel || "-"}
                             </div>
-                        </div>
-                        {/* 
-                        <div className={classes.fieldValuesContainer}>
+                        </div>       
+                        {/* <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1147,9 +1037,11 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.exitDate || "-"}
                             </div>
-                        </div>    
-                        */}
+                        </div>    */}
+                                 
                         <div className={classes.fieldValuesContainer} >
+                             
+
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1253,6 +1145,7 @@ class DisplayAdmissionApplications extends Component {
                                 {data.email || "-"}
                             </div>
                         </div>
+
                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
@@ -1301,14 +1194,13 @@ class DisplayAdmissionApplications extends Component {
                                 width: '80%',
                                 textAlign: `${data.guardianRelationWithStudentLabel ? 'left' : 'left'}`
                             }}>
-                                <div 
-                                    style={{
-                                        marginTop: '0.5em',
-                                        marginBottom: '0.5em'
-                                    }}
-                                >
-                                    <span className={classes.tagValue}>{data.isAnyMedicalCondition === 1 ? 'Yes' : 'No'}</span>
-                                </div>
+                                <div style={{
+                           
+                           marginTop: '1%',
+                            marginBottom: '1%'
+                        }}>
+                            <span className={classes.tagValue}>{data.isAnyMedicalCondition === 1 ? 'Yes' : 'No'}</span>
+                        </div>
                         {data.isAnyMedicalCondition === 1 && (<Fragment>
                             <div className={classes.valuesContainer}>
                                 <span style={{
@@ -1354,6 +1246,7 @@ class DisplayAdmissionApplications extends Component {
                                     {data.emergencyContactRelationshipLabel || '-'}
                                 </div>
                             </div>
+
                             <div className={classes.fieldValuesContainer}>
                                 <div className={classes.valuesContainer} style={{
                                     width: '20%',
@@ -1370,34 +1263,14 @@ class DisplayAdmissionApplications extends Component {
                         </Fragment>)}
                             </div>
                         </div>
-                        </Collapse>
-                        <div className={classes.collapseSectionHeader} >
+                        <div className={classes.valuesContainer} >
                             <span style={{
                                 fontSize: 'larger',
                             }}>
                                 Permanent Address
-                            </span>
-                            <span
-                                style={{
-                                    float: "right"
-                                }}
-                            >
-                                { 
-                                this.state.isLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
-                                :
-                                <IconButton
-                                    size='small'
-                                    className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[1]})}
-                                    onClick={()=>this.handleExpandClick(1)}
-                                    aria-expanded={this.state.expanded[1]}
-                                    aria-label="Show more"
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                }
-                            </span>
+                        </span>
                         </div>
-                        <Collapse in={this.state.expanded[1]} timeout="auto" unmountOnExit>
+
                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
@@ -1438,6 +1311,8 @@ class DisplayAdmissionApplications extends Component {
                                 {data.permanentProvinceLabel || "-"}
                             </div>
                         </div>
+
+
                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
@@ -1463,34 +1338,14 @@ class DisplayAdmissionApplications extends Component {
                                 {data.permanentPostalCode || "-"}
                             </div>
                         </div>
-                        </Collapse>
-                        <div className={classes.collapseSectionHeader}>
+                        <div className={classes.valuesContainer}>
                             <span style={{
                                 fontSize: 'larger',
                             }}>
+
                                 Present Address
-                            </span>
-                            <span
-                                style={{
-                                    float: "right"
-                                }}
-                            >
-                                { 
-                                this.state.isLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
-                                :
-                                <IconButton
-                                    size='small'
-                                    className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[2]})}
-                                    onClick={()=>this.handleExpandClick(2)}
-                                    aria-expanded={this.state.expanded[2]}
-                                    aria-label="Show more"
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                }
-                            </span>
+                        </span>
                         </div>
-                        <Collapse in={this.state.expanded[2]} timeout="auto" unmountOnExit>
                         {data.mailingAddressTypeId === 1 && (
                             <div style={{
                                 marginLeft: '3%',
@@ -1543,6 +1398,8 @@ class DisplayAdmissionApplications extends Component {
                                     {data.mailingProvinceLabel || "-"}
                                 </div>
                             </div>
+
+
                             <div className={classes.fieldValuesContainer}>
                                 <div className={classes.valuesContainer} style={{
                                     width: '20%',
@@ -1569,34 +1426,15 @@ class DisplayAdmissionApplications extends Component {
                                 </div>
                             </div>
                         </Fragment>)}
-                        </Collapse>
-                        <div className={classes.collapseSectionHeader}>
+
+                        <div className={classes.valuesContainer}>
                             <span style={{
                                 fontSize: 'larger'
                             }}>
                                 Father's Information
-                            </span>
-                            <span
-                                style={{
-                                    float: "right"
-                                }}
-                            >
-                                { 
-                                this.state.isLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
-                                :
-                                <IconButton
-                                    size='small'
-                                    className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[3]})}
-                                    onClick={()=>this.handleExpandClick(3)}
-                                    aria-expanded={this.state.expanded[3]}
-                                    aria-label="Show more"
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                }
-                            </span>
+                        </span>
                         </div>
-                        <Collapse in={this.state.expanded[3]} timeout="auto" unmountOnExit>
+
                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
@@ -1677,34 +1515,15 @@ class DisplayAdmissionApplications extends Component {
                                 </div>
                             </div>
                         </Fragment>)}
-                        </Collapse>
-                        <div className={classes.collapseSectionHeader}>
+
+                        <div className={classes.valuesContainer}>
                             <span style={{
                                 fontSize: 'larger'
                             }}>
                                 Mother's Information
-                            </span>
-                            <span
-                                style={{
-                                    float: "right"
-                                }}
-                            >
-                                { 
-                                this.state.isLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
-                                :
-                                <IconButton
-                                    size='small'
-                                    className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[4]})}
-                                    onClick={()=>this.handleExpandClick(4)}
-                                    aria-expanded={this.state.expanded[4]}
-                                    aria-label="Show more"
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                }
-                            </span>
+                        </span>
                         </div>
-                        <Collapse in={this.state.expanded[4]} timeout="auto" unmountOnExit>
+
                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
@@ -1786,34 +1605,15 @@ class DisplayAdmissionApplications extends Component {
                             </div>
 
                         </Fragment>)}
-                        </Collapse>
-                        <div className={classes.collapseSectionHeader}>
+
+                        <div className={classes.valuesContainer}>
                             <span style={{
                                 fontSize: 'larger'
                             }}>
                                 Guardian's Information
-                            </span>
-                            <span
-                                style={{
-                                    float: "right"
-                                }}
-                            >
-                                { 
-                                this.state.isLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
-                                :
-                                <IconButton
-                                    size='small'
-                                    className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[5]})}
-                                    onClick={()=>this.handleExpandClick(5)}
-                                    aria-expanded={this.state.expanded[5]}
-                                    aria-label="Show more"
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                }
-                            </span>
+                        </span>
                         </div>
-                        <Collapse in={this.state.expanded[5]} timeout="auto" unmountOnExit>
+
                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
@@ -1906,7 +1706,7 @@ class DisplayAdmissionApplications extends Component {
                                 {data.guardianRelationWithStudentLabel || "-"}
                             </div>
                         </div>
-                        </Collapse>
+                        
 
                         {/* <div className={classes.valuesContainer}>
                             <span style={{
@@ -1915,6 +1715,22 @@ class DisplayAdmissionApplications extends Component {
                                 
                         </span>
                         </div> */}
+
+
+                        
+
+                        <Fragment>
+                          <div >
+                          {allCategoriesYearWise.map( (data, index) =>
+                            <AllCategoriesYearWise 
+                                key={"allCategoriesYearWise"+index}
+                                classes={classes}
+                                data={data}
+                                isOpen={ index==0 ? true : false}
+                            />
+                            )}
+                           </div>     
+                        </Fragment>
 
                         {/* <Fragment>
                             <div className={classes.valuesContainer}>
@@ -2039,8 +1855,9 @@ class DisplayAdmissionApplications extends Component {
                             </div>
                         </Fragment> */}
 
+
                         <Fragment>
-                            <div className={classes.collapseSectionHeader}>
+                            <div className={classes.valuesContainer}>
                                 <span 
                                     style={{
                                         fontSize: 'larger'
@@ -2048,37 +1865,14 @@ class DisplayAdmissionApplications extends Component {
                                 >
                                     Student Attendance Summary
                                 </span>
-                                <span
-                                    style={{
-                                        float: "right"
-                                    }}
-                                    >
-                                    { 
-                                    this.state.isLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
-                                    :
-                                    <IconButton
-                                        size='small'
-                                        className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[6]})}
-                                        onClick={()=>this.handleExpandClick(6)}
-                                        aria-expanded={this.state.expanded[6]}
-                                        aria-label="Show more"
-                                    >
-                                        <ExpandMoreIcon />
-                                    </IconButton>
-                                    }
-                                </span>
                             </div>
-                            <Collapse in={this.state.expanded[6]} timeout="auto" unmountOnExit>
-                            <div 
-                                className={classes.fieldValuesContainer}
-                                style={{
-                                    // marginLeft: '3%',
-                                    // marginRight: '3%',
-                                    marginTop: '10px',
-                                    // marginBottom: '1%',
-                                    // display: 'flex'
-                                }}
-                            >
+                            <div style={{
+                                marginLeft: '3%',
+                                marginRight: '3%',
+                                marginTop: '2%',
+                                marginBottom: '1%',
+                                display: 'flex'
+                            }}>
                                 {studentAttendance.length > 0 ?
                                 <TableContainer component={Paper} style={{ overflowX: "inherit" }}>
                                     <Table
@@ -2138,7 +1932,6 @@ class DisplayAdmissionApplications extends Component {
                                                         ""
                                   }
                             </div>
-                            </Collapse>
                         </Fragment>
 
 
