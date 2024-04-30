@@ -84,8 +84,8 @@ const styles = (theme) => ({
         justifyContent: 'space-between'
     },
     tagTitle: {
-        padding: 6,
-        marginBottom: 10,
+        padding: "2px 6px",
+        marginBottom: 8,
         textAlign: 'center',
         fontSize: 'larger',
         backgroundColor: '#2f57a5',
