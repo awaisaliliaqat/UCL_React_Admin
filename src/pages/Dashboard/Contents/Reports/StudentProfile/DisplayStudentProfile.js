@@ -1157,25 +1157,40 @@ class DisplayAdmissionApplications extends Component {
                                 Name
                            </div>
                             <div className={classes.value} style={{
-                                width: '25%',
+                                width: '8.5%',
                                 textAlign: `${data.firstName ? 'left' : 'center'}`
                             }}>
                                 {data.firstName || "-"}
                             </div>
                             <div className={classes.value} style={{
-                                width: '25%',
+                                width: '7%',
                                 textAlign: `${data.middleName ? 'left' : 'center'}`
                             }}>
                                 {data.middleName || '-'}
                             </div>
                             <div className={classes.value} style={{
-                                width: '25%',
+                                width: '8.5%',
                                 textAlign: `${data.lastName ? 'left' : 'center'}`
                             }}>
                                 {data.lastName || "-"}
                             </div>
+                            <div 
+                                className={classes.valuesContainer}
+                                style={{
+                                    width: '20%',
+                                    marginLeft: 15,
+                                    textAlign: 'center'
+                                }}
+                            >
+                                Name as per CNIC/Passport
+                           </div>
+                            <div className={classes.value} style={{
+                                // width: '30%',
+                                textAlign: `${data.displayName ? 'left' : 'center'}`
+                            }}>
+                                {data.displayName || "-"}
+                            </div>
                         </div>
-
                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
