@@ -103,6 +103,8 @@ class DocumentRequestAction extends Component {
       middleNameError: "",
       lastName: "",
       lastNameError: "",
+      displayName: "",
+      displayNameError: "",
       imageName: "",
       dateOfBirth: null,
       dateOfBirthError: "",
@@ -393,6 +395,7 @@ getCitiesData = async (id, type, value='') => {
       emailError,
       firstNameError,
       lastNameError,
+      displayNameError,
       mobileNoError,
       chessSubDegreeError,
       yearAlevelError,
@@ -504,6 +507,16 @@ getCitiesData = async (id, type, value='') => {
       dateOfBirthError = "";
     }
 
+    if (!this.state.firstName) {
+      firstNameError = "Please enter first name";
+      document.getElementById("firstName").focus();
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      isValid = false;
+    } else {
+      firstNameError = "";
+    }
+
     if (!this.state.lastName) {
       lastNameError = "Please enter last name";
       document.getElementById("lastName").focus();
@@ -514,14 +527,14 @@ getCitiesData = async (id, type, value='') => {
       lastNameError = "";
     }
 
-    if (!this.state.firstName) {
-      firstNameError = "Please enter first name";
-      document.getElementById("firstName").focus();
+    if (!this.state.displayName) {
+      displayNameError = "Please enter Name as per CNIC/Passport";
+      document.getElementById("displayName").focus();
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
       isValid = false;
     } else {
-      firstNameError = "";
+      displayNameError = "";
     }
 
     if (this.state.appliedFor === 11 && !this.state.chessSubDegree) {
@@ -602,6 +615,7 @@ getCitiesData = async (id, type, value='') => {
       dateOfBirthError,
       firstNameError,
       lastNameError,
+      displayNameError,
       chessSubDegreeError,
       yearAlevelError,
       appliedForError,
@@ -653,6 +667,7 @@ getCitiesData = async (id, type, value='') => {
       imageName: data.imageName || "",
       middleName: data.middleName || "",
       lastName: data.lastName || "",
+      displayName: data.displayName || "",
       dateOfBirth: dob,
       mobileNo: data.mobileNo || "",
       email: data.email || "",
@@ -1128,7 +1143,7 @@ getCitiesData = async (id, type, value='') => {
                 </span>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item xs={6} md={3}>
                 <TextField
                   id="firstName"
                   name="firstName"
@@ -1143,7 +1158,7 @@ getCitiesData = async (id, type, value='') => {
                   error={!!this.state.firstNameError}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6} md={3}>
                 <TextField
                   id="middleName"
                   name="middleName"
@@ -1156,7 +1171,7 @@ getCitiesData = async (id, type, value='') => {
                   error={!!this.state.middleNameError}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6} md={3}>
                 <TextField
                   id="lastName"
                   name="lastName"
@@ -1168,6 +1183,19 @@ getCitiesData = async (id, type, value='') => {
                   onChange={this.handleChange}
                   value={this.state.lastName}
                   error={!!this.state.lastNameError}
+                />
+              </Grid>
+              <Grid item xs={6} md={3}>
+                <TextField
+                  id="displayName"
+                  name="displayName"
+                  label="Name as per CNIC/Passport"
+                  required
+                  fullWidth
+                  onKeyDown={this.StopEnter}
+                  onChange={this.handleChange}
+                  value={this.state.displayName}
+                  error={!!this.state.displayNameError}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -1442,69 +1470,26 @@ getCitiesData = async (id, type, value='') => {
         />
         <form onSubmit={this.onFormSubmit}>
           <input type="hidden" value={this.state.applicationId} name="id" />
-
-          <input
-            type="hidden"
-            value={this.state.appliedFor}
-            name="degreeProgrammeId"
-          />
-          <input
-            type="hidden"
-            value={this.state.chessSubDegree}
-            name="chessDegreeTransferId"
-          />
-          <input
-            type="hidden"
-            value={this.state.yearAlevel}
-            name="alevelAdmissionYear"
-          />
-          <input
-            type="hidden"
-            value={this.state.category}
-            name="isTransferCandidate"
-          />
-
+          <input type="hidden" value={this.state.appliedFor} name="degreeProgrammeId" />
+          <input type="hidden" value={this.state.chessSubDegree} name="chessDegreeTransferId" />
+          <input type="hidden" value={this.state.yearAlevel} name="alevelAdmissionYear" />
+          <input type="hidden" value={this.state.category} name="isTransferCandidate" />
           <input type="hidden" value={this.state.firstName} name="firstName" />
-          <input
-            type="hidden"
-            value={this.state.middleName}
-            name="middleName"
-          />
+          <input type="hidden" value={this.state.middleName} name="middleName" />
           <input type="hidden" value={this.state.lastName} name="lastName" />
+          <input type="hidden" value={this.state.displayName} name="displayName" />
           <input type="hidden" value={userDob} name="dateOfBirth" />
           <input type="hidden" value={this.state.mobileNo} name="mobileNo" />
           <input type="hidden" value={this.state.email} name="email" />
-
           <input type="hidden" value={this.state.permanentAddress} name="permanentAddress" />
           <input type="hidden" value={this.state.permanentCountryId} name="permanentCountryId" />
           <input type="hidden" value={this.state.permanentProvinceId} name="permanentProvinceId" />
           <input type="hidden" value={this.state.permanentCityId} name="permanentCityId" />
           <input type="hidden" value={this.state.permanentPostalCode} name="permanentPostalCode" />
-
-
-          <input
-            type="hidden"
-            value={this.state.fatherMobileNo}
-            name="fatherMobileNo"
-          />
-
-          <input
-            type="hidden"
-            value={this.state.motherMobileNo}
-            name="motherMobileNo"
-          />
-
-          <input
-            type="hidden"
-            value={this.state.guardianMobileNo}
-            name="guardianMobileNo"
-          />
-
-          <button
-            style={{ display: "none" }}
-            id="submit-button"
-            type="submit"
-          />
+          <input type="hidden" value={this.state.fatherMobileNo} name="fatherMobileNo" />
+          <input type="hidden" value={this.state.motherMobileNo} name="motherMobileNo" />
+          <input type="hidden" value={this.state.guardianMobileNo} name="guardianMobileNo" />
+          <button style={{ display: "none" }} id="submit-button" type="submit" />
         </form>
       </Fragment>
     );

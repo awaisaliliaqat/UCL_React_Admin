@@ -96,17 +96,17 @@ const NavBar = (props) => {
     window.location.replace("#/dashboard");
   };
 
-  useEffect(() => {
-    if (isAuthorize) {
-      getCounterData();
-      interval = setInterval(function () {
-        getCounterData();
-      }, notiCallTimeMiliSec);
-    }
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  // useEffect(() => {
+  //   if (isAuthorize) {
+  //     getCounterData();
+  //     interval = setInterval(function () {
+  //       getCounterData();
+  //     }, notiCallTimeMiliSec);
+  //   }
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   const getCounterData = async () => {
     const endpoint =
