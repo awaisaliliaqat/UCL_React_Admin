@@ -56,6 +56,13 @@ class AdmissionApplicationReports extends Component {
         
        
     }
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar: true,
+            snackbarMessage: msg,
+            snackbarSeverity: severity
+        });
+    };
 
     getGenderData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonGendersView`;

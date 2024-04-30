@@ -220,50 +220,51 @@ class RegistrationFeeApprovel extends Component {
 
     getDegreesData = async () => {
         let data = [];
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonAcademicsDegreeProgramsView`;
+        //const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonAcademicsDegreeProgramsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C03CommonAcademicsDegreeProgramsView`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
                 Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
             })
         })
-            .then((res) => {
-                if (!res.ok) {
-                    throw res;
-                }
-                return res.json();
-            })
-            .then(
-                (json) => {
-                    const resData = json.DATA || [];
-                    if (resData.length > 0) {
-                        for (let i = 0; i < resData.length; i++) {
-                            if (!isEmpty(resData[i])) {
-                                data.push({ id: "", label: resData[i].department });
-                            }
-                            for (let j = 0; j < resData[i].degrees.length; j++) {
-                                if (!isEmpty(resData[i].degrees[j])) {
-                                    data.push({
-                                        id: resData[i].degrees[j].id,
-                                        label: resData[i].degrees[j].label,
-                                    });
-                                }
+        .then((res) => {
+            if (!res.ok) {
+                throw res;
+            }
+            return res.json();
+        })
+        .then(
+            (json) => {
+                const resData = json.DATA || [];
+                if (resData.length > 0) {
+                    for (let i = 0; i < resData.length; i++) {
+                        if (!isEmpty(resData[i])) {
+                            data.push({ id: "", label: resData[i].department });
+                        }
+                        for (let j = 0; j < resData[i].degrees.length; j++) {
+                            if (!isEmpty(resData[i].degrees[j])) {
+                                data.push({
+                                    id: resData[i].degrees[j].id,
+                                    label: resData[i].degrees[j].label,
+                                });
                             }
                         }
                     }
-                },
-                (error) => {
-                    if (error.status === 401) {
-                        this.setState({
-                            isLoginMenu: true,
-                            isReload: true
-                        })
-                    } else {
-                        alert('Failed to fetch, Please try again later.');
-                        console.log(error);
-                    }
                 }
-            );
+            },
+            (error) => {
+                if (error.status === 401) {
+                    this.setState({
+                        isLoginMenu: true,
+                        isReload: true
+                    })
+                } else {
+                    alert('Failed to fetch, Please try again later.');
+                    console.log(error);
+                }
+            }
+        );
         this.setState({
             degreeData: data,
         });
