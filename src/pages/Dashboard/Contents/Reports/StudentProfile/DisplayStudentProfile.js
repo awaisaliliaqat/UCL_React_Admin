@@ -738,7 +738,7 @@ class DisplayAdmissionApplications extends Component {
             yearEndStatus: [],
             achivementDetail: [],
             isTrue: false,
-            expanded: [false,false,false,false,false,false,false]
+            expanded: [false,false,false,false,false,false,false,false]
         }
     }
 
@@ -932,7 +932,7 @@ class DisplayAdmissionApplications extends Component {
         const { classes } = this.props;
         const { data } = this.state;
         const { studentProgressReport } = data;
-        const { allCategoriesYearWise = [],enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], yearEndStatus=[],} = data;
+        const { allCategoriesYearWise = [],enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], yearEndStatus=[], studentStatusSummary=[]} = data;
         return (
             <Fragment>
                 {/* 
@@ -990,7 +990,70 @@ class DisplayAdmissionApplications extends Component {
                         </div>
                     </div>
                     <div className={classes.flexColumn}>
-                    <div className={classes.collapseSectionHeader}>
+                        <div className={classes.collapseSectionHeader}>
+                            <span style={{
+                                fontSize: 'larger'
+                            }}>
+                                Account Active / Inactive Summary
+                            </span>
+                            <span
+                                style={{
+                                    float: "right"
+                                }}
+                            >
+                                { 
+                                this.state.isLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
+                                :
+                                <IconButton
+                                    size='small'
+                                    className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[8]})}
+                                    onClick={()=>this.handleExpandClick(8)}
+                                    aria-expanded={this.state.expanded[8]}
+                                    aria-label="Show more"
+                                >
+                                    <ExpandMoreIcon />
+                                </IconButton>
+                                }
+                            </span>
+                        </div>
+                        <Collapse in={this.state.expanded[8]} timeout="auto" unmountOnExit>
+                            <div style={{margin:"1em"}}>
+                                <Typography variant='body1' color='primary'>Status Logs</Typography>
+                                <Divider
+                                    style={{
+                                    backgroundColor: "rgb(47 87 165)", //"rgb(58, 127, 187)",
+                                    opacity: "0.3",
+                                    marginLeft: "1em",
+                                    marginTop: 10,
+                                    marginBottom: '1em',
+                                    }}
+                                />
+                                <TableContainer component={Paper}>
+                                    <Table className={classes.table} size="small" aria-label="customized table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Session</StyledTableCell>
+                                                <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Status</StyledTableCell>
+                                                <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Changed On</StyledTableCell>
+                                                <StyledTableCell align="center" style={{backgroundColor:"rgb(47 87 165)"}}>Changed By</StyledTableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {studentStatusSummary.map((dt, i) => (
+                                            <StyledTableRow key={"studentStatusSummaryDetail"+i}>
+                                            <StyledTableCell component="th" scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.sessionLabel}</StyledTableCell>
+                                            <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.isActive ? "Active":"Inactive"}</StyledTableCell>
+                                            <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.isActive ? dt.activatedOnDisplay : dt.deactivatedOnDisplay}</StyledTableCell>
+                                            <StyledTableCell scope="row" align="center" style={{borderColor:"rgb(47 87 165)"}}>{dt.activatedByLabel}</StyledTableCell>
+                                            </StyledTableRow>
+                                        ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer> 
+                                <br/>
+                            </div>
+                        </Collapse>
+                        <div className={classes.collapseSectionHeader}>
                             <span style={{
                                 fontSize: 'larger'
                             }}>
