@@ -85,6 +85,7 @@ const NavBar = (props) => {
     window.localStorage.removeItem("uclAdminToken");
     window.localStorage.removeItem("userTypeId");
     window.location.replace("#/login");
+    window.location.reload();
   };
 
   const handleChangePasswordClick = () => {

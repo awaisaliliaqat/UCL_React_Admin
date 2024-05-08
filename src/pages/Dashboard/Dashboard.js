@@ -182,7 +182,7 @@ import F310DefineEmployeeDepartmentsFrom from "./Contents/Forms/DefineEmployeeDe
 import F311DefineEmployeeSubDepartmentsFrom from "./Contents/Forms/DefineEmployeeSubDepartments/F311DefineEmployeeSubDepartmentsFrom";
 import F312DefineEmployeeDesignationsFrom from "./Contents/Forms/DefineEmployeeDesignations/F312DefineEmployeeDesignationsFrom";
 import R313Reports from "./Contents/Reports/UOLEnrolment/F313Reports";
-
+import F314Form from "./Contents/Forms/F314Form";
 
 const drawerWidth = 283;
 
@@ -2532,6 +2532,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R313Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F314Form"
+                exact
+                path="/dashboard/F314Form"
+                render={(props) => {
+                  return (
+                    <F314Form
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
