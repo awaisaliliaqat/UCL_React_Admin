@@ -104,12 +104,13 @@ const styles = (theme) => ({
         height: 140,
         width: 130,
         border: '1px solid',
-        marginLeft: 50,
+        marginLeft: 20,
+        marginBottom: 10,
         textAlign: 'center',
         //marginTop: '-25px',
-        marginTop: '-18px',
+        marginTop: '-35px',
         backgroundSize: 'cover',
-        backgroundpPosition: 'center',
+        backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         webkitPrintColorAdjust: 'exact',
         colorAdjust: 'exact',
@@ -984,10 +985,17 @@ class DisplayAdmissionApplications extends Component {
                                 ""
                             }
                         </div>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column"
+                        }}>
                         <div className={classes.image} style={{
                             backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${data.imageName})`,
                         }}>
+                        </div>    
+                        <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{ height: 24}} /> : <span>{data.displayName || "N/A"}</span> }</span>
                         </div>
+                        
                     </div>
                     <div className={classes.flexColumn}>
                     <div className={classes.collapseSectionHeader}>
