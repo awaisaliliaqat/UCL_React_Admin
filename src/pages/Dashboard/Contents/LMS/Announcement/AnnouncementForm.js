@@ -294,7 +294,7 @@ class AnnouncementForm extends Component {
       labelError,
       anouncementDateError,
       anouncementDetailsError,
-      announcementForError,
+      // announcementForError,
     } = this.state;
 
     if (!this.state.anouncementDate) {
@@ -318,21 +318,21 @@ class AnnouncementForm extends Component {
       anouncementDetailsError = "";
     }
 
-    if (
-      !this.state.isAnnouncementForTeachers &&
-      !this.state.isAnnouncementForStudents
-    ) {
-      announcementForError = "Please select";
-      isValid = false;
-    } else {
-      announcementForError = "";
-    }
+    // if (
+    //   !this.state.isAnnouncementForTeachers &&
+    //   !this.state.isAnnouncementForStudents
+    // ) {
+    //   announcementForError = "Please select";
+    //   isValid = false;
+    // } else {
+    //   announcementForError = "";
+    // }
 
     this.setState({
       labelError,
       anouncementDateError,
       anouncementDetailsError,
-      announcementForError,
+      // announcementForError,
     });
 
     return isValid;
