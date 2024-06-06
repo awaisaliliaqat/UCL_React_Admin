@@ -10,6 +10,7 @@ import FilterIcon from "mdi-material-ui/FilterOutline";
 import FilterListOutlinedIcon from '@material-ui/icons/FilterListOutlined';
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import F221FormTableComponent from "./F221FormTableComponent";
+import F221FormAllStudentsTableComponent from './F221FormAllStudentsTableComponent';
 import InputBase from '@material-ui/core/InputBase';
 import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
 import AddIcon from "@material-ui/icons/Add";
@@ -67,6 +68,7 @@ class F221Form extends Component {
       snackbarMessage: "",
       snackbarSeverity: "",
       tableData: [],
+      allStudentsTableData: [],
       academicSessionMenuItems: [],
       academicSessionId: "",
       academicSessionIdError: "",
@@ -931,7 +933,9 @@ class F221Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.loadNewAcademicSessions(this.state.academicSessionId);
-            let data = json.DATA || [];
+            let jsonData = json.DATA || [];
+            let data = jsonData.length > 0 ? jsonData[0]["activeStudentsData"]||[] : [];
+            let allData = jsonData.length > 0 ? jsonData[0]["allStudentsData"]||[] : [];
             let dataLength = data.length || 0;
 
             for (let i=0; i<dataLength; i++) {
@@ -997,14 +1001,7 @@ class F221Form extends Component {
                  />
               );
             }
-            // this.state.tableData.add({
-            //   "Roshaan": "Rao",
-            //   "displayName" : "displayName"
-
-            // })
-         
-
-            this.setState({tableData: data});
+            this.setState({tableData: data, allStudentsTableData: allData});
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
@@ -1053,7 +1050,11 @@ class F221Form extends Component {
               programmeGroupId: "",
               courseId:"",
               coursesMenuItems:[],
-              tableData: []
+              tableData: [],
+              allStudentsTableData: [],
+              programmeId: "",
+              programmeIdError: "",
+              programmeMenuItems: [],
             });
             // this.loadCourse(this.state.academicSessionId, value);
             // this.loadModules(this.state.academicSessionId, value);
@@ -1064,7 +1065,8 @@ class F221Form extends Component {
             programmeId: "",
             preCourseMenuItems: [],
             preCourseSelectionItems:[],
-            tableData: []
+            tableData: [],
+            allStudentsTableData: [],
           });
           // this.loadModules(this.state.academicSessionId, value);
           // this.loadProgrammeCourses(this.state.academicSessionId, value);
@@ -1164,7 +1166,7 @@ class F221Form extends Component {
       || !this.isProgrammeValid
       // || !this.isCourseValid()
     ){return;}
-    this.setState({tableData:[]});
+    this.setState({tableData:[], allStudentsTableData: []});
     this.loadData();
   }
   
@@ -1976,6 +1978,20 @@ class F221Form extends Component {
             <Grid item xs={12}>
               <F221FormTableComponent
                 rows={this.state.tableData}
+                showFilter={this.state.showTableFilter}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <div style = {{
+                    margin: "20px 0",
+    fontSize: "14pt",
+    fontWeight: 500,
+    color: "rgb(29, 95, 152)"
+              }}>Promoted / Graduated / WithDrawn - Students List</div>
+            </Grid>
+            <Grid item xs={12}>
+              <F221FormAllStudentsTableComponent
+                rows={this.state.allStudentsTableData}
                 showFilter={this.state.showTableFilter}
               />
             </Grid>

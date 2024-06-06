@@ -4,7 +4,7 @@ import { Paper } from "@material-ui/core";
 import {FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
 import {Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
 
-class F221FormTableComponent extends Component {
+class F221FormAllStudentsTableComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -13,9 +13,7 @@ class F221FormTableComponent extends Component {
         { name: "displayName", title: "Student\xa0Name" },
         { name: "degreeLabel", title: "Programme" },
         { name: "pathwayLabel", title: "Pathway" },
-        { name: "changeStatusAction", title: "Promote\xa0Student"},
-        { name: "action", title: <span>Withdrawn</span>},
-        { name: "graduate", title: <span>Graduate</span>}
+        { name: "statusLabel", title: "Status" },
       ],
       rows: [],
       formatColumns: [],
@@ -30,27 +28,17 @@ class F221FormTableComponent extends Component {
       ],
       pageSizes: [5, 10, 25],
       defaultSorting: [],
-      sortingStateColumnExtensions: [
-        { columnName: "changeStatusAction", sortingEnabled: false },
-        { columnName: "action", sortingEnabled: false },
-        { columnName: "graduate", sortingEnabled: false}
-      ],
+      sortingStateColumnExtensions: [],
       tableColumnExtensions: [
         { columnName: "studentId"},
         { columnName: "displayName",  wordWrapEnabled: true },
         { columnName: "degreeLabel", wordWrapEnabled: true },
         { columnName: "pathwayLabel",  wordWrapEnabled: true },
-        { columnName: "changeStatusAction",  align:"center"},
-        { columnName: "action", align:"center"},
-        { columnName: "graduate", align:"center"}
+        { columnName: "statusLabel",  wordWrapEnabled: true },
       ],
       defaultColumnWidths: [],
       defaultFilters: [],
-      filteringStateColumnExtensions: [
-        { columnName: "changeStatusAction", filteringEnabled: false },
-        { columnName: "action", filteringEnabled: false },
-        { columnName: "graduate", filteringEnabled: false }
-      ]
+      filteringStateColumnExtensions: []
     };
   }
 
@@ -123,12 +111,12 @@ class F221FormTableComponent extends Component {
   }
 }
 
-export default F221FormTableComponent;
+export default F221FormAllStudentsTableComponent;
 
-F221FormTableComponent.propTypes = {
+F221FormAllStudentsTableComponent.propTypes = {
   showFilter: PropTypes.bool,
 }
 
-F221FormTableComponent.defaultProps = {
+F221FormAllStudentsTableComponent.defaultProps = {
   showFilter: false,
 }
