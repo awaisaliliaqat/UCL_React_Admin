@@ -537,7 +537,7 @@ getCitiesData = async (id, type, value='') => {
       displayNameError = "";
     }
 
-    if (this.state.appliedFor === 11 && !this.state.chessSubDegree) {
+    if (this.state.appliedFor === 8 && !this.state.chessSubDegree) {
       chessSubDegreeError = "Please select degree";
       document.getElementById("chessSubDegree").focus();
       document.body.scrollTop = 0;
@@ -547,7 +547,7 @@ getCitiesData = async (id, type, value='') => {
       chessSubDegreeError = "";
     }
 
-    if (this.state.appliedFor === 17 && !this.state.yearAlevel) {
+    if (this.state.appliedFor === 32 && !this.state.yearAlevel) {
       yearAlevelError = "Please select A level year";
       document.getElementById("yearAlevel").focus();
       document.body.scrollTop = 0;
@@ -1070,7 +1070,7 @@ getCitiesData = async (id, type, value='') => {
                   </Select>
                 </FormControl>
               </Grid>
-              {this.state.appliedFor === 17 && (
+              {this.state.appliedFor == 32 && (
                 <Grid item xs={12} sm={6}>
                   <FormControl
                     error={!!this.state.yearAlevelError}
@@ -1092,7 +1092,7 @@ getCitiesData = async (id, type, value='') => {
                 </Grid>
               )}
 
-              {this.state.appliedFor === 11 && (
+              {this.state.appliedFor === 8 && (
                 <Grid item xs={12} sm={6}>
                   <FormControl
                     error={!!this.state.chessSubDegreeError}
