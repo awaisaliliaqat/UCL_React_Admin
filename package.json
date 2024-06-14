@@ -1,8 +1,8 @@
 {
-  "name": "ucl-admin",
+  "name": "ucl-admin-update",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://hitechgrainmills.com/ucl-admin",
+  "homepage": "http://hitechgrainmills.com/ucl-admin-update",
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
     "@devexpress/dx-core": "^2.6.3",
