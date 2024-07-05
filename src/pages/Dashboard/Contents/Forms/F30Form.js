@@ -106,7 +106,7 @@ class F30Form extends Component {
     this.setState({ showSearchBar: !this.state.showSearchBar });
   };
 
-  loadAcademicSession = async () => {
+  loadAcademicSession = async (sessionId, programmeId) => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C30CommonAcademicSessionsView`;
     await fetch(url, {
@@ -122,21 +122,29 @@ class F30Form extends Component {
         return res.json();
       })
       .then(
-        (json) => {
+        async (json) => {
           if (json.CODE === 1) {
-            this.setState({ academicSessionIdMenuItems: json.DATA });
-            for (
-              var i = 0;
-              i < this.state.academicSessionIdMenuItems.length;
-              i++
-            ) {
-              if (this.state.academicSessionIdMenuItems[i].isActive == "1") {
-                this.state.academicSessionId = this.state.academicSessionIdMenuItems[
-                  i
-                ].ID;
-                this.loadProgrammes(this.state.academicSessionId);
+
+            let data = json.DATA || [];
+            
+            let res2 = data.find((obj) => obj.ID == sessionId);
+            if (sessionId && res2) {
+              this.setState({
+                academicSessionId: res2.ID,
+              });
+              await this.loadProgrammes(res2.ID, programmeId);
+            } else {
+              let res = data.find((obj) => obj.isActive === 1);
+              if (res) {
+                this.setState({
+                  academicSessionId: res.ID,
+                });
+                this.loadProgrammes(res.ID);
               }
             }
+
+            this.setState({ academicSessionIdMenuItems: data });
+           
           } else {
             this.handleOpenSnackbar(
               json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
@@ -163,7 +171,7 @@ class F30Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadProgrammes = async (academicsSessionId) => {
+  loadProgrammes = async (academicsSessionId, programmeId) => {
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
     this.setState({ isLoading: true });
@@ -184,7 +192,7 @@ class F30Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ programmeIdMenuItems: json.DATA });
+            this.setState({ programmeIdMenuItems: json.DATA || [], programmeId: programmeId || "" });
           } else {
             this.handleOpenSnackbar(
               json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
@@ -309,9 +317,10 @@ class F30Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadStudents = async (programmeId) => {
+  loadStudents = async (programmeId,studentId) => {
     let data = new FormData();
     data.append("programmeId", programmeId);
+    data.append("studentId", studentId || 0);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C30CommonStudentsView`;
     await fetch(url, {
@@ -511,7 +520,20 @@ class F30Form extends Component {
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.loadAcademicSession();
+    this.onLoadAllData();
+  }
+
+  onLoadAllData = async () => {
+
+    const query = new URLSearchParams(this.props.location.search);
+    const studentId = query.get("studentId") || "";
+    const academicSessionId = query.get("academicSessionId") || "";
+    const programmeId = query.get("programmeId") || "";
+
+    await this.loadAcademicSession(academicSessionId, programmeId);
+    if(studentId != ""){
+      this.loadStudents(programmeId, studentId);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
