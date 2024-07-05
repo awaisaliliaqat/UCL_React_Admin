@@ -107,64 +107,7 @@ class R314StudentsList extends Component {
         (json) => {
           if (json.CODE === 1) {
             let jsonArray = json.DATA || [];
-            if (jsonArray.length > 0) {
-              for (let i = 0; i < jsonArray.length; i++) {
-                let featuresData = [
-                  {
-                    id: 1,
-                    label: "Student Profile",
-                    action: `#/view-student-profile/${jsonArray[i].studentId || 0}`,
-                  },
-                  {
-                    id: 2,
-                    label: "Student Activate/Deactivate",
-                    action: `#/dashboard/change-student-status?studentId=${
-                      jsonArray[i].studentId || 0
-                    }&academicSessionId=${jsonArray[i].academicSessionId || 0}`,
-                  },
-                  {
-                    id: 3,
-                    label: "Edit Student Profile",
-                    action: `#/dashboard/edit-student-information/${
-                      jsonArray[i].id || 0}`,
-                  },
-                  {
-                    id: 5,
-                    label: "Assign Section to Students",
-                    action: "",
-                  },
-                  {
-                    id: 6,
-                    label: "Student Course Selection",
-                    action: `#/dashboard/student-course-selection?studentId=${
-                      jsonArray[i].studentId || 0
-                    }&academicSessionId=${jsonArray[i].academicSessionId || 0}&programmeGroupId=${jsonArray[i].programmeGroupId || 0}`,
-                  },
-                  {
-                    id: 7,
-                    label: "Student Achievements",
-                    action: "",
-                  },
-                  {
-                    id: 8,
-                    label: "Student Achievements With Programme",
-                    action: "",
-                  },
-                  {
-                    id: 9,
-                    label: "Student Promotion and Exit",
-                    action: "",
-                  },
-                  { id: 10, label: "UOL Enrolment", action: `#/dashboard/F212Form/0?studentId=${
-                      jsonArray[i].studentId || 0
-                    }&academicSessionId=${jsonArray[i].academicSessionId || 0}` },
-                ];
-
-                jsonArray[i]["featuresData"] = featuresData;
-              }
-
               this.setState({ tableData: jsonArray });
-            }
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(
@@ -281,7 +224,7 @@ class R314StudentsList extends Component {
               }}
               variant="h5"
             >
-              {"Student's Centric Dashboard"}
+              {"Student-Centric Dashboard"}
               <br />
             </Typography>
           </div>

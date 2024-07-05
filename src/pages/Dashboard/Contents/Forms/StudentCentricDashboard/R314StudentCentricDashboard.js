@@ -55,8 +55,6 @@ class R314StudentCentricDashboard extends Component {
 
       recordId: 0,
       data: {},
-
-      featuresData: [],
     };
   }
 
@@ -111,67 +109,8 @@ class R314StudentCentricDashboard extends Component {
             if (jsonArray.length > 0) {
               studentData = jsonArray[0] || {};
             }
-
-            let featuresData = [
-              {
-                id: 1,
-                label: "Student Profile",
-                action: `#/dashboard/student-profile?studentId=${
-                  studentData.studentId || 0
-                }&academicSessionId=${studentData.academicSessionId || 0}`,
-              },
-              {
-                id: 2,
-                label: "Student Activate/Deactivate",
-                action: `#/dashboard/change-student-status?studentId=${
-                  studentData.studentId || 0
-                }&academicSessionId=${studentData.academicSessionId || 0}`,
-              },
-              {
-                id: 3,
-                label: "Edit Student Profile",
-                action: `#/dashboard/edit-student-information?studentId=${
-                  studentData.studentId || 0
-                }&isActive=${studentData.isActive || 0}`,
-              },
-              {
-                id: 5,
-                label: "Assign Section to Students",
-                action: "",
-              },
-              {
-                id: 6,
-                label: "Student Course Selection",
-                action: `#/dashboard/student-course-selection?studentId=${
-                  studentData.studentId || 0
-                }&academicSessionId=${studentData.academicSessionId || 0}`,
-              },
-              {
-                id: 7,
-                label: "Student Achievements",
-                action: "",
-              },
-              {
-                id: 8,
-                label: "Student Achievements With Programme",
-                action: "",
-              },
-              {
-                id: 9,
-                label: "Student Promotion and Exit",
-                action: "",
-              },
-              { id: 10, label: "UOL Enrolment", action: "" },
-              {
-                id: 11,
-                label: "UOL Enrolment Report",
-                action: "",
-              }
-            ];
-
             this.setState({
               data: studentData,
-              featuresData,
             });
           } else {
             this.handleSnackbar(
@@ -220,7 +159,7 @@ class R314StudentCentricDashboard extends Component {
         <div className={classes.mainContainer}>
           <div>
             <Typography className={classes.pageTitle} variant="h5">
-              {"Student's Centric Dashboard"}
+              {"Student-Centric Dashboard"}
             </Typography>
           </div>
           <Divider className={classes.titleDivider} />
@@ -256,32 +195,50 @@ class R314StudentCentricDashboard extends Component {
                   {this.state.data.email || "N/A"}
                 </Typography>
               </Grid>
-              {this.state.featuresData.map((item) => {
-                return (
-                  <Grid key={item} item xs={2}>
-                    <Card
-                      onClick={() => {
-                        if (item.action) {
-                          window.open(item.action, "_blank", "noreferrer");
-                        }
-                      }}
-                      style={{
-                        height: 130,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <CardContent>
-                        <Typography variant="subtitle1">
-                          {item.label}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                );
-              })}
+              {this.state.data?.featuresData &&
+              this.state.data?.featuresData?.length > 0 ? (
+                <Fragment>
+                  {this.state.data?.featuresData?.map((item) => {
+                    return (
+                      <Grid key={item} item xs={2}>
+                        <Card
+                          onClick={() => {
+                            if (item.action) {
+                              window.open(item.action, "_blank", "noreferrer");
+                            }
+                          }}
+                          style={{
+                            height: 130,
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <CardContent>
+                            <Typography variant="subtitle1">
+                              {item.label}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    );
+                  })}
+                </Fragment>
+              ) : (
+                <Grid item xs={12}>
+                  <Typography
+                    style={{
+                      marginTop: 20,
+                      color: "gray",
+                      opacity: 0.8,
+                      fontSize: 14,
+                    }}
+                  >
+                    Student&apos;s related Features are not assigned.
+                  </Typography>
+                </Grid>
+              )}
             </Grid>
           </center>
         </div>

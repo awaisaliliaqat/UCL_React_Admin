@@ -87,7 +87,8 @@ const R314StudentCentricDashboardDialog = (props) => {
             Please click below on any <b>Feature</b> to open details according
             to selected student{" "}
           </Typography>
-          <List>
+          {data.featuresData && data.featuresData?.length > 0 ? 
+            <List>
             {data.featuresData?.map((item) => (
               <ListItem
                 button
@@ -106,7 +107,14 @@ const R314StudentCentricDashboardDialog = (props) => {
                 <ListItemText primary={item.label} />
               </ListItem>
             ))}
-          </List>
+          </List> :
+          <center><Typography style={{
+            marginTop: 20,
+            color: "gray",
+            opacity: 0.8,
+            fontSize: 14
+          }}>Student&apos;s related Features are not assigned.</Typography></center>
+          }
         </DialogContent>
         <DialogActions>
           <Button
