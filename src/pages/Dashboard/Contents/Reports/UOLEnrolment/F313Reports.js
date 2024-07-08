@@ -694,7 +694,7 @@ class F212Form extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadData = async () => {
+  loadData = async (studentId) => {
     this.setState({isLoading: true});
     let data = new FormData();
     // data.append("academicSessionId", this.state.academicSessionId);
@@ -707,7 +707,7 @@ class F212Form extends Component {
     // data.append("courseCompletionStatusId", this.state.courseCompletionStatus);
     // data.append("endYearAchievementId", this.state.endYearAchievement);
     // data.append("pathwayId", this.state.pathway);
-    // data.append("studentId", this.state.mainPagestudentNucleusId || 0);
+    data.append("studentId", studentId || 0);
     
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C313CommonStudentsView`;
     await fetch(url, {
@@ -1364,7 +1364,13 @@ class F212Form extends Component {
     // this.loadCourseCompletionStatus();
     // this.loadEndYearAchievement();
     // this.loadPathway();
-    this.loadData();
+    this.onLoadAllData();
+  }
+
+  onLoadAllData = async () => {
+    const query = new URLSearchParams(this.props.location.search);
+    const studentId = query.get("studentId") || "";
+    this.loadData(studentId);
   }
 
   render() {

@@ -39,6 +39,13 @@ const styles = () => ({
   "card:hover": {
     color: "blue",
   },
+  featureContainerLabel: {
+    display: "flex",
+    justifyContent: "flex-start",
+    fontSize: 18,
+    fontWeight: 700,
+    color: "rgb(23, 74, 132)",
+  },
 });
 
 class R314StudentCentricDashboard extends Component {
@@ -164,83 +171,107 @@ class R314StudentCentricDashboard extends Component {
           </div>
           <Divider className={classes.titleDivider} />
           <br />
-          <center>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <div
-                  className={classes.imageContainer}
-                  style={{
-                    backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${this.state.data.imageName})`,
-                  }}
-                />
-              </Grid>
-              <Grid
-                style={{
-                  marginBottom: 10,
-                }}
-                item
-                xs={12}
-              >
-                <Typography
-                  style={{
-                    textTransform: "capitalize",
-                  }}
-                  component="h5"
-                  variant="h5"
-                >
-                  {`${this.state.data.displayName || "N/A"}`}
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {this.state.data.genderLabel || "N/A"},{" "}
-                  {this.state.data.email || "N/A"}
-                </Typography>
-              </Grid>
-              {this.state.data?.featuresData &&
-              this.state.data?.featuresData?.length > 0 ? (
-                <Fragment>
-                  {this.state.data?.featuresData?.map((item) => {
-                    return (
-                      <Grid key={item} item xs={2}>
-                        <Card
-                          onClick={() => {
-                            if (item.action) {
-                              window.open(item.action, "_blank", "noreferrer");
-                            }
-                          }}
-                          style={{
-                            height: 130,
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <CardContent>
-                            <Typography variant="subtitle1">
-                              {item.label}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    );
-                  })}
-                </Fragment>
-              ) : (
+          <div style={{
+            marginLeft: 20,
+            marginRight: 20
+          }}>
+            <center>
+              <Grid container spacing={2}>
                 <Grid item xs={12}>
+                  <div
+                    className={classes.imageContainer}
+                    style={{
+                      backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${this.state.data.fileName})`,
+                    }}
+                  />
+                </Grid>
+                <Grid
+                  style={{
+                    marginBottom: 10,
+                  }}
+                  item
+                  xs={12}
+                >
                   <Typography
                     style={{
-                      marginTop: 20,
-                      color: "gray",
-                      opacity: 0.8,
-                      fontSize: 14,
+                      textTransform: "capitalize",
                     }}
+                    component="h5"
+                    variant="h5"
                   >
-                    Student&apos;s related Features are not assigned.
+                    {`${this.state.data.displayName || "N/A"}`}
+                  </Typography>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    {this.state.data.genderLabel || "N/A"},{" "}
+                    {this.state.data.email || "N/A"}
                   </Typography>
                 </Grid>
-              )}
-            </Grid>
-          </center>
+                {this.state.data?.featuresData &&
+                this.state.data?.featuresData?.length > 0 ? (
+                  <Fragment>
+                    {this.state.data?.featuresData?.map((item) => {
+                      return (
+                        <Fragment key={item}>
+                          <Grid item xs={12}>
+                            <div className={classes.featureContainerLabel}>
+                              {item.label}
+                            </div>
+                          </Grid>
+                          {item.data && item.data?.length > 0 && (
+                            <Fragment>
+                              {item.data?.map((data) => {
+                                return (
+                                  <Grid key={data} item xs={2}>
+                                    <Card
+                                      onClick={() => {
+                                        if (data.action) {
+                                          window.open(
+                                            data.action,
+                                            "_blank",
+                                            "noreferrer"
+                                          );
+                                        }
+                                      }}
+                                      style={{
+                                        height: 130,
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        cursor: "pointer",
+                                      }}
+                                    >
+                                      <CardContent>
+                                        <Typography variant="subtitle1">
+                                          {data.label}
+                                        </Typography>
+                                      </CardContent>
+                                    </Card>
+                                  </Grid>
+                                );
+                              })}
+                            </Fragment>
+                          )}
+                        </Fragment>
+                      );
+                    })}
+                  </Fragment>
+                ) : (
+                  <Grid item xs={12}>
+                    <Typography
+                      style={{
+                        marginTop: 20,
+                        color: "gray",
+                        opacity: 0.8,
+                        fontSize: 14,
+                      }}
+                    >
+                      Student&apos;s related Features are not assigned.
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
+            </center>
+          </div>
         </div>
 
         <LoginMenu
