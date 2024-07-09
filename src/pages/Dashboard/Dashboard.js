@@ -184,6 +184,7 @@ import F312DefineEmployeeDesignationsFrom from "./Contents/Forms/DefineEmployeeD
 import R313Reports from "./Contents/Reports/UOLEnrolment/F313Reports";
 import R314StudentList from "./Contents/Forms/StudentCentricDashboard/R314StudentsList";
 import R314StudentCentricDashboard from "./Contents/Forms/StudentCentricDashboard/R314StudentCentricDashboard";
+import AssignSectionToStudentFormForCentricDashboard from "./Contents/Forms/AssignSectionToStudent/AssignSectionToStudentFormForCentricDashboard";
 
 const drawerWidth = 283;
 
@@ -1587,6 +1588,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/assign-section-to-student-reports"
                 component={AssignSectionToStudentReport}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="assign-section"
+                exact
+                path="/dashboard/assign-section/:id"
+                component={AssignSectionToStudentFormForCentricDashboard}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}

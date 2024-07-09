@@ -55,6 +55,7 @@ class StudentCourseSelection extends Component {
     const studentId = query.get("studentId") || "";
     const academicSessionId = query.get("academicSessionId") || "";
     const programmeGroupId = query.get("programmeGroupId") || "";
+    const isEdit = query.get("isEdit") || 0;
     await this.getSessionData(academicSessionId, programmeGroupId);
 
     if (studentId != "") {
@@ -63,7 +64,7 @@ class StudentCourseSelection extends Component {
           studentId,
           regStatusId: 0,
         },
-        () => this.getData()
+        () => this.getData(false, "", 1, isEdit)
       );
     }
   }
@@ -506,7 +507,7 @@ class StudentCourseSelection extends Component {
     });
   };
 
-  getData = async (isChangeCall = false, value = "") => {
+  getData = async (isChangeCall = false, value = "", isCentricCall=0, isEdit=0) => {
     this.setState({
       isLoading: true,
     });
@@ -527,11 +528,40 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            const data = json.DATA || [];
+            let dataLength = data.length;
             this.setState({
-              admissionData: json.DATA || [],
+              admissionData: data,
+              totalStudents: dataLength
             });
-            let totalStudents = this.state.admissionData.length;
-            this.setState({totalStudents: totalStudents});
+            if(isCentricCall == 1 && dataLength > 0){
+              const rowData = data[0] || {};
+              if(isEdit == 1){
+                this.setState({
+                  studentIddToSend:rowData.id,
+                  selectedData:rowData
+                });
+                this.getCouresData(0);
+                this.getRegisteredCoursesData(rowData);
+                this.getPreviousCouresData(rowData);
+                this.getModulesData(rowData);
+                this.getModulesDropDownData(rowData);
+                this.getStudentAchivementsData(rowData);
+              } else {
+              this.setState({
+                studentIddToSend:rowData.id,
+                selectedData:rowData
+              });
+              this.onReadOnly();
+              this.getCouresData(0);
+              this.getRegisteredCoursesData(rowData);
+              this.getPreviousCouresData(rowData)
+              this.getModulesData(rowData);
+              this.getModulesDropDownData(rowData);
+              this.getStudentAchivementsData(rowData);
+            }
+          }
+
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
           }
