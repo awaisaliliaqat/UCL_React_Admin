@@ -15,9 +15,15 @@ import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/Custom
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 
 const styles = () => ({
+  root: {
+    paddingBottom: 15,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 15
+  },
   imageContainer: {
-    height: 120,
-    width: 120,
+    height: 60,
+    width: 60,
     border: "1px solid #ccc3c3",
     marginBottom: 5,
     marginTop: 20,
@@ -82,7 +88,6 @@ class F34ReportsForCentricDashboard extends Component {
             let assignmentsData = studentDetails.assignmentsList || [];
 
             for (var i = 0; i < assignmentsData.length; i++) {
-
               let isAssignmentGraded = assignmentsData[i].isAssignmentGraded;
               let gradedAssignmentUrl = assignmentsData[i].gradedAssignmentUrl;
               let fileName = assignmentsData[i].assignmentUrl;
@@ -90,8 +95,8 @@ class F34ReportsForCentricDashboard extends Component {
               assignmentsData[i].fileDownload = (
                 <Fragment>
                   <Tooltip title="Download Assignemt">
-                    <IconButton 
-                      onClick={(e)=>this.downloadFile(e, fileName)} 
+                    <IconButton
+                      onClick={(e) => this.downloadFile(e, fileName)}
                       aria-label="download"
                       color="primary"
                       disabled={!fileName}
@@ -99,21 +104,24 @@ class F34ReportsForCentricDashboard extends Component {
                       <CloudDownloadIcon />
                     </IconButton>
                   </Tooltip>
-                  {isAssignmentGraded == 1 && 
-                  <Tooltip title="Download Graded Assignemt">
-                    <IconButton 
-                      onClick={(e)=>this.downloadFile(e, gradedAssignmentUrl)} 
-                      aria-label="download"
-                      style={gradedAssignmentUrl ?
-                        {color: "rgb(76, 175, 80)"} :
-                      {color: "primary"}
+                  {isAssignmentGraded == 1 && (
+                    <Tooltip title="Download Graded Assignemt">
+                      <IconButton
+                        onClick={(e) =>
+                          this.downloadFile(e, gradedAssignmentUrl)
                         }
-                      disabled={!gradedAssignmentUrl}
-                    >
-                      <CloudDownloadIcon />
-                    </IconButton>
-                  </Tooltip>
-                  }
+                        aria-label="download"
+                        style={
+                          gradedAssignmentUrl
+                            ? { color: "rgb(76, 175, 80)" }
+                            : { color: "primary" }
+                        }
+                        disabled={!gradedAssignmentUrl}
+                      >
+                        <CloudDownloadIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </Fragment>
               );
             }
@@ -242,7 +250,6 @@ class F34ReportsForCentricDashboard extends Component {
   }
 
   render() {
-
     const { classes } = this.props;
 
     const columns = [
@@ -263,11 +270,7 @@ class F34ReportsForCentricDashboard extends Component {
           open={this.state.isLoginMenu}
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
-        <div
-          style={{
-            padding: 20,
-          }}
-        >
+        <div className={classes.root}>
           <div
             style={{
               display: "flex",
@@ -279,6 +282,7 @@ class F34ReportsForCentricDashboard extends Component {
                 color: "#1d5f98",
                 fontWeight: 600,
                 textTransform: "capitalize",
+                marginBottom: 5,
               }}
               variant="h5"
             >
@@ -289,9 +293,10 @@ class F34ReportsForCentricDashboard extends Component {
             style={{
               backgroundColor: "rgb(58, 127, 187)",
               opacity: "0.3",
+              marginBottom: 10
             }}
           />
-           <Grid
+          <Grid
             container
             spacing={2}
             style={{
@@ -299,7 +304,7 @@ class F34ReportsForCentricDashboard extends Component {
               marginRight: 15,
             }}
           >
-            <Grid
+            {/* <Grid
               style={{
                 display: "flex",
                 justifyContent: "center",
@@ -310,34 +315,43 @@ class F34ReportsForCentricDashboard extends Component {
               <div
                 className={classes.imageContainer}
                 style={{
-                  backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${
-                    process.env.REACT_APP_SUB_API_NAME
-                  }/common/C01AdmissionsProspectApplicationImageView?fileName=${"abc"})`,
+                  backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${this.state.studentDetails.fileName})`,
                 }}
               />
-            </Grid>
+            </Grid> */}
             <Grid
               style={{
                 marginBottom: 10,
+                display: "flex",
+                justifyContent: "center",
+              }}
+              item
+              xs={12}
+            >
+              {/* <div
+                className={classes.imageContainer}
+                style={{
+                  backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${this.state.studentDetails.fileName})`,
+                }}
+              /> */}
+              <div style={{
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
                 textTransform: "capitalize",
                 textAlign: "center",
-              }}
-              item
-              xs={12}
-            >
-              <Typography component="h5" variant="h5">
-                {`${this.state.studentDetails.studentId || "N/A"} - ${
-                  this.state.studentDetails.displayName || "N/A"
-                }`}
-              </Typography>
-              <Typography variant="subtitle1" color="textSecondary">
-                {`${
-                  this.state.studentDetails.academicSessionLabel || "N/A"
-                },  ${this.state.studentDetails.programmeLabel || "N/A"}`}
-              </Typography>
+              }}>
+                <Typography component="h5" variant="h5">
+                  {`${this.state.studentDetails.studentId || "N/A"} - ${
+                    this.state.studentDetails.displayName || "N/A"
+                  }`}
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {`${
+                    this.state.studentDetails.academicSessionLabel || "N/A"
+                  },  ${this.state.studentDetails.programmeLabel || "N/A"}`}
+                </Typography>
+              </div>
             </Grid>
           </Grid>
           <Divider
@@ -385,4 +399,4 @@ F34ReportsForCentricDashboard.defaultProps = {
   },
   setDrawerOpen: (fn) => fn,
 };
-export default  withStyles(styles)(F34ReportsForCentricDashboard);
+export default withStyles(styles)(F34ReportsForCentricDashboard);

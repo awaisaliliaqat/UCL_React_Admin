@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import { Paper } from "@material-ui/core";
-import {Column, FilteringState, GroupingState, IntegratedFiltering, IntegratedGrouping, IntegratedPaging,
-  IntegratedSelection, IntegratedSorting, PagingState, SelectionState, SortingState, DataTypeProvider,
-  DataTypeProviderProps} from "@devexpress/dx-react-grid";
-import {DragDropProvider, Grid, GroupingPanel, PagingPanel, Table, TableFilterRow, TableGroupRow, TableHeaderRow,
-  TableSelection, Toolbar, VirtualTable, TableColumnResizing} from "@devexpress/dx-react-grid-material-ui";
+import { FilteringState, IntegratedFiltering, IntegratedPaging,
+  IntegratedSorting, PagingState, SortingState } from "@devexpress/dx-react-grid";
+import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
+import PropTypes from "prop-types";
 
-class F201ReportsTableComponent extends Component {
+class F201FormTableComponentForCentric extends Component {
   constructor(props) {
     super(props);
 
@@ -47,18 +46,11 @@ class F201ReportsTableComponent extends Component {
 
   render() {
     const {
-      formatColumns,
-      currencyColumns,
-      availableFilterOperations,
-      CurrencyEditor,
       tableColumnExtensions,
-      resizingMode,
       defaultSorting,
       sortingStateColumnExtensions,
       filteringStateColumnExtensions,
       defaultFilters,
-      defaultColumnWidths,
-      columnBands,
       pageSizes,
     } = this.state;
 
@@ -94,4 +86,18 @@ class F201ReportsTableComponent extends Component {
   }
 }
 
-export default F201ReportsTableComponent;
+F201FormTableComponentForCentric.propTypes = {
+  columns: PropTypes.array,
+  data: PropTypes.array,
+  showFilter: PropTypes.bool,
+
+
+}
+
+F201FormTableComponentForCentric.defaultProps = {
+  columns: [],
+  data: [],
+  showFilter: false,
+}
+
+export default F201FormTableComponentForCentric;

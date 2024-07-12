@@ -15,9 +15,15 @@ import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/Custom
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 
 const styles = () => ({
+  root: {
+    paddingBottom: 15,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 15
+  },
   imageContainer: {
-    height: 120,
-    width: 120,
+    height: 60,
+    width: 60,
     border: "1px solid #ccc3c3",
     marginBottom: 5,
     marginTop: 20,
@@ -263,11 +269,7 @@ class F205ReportsForCentricDashboard extends Component {
           open={this.state.isLoginMenu}
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
-        <div
-          style={{
-            padding: 20,
-          }}
-        >
+         <div className={classes.root}>
           <div
             style={{
               display: "flex",
@@ -279,6 +281,7 @@ class F205ReportsForCentricDashboard extends Component {
                 color: "#1d5f98",
                 fontWeight: 600,
                 textTransform: "capitalize",
+                marginBottom: 5
               }}
               variant="h5"
             >
@@ -289,6 +292,7 @@ class F205ReportsForCentricDashboard extends Component {
             style={{
               backgroundColor: "rgb(58, 127, 187)",
               opacity: "0.3",
+              marginBottom: 10
             }}
           />
            <Grid
@@ -299,7 +303,7 @@ class F205ReportsForCentricDashboard extends Component {
               marginRight: 15,
             }}
           >
-            <Grid
+            {/* <Grid
               style={{
                 display: "flex",
                 justifyContent: "center",
@@ -315,29 +319,40 @@ class F205ReportsForCentricDashboard extends Component {
                   }/common/C01AdmissionsProspectApplicationImageView?fileName=${"abc"})`,
                 }}
               />
-            </Grid>
+            </Grid> */}
             <Grid
               style={{
                 marginBottom: 10,
+                display: "flex",
+                justifyContent: "center",
+              }}
+              item
+              xs={12}
+            >
+              {/* <div
+                className={classes.imageContainer}
+                style={{
+                  backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${this.state.studentDetails.fileName})`,
+                }}
+              /> */}
+              <div style={{
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
                 textTransform: "capitalize",
                 textAlign: "center",
-              }}
-              item
-              xs={12}
-            >
-              <Typography component="h5" variant="h5">
-                {`${this.state.studentDetails.studentId || "N/A"} - ${
-                  this.state.studentDetails.displayName || "N/A"
-                }`}
-              </Typography>
-              <Typography variant="subtitle1" color="textSecondary">
-                {`${
-                  this.state.studentDetails.academicSessionLabel || "N/A"
-                },  ${this.state.studentDetails.programmeLabel || "N/A"}`}
-              </Typography>
+              }}>
+                <Typography component="h5" variant="h5">
+                  {`${this.state.studentDetails.studentId || "N/A"} - ${
+                    this.state.studentDetails.displayName || "N/A"
+                  }`}
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {`${
+                    this.state.studentDetails.academicSessionLabel || "N/A"
+                  },  ${this.state.studentDetails.programmeLabel || "N/A"}`}
+                </Typography>
+              </div>
             </Grid>
           </Grid>
           <Divider

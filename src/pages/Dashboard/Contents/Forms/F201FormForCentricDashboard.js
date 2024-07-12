@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
-import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
+import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import {
   Grid,
   Divider,
@@ -8,17 +8,17 @@ import {
   TextField,
   MenuItem,
 } from "@material-ui/core";
-import BottomBar from "../../../../../components/BottomBar/BottomBar";
-import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import BottomBar from "../../../../components/BottomBar/BottomBar";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import PropTypes from "prop-types";
-import AssignSectionToStudentFormTableComponentForCentric from "./Chunks/AssignSectionToStudentFormTableComponentForCentric";
+import F201TableComponentForCentric from "./F201FormTableComponentForCentric";
 
 const styles = () => ({
   root: {
     paddingBottom: 15,
     paddingLeft: 20,
     paddingRight: 20,
-    paddingTop: 15
+    paddingTop: 15,
   },
   imageContainer: {
     height: 60,
@@ -34,13 +34,15 @@ const styles = () => ({
   },
 });
 
-class AssignSectionToStudentFormForCentricDashboard extends Component {
+class F201FormForCentricDashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
       recordId: this.props.match.params.recordId,
       isLoading: false,
       isReload: false,
+
+      letterGradeMenuItems: [],
 
       studentId: "",
       studentsDetails: {},
@@ -54,18 +56,74 @@ class AssignSectionToStudentFormForCentricDashboard extends Component {
   }
 
   componentDidMount() {
+    this.onLoadAllData();
+  }
+
+  onLoadAllData = async () => {
+    this.getLetterGrades();
     const { id = 0 } = this.props.match.params;
     this.setState({
       studentId: id,
     });
     this.getStudentsData(id);
-  }
+  };
+
+  getLetterGrades = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsLetterGradesView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ letterGradeMenuItems: json.DATA || [] });
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+          console.log("getLetterGrades", json);
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            console.log(error);
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
 
   getStudentsData = async (id) => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${
       process.env.REACT_APP_SUB_API_NAME
-    }/common/C28CommonStudentsViewForCentricDashboard?studentId=${
+    }/common/C201CommonStudentsViewForCentricDashboard?studentId=${
       id || this.state.studentId
     }`;
     await fetch(url, {
@@ -85,8 +143,7 @@ class AssignSectionToStudentFormForCentricDashboard extends Component {
           if (json.CODE === 1) {
             let data = json.DATA || [];
             let studentDetails = data[0] || {};
-            let sectionStudents =
-              studentDetails.offeredCoursesSectionsList || [];
+            let sectionStudents = studentDetails.sectionsList || [];
             this.setState({
               studentsDetails: studentDetails,
               studentCoursesSectionsData: sectionStudents,
@@ -155,9 +212,7 @@ class AssignSectionToStudentFormForCentricDashboard extends Component {
   clickOnFormSubmit = () => {
     if (this.isFormValid()) {
       this.onFormSubmit();
-    } else {
-      this.handleSnackbar(true, "Student's assignment data not found", "error");
-    }
+    } 
   };
   onFormSubmit = async (e) => {
     if (e) {
@@ -168,19 +223,24 @@ class AssignSectionToStudentFormForCentricDashboard extends Component {
         this.state;
       const data = new FormData();
       data.append("studentId", studentsDetails.id || 0);
-      for (let i = 0; i < studentCoursesSectionsData.length; i++) {
+      data.append("academicSessionId", studentsDetails.academicSessionId || 0);
+      data.append("programmeGroupId", studentsDetails.programmeGroupId || 0);
+      data.append("evaluationTypeId", 1);
+      let saveDataFilter = studentCoursesSectionsData.filter(item => item.isAssessmentCompleted == false && item.letterGradeId);
+      for (let i = 0; i < saveDataFilter.length; i++) {
         data.append(
-          "lectureSectionId",
-          studentCoursesSectionsData[i].lectureSectionId
+          "sectionId",
+          saveDataFilter[i].sectionId
         );
         data.append(
-          "tutorialSectionId",
-          studentCoursesSectionsData[i].tutorialSectionId
+          "sessionTermId",
+          saveDataFilter[i].sessionTermId
         );
-        data.append("courseId", studentCoursesSectionsData[i].id);
+        data.append("assessmentNo", saveDataFilter[i].maxAssessmentNo);
+        data.append("letterGradeId", saveDataFilter[i].letterGradeId);
       }
       this.setState({ isLoading: true });
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C28CommonAcademicsSectionsStudentsSaveForCentricDashboard`;
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C201CommonAcademicsSessionsEvaluationsSaveForCentricDashboard`;
       await fetch(url, {
         method: "POST",
         body: data,
@@ -227,41 +287,20 @@ class AssignSectionToStudentFormForCentricDashboard extends Component {
     }
   };
 
-  onSectionChange = (e, rowData = {}) => {
-    const { name, value } = e.target;
-    switch (name) {
-      case "lectureSectionId":
-        if (value) {
-          let { studentCoursesSectionsData = [] } = this.state;
-          const myIndex = studentCoursesSectionsData.findIndex(
-            (item) => item.id == rowData.id
-          );
-          if (myIndex >= 0) {
-            rowData.lectureSectionId = value;
-            studentCoursesSectionsData[myIndex] = rowData;
-            this.setState({
-              studentCoursesSectionsData,
-            });
-          }
-        }
-        break;
-      case "tutorialSectionId":
-        if (value) {
-          let { studentCoursesSectionsData = [] } = this.state;
-          const myIndex = studentCoursesSectionsData.findIndex(
-            (item) => item.id == rowData.id
-          );
-          if (myIndex >= 0) {
-            rowData.tutorialSectionId = value;
-            studentCoursesSectionsData[myIndex] = rowData;
-            this.setState({
-              studentCoursesSectionsData,
-            });
-          }
-        }
-        break;
-      default:
-        break;
+  onLetterGradeChange = (e, rowData = {}) => {
+    const { value } = e.target;
+    if (value) {
+      let { studentCoursesSectionsData = [] } = this.state;
+      const myIndex = studentCoursesSectionsData.findIndex(
+        (item) => item.id == rowData.id
+      );
+      if (myIndex >= 0) {
+        rowData.letterGradeId = value;
+        studentCoursesSectionsData[myIndex] = rowData;
+        this.setState({
+          studentCoursesSectionsData,
+        });
+      }
     }
   };
 
@@ -269,60 +308,52 @@ class AssignSectionToStudentFormForCentricDashboard extends Component {
     const { classes } = this.props;
     const columns = [
       { name: "serialNo", title: "Sr #" },
-      { name: "courseLabel", title: "Course" },
+      { name: "sectionLabel", title: "Section" },
+      { name: "sessionTermLabel", title: "Term" },
+      { name: "noOfAssessmentLabel", title: "No. of Assessment" },
       {
-        name: "lectureSection",
-        title: "Lecture Section",
+        name: "letterGrade",
+        title: "Letter Grade",
         getCellValue: (rowData) => {
           return (
-            <TextField
-              id="lectureSectionId"
-              name="lectureSectionId"
-              label="Assign Lecture Section"
-              required
-              fullWidth
-              variant="outlined"
-              disabled={!this.state.studentId}
-              onChange={(e) => this.onSectionChange(e, rowData)}
-              value={rowData.lectureSectionId}
-              select
-            >
-              {rowData.lectureSectionList?.map((item) => {
-                return (
-                  <MenuItem key={item.id} value={item.id}>
-                    {item.label}
-                  </MenuItem>
-                );
-              })}
-            </TextField>
-          );
-        },
-      },
-      {
-        name: "tutorialSection",
-        title: "Tutorial Section",
-        getCellValue: (rowData) => {
-          return (
-            <TextField
-              id="tutorialSectionId"
-              name="tutorialSectionId"
-              label="Assign Tutorial Section"
-              required
-              fullWidth
-              variant="outlined"
-              disabled={!this.state.studentId}
-              value={rowData.tutorialSectionId}
-              onChange={(e) => this.onSectionChange(e, rowData)}
-              select
-            >
-              {rowData.tutorialSectionList?.map((item) => {
-                return (
-                  <MenuItem key={item.id} value={item.id}>
-                    {item.label}
-                  </MenuItem>
-                );
-              })}
-            </TextField>
+            <>
+              {rowData.isAssessmentCompleted ? (
+                <div
+                  style={{
+                    border: "1px solid green",
+                    textAlign: "center",
+                    padding: 5,
+                    width: "fit-content",
+                    color: "green",
+                  }}
+                >
+                  All Assessment Completed
+                </div>
+              ) : (
+                <TextField
+                  id="letterGradeId"
+                  name="letterGradeId"
+                  label="Letter Grade"
+                  size="small"
+                  required
+                  fullWidth
+                  InputProps={{ classes: { input: classes.resize } }}
+                  variant="outlined"
+                  disabled={!this.state.studentId}
+                  onChange={(e) => this.onLetterGradeChange(e, rowData)}
+                  value={rowData.letterGradeId}
+                  select
+                >
+                  {this.state.letterGradeMenuItems?.map((item) => {
+                    return (
+                      <MenuItem key={item.id} value={item.id}>
+                        {item.label}
+                      </MenuItem>
+                    );
+                  })}
+                </TextField>
+              )}
+            </>
           );
         },
       },
@@ -343,18 +374,18 @@ class AssignSectionToStudentFormForCentricDashboard extends Component {
               fontWeight: 600,
               width: "98%",
               fontSize: 20,
-              marginBottom: 5
+              marginBottom: 5,
             }}
             variant="h5"
           >
-            Assign Section to Student
+            Subject Evaluation
           </Typography>
           <Divider
             style={{
               backgroundColor: "rgb(58, 127, 187)",
               opacity: "0.3",
               marginBottom: 10,
-              width: "99%"
+              width: "99%",
             }}
           />
           <Grid
@@ -431,7 +462,7 @@ class AssignSectionToStudentFormForCentricDashboard extends Component {
               marginBottom: 40,
             }}
           >
-            <AssignSectionToStudentFormTableComponentForCentric
+            <F201TableComponentForCentric
               rows={this.state.studentCoursesSectionsData}
               columns={columns}
               showFilter={false}
@@ -459,13 +490,13 @@ class AssignSectionToStudentFormForCentricDashboard extends Component {
   }
 }
 
-AssignSectionToStudentFormForCentricDashboard.propTypes = {
+F201FormForCentricDashboard.propTypes = {
   isDrawerOpen: PropTypes.bool,
   classes: PropTypes.object.isRequired,
   match: PropTypes.object,
 };
 
-AssignSectionToStudentFormForCentricDashboard.defaultProps = {
+F201FormForCentricDashboard.defaultProps = {
   isDrawerOpen: true,
   match: {
     params: {
@@ -474,6 +505,4 @@ AssignSectionToStudentFormForCentricDashboard.defaultProps = {
   },
 };
 
-export default withStyles(styles)(
-  AssignSectionToStudentFormForCentricDashboard
-);
+export default withStyles(styles)(F201FormForCentricDashboard);

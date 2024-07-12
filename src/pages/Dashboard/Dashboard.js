@@ -187,7 +187,8 @@ import R314StudentCentricDashboard from "./Contents/Forms/StudentCentricDashboar
 import AssignSectionToStudentFormForCentricDashboard from "./Contents/Forms/AssignSectionToStudent/AssignSectionToStudentFormForCentricDashboard";
 import F34ReportsForCentricDashboard from "./Contents/Forms/F34ReportsForCentricDashboard";
 import F205ReportsForCentricDashboard from "./Contents/Forms/F205ReportsForCentricDashboard";
-
+import F201FormForCentricDashboard from "./Contents/Forms/F201FormForCentricDashboard";
+import F202FormForCentricDashboard from "./Contents/Forms/F202FormForCentricDashboard";
 
 const drawerWidth = 283;
 
@@ -2609,6 +2610,36 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F205ReportsForCentricDashboard
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F201FormForCentricDashboard"
+                exact
+                path="/dashboard/F201FormForCentricDashboard/:id"
+                render={(props) => {
+                  return (
+                    <F201FormForCentricDashboard
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F202FormForCentricDashboard"
+                exact
+                path="/dashboard/F202FormForCentricDashboard/:id"
+                render={(props) => {
+                  return (
+                    <F202FormForCentricDashboard
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
