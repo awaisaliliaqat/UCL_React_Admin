@@ -13,9 +13,13 @@ import {
   Avatar,
   DialogActions,
   Button,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
 } from "@material-ui/core";
 import { blue } from "@material-ui/core/colors";
 import EcoIcon from "@material-ui/icons/Eco";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const useStyles = makeStyles({
   avatar: {
@@ -63,7 +67,7 @@ const R314StudentCentricDashboardDialog = (props) => {
             <div
               className={classes.imageContainer}
               style={{
-                backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${data.imageName})`,
+                backgroundImage: `url(${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C01AdmissionsProspectApplicationImageView?fileName=${data.fileName})`,
               }}
             />
 
@@ -78,7 +82,7 @@ const R314StudentCentricDashboardDialog = (props) => {
             }`}</Typography>
           </div>
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent style={{ overflowY: "scroll" }} dividers>
           <Typography
             style={{
               fontSize: 12,
@@ -87,34 +91,69 @@ const R314StudentCentricDashboardDialog = (props) => {
             Please click below on any <b>Feature</b> to open details according
             to selected student{" "}
           </Typography>
-          {data.featuresData && data.featuresData?.length > 0 ? 
+          {data.featuresData && data.featuresData?.length > 0 ? (
             <List>
-            {data.featuresData?.map((item) => (
-              <ListItem
-                button
-                onClick={() => {
-                  if (item.action) {
-                    window.open(item.action, "_blank", "noreferrer");
-                  }
+              {data.featuresData?.map((item) => (
+                <ListItem key={item}>
+                  <Accordion defaultExpanded style={{ width: "100%" }}>
+                    <AccordionSummary
+                      style={{
+                        backgroundColor: "aliceblue",
+                      }}
+                      expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                    >
+                      <Typography style={{ fontSize: 15, fontWeight: 600 }}>
+                        {item.label || "N/A"}
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      {item.data && item.data?.length > 0 && (
+                        <List style={{ width: "100%"}}>
+                          {item.data?.map((data) => (
+                            <ListItem
+                              button
+                              onClick={() => {
+                                if (data.action) {
+                                  window.open(
+                                    data.action,
+                                    "_blank",
+                                    "noreferrer"
+                                  );
+                                }
+                              }}
+                              key={data}
+                            >
+                              <ListItemAvatar>
+                                <Avatar className={classes.avatar}>
+                                  <EcoIcon />
+                                </Avatar>
+                              </ListItemAvatar>
+                              <ListItemText primary={data.label || "N/A"} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      )}
+                    </AccordionDetails>
+                  </Accordion>
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <center>
+              <Typography
+                style={{
+                  marginTop: 20,
+                  color: "gray",
+                  opacity: 0.8,
+                  fontSize: 14,
                 }}
-                key={item}
               >
-                <ListItemAvatar>
-                  <Avatar className={classes.avatar}>
-                    <EcoIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={item.label} />
-              </ListItem>
-            ))}
-          </List> :
-          <center><Typography style={{
-            marginTop: 20,
-            color: "gray",
-            opacity: 0.8,
-            fontSize: 14
-          }}>Student&apos;s related Features are not assigned.</Typography></center>
-          }
+                Student&apos;s related Features are not assigned.
+              </Typography>
+            </center>
+          )}
         </DialogContent>
         <DialogActions>
           <Button
@@ -128,7 +167,13 @@ const R314StudentCentricDashboardDialog = (props) => {
           <Button
             className={classes.button}
             variant="contained"
-            onClick={() =>  window.open(`#/dashboard/R314StudentCentricDashboard/${data.studentId}`, "_blank", "noreferrer")}
+            onClick={() =>
+              window.open(
+                `#/dashboard/R314StudentCentricDashboard/${data.studentId}`,
+                "_blank",
+                "noreferrer"
+              )
+            }
             color="primary"
           >
             Dashboard View

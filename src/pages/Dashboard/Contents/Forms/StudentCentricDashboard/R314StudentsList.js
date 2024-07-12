@@ -178,6 +178,7 @@ class R314StudentsList extends Component {
       { name: "serialNo", title: "SR#" },
       { name: "studentId", title: "NucleusID" },
       { name: "displayName", title: "Student\xa0Name" },
+      { name: "academicSessionLabel", title: "Session" },
       { name: "programmeLabel", title: "Programme" },
       {
         name: "action",
