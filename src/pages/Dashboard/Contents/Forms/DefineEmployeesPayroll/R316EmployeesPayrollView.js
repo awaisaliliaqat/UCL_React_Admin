@@ -25,7 +25,7 @@ class R316EmployeesPayrollView extends Component {
 
   handleSnackbar = (open, msg, severity) => {
     this.setState({
-      isOpenSnackbar: true,
+      isOpenSnackbar: open,
       snackbarMessage: msg,
       snackbarSeverity: severity,
     });
