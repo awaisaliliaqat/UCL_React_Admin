@@ -190,6 +190,7 @@ import F205ReportsForCentricDashboard from "./Contents/Forms/F205ReportsForCentr
 import F201FormForCentricDashboard from "./Contents/Forms/F201FormForCentricDashboard";
 import F202FormForCentricDashboard from "./Contents/Forms/F202FormForCentricDashboard";
 import F315DefineEmployeesPayroll from "./Contents/Forms/DefineEmployeesPayroll/F315DefineEmployeesPayroll";
+import R316EmployeesPayrollView from "./Contents/Forms/DefineEmployeesPayroll/R316EmployeesPayrollView";
 
 const drawerWidth = 283;
 
@@ -1563,6 +1564,20 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F315DefineEmployeesPayroll
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R316EmployeesPayrollView"
+                exact
+                path="/dashboard/R316EmployeesPayrollView"
+                render={(props) => {
+                  return (
+                    <R316EmployeesPayrollView
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                     />

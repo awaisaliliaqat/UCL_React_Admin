@@ -11,7 +11,7 @@ import {
 import PropTypes from "prop-types";
 
 
-class DefineEmployeeReportsTableComponent extends Component {
+class R316EmployeesPayrollViewTableComponent extends Component {
 
     constructor(props) {
 
@@ -37,19 +37,7 @@ class DefineEmployeeReportsTableComponent extends Component {
                 { columnName: 'action', sortingEnabled: false },
             ],
             tableColumnExtensions: [
-                { columnName: 'id', width: 70 },
-                { columnName: 'displayName', wordWrapEnabled: true, width: 100 },
-                { columnName: 'mobileNo', wordWrapEnabled: true,  width: 110 },
-                { columnName: 'email', wordWrapEnabled: true, width: 100 },
-                { columnName: 'jobStatusLabel', wordWrapEnabled: true, width: 80 },
-                { columnName: 'createdOn', wordWrapEnabled: true, width: 100 },
-                { columnName: 'statusLabel', wordWrapEnabled: true, width: 80 },
-                { columnName: 'leavingDateLabel', wordWrapEnabled: true, width: 100 },
-                { columnName: 'rolesLabel', wordWrapEnabled: true, width: 80 },
-                { columnName: 'entitiesLabel', wordWrapEnabled: true, width: 130 },
-                { columnName: 'departmentsLabel', wordWrapEnabled: true, width: 130 },
-                { columnName: 'subDepartmentsLabel', wordWrapEnabled: true, width: 130 },
-                { columnName: 'designationsLabel', wordWrapEnabled: true, width: 130 },
+                { columnName: 'id', width: 100 },
                 { columnName: 'action', width: 120 }
             ],
 
@@ -110,7 +98,7 @@ class DefineEmployeeReportsTableComponent extends Component {
     }
 }
 
-DefineEmployeeReportsTableComponent.propTypes = {
+R316EmployeesPayrollViewTableComponent.propTypes = {
     columns: PropTypes.array,
     rows: PropTypes.array,
     showFilter: PropTypes.bool
@@ -118,10 +106,10 @@ DefineEmployeeReportsTableComponent.propTypes = {
 
 }
 
-DefineEmployeeReportsTableComponent.defaultProps = {
+R316EmployeesPayrollViewTableComponent.defaultProps = {
     columns: [],
     rows: [],
     showFilter: false
 }
 
-export default DefineEmployeeReportsTableComponent;
+export default R316EmployeesPayrollViewTableComponent;

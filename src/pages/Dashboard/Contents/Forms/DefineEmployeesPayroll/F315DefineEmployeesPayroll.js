@@ -84,7 +84,7 @@ class F315DefineEmployeesPayroll extends Component {
     const data = new FormData();
     data.append("id", index);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersViewV2`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C316CommonUsersEmployeesPayrollView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -101,10 +101,28 @@ class F315DefineEmployeesPayroll extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            if (json.DATA) {
-              if (json.DATA.length > 0) {
-                // Get and Set Data
-              }
+            let data = json.DATA || [];
+            if (data.length > 0) {
+              let myDataObject = data[0] || {};
+              this.setState({
+                employeeObject: {
+                  id:  myDataObject["userId"],
+                  label:  myDataObject["userLabel"],
+                },
+                employeeObjectError: "",
+
+                payrollMonths: myDataObject["payrollMonths"],
+                payrollMonthsError: "",
+
+                perMonthSalary: myDataObject["perMonthSalary"],
+                perMonthSalaryError: "",
+
+                perHourRate: myDataObject["perHourRate"],
+                perHourRateError: "",
+
+                payrollComments: myDataObject["comments"],
+                payrollCommentsError: "",
+              });
             }
           } else {
             this.handleSnackbar(
@@ -187,10 +205,12 @@ class F315DefineEmployeesPayroll extends Component {
       payrollMonthsError = "";
     }
 
-    if (!this.state. perMonthSalary && !this.state. perHourRate) {
+    if (!this.state.perMonthSalary && !this.state.perHourRate) {
       isValid = false;
-      perMonthSalaryError = "Please enter Per Month Salary or Enter in Per Hour Rate field.";
-      perHourRateError = "Please enter Per Hour Rate  or Enter in Per Month Salary field.";
+      perMonthSalaryError =
+        "Please enter Per Month Salary or Enter in Per Hour Rate field.";
+      perHourRateError =
+        "Please enter Per Hour Rate  or Enter in Per Month Salary field.";
     } else {
       perMonthSalaryError = "";
       perHourRateError = "";
@@ -220,32 +240,29 @@ class F315DefineEmployeesPayroll extends Component {
   };
 
   clearAllData = () => {
-    this.setState(
-      {
-        employeeDataLoading: false,
-        employeeObject: {},
-        employeeObjectError: "",
-  
-        payrollMonths: "",
-        payrollMonthsError: "",
-  
-        perMonthSalary: "",
-        perMonthSalaryError: "",
-  
-        perHourRate: "",
-        perHourRateError: "",
-  
-        payrollComments: "",
-        payrollCommentsError: "",
-  
-      }
-    )
-  }
+    this.setState({
+      employeeDataLoading: false,
+      employeeObject: {},
+      employeeObjectError: "",
+
+      payrollMonths: "",
+      payrollMonthsError: "",
+
+      perMonthSalary: "",
+      perMonthSalaryError: "",
+
+      perHourRate: "",
+      perHourRateError: "",
+
+      payrollComments: "",
+      payrollCommentsError: "",
+    });
+  };
 
   onFormSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
-    data.append("userId", this.state.employeeObject.id)
+    data.append("userId", this.state.employeeObject.id);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C315CommonUsersEmployeesPayrollSave`;
     await fetch(url, {
@@ -268,9 +285,9 @@ class F315DefineEmployeesPayroll extends Component {
             if (this.state.recordId == 0) {
               this.clearAllData();
             } else {
-              // setTimeout(() => {
-              //   // window.location.replace("#/dashboard/employee-reports");
-              // }, 1000);
+              setTimeout(() => {
+                window.location.replace("#/dashboard/R316EmployeesPayrollView");
+              }, 1000);
             }
           } else {
             this.handleSnackbar(
@@ -322,7 +339,8 @@ class F315DefineEmployeesPayroll extends Component {
               employeeData: json.DATA || [],
             });
           } else {
-            this.handleSnackbar(true,
+            this.handleSnackbar(
+              true,
               json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
               "error"
             );
@@ -337,7 +355,8 @@ class F315DefineEmployeesPayroll extends Component {
             });
           } else {
             console.log(error);
-            this.handleSnackbar(true,
+            this.handleSnackbar(
+              true,
               "Failed to Get Data ! Please try Again later.",
               "error"
             );
@@ -348,7 +367,7 @@ class F315DefineEmployeesPayroll extends Component {
   };
 
   viewReport = () => {
-    // window.location = "#/dashboard/employee-reports";
+    window.location = "#/dashboard/R316EmployeesPayrollView";
   };
 
   render() {
