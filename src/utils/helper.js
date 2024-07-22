@@ -1,6 +1,20 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { Fragment } from 'react';
 
+export const IsEmpty = (obj) => {
+    if (obj == null) return true;
+  
+    if (obj.length > 0) return false;
+    if (obj.length === 0) return true;
+  
+    if (typeof obj !== "object") return true;
+  
+    for (var key in obj) {
+      if (hasOwnProperty.call(obj, key)) return false;
+    }
+  
+    return true;
+  };
 
 export const getHeaders = (type = "") => {
     const jwtToken = localStorage.getItem("uclAdminToken") || "";
