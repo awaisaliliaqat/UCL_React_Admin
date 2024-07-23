@@ -191,6 +191,7 @@ import F201FormForCentricDashboard from "./Contents/Forms/F201FormForCentricDash
 import F202FormForCentricDashboard from "./Contents/Forms/F202FormForCentricDashboard";
 import F315DefineEmployeesPayroll from "./Contents/Forms/DefineEmployeesPayroll/F315DefineEmployeesPayroll";
 import R316EmployeesPayrollView from "./Contents/Forms/DefineEmployeesPayroll/R316EmployeesPayrollView";
+import R317TeacherCoursesHistory from "./Contents/Reports/TeacherCoursesHistory/R317TeacherCoursesHistory";
 
 const drawerWidth = 283;
 
@@ -2670,6 +2671,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F202FormForCentricDashboard
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R317TeacherCoursesHistory"
+                exact
+                path="/dashboard/R317TeacherCoursesHistory"
+                render={(props) => {
+                  return (
+                    <R317TeacherCoursesHistory
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
