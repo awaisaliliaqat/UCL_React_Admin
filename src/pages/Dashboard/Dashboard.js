@@ -195,6 +195,7 @@ import R317TeacherCoursesHistory from "./Contents/Reports/TeacherCoursesHistory/
 import R318EmployeeActivationHistory from "./Contents/Reports/EmployeeActivationHistory/R318EmployeeActivationHistory";
 import F319DefineEmployeeSalaryAllowancesLabelFrom from "./Contents/Forms/DefineEmployeeSalaryAllowancesLabel/F319DefineEmployeeSalaryAllowancesLabelFrom";
 import F320DefineEmployeeSalaryDeductionsLabelFrom from "./Contents/Forms/DefineEmployeeSalaryDeductionsLabel/F320DefineEmployeeSalaryDeductionsLabelFrom";
+import F321DefineEmployeesMonthlySalary from "./Contents/Forms/DefineEmployeesMonthlySalary/F321DefineEmployeesMonthlySalary";
 
 const drawerWidth = 283;
 
@@ -2743,6 +2744,23 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+              
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F321DefineEmployeesMonthlySalary"
+                exact
+                path="/dashboard/F321DefineEmployeesMonthlySalary/:id"
+                render={(props) => {
+                  return (
+                    <F321DefineEmployeesMonthlySalary
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"
