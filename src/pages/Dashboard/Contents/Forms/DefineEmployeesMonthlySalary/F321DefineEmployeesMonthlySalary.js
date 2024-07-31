@@ -3,8 +3,6 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/styles";
 import {
   Divider,
-  IconButton,
-  Tooltip,
   Typography,
   TableContainer,
   Table,
@@ -15,9 +13,9 @@ import {
   Paper,
   CircularProgress,
   TextField,
+  MenuItem
 } from "@material-ui/core";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import FilterIcon from "mdi-material-ui/FilterOutline";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
 const styles = () => ({
@@ -67,6 +65,24 @@ class F321DefineEmployeesMonthlySalary extends Component {
       snackbarMessage: "",
       snackbarSeverity: "",
 
+      monthId: "",
+      monthIdError: "",
+      monthsData: [
+        {id: 1, label: "January"},
+        {id: 2, label: "February"},
+        {id: 3, label: "March"},
+        {id: 4, label: "April"},
+        {id: 5, label: "May"},
+        {id: 6, label: "June"},
+        {id: 7, label: "July"},
+        {id: 8, label: "August"},
+        {id: 9, label: "September"},
+        {id: 10, label: "October"},
+        {id: 11, label: "November"},
+        {id: 12, label: "December"},
+      ],
+      monthsDataLoading: false,
+
       isColumnsLoading: false,
       columns: [
         { id: 1, name: "id", title: "ID", colspan: 1 },
@@ -78,22 +94,28 @@ class F321DefineEmployeesMonthlySalary extends Component {
           title: "Per Month Salary",
           colspan: 1,
         },
-        { id: 5, name: "grossSalary", title: "Gross Salary", colspan: 1 },
         {
-          id: 6,
-          name: "allowances",
-          title: "Allowances",
-          colspan: 3,
-          subColumns: [],
+          id: 5,
+          name: "homeRent",
+          title: "Home Rent",
+          colspan: 1,
         },
+        { id: 6, name: "grossSalary", title: "Gross Salary", colspan: 1 },
         {
           id: 7,
-          name: "deductions",
-          title: "Deductions",
-          colspan: 3,
+          name: "allowances",
+          title: "Allowances",
+          colspan: 1,
           subColumns: [],
         },
-        { id: 8, name: "netSalary", title: "Net Salary", colspan: 1 },
+        {
+          id: 8,
+          name: "deductions",
+          title: "Deductions",
+          colspan: 1,
+          subColumns: [],
+        },
+        { id: 9, name: "netSalary", title: "Net Salary", colspan: 1 },
       ],
     };
   }
@@ -128,7 +150,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
           if (json.CODE === 1) {
             let data = json.DATA || [];
             let { columns } = this.state;
-            let index = columns.findIndex((item) => item.id == 6);
+            let index = columns.findIndex((item) => item.id == 7);
             columns[index]["subColumns"] = data;
             columns[index]["colspan"] = data.length == 0 ? 1 : data.length;
             this.setState({
@@ -186,7 +208,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
           if (json.CODE === 1) {
             let data = json.DATA || [];
             let { columns } = this.state;
-            let index = columns.findIndex((item) => item.id == 7);
+            let index = columns.findIndex((item) => item.id == 8);
             columns[index]["subColumns"] = data;
             columns[index]["colspan"] = data.length == 0 ? 1 : data.length;
             this.setState({
@@ -243,21 +265,8 @@ class F321DefineEmployeesMonthlySalary extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
-
-            let testData = [
-              ...data,
-              ...data,
-              ...data,
-              ...data,
-              ...data,
-              ...data,
-              ...data,
-              ...data,
-            ];
-
-            console.log(testData);
             this.setState({
-              employeePayrollsData: testData,
+              employeePayrollsData: data,
             });
           } else {
             this.handleSnackbar(
@@ -341,18 +350,8 @@ class F321DefineEmployeesMonthlySalary extends Component {
               }}
               variant="h5"
             >
-              Define Employee&apos;s Monthly Salary
+              Payroll Monthly Voucher
             </Typography>
-            <div style={{ float: "right" }}>
-              <Tooltip title="Table Filter">
-                <IconButton
-                  style={{ marginLeft: "-10px" }}
-                  onClick={() => this.handleToggleTableFilter()}
-                >
-                  <FilterIcon fontSize="default" color="primary" />
-                </IconButton>
-              </Tooltip>
-            </div>
           </div>
           <Divider
             style={{
@@ -361,7 +360,39 @@ class F321DefineEmployeesMonthlySalary extends Component {
               marginBottom: 20,
             }}
           />
-
+          <div>
+            <TextField
+              id="monthId"
+              name="monthId"
+              label="Month"
+              required
+              style={{
+                width: "50%",
+                marginBottom: 20
+              }}
+              variant="outlined"
+              onChange={this.onHandleChange}
+              value={this.state.monthId}
+              helperText={this.state.monthIdError}
+              error={this.state.monthIdError}
+              select
+            >
+              {this.state.monthsData.map((item) => {
+                return (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.label}
+                  </MenuItem>
+                );
+              })}
+            </TextField>
+          </div>
+          <Divider
+            style={{
+              backgroundColor: "rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginBottom: 20,
+            }}
+          />
           <TableContainer component={Paper}>
             {this.state.isColumnsLoading ? (
               <div className={classes.columnsLoader}>
@@ -418,7 +449,20 @@ class F321DefineEmployeesMonthlySalary extends Component {
                         <>
                           <StyledTableRow>
                             {this.state.columns?.map((col) => {
-                              if (col.id == 6) {
+                              if(col.id == 5){
+                                return (
+                                        <>
+                                          <TableCell>
+                                            <TextField
+                                              size="small"
+                                              type="number"
+                                              placeholder={col.title}
+                                            />
+                                          </TableCell>
+                                        </>
+                                      )
+                              } else if (col.id == 7) {
+                                if(col.subColumns && col.subColumns.length > 0){
                                 return (
                                   <>
                                     {col.subColumns?.map((subCol) => {
@@ -432,11 +476,16 @@ class F321DefineEmployeesMonthlySalary extends Component {
                                             />
                                           </TableCell>
                                         </>
-                                      );
+                                      )
                                     })}
                                   </>
-                                );
-                              } else if (col.id == 7) {
+                                )} else {
+                                  return (
+                                    <TableCell>N/A</TableCell>
+                                  )
+                                }
+                              } else if (col.id == 8) {
+                                if(col.subColumns && col.subColumns.length > 0){
                                 return (
                                   <>
                                     {col.subColumns?.map((subCol) => {
@@ -454,7 +503,11 @@ class F321DefineEmployeesMonthlySalary extends Component {
                                       );
                                     })}
                                   </>
-                                );
+                                )}  else {
+                                  return (
+                                    <TableCell>N/A</TableCell>
+                                  )
+                                }
                               } else {
                                 const value = item[col.name] || "0";
                                 return (

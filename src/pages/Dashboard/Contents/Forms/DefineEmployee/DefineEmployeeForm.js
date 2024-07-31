@@ -71,6 +71,8 @@ class DefineEmployeeForm extends Component {
       displayNameError: "",
       mobileNo: "",
       mobileNoError: "",
+      secondaryMobileNo: "",
+      secondaryMobileNoError: "",
       email: "",
       emailError: "",
       secondaryEmail: "",
@@ -200,6 +202,7 @@ class DefineEmployeeForm extends Component {
                   lastName,
                   displayName,
                   mobileNo,
+                  secondaryMobileNo,
                   email,
                   secondaryEmail,
                   discipline,
@@ -229,6 +232,7 @@ class DefineEmployeeForm extends Component {
                   lastName,
                   displayName,
                   mobileNo,
+                  secondaryMobileNo,
                   email,
                   secondaryEmail,
                   discipline,
@@ -288,6 +292,7 @@ class DefineEmployeeForm extends Component {
         }
         break;
       case "mobileNo":
+      case "secondaryMobileNo":
         regex = new RegExp(numberExp);
         if (value && !regex.test(value)) {
           return;
@@ -358,6 +363,7 @@ class DefineEmployeeForm extends Component {
       lastNameError,
       displayNameError,
       mobileNoError,
+      secondaryMobileNoError,
       emailError,
       disciplineError,
       jobStatusIdError,
@@ -403,6 +409,18 @@ class DefineEmployeeForm extends Component {
         isValid = false;
       } else {
         mobileNoError = "";
+      }
+    }
+
+    if(this.state.secondaryMobileNo){
+      if (
+        !this.state.secondaryMobileNo.startsWith("03") ||
+        this.state.secondaryMobileNo.split("").length !== 11
+      ) {
+        secondaryMobileNoError = "Please enter a valid mobile number e.g 03001234567";
+        isValid = false;
+      } else {
+        secondaryMobileNoError = "";
       }
     }
 
@@ -500,6 +518,7 @@ class DefineEmployeeForm extends Component {
       lastNameError,
       displayNameError,
       mobileNoError,
+      secondaryMobileNoError,
       emailError,
       disciplineError,
       jobStatusIdError,
@@ -533,6 +552,8 @@ class DefineEmployeeForm extends Component {
       displayNameError: "",
       mobileNo: "",
       mobileNoError: "",
+      secondaryMobileNo: "",
+      secondaryMobileNoError: "",
       email: "",
       emailError: "",
       secondaryEmail: "",
@@ -1132,7 +1153,7 @@ class DefineEmployeeForm extends Component {
                 <TextField
                   id="mobileNo"
                   name="mobileNo"
-                  label="Mobile Number"
+                  label="Primary Mobile Number"
                   required
                   fullWidth
                   variant="outlined"
@@ -1140,6 +1161,22 @@ class DefineEmployeeForm extends Component {
                   value={this.state.mobileNo}
                   helperText={this.state.mobileNoError}
                   error={this.state.mobileNoError}
+                  inputProps={{
+                    maxLength: 11,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="secondaryMobileNo"
+                  name="secondaryMobileNo"
+                  label="Secondary Mobile Number"
+                  fullWidth
+                  variant="outlined"
+                  onChange={this.onHandleChange}
+                  value={this.state.secondaryMobileNo}
+                  helperText={this.state.secondaryMobileNoError}
+                  error={this.state.secondaryMobileNoError}
                   inputProps={{
                     maxLength: 11,
                   }}
