@@ -337,7 +337,7 @@ class R318EmployeeActivationHistory extends Component {
                         flexDirection: "column",
                         alignItems: "center",
                         marginTop: 25,
-                        marginBottom: 20
+                        marginBottom: 20,
                       }}
                     >
                       <div
@@ -378,6 +378,49 @@ class R318EmployeeActivationHistory extends Component {
                           {this.state.userObject.isActive == 1
                             ? "Active"
                             : "De-Active"}
+                        </div>
+                      </div>
+                      <div style={{
+                        display: "flex",
+                        marginTop: 17
+                      }}>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            color: "gray",
+                          }}
+                        >
+                          Joining Date:{" "}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            marginLeft: 15,
+                            marginRight: 15,
+                            marginTop: "-5px",
+                          }}
+                        >
+                          {this.state.userObject.joiningDateLabel || "N/A"}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            color: "gray",
+                          }}
+                        >
+                          Leaving Date:{" "}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            marginLeft: 15,
+                            marginRight: 15,
+                            marginTop: "-5px",
+                          }}
+                        >
+                          {this.state.userObject.leavingDateLabel || "N/A"}
                         </div>
                       </div>
                     </div>
@@ -459,6 +502,39 @@ class R318EmployeeActivationHistory extends Component {
                                         >
                                           - {item.timeLabel || "N/A"}
                                         </div>
+                                        {item.isActive == 0 && (
+                                          <>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                color: "gray",
+                                              }}
+                                            >
+                                              ,
+                                            </div>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                marginLeft: 10,
+                                                color: "gray",
+                                              }}
+                                            >
+                                              Reason:{" "}
+                                            </div>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                marginLeft: 10,
+                                                fontSize: 16,
+                                              }}
+                                            >
+                                              {item.reasonLabel || ""}
+                                            </div>
+                                          </>
+                                        )}
                                       </div>
                                     );
                                   }

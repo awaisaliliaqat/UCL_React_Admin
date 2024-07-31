@@ -159,7 +159,7 @@ class DefineEmployeeReports extends Component {
             { name: "mobileNo", title: "Mobile No" },
             { name: "email", title: "Email" },
             { name: "jobStatusLabel", title: "Job Status" },
-            { name: "createdOn", title: "Joining Date" },
+            { name: "joiningDateLabel", title: "Joining Date" },
             { name: "statusLabel", title: "Status" },
             { name: "leavingDateLabel", title: "Leaving Date" },
             { name: "rolesLabel", title: "Roles" },
