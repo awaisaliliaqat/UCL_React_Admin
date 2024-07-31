@@ -193,6 +193,9 @@ import F315DefineEmployeesPayroll from "./Contents/Forms/DefineEmployeesPayroll/
 import R316EmployeesPayrollView from "./Contents/Forms/DefineEmployeesPayroll/R316EmployeesPayrollView";
 import R317TeacherCoursesHistory from "./Contents/Reports/TeacherCoursesHistory/R317TeacherCoursesHistory";
 import R318EmployeeActivationHistory from "./Contents/Reports/EmployeeActivationHistory/R318EmployeeActivationHistory";
+import F319DefineEmployeeSalaryAllowancesLabelFrom from "./Contents/Forms/DefineEmployeeSalaryAllowancesLabel/F319DefineEmployeeSalaryAllowancesLabelFrom";
+import F320DefineEmployeeSalaryDeductionsLabelFrom from "./Contents/Forms/DefineEmployeeSalaryDeductionsLabel/F320DefineEmployeeSalaryDeductionsLabelFrom";
+import F321DefineEmployeesMonthlySalary from "./Contents/Forms/DefineEmployeesMonthlySalary/F321DefineEmployeesMonthlySalary";
 
 const drawerWidth = 283;
 
@@ -2709,6 +2712,55 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+              
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F319DefineEmployeeSalaryAllowanceLabelsFrom"
+                exact
+                path="/dashboard/F319DefineEmployeeSalaryAllowanceLabelsFrom/:id"
+                render={(props) => {
+                  return (
+                    <F319DefineEmployeeSalaryAllowancesLabelFrom
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F320DefineEmployeeSalaryDeductionLabelsFrom"
+                exact
+                path="/dashboard/F320DefineEmployeeSalaryDeductionLabelsFrom/:id"
+                render={(props) => {
+                  return (
+                    <F320DefineEmployeeSalaryDeductionsLabelFrom
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F321DefineEmployeesMonthlySalary"
+                exact
+                path="/dashboard/F321DefineEmployeesMonthlySalary/:id"
+                render={(props) => {
+                  return (
+                    <F321DefineEmployeesMonthlySalary
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"
