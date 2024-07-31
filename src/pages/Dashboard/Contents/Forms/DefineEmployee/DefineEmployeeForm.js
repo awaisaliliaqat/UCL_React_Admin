@@ -22,6 +22,7 @@ import {
 } from "../../../../../utils/regularExpression";
 import PropTypes from "prop-types";
 import DefineEmployeeRolesSection from "./Chunks/DefineEmployeeRolesSection";
+import { DatePicker } from "@material-ui/pickers";
 
 const styles = () => ({
   root: {
@@ -85,6 +86,12 @@ class DefineEmployeeForm extends Component {
       addressError: "",
       password: "",
       passwordError: "",
+
+      joiningDate: null,
+      joiningDateError: "",
+
+      leavingDate: null,
+      leavingDateError: "",
 
       isActive: 1,
       isActiveError: "",
@@ -207,6 +214,8 @@ class DefineEmployeeForm extends Component {
                   secondaryEmail,
                   discipline,
                   jobStatusId,
+                  joiningDate,
+                  leavingDate,
                   address,
                   password,
                   employeesRolesArray = [],
@@ -237,6 +246,8 @@ class DefineEmployeeForm extends Component {
                   secondaryEmail,
                   discipline,
                   jobStatusId,
+                  joiningDate,
+                  leavingDate,
                   address,
                   password,
                   employeesRolesArray,
@@ -367,6 +378,7 @@ class DefineEmployeeForm extends Component {
       emailError,
       disciplineError,
       jobStatusIdError,
+      joiningDateError,
       addressError,
       passwordError,
       employeesRolesArrayError,
@@ -463,6 +475,13 @@ class DefineEmployeeForm extends Component {
       jobStatusIdError = "";
     }
 
+    if(!this.state.joiningDate){
+      joiningDateError = "Please select joining date";
+      isValid = false;
+    } else {
+      joiningDateError = "";
+    }
+
     // if (!this.state.address) {
     //     addressError = "Please enter present address"
     //     isValid = false;
@@ -522,6 +541,7 @@ class DefineEmployeeForm extends Component {
       emailError,
       disciplineError,
       jobStatusIdError,
+      joiningDateError,
       addressError,
       passwordError,
       employeesRolesArrayError,
@@ -562,6 +582,10 @@ class DefineEmployeeForm extends Component {
       disciplineError: "",
       jobStatusId: "",
       jobStatusIdError: "",
+      joiningDate: null,
+      joiningDateError: "",
+      leavingDate: null,
+      leavingDateError: "",
       address: "",
       addressError: "",
       password: "",
@@ -1245,6 +1269,46 @@ class DefineEmployeeForm extends Component {
                     );
                   })}
                 </TextField>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <DatePicker
+                  autoOk
+                  id="joiningDate"
+                  name="joiningDate"
+                  label="Joining Date"
+                  invalidDateMessage=""
+                  placeholder=""
+                  variant="inline"
+                  inputVariant="outlined"
+                  format="dd-MM-yyyy"
+                  fullWidth
+                  required
+                  value={this.state.joiningDate}
+                  onChange={date => this.onHandleChange({target:{name: "joiningDate", value: date}})}
+                  error={!!this.state.joiningDateError}
+                  helperText={this.state.joiningDateError}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <DatePicker
+                  autoOk
+                  id="leavingDate"
+                  name="leavingDate"
+                  label="Leaving Date"
+                  invalidDateMessage=""
+                  disabled={!this.state.joiningDate}
+                  minDate={this.state.joiningDate}
+                  placeholder=""
+                  variant="inline"
+                  inputVariant="outlined"
+                  format="dd-MM-yyyy"
+                  fullWidth
+                  required
+                  value={this.state.leavingDate}
+                  onChange={date => this.onHandleChange({target:{name: "leavingDate", value: date}})}
+                  error={!!this.state.leavingDateError}
+                  helperText={this.state.leavingDateError}
+                />
               </Grid>
               {/* <Grid item xs={4}>
                                 <TextField
