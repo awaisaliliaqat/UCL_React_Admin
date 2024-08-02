@@ -6,19 +6,15 @@ import {
   CircularProgress,
   Grid,
   Button,
+  Typography,
+  TextField,
+  MenuItem,
 } from "@material-ui/core";
-import { Typography, TextField, MenuItem } from "@material-ui/core";
 import ExcelIcon from "../../../../assets/Images/excel.png";
-import PDFIcon from "../../../../assets/Images/pdf_export_icon.png";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import { format } from "date-fns";
 import R66ReportsTableComponent from "./R66ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
-import SearchIcon from "mdi-material-ui/FileSearchOutline";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import SearchOutlinedIcon from "@material-ui/icons/SearchOutlined";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 class R66Reports extends Component {
@@ -47,12 +43,13 @@ class R66Reports extends Component {
       programmeMenuItems: [],
       programId: "",
       programIdError: "",
-      totalCourseStudent: "",
-      totalGroupStudent: "",
-      totalProgrammeStudent: "",
-      totalSchoolStudent: "",
+      totalCourseStudent: "Total Students OF 0",
+      totalPathwayStudent: "Total Students OF 0",
+      totalGroupStudent: "Total Students OF 0",
+      totalProgrammeStudent: "Total Students OF 0",
+      totalSchoolStudent: "Total Students OF 0",
       coursesMenuItems: [],
-      courseId: "",
+      courseId: null,
       courseIdError: "",
       totalStudents: [],
       academicSessionMenuItems: [],
@@ -131,7 +128,7 @@ class R66Reports extends Component {
   };
 
   getProgramGroup = async (schoolId) => {
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, programmeGroupsMenuItems: [] });
     let data = new FormData();
     data.append("schoolId", schoolId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeGroupsView`;
@@ -202,7 +199,6 @@ class R66Reports extends Component {
         (json) => {
           if (json.CODE === 1) {
             let array = json.DATA || [];
-            let arrayLength = array.length;
             let res = array.find((obj) => obj.isActive === 1);
             if (res) {
               this.setState({ academicSessionId: res.ID });
@@ -238,112 +234,118 @@ class R66Reports extends Component {
     this.setState({ isLoading: false });
   };
 
-  getProgrammes = async (programmeGroupId) => {
-    this.setState({ isLoading: true });
-    let data = new FormData();
-    data.append("programmeGroupId", programmeGroupId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammesView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
+  getProgrammes = async (sessionId, programmeGroupId) => {
+    if (sessionId && programmeGroupId) {
+      this.setState({ isLoading: true, programmeMenuItems: [] });
+      let data = new FormData();
+      data.append("programmeGroupId", programmeGroupId);
+      data.append("sessionId", sessionId);
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammesView`;
+      await fetch(url, {
+        method: "POST",
+        body: data,
+        headers: new Headers({
+          Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+        }),
       })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({ programmeMenuItems: json.DATA || [] });
-          } else {
-            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
+        .then((res) => {
+          if (!res.ok) {
+            throw res;
           }
-          console.log("getCourse", json);
-        },
-        (error) => {
-          if (error.status === 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar(
-              "Failed to fetch, Please try again later.",
-              "error"
-            );
-            console.log(error);
+          return res.json();
+        })
+        .then(
+          (json) => {
+            if (json.CODE === 1) {
+              this.setState({ programmeMenuItems: json.DATA || [] });
+            } else {
+              //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+              this.handleOpenSnackbar(
+                <span>
+                  {json.SYSTEM_MESSAGE}
+                  <br />
+                  {json.USER_MESSAGE}
+                </span>,
+                "error"
+              );
+            }
+            console.log("getCourse", json);
+          },
+          (error) => {
+            if (error.status === 401) {
+              this.setState({
+                isLoginMenu: true,
+                isReload: true,
+              });
+            } else {
+              //alert('Failed to fetch, Please try again later.');
+              this.handleOpenSnackbar(
+                "Failed to fetch, Please try again later.",
+                "error"
+              );
+              console.log(error);
+            }
           }
-        }
-      );
-    this.setState({ isLoading: false });
+        );
+      this.setState({ isLoading: false });
+    }
   };
 
-  getCourse = async (programmeGroupId) => {
-    this.setState({ isLoading: true });
-    let data = new FormData();
-    data.append("programmeGroupId", programmeGroupId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeCoursesView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
+  getCourse = async (sessionId, programmeGroupId) => {
+    if (sessionId && programmeGroupId) {
+      this.setState({ isLoading: true, coursesMenuItems: [] });
+      let data = new FormData();
+      data.append("programmeGroupId", programmeGroupId);
+      data.append("sessionId", sessionId);
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeCoursesView`;
+      await fetch(url, {
+        method: "POST",
+        body: data,
+        headers: new Headers({
+          Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+        }),
       })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({ coursesMenuItems: json.DATA || [] });
-          } else {
-            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
+        .then((res) => {
+          if (!res.ok) {
+            throw res;
           }
-          console.log("getCourse", json);
-        },
-        (error) => {
-          if (error.status === 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar(
-              "Failed to fetch, Please try again later.",
-              "error"
-            );
-            console.log(error);
+          return res.json();
+        })
+        .then(
+          (json) => {
+            if (json.CODE === 1) {
+              this.setState({ coursesMenuItems: json.DATA || [] });
+            } else {
+              //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+              this.handleOpenSnackbar(
+                <span>
+                  {json.SYSTEM_MESSAGE}
+                  <br />
+                  {json.USER_MESSAGE}
+                </span>,
+                "error"
+              );
+            }
+            console.log("getCourse", json);
+          },
+          (error) => {
+            if (error.status === 401) {
+              this.setState({
+                isLoginMenu: true,
+                isReload: true,
+              });
+            } else {
+              //alert('Failed to fetch, Please try again later.');
+              this.handleOpenSnackbar(
+                "Failed to fetch, Please try again later.",
+                "error"
+              );
+              console.log(error);
+            }
           }
-        }
-      );
-    this.setState({ isLoading: false });
+        );
+      this.setState({ isLoading: false });
+    }
   };
 
   loadPathway = async () => {
@@ -404,7 +406,7 @@ class R66Reports extends Component {
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("programmeId", this.state.programmeId);
     data.append("academicSessionId", this.state.academicSessionId);
-    if (this.state.courseId != "") {
+    if (this.state.courseId != null) {
       data.append("courseId", this.state.courseId.id);
     } else {
       data.append("courseId", "0");
@@ -431,9 +433,14 @@ class R66Reports extends Component {
             this.setState({ tableData: json.DATA[0].StudentsDetail || [] });
             let totalStudents = this.state.tableData.length;
             this.setState({ totalStudents: totalStudents });
-            this.state.totalCourseStudent = json.DATA[0].totalCourseStudent;
-            this.state.totalGroupStudent = json.DATA[0].totalGroupStudent;
-            this.state.totalSchoolStudent = json.DATA[0].totalSchoolStudent;
+            this.state.totalCourseStudent =
+              json.DATA[0].totalCourseStudent || "Total Students OF 0";
+            this.state.totalPathwayStudent =
+              json.DATA[0].totalPathwayStudent || "Total Students OF 0";
+            this.state.totalGroupStudent =
+              json.DATA[0].totalGroupStudent || "Total Students OF 0";
+            this.state.totalSchoolStudent =
+              json.DATA[0].totalSchoolStudent || "Total Students OF 0";
             this.state.totalProgrammeStudent =
               json.DATA[0].totalProgrammeStudent;
           } else {
@@ -479,7 +486,7 @@ class R66Reports extends Component {
       data.append("programmeGroupId", this.state.programmeGroupId);
       data.append("programmeId", this.state.programmeId);
       data.append("academicSessionId", this.state.academicSessionId);
-      if (this.state.courseId != "") {
+      if (this.state.courseId != null) {
         data.append("courseId", this.state.courseId.id);
       } else {
         data.append("courseId", "0");
@@ -539,6 +546,11 @@ class R66Reports extends Component {
       courseId: value,
       courseIdError: "",
       tableData: [],
+      totalCourseStudent: "Total Students OF 0",
+      totalPathwayStudent: "Total Students OF 0",
+      totalGroupStudent: "Total Students OF 0",
+      totalProgrammeStudent: "Total Students OF 0",
+      totalSchoolStudent: "Total Students OF 0",
     });
 
     console.log("value", value);
@@ -548,46 +560,137 @@ class R66Reports extends Component {
     }
   };
 
+  onClearAllData() {
+    let activeSessionId = "";
+    if (
+      this.state.academicSessionMenuItems &&
+      this.state.academicSessionMenuItems.length > 0
+    ) {
+      let res = this.state.academicSessionMenuItems.find(
+        (obj) => obj.isActive === 1
+      );
+      if (res.ID != null) {
+        activeSessionId = res.ID;
+      }
+    }
+
+    this.setState({
+      totalCourseStudent: "Total Students OF 0",
+      totalPathwayStudent: "Total Students OF 0",
+      totalGroupStudent: "Total Students OF 0",
+      totalProgrammeStudent: "Total Students OF 0",
+      totalSchoolStudent: "Total Students OF 0",
+      academicSessionId: activeSessionId,
+      academicSessionIdError: "",
+      pathwayId: "",
+      pathwayIdError: "",
+      schoolId: "",
+      schoolIdError: "",
+      programmeGroupId: "",
+      programmeGroupIdError: "",
+      programmeGroupsMenuItems: [],
+      courseId: null,
+      courseIdError: "",
+      coursesMenuItems: [],
+      programmeMenuItems: [],
+      programmeId: "",
+      programmeIdError: "",
+      tableData: [],
+    });
+  }
+
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
-    let regex = "";
     switch (name) {
-      case "schoolId":
+      case "academicSessionId":
         this.setState({
+          totalCourseStudent: "Total Students OF 0",
+          totalPathwayStudent: "Total Students OF 0",
+          totalGroupStudent: "Total Students OF 0",
+          totalProgrammeStudent: "Total Students OF 0",
+          totalSchoolStudent: "Total Students OF 0",
+          pathwayId: "",
+          pathwayIdError: "",
+          schoolId: "",
+          schoolIdError: "",
           programmeGroupId: "",
-          courseId: "",
+          programmeGroupIdError: "",
+          programmeGroupsMenuItems: [],
+          courseId: null,
+          courseIdError: "",
           coursesMenuItems: [],
           programmeMenuItems: [],
           programmeId: "",
+          programmeIdError: "",
+          tableData: [],
+        });
+        break;
+      case "schoolId":
+        this.setState({
+          totalCourseStudent: "Total Students OF 0",
+          totalPathwayStudent: "Total Students OF 0",
+          totalGroupStudent: "Total Students OF 0",
+          totalProgrammeStudent: "Total Students OF 0",
+          totalSchoolStudent: "Total Students OF 0",
+          programmeGroupId: "",
+          programmeGroupIdError: "",
+          courseId: null,
+          courseIdError: "",
+          coursesMenuItems: [],
+          programmeMenuItems: [],
+          programmeId: "",
+          programmeIdError: "",
           tableData: [],
         });
         this.getProgramGroup(value);
         break;
       case "programmeGroupId":
         this.setState({
-          programmeGroupId: "",
-          courseId: "",
-          coursesMenuItems: [],
-          tableData: [],
-          programmeMenuItems: [],
+          totalCourseStudent: "Total Students OF 0",
+          totalPathwayStudent: "Total Students OF 0",
+          totalGroupStudent: "Total Students OF 0",
+          totalProgrammeStudent: "Total Students OF 0",
+          totalSchoolStudent: "Total Students OF 0",
+          programmeGroupIdError: "",
+          courseId: null,
+          courseIdError: "",
           programmeId: "",
+          programmeIdError: "",
+          tableData: [],
         });
-        this.getProgrammes(value);
-        this.getCourse(value);
+        this.getProgrammes(this.state.academicSessionId, value);
+        this.getCourse(this.state.academicSessionId, value);
         break;
       case "programmeId":
         this.setState({
           tableData: [],
+          totalCourseStudent: "Total Students OF 0",
+          totalPathwayStudent: "Total Students OF 0",
+          totalGroupStudent: "Total Students OF 0",
+          totalProgrammeStudent: "Total Students OF 0",
+          totalSchoolStudent: "Total Students OF 0",
         });
-
         break;
       case "courseId":
-        this.setState({ tableData: [] });
+        this.setState({
+          tableData: [],
+          totalCourseStudent: "Total Students OF 0",
+          totalPathwayStudent: "Total Students OF 0",
+          totalGroupStudent: "Total Students OF 0",
+          totalProgrammeStudent: "Total Students OF 0",
+          totalSchoolStudent: "Total Students OF 0",
+        });
         break;
       case "pathwayId":
-        this.setState({ [name]: value });
-        console.log("pathway", value);
+        this.setState({
+          tableData: [],
+          totalCourseStudent: "Total Students OF 0",
+          totalPathwayStudent: "Total Students OF 0",
+          totalGroupStudent: "Total Students OF 0",
+          totalProgrammeStudent: "Total Students OF 0",
+          totalSchoolStudent: "Total Students OF 0",
+        });
         break;
       default:
         break;
@@ -788,23 +891,17 @@ class R66Reports extends Component {
                     ? this.state.academicSessionIdError
                     : " "
                 }
-                // disabled={!this.state.schoolId}
+                disabled={this.state.isLoading}
               >
                 {this.state.academicSessionMenuItems &&
-                !this.state.isLoading ? (
-                  this.state.academicSessionMenuItems.map((dt, i) => (
+                  this.state.academicSessionMenuItems.map((dt) => (
                     <MenuItem
                       key={"academicSessionMenuItems" + dt.ID}
                       value={dt.ID}
                     >
                       {dt.Label}
                     </MenuItem>
-                  ))
-                ) : (
-                  <Grid container justify="center">
-                    <CircularProgress />
-                  </Grid>
-                )}
+                  ))}
               </TextField>
             </Grid>
             <Grid item xs={12} md={2}>
@@ -819,21 +916,17 @@ class R66Reports extends Component {
                 helperText={
                   this.state.schoolIdError ? this.state.schoolIdError : " "
                 }
+                disabled={this.state.isLoading}
                 required
                 fullWidth
                 select
               >
-                {this.state.schoolsMenuItems && !this.state.isLoading ? (
-                  this.state.schoolsMenuItems.map((dt, i) => (
+                {this.state.schoolsMenuItems &&
+                  this.state.schoolsMenuItems.map((dt) => (
                     <MenuItem key={"schoolsMenuItems" + dt.id} value={dt.id}>
                       {dt.label}
                     </MenuItem>
-                  ))
-                ) : (
-                  <Grid container justify="center">
-                    <CircularProgress />
-                  </Grid>
-                )}
+                  ))}
               </TextField>
             </Grid>
             <Grid item xs={12} md={2}>
@@ -852,23 +945,17 @@ class R66Reports extends Component {
                     ? this.state.programmeGroupIdError
                     : " "
                 }
-                disabled={!this.state.schoolId}
+                disabled={!this.state.schoolId || this.state.isLoading}
               >
                 {this.state.programmeGroupsMenuItems &&
-                !this.state.isLoading ? (
-                  this.state.programmeGroupsMenuItems.map((dt, i) => (
+                  this.state.programmeGroupsMenuItems.map((dt) => (
                     <MenuItem
                       key={"programmeGroupsMenuItems" + dt.id}
                       value={dt.id}
                     >
                       {dt.label}
                     </MenuItem>
-                  ))
-                ) : (
-                  <Grid container justify="center">
-                    <CircularProgress />
-                  </Grid>
-                )}
+                  ))}
               </TextField>
             </Grid>
             <Grid item xs={12} md={2}>
@@ -887,19 +974,14 @@ class R66Reports extends Component {
                     ? this.state.programmeIdError
                     : " "
                 }
-                disabled={!this.state.programmeGroupId}
+                disabled={!this.state.programmeGroupId || this.state.isLoading}
               >
-                {this.state.programmeMenuItems && !this.state.isLoading ? (
-                  this.state.programmeMenuItems.map((dt, i) => (
+                {this.state.programmeMenuItems &&
+                  this.state.programmeMenuItems.map((dt) => (
                     <MenuItem key={"programmeMenuItems" + dt.ID} value={dt.ID}>
                       {dt.Label}
                     </MenuItem>
-                  ))
-                ) : (
-                  <Grid container justify="center">
-                    <CircularProgress />
-                  </Grid>
-                )}
+                  ))}
               </TextField>
             </Grid>
             {/* <Grid item xs={12} md={3}>
@@ -941,7 +1023,8 @@ class R66Reports extends Component {
                 options={this.state.coursesMenuItems}
                 value={this.state.courseId}
                 onChange={(event, value) => this.handleSetUserId(value)}
-                disabled={this.state.isEditMode}
+                disabled={this.state.isEditMode || this.state.isLoading}
+                loading={this.state.isLoading}
                 // disableCloseOnSelect
                 getOptionLabel={(option) => option.label}
                 renderInput={(params) => (
@@ -971,7 +1054,7 @@ class R66Reports extends Component {
                 label="Pathway"
                 onChange={this.onHandleChange}
                 value={this.state.pathwayId}
-                disabled={!this.state.schoolId}
+                disabled={!this.state.schoolId || this.state.isLoading}
                 error={!!this.state.pathwayIdError}
                 helperText={
                   this.state.pathwayIdError ? this.state.pathwayIdError : " "
@@ -979,17 +1062,12 @@ class R66Reports extends Component {
                 fullWidth
                 select
               >
-                {this.state.pathwayMenuItems && !this.state.isLoading ? (
-                  this.state.pathwayMenuItems.map((dt, i) => (
+                {this.state.pathwayMenuItems &&
+                  this.state.pathwayMenuItems.map((dt) => (
                     <MenuItem key={"pathwayMenuItems" + dt.id} value={dt.id}>
                       {dt.label}
                     </MenuItem>
-                  ))
-                ) : (
-                  <Grid container justify="center">
-                    <CircularProgress />
-                  </Grid>
-                )}
+                  ))}
               </TextField>
             </Grid>
             <Grid item xs={12} md={1}>
@@ -1007,8 +1085,19 @@ class R66Reports extends Component {
                 )}
               </Button>
             </Grid>
+            <Grid item xs={12} md={1}>
+              <Button
+                variant="contained"
+                color="default"
+                disabled={this.state.isLoading}
+                onClick={() => this.onClearAllData()}
+                style={{ width: "100%", height: 54, marginBottom: 24 }}
+              >
+                Clear
+              </Button>
+            </Grid>
           </Grid>
-          {this.state.schoolId ? (
+          {this.state.totalSchoolStudent != "Total Students OF 0" ? (
             <Typography
               style={{
                 color: "#1d5f98",
@@ -1049,6 +1138,21 @@ class R66Reports extends Component {
               variant="subtitle1"
             >
               {this.state.totalProgrammeStudent}
+            </Typography>
+          ) : (
+            ""
+          )}
+          {this.state.totalPathwayStudent != "Total Students OF 0" ? (
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                textTransform: "capitalize",
+                textAlign: "left",
+              }}
+              variant="subtitle1"
+            >
+              {this.state.totalPathwayStudent}
             </Typography>
           ) : (
             ""

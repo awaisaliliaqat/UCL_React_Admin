@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { Paper } from "@material-ui/core";
-import { FilteringState, IntegratedFiltering, IntegratedPaging,
-  IntegratedSorting, PagingState, SortingState } from "@devexpress/dx-react-grid";
-import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
+import {FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState} from "@devexpress/dx-react-grid";
+import {Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
 import PropTypes from "prop-types";
-
-class F201FormTableComponentForCentric extends Component {
+import { withStyles } from '@material-ui/core/styles';
+class R314StudentsListTableComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -24,22 +23,20 @@ class F201FormTableComponentForCentric extends Component {
       ],
       pageSizes: [5, 10, 15, 20],
       defaultSorting: [],
-      sortingStateColumnExtensions: [
-        { columnName: "action", sortingEnabled: false }
+     sortingStateColumnExtensions: [
+        { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
-        { columnName: "academicsSessionLabel", wordWrapEnabled: true },
-        { columnName: "programmeGroupLabel", wordWrapEnabled: true },
-        { columnName: "sessionTermLabel", wordWrapEnabled: true },
-        { columnName: "sectionLabel", wordWrapEnabled: true },
-        { columnName: "noOfAssessment", width: 100, align:"center" },
-        { columnName: "action", width: 100, align:"center"}
+        { columnName: "SRNo", width: 100 },
+        { columnName: "nucluesId", wordWrapEnabled: true },
+        { columnName: "studentName", wordWrapEnabled: true },
+        { columnName: "programmeLabel", wordWrapEnabled: true },
+        { columnName: "pathway", wordWrapEnabled: true },
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
-        { columnName: "action", filteringEnabled: false },
       ],
     };
   }
@@ -57,6 +54,26 @@ class F201FormTableComponentForCentric extends Component {
     const rows = this.props.data;
     const columns = this.props.columns;
     const showFilter = this.props.showFilter;
+    const TableRow = ({ row, ...restProps }) => (
+      <Table.Row
+        {...restProps}
+        // eslint-disable-next-line no-alert
+        onContextMenu={
+          (e) => this.props.onHandleRightClick(e, row)
+        }
+        style={{
+          cursor: 'default',
+        }}
+      />
+    );
+
+    const StyledTableRow = withStyles(() => ({
+      root: {
+        "&:hover":{
+            backgroundColor:"#E5E4E2"
+          }
+      },
+    }))(TableRow);
 
     return (
       <Paper>
@@ -67,11 +84,11 @@ class F201FormTableComponentForCentric extends Component {
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
-          <Table columnExtensions={tableColumnExtensions} />
+          <Table  rowComponent={StyledTableRow} columnExtensions={tableColumnExtensions} />
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children!="Action" ? (
+              props.children != "Action" ? (
                 <b>{props.children}</b>
               ) : (
                 <b>&emsp;{props.children}</b>
@@ -80,24 +97,25 @@ class F201FormTableComponentForCentric extends Component {
           />
           {showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
           <PagingPanel pageSizes={pageSizes} />
+          {/* <Toolbar /> */}
         </Grid>
       </Paper>
     );
   }
 }
 
-F201FormTableComponentForCentric.propTypes = {
-  columns: PropTypes.array,
+R314StudentsListTableComponent.propTypes = {
   data: PropTypes.array,
+  columns: PropTypes.array,
   showFilter: PropTypes.bool,
+  onHandleRightClick: PropTypes.func
+};
 
-
-}
-
-F201FormTableComponentForCentric.defaultProps = {
-  columns: [],
+R314StudentsListTableComponent.defaultProps = {
   data: [],
+  columns: [],
   showFilter: false,
+  onHandleRightClick: fn => fn
 }
 
-export default F201FormTableComponentForCentric;
+export default R314StudentsListTableComponent;

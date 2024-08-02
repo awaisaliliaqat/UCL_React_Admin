@@ -63,7 +63,7 @@ import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form";
 import F33Form from "./Contents/Forms/F33Form";
 import F34Form from "./Contents/Forms/F34Form";
-import F34Reports from "./Contents/Forms/F34Reports"; 
+import F34Reports from "./Contents/Forms/F34Reports";
 import F36Form from "./Contents/Forms/F36Form";
 import ControlledDialog from "../../components/ControlledDialog/ControlledDialog";
 import TeacherAttendance from "./Contents/LMS/TeacherAttendance/TeacherAttendance";
@@ -158,7 +158,7 @@ import R220Reports from "./Contents/Forms/R220Reports";
 import HomePage from "./Contents/LMS/HomePage/HomePage";
 import AllActiveClasses from "./Contents/Reports/AllActiveClasses/AllActiveClasses";
 import R80Reports from "./Contents/Forms/R80Reports";
-import StudentDynamicColumnsReports  from "./Contents/Reports/StudentDynamicColumnsReports/StudentDynamicColumnsReports";
+import StudentDynamicColumnsReports from "./Contents/Reports/StudentDynamicColumnsReports/StudentDynamicColumnsReports";
 import R244Report from "./Contents/Reports/AllGraduatedStudents/R224Report";
 import F225Form from "./Contents/Forms/F225Form";
 import F227UserLoginAs from "./Contents/Forms/F227UserLoginAs";
@@ -172,7 +172,7 @@ import R302Reports from "./Contents/Forms/R302Reports";
 import F302Form from "./Contents/Forms/F302Form";
 import F304Form from "./Contents/Forms/DegreeProgrammesActivation/F304Form";
 import F306AnnouncementForEmployeeForm from "./Contents/LMS/AnnouncementForEmployee/F306AnnouncementForEmployeeForm";
-import R307ApprovedProgressReportsFilter from './Contents/Forms/ApprovedStudentsProgressReports/R307ApprovedProgressReportsFilter';
+import R307ApprovedProgressReportsFilter from "./Contents/Forms/ApprovedStudentsProgressReports/R307ApprovedProgressReportsFilter";
 import DefineEmployeeForm from "./Contents/Forms/DefineEmployee/DefineEmployeeForm";
 import DefineEmployeeReports from "./Contents/Forms/DefineEmployee/DefineEmployeeReports";
 import AnnouncementForEmployeeReports from "./Contents/LMS/AnnouncementForEmployee/AnnouncementForEmployeeReports";
@@ -182,7 +182,20 @@ import F310DefineEmployeeDepartmentsFrom from "./Contents/Forms/DefineEmployeeDe
 import F311DefineEmployeeSubDepartmentsFrom from "./Contents/Forms/DefineEmployeeSubDepartments/F311DefineEmployeeSubDepartmentsFrom";
 import F312DefineEmployeeDesignationsFrom from "./Contents/Forms/DefineEmployeeDesignations/F312DefineEmployeeDesignationsFrom";
 import R313Reports from "./Contents/Reports/UOLEnrolment/F313Reports";
-
+import R314StudentList from "./Contents/Forms/StudentCentricDashboard/R314StudentsList";
+import R314StudentCentricDashboard from "./Contents/Forms/StudentCentricDashboard/R314StudentCentricDashboard";
+import AssignSectionToStudentFormForCentricDashboard from "./Contents/Forms/AssignSectionToStudent/AssignSectionToStudentFormForCentricDashboard";
+import F34ReportsForCentricDashboard from "./Contents/Forms/F34ReportsForCentricDashboard";
+import F205ReportsForCentricDashboard from "./Contents/Forms/F205ReportsForCentricDashboard";
+import F201FormForCentricDashboard from "./Contents/Forms/F201FormForCentricDashboard";
+import F202FormForCentricDashboard from "./Contents/Forms/F202FormForCentricDashboard";
+import F315DefineEmployeesPayroll from "./Contents/Forms/DefineEmployeesPayroll/F315DefineEmployeesPayroll";
+import R316EmployeesPayrollView from "./Contents/Forms/DefineEmployeesPayroll/R316EmployeesPayrollView";
+import R317TeacherCoursesHistory from "./Contents/Reports/TeacherCoursesHistory/R317TeacherCoursesHistory";
+import R318EmployeeActivationHistory from "./Contents/Reports/EmployeeActivationHistory/R318EmployeeActivationHistory";
+import F319DefineEmployeeSalaryAllowancesLabelFrom from "./Contents/Forms/DefineEmployeeSalaryAllowancesLabel/F319DefineEmployeeSalaryAllowancesLabelFrom";
+import F320DefineEmployeeSalaryDeductionsLabelFrom from "./Contents/Forms/DefineEmployeeSalaryDeductionsLabel/F320DefineEmployeeSalaryDeductionsLabelFrom";
+import F321DefineEmployeesMonthlySalary from "./Contents/Forms/DefineEmployeesMonthlySalary/F321DefineEmployeesMonthlySalary";
 
 const drawerWidth = 283;
 
@@ -485,7 +498,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-               <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F309DefineEmployeeEntitiesFrom"
                 exact
@@ -530,7 +543,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-             <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F312DefineEmployeeDesignationsFrom"
                 exact
@@ -1361,7 +1374,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-               <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F77Form"
                 exact
@@ -1541,7 +1554,38 @@ const Dashboard = (props) => {
                 path="/dashboard/define-employees/:recordId"
                 render={(props) => {
                   return (
-                    <DefineEmployeeForm {...props} isDrawerOpen={isDrawerOpen} />
+                    <DefineEmployeeForm
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F315DefineEmployeesPayroll"
+                exact
+                path="/dashboard/F315DefineEmployeesPayroll/:recordId"
+                render={(props) => {
+                  return (
+                    <F315DefineEmployeesPayroll
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R316EmployeesPayrollView"
+                exact
+                path="/dashboard/R316EmployeesPayrollView"
+                render={(props) => {
+                  return (
+                    <R316EmployeesPayrollView
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
                   );
                 }}
               />
@@ -1583,6 +1627,13 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/assign-section-to-student-reports"
                 component={AssignSectionToStudentReport}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="assign-section"
+                exact
+                path="/dashboard/assign-section/:id"
+                component={AssignSectionToStudentFormForCentricDashboard}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
@@ -1633,7 +1684,7 @@ const Dashboard = (props) => {
                 path="/dashboard/teacher-attendance-report"
                 component={TeacherAttendance}
               />
-                 <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="month-wise-teacher-time-sheet-report"
                 exact
@@ -1648,14 +1699,13 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-                <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="month-wise-teacher-time-sheet-coordinator-report"
                 exact
                 path="/dashboard/month-wise-teacher-time-sheet-coordinator-report"
                 component={MonthWiseTeachersTimeSheetCoordinatorReport}
               />
-
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
@@ -1671,7 +1721,7 @@ const Dashboard = (props) => {
                 exact
                 path="/dashboard/students-british-council-excel-report"
                 component={StudentBritishCouncilReports}
-              /> 
+              />
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
@@ -1730,7 +1780,7 @@ const Dashboard = (props) => {
                 path="/dashboard/student-profile"
                 component={StudentProfile}
               />
-              
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="covid-vaccine_certificate"
@@ -1812,7 +1862,7 @@ const Dashboard = (props) => {
                 path="/dashboard/announcements"
                 component={AnnouncementReports}
               />
-              
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="announcements"
@@ -1838,7 +1888,10 @@ const Dashboard = (props) => {
                 path="/dashboard/F306Form/:recordId"
                 render={(props) => {
                   return (
-                    <F306AnnouncementForEmployeeForm {...props} isDrawerOpen={isDrawerOpen} />
+                    <F306AnnouncementForEmployeeForm
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
                   );
                 }}
               />
@@ -2224,7 +2277,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="R220Reports"
@@ -2255,7 +2308,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-               <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="R222Reports"
                 exact
@@ -2270,7 +2323,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-               <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F221Form"
                 exact
@@ -2300,7 +2353,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-               <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F81Form"
                 exact
@@ -2346,7 +2399,6 @@ const Dashboard = (props) => {
                 }}
               />
 
-
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F225Form"
@@ -2377,7 +2429,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-               <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F228Form"
                 exact
@@ -2392,7 +2444,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-            <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F229Form"
                 exact
@@ -2407,7 +2459,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-            <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F230Form"
                 exact
@@ -2438,7 +2490,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
+
               {/* Payroll Module */}
               {/* <SetRoute
                 setValue={(value) => handleValueChange(value)}
@@ -2455,7 +2507,7 @@ const Dashboard = (props) => {
                   );
                 }}
               /> */}
-               <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="R232Reports"
                 exact
@@ -2487,7 +2539,7 @@ const Dashboard = (props) => {
                 }}
               />
 
-          <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F302Form"
                 exact
@@ -2502,7 +2554,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-               <SetRoute
+              <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="R302Reports"
                 exact
@@ -2539,6 +2591,176 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R314StudentsList"
+                exact
+                path="/dashboard/R314StudentsList"
+                render={(props) => {
+                  return (
+                    <R314StudentList
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R314StudentsList"
+                exact
+                path="/dashboard/R314StudentCentricDashboard/:id"
+                render={(props) => {
+                  return (
+                    <R314StudentCentricDashboard
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F34ReportsForCentricDashboard"
+                exact
+                path="/dashboard/F34ReportsForCentricDashboard/:id"
+                render={(props) => {
+                  return (
+                    <F34ReportsForCentricDashboard
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F205ReportsForCentricDashboard"
+                exact
+                path="/dashboard/F205ReportsForCentricDashboard/:id"
+                render={(props) => {
+                  return (
+                    <F205ReportsForCentricDashboard
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F201FormForCentricDashboard"
+                exact
+                path="/dashboard/F201FormForCentricDashboard/:id"
+                render={(props) => {
+                  return (
+                    <F201FormForCentricDashboard
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F202FormForCentricDashboard"
+                exact
+                path="/dashboard/F202FormForCentricDashboard/:id"
+                render={(props) => {
+                  return (
+                    <F202FormForCentricDashboard
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R317TeacherCoursesHistory"
+                exact
+                path="/dashboard/R317TeacherCoursesHistory"
+                render={(props) => {
+                  return (
+                    <R317TeacherCoursesHistory
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R318EmployeeActivationHistory"
+                exact
+                path="/dashboard/R318EmployeeActivationHistory"
+                render={(props) => {
+                  return (
+                    <R318EmployeeActivationHistory
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F319DefineEmployeeSalaryAllowanceLabelsFrom"
+                exact
+                path="/dashboard/F319DefineEmployeeSalaryAllowanceLabelsFrom/:id"
+                render={(props) => {
+                  return (
+                    <F319DefineEmployeeSalaryAllowancesLabelFrom
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F320DefineEmployeeSalaryDeductionLabelsFrom"
+                exact
+                path="/dashboard/F320DefineEmployeeSalaryDeductionLabelsFrom/:id"
+                render={(props) => {
+                  return (
+                    <F320DefineEmployeeSalaryDeductionsLabelFrom
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F321DefineEmployeesMonthlySalary"
+                exact
+                path="/dashboard/F321DefineEmployeesMonthlySalary/:id"
+                render={(props) => {
+                  return (
+                    <F321DefineEmployeesMonthlySalary
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"

@@ -87,7 +87,7 @@ class R210Reports extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  loadAcademicSession = async () => {
+  loadAcademicSession = async (sessionId, programmeId, sessionTermId) => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C210CommonAcademicSessionsView`;
     await fetch(url, {
@@ -103,17 +103,30 @@ class R210Reports extends Component {
         return res.json();
       })
       .then(
-        (json) => {
+        async (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
-            let dataLength = data.length || 0;
-            let res = data.find((option) => option.isActive == 1);
-            if (res) {
-              this.setState({ academicSessionLabel: data.Label });
-              this.loadProgrammes(res.ID);
-              this.loadTerms(res.ID);
-              this.setState({ academicSessionId: res.ID });
+            
+            let res2 = data.find((obj) => obj.ID == sessionId);
+            if (sessionId && res2) {
+              this.setState({
+                academicSessionId: res2.ID,
+                academicSessionLabel: res2.Label,
+              });
+              await this.loadProgrammes(res2.ID, programmeId);
+              this.loadTerms(res2.ID, sessionTermId);
+            } else {
+              let res = data.find((obj) => obj.isActive === 1);
+              if (res) {
+                this.setState({
+                  academicSessionId: res.ID,
+                  academicSessionLabel: res.Label,
+                });
+                this.loadProgrammes(res.ID);
+                this.loadTerms(res.ID);
+              }
             }
+
             this.setState({ academicSessionIdMenuItems: data });
           } else {
             this.handleOpenSnackbar(
@@ -145,7 +158,7 @@ class R210Reports extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadTerms = async (academicsSessionId) => {
+  loadTerms = async (academicsSessionId, sessionTermId) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
@@ -166,7 +179,7 @@ class R210Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ sessionTermMenuItems: json.DATA || [] });
+            this.setState({ sessionTermMenuItems: json.DATA || [], sessionTermId: sessionTermId || "" });
           } else {
             this.handleOpenSnackbar(
               <span>
@@ -197,7 +210,7 @@ class R210Reports extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadProgrammes = async (academicSessionId) => {
+  loadProgrammes = async (academicSessionId, programmeId) => {
     this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicSessionId);
@@ -218,7 +231,7 @@ class R210Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ programmeIdMenuItems: json.DATA });
+            this.setState({ programmeIdMenuItems: json.DATA, programmeId: programmeId || "" });
           } else {
             this.handleOpenSnackbar(
               <span>
@@ -249,7 +262,7 @@ class R210Reports extends Component {
     this.setState({ isLoading: false });
   };
 
-  loadUsers = async (programmeId) => {
+  loadUsers = async (programmeId, studentId) => {
     let data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
     data.append("programmeId", programmeId);
@@ -271,7 +284,21 @@ class R210Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ studentMenuItems: json.DATA });
+
+            let data = json.DATA || [];
+
+            let studentObj = data.find(item => item.id == studentId) || {};
+
+            if(studentObj.id){
+              this.loadPreviousReports(
+                this.state.academicSessionId,
+                this.state.programmeId,
+                studentObj.id,
+                this.state.sessionTermId
+              );
+            }
+
+            this.setState({ studentMenuItems: data, studentObj });
           } else {
             this.handleOpenSnackbar(
               <span>
@@ -505,7 +532,22 @@ class R210Reports extends Component {
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.loadAcademicSession();
+    this.onLoadData();
+  }
+
+  onLoadData = async () => {
+
+    const query = new URLSearchParams(this.props.location.search);
+    const studentId = query.get("studentId") || "";
+    const academicSessionId = query.get("academicSessionId") || "";
+    const programmeId = query.get("programmeId") || "";
+    const sessionTermId = query.get("sessionTermId") || "";
+
+    await this.loadAcademicSession(academicSessionId, programmeId, sessionTermId);
+
+    if(programmeId != "" && studentId != ""){
+    await this.loadUsers(programmeId, studentId);
+    }
   }
 
   render() {

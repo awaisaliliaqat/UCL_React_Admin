@@ -169,10 +169,12 @@ class DisplayAdmissionApplications extends Component {
     sessionId = 0,
     programmeId = 0,
     fromDate = 0,
-    toDate = 0
+    toDate = 0,
+    studentId = 0
   ) => {
     this.setState({ isLoading: true });
     let data = new FormData();
+    data.append("studentId", studentId);
     data.append("academicsSessionId", sessionId);
     data.append("programmeId", programmeId);
     data.append("fromDate", this.getDateInString(fromDate));
@@ -230,11 +232,11 @@ class DisplayAdmissionApplications extends Component {
   };
 
   componentDidMount() {
-    const { id = "0&0&0&0" } = this.props.match.params;
+    const { id = "0&0&0&0&0&0" } = this.props.match.params;
     let ids = id.split("&");
     console.log(ids[0] + " - " + ids[1] + " - " + ids[2] + " - " + ids[3]);
     this.getDateInString(ids[2]);
-    this.getData(ids[0], ids[1], ids[2], ids[3]);
+    this.getData(ids[0], ids[1], ids[2], ids[3], ids[6]);
     this.setState({
       fromDateLabel: this.getDateInString(ids[2]),
       toDateLabel: this.getDateInString(ids[3]),

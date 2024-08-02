@@ -22,6 +22,7 @@ import {
 } from "../../../../../utils/regularExpression";
 import PropTypes from "prop-types";
 import DefineEmployeeRolesSection from "./Chunks/DefineEmployeeRolesSection";
+import { DatePicker } from "@material-ui/pickers";
 
 const styles = () => ({
   root: {
@@ -71,8 +72,12 @@ class DefineEmployeeForm extends Component {
       displayNameError: "",
       mobileNo: "",
       mobileNoError: "",
+      secondaryMobileNo: "",
+      secondaryMobileNoError: "",
       email: "",
       emailError: "",
+      secondaryEmail: "",
+      secondaryEmailError: "",
       discipline: "",
       disciplineError: "",
       jobStatusId: "",
@@ -81,6 +86,12 @@ class DefineEmployeeForm extends Component {
       addressError: "",
       password: "",
       passwordError: "",
+
+      joiningDate: null,
+      joiningDateError: "",
+
+      leavingDate: null,
+      leavingDateError: "",
 
       isActive: 1,
       isActiveError: "",
@@ -93,6 +104,9 @@ class DefineEmployeeForm extends Component {
 
       otherReason: "",
       otherReasonError: "",
+
+      employeeComments: "",
+      employeeCommentsError: "",
 
       jobStatusIdData: [],
 
@@ -195,9 +209,13 @@ class DefineEmployeeForm extends Component {
                   lastName,
                   displayName,
                   mobileNo,
+                  secondaryMobileNo,
                   email,
+                  secondaryEmail,
                   discipline,
                   jobStatusId,
+                  joiningDate,
+                  leavingDate,
                   address,
                   password,
                   employeesRolesArray = [],
@@ -207,6 +225,7 @@ class DefineEmployeeForm extends Component {
                   employeesDesignationsArray = [],
                   inactiveReasonId,
                   otherReason,
+                  employeeComments,
                   isActive,
                 } = json.DATA[0];
 
@@ -222,9 +241,13 @@ class DefineEmployeeForm extends Component {
                   lastName,
                   displayName,
                   mobileNo,
+                  secondaryMobileNo,
                   email,
+                  secondaryEmail,
                   discipline,
                   jobStatusId,
+                  joiningDate,
+                  leavingDate,
                   address,
                   password,
                   employeesRolesArray,
@@ -234,6 +257,7 @@ class DefineEmployeeForm extends Component {
                   employeesDesignationsArray,
                   inactiveReasonId,
                   otherReason,
+                  employeeComments,
                   isActive,
                 });
               }
@@ -279,6 +303,7 @@ class DefineEmployeeForm extends Component {
         }
         break;
       case "mobileNo":
+      case "secondaryMobileNo":
         regex = new RegExp(numberExp);
         if (value && !regex.test(value)) {
           return;
@@ -349,9 +374,11 @@ class DefineEmployeeForm extends Component {
       lastNameError,
       displayNameError,
       mobileNoError,
+      secondaryMobileNoError,
       emailError,
       disciplineError,
       jobStatusIdError,
+      joiningDateError,
       addressError,
       passwordError,
       employeesRolesArrayError,
@@ -397,6 +424,18 @@ class DefineEmployeeForm extends Component {
       }
     }
 
+    if(this.state.secondaryMobileNo){
+      if (
+        !this.state.secondaryMobileNo.startsWith("03") ||
+        this.state.secondaryMobileNo.split("").length !== 11
+      ) {
+        secondaryMobileNoError = "Please enter a valid mobile number e.g 03001234567";
+        isValid = false;
+      } else {
+        secondaryMobileNoError = "";
+      }
+    }
+
     if (!this.state.email) {
       emailError = "Please enter a valid email e.g name@domain.com";
       isValid = false;
@@ -408,6 +447,18 @@ class DefineEmployeeForm extends Component {
       } else {
         emailError = "";
       }
+    }
+
+    if (this.state.secondaryEmail) {
+      regex = new RegExp(emailExp);
+      if (!regex.test(this.state.secondaryEmail)) {
+        emailError = "Please enter a valid email e.g name@domain.com";
+        isValid = false;
+      } else {
+        emailError = "";
+      }
+    } else {
+      // Nothing
     }
 
     if (!this.state.discipline) {
@@ -422,6 +473,13 @@ class DefineEmployeeForm extends Component {
       isValid = false;
     } else {
       jobStatusIdError = "";
+    }
+
+    if(!this.state.joiningDate){
+      joiningDateError = "Please select joining date";
+      isValid = false;
+    } else {
+      joiningDateError = "";
     }
 
     // if (!this.state.address) {
@@ -479,9 +537,11 @@ class DefineEmployeeForm extends Component {
       lastNameError,
       displayNameError,
       mobileNoError,
+      secondaryMobileNoError,
       emailError,
       disciplineError,
       jobStatusIdError,
+      joiningDateError,
       addressError,
       passwordError,
       employeesRolesArrayError,
@@ -512,12 +572,20 @@ class DefineEmployeeForm extends Component {
       displayNameError: "",
       mobileNo: "",
       mobileNoError: "",
+      secondaryMobileNo: "",
+      secondaryMobileNoError: "",
       email: "",
       emailError: "",
+      secondaryEmail: "",
+      secondaryEmailError: "",
       discipline: "",
       disciplineError: "",
       jobStatusId: "",
       jobStatusIdError: "",
+      joiningDate: null,
+      joiningDateError: "",
+      leavingDate: null,
+      leavingDateError: "",
       address: "",
       addressError: "",
       password: "",
@@ -531,6 +599,9 @@ class DefineEmployeeForm extends Component {
 
       otherReason: "",
       otherReasonError: "",
+
+      employeeComments: "",
+      employeeCommentsError: "",
 
       employeesRolesArray: [],
       employeesRolesArrayError: "",
@@ -1106,7 +1177,7 @@ class DefineEmployeeForm extends Component {
                 <TextField
                   id="mobileNo"
                   name="mobileNo"
-                  label="Mobile Number"
+                  label="Primary Mobile Number"
                   required
                   fullWidth
                   variant="outlined"
@@ -1121,9 +1192,25 @@ class DefineEmployeeForm extends Component {
               </Grid>
               <Grid item xs={4}>
                 <TextField
+                  id="secondaryMobileNo"
+                  name="secondaryMobileNo"
+                  label="Secondary Mobile Number"
+                  fullWidth
+                  variant="outlined"
+                  onChange={this.onHandleChange}
+                  value={this.state.secondaryMobileNo}
+                  helperText={this.state.secondaryMobileNoError}
+                  error={this.state.secondaryMobileNoError}
+                  inputProps={{
+                    maxLength: 11,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
                   id="email"
                   name="email"
-                  label="Email"
+                  label="Primary Email"
                   required
                   fullWidth
                   variant="outlined"
@@ -1131,6 +1218,19 @@ class DefineEmployeeForm extends Component {
                   value={this.state.email}
                   helperText={this.state.emailError}
                   error={this.state.emailError}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="secondaryEmail"
+                  name="secondaryEmail"
+                  label="Secondary Email"
+                  fullWidth
+                  variant="outlined"
+                  onChange={this.onHandleChange}
+                  value={this.state.secondaryEmail}
+                  helperText={this.state.secondaryEmailError}
+                  error={this.state.secondaryEmailError}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -1169,6 +1269,46 @@ class DefineEmployeeForm extends Component {
                     );
                   })}
                 </TextField>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <DatePicker
+                  autoOk
+                  id="joiningDate"
+                  name="joiningDate"
+                  label="Joining Date"
+                  invalidDateMessage=""
+                  placeholder=""
+                  variant="inline"
+                  inputVariant="outlined"
+                  format="dd-MM-yyyy"
+                  fullWidth
+                  required
+                  value={this.state.joiningDate}
+                  onChange={date => this.onHandleChange({target:{name: "joiningDate", value: date}})}
+                  error={!!this.state.joiningDateError}
+                  helperText={this.state.joiningDateError}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <DatePicker
+                  autoOk
+                  id="leavingDate"
+                  name="leavingDate"
+                  label="Leaving Date"
+                  invalidDateMessage=""
+                  disabled={!this.state.joiningDate}
+                  minDate={this.state.joiningDate}
+                  placeholder=""
+                  variant="inline"
+                  inputVariant="outlined"
+                  format="dd-MM-yyyy"
+                  fullWidth
+                  required
+                  value={this.state.leavingDate}
+                  onChange={date => this.onHandleChange({target:{name: "leavingDate", value: date}})}
+                  error={!!this.state.leavingDateError}
+                  helperText={this.state.leavingDateError}
+                />
               </Grid>
               {/* <Grid item xs={4}>
                                 <TextField
@@ -1295,6 +1435,21 @@ class DefineEmployeeForm extends Component {
                   )}
                 </>
               )}
+              <Grid item xs={12}>
+                      <TextField
+                        multiline
+                        rows={3}
+                        id="employeeComments"
+                        name="employeeComments"
+                        label="Employee Comments"
+                        fullWidth
+                        variant="outlined"
+                        onChange={this.onHandleChange}
+                        value={this.state.employeeComments}
+                        helperText={this.state.employeeCommentsError}
+                        error={!!this.state.employeeCommentsError}
+                      />
+                    </Grid>
               <DefineEmployeeRolesSection
                 state={this.state}
                 onHandleChange={(e) => this.onHandleChange(e)}

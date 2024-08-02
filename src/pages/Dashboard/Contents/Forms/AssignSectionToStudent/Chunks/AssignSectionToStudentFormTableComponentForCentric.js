@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import {
-    FilteringState, IntegratedFiltering, IntegratedPaging,
-    IntegratedSorting, PagingState, SortingState
+    FilteringState, IntegratedFiltering,
+    IntegratedSorting, SortingState
 } from '@devexpress/dx-react-grid';
 import {
-    Grid, PagingPanel, Table, TableFilterRow,
+    Grid, Table, TableFilterRow,
     TableHeaderRow
 } from '@devexpress/dx-react-grid-material-ui';
 import PropTypes from "prop-types";
 
 
-class DefineEmployeeReportsTableComponent extends Component {
+class AssignSectionToStudentFormTableComponentForCentric extends Component {
 
     constructor(props) {
 
@@ -33,40 +33,20 @@ class DefineEmployeeReportsTableComponent extends Component {
             pageSizes: [5, 10, 15, 20],
             defaultSorting: [
             ],
-            sortingStateColumnExtensions: [
-                { columnName: 'action', sortingEnabled: false },
-            ],
             tableColumnExtensions: [
-                { columnName: 'id', width: 80 },
-                { columnName: 'displayName', wordWrapEnabled: true},
-                { columnName: 'mobileNo', wordWrapEnabled: true,  width: 110 },
-                { columnName: 'email', wordWrapEnabled: true },
-                { columnName: 'jobStatusLabel', wordWrapEnabled: true, width: 80 },
-                { columnName: 'createdOn', wordWrapEnabled: true, width: 100 },
-                { columnName: 'statusLabel', wordWrapEnabled: true, width: 80 },
-                { columnName: 'leavingDateLabel', wordWrapEnabled: true, width: 100 },
-                { columnName: 'rolesLabel', wordWrapEnabled: true, width: 110 },
-                { columnName: 'entitiesLabel', wordWrapEnabled: true },
-                { columnName: 'departmentsLabel', wordWrapEnabled: true },
-                { columnName: 'subDepartmentsLabel', wordWrapEnabled: true },
-                { columnName: 'designationsLabel', wordWrapEnabled: true },
-                { columnName: 'action', width: 120 }
+                { columnName: 'serialNo', width: 120 },
+                { columnName: 'courseLabel', wordWrapEnabled: true },
+
             ],
 
             resizingMode: "widget",
             defaultFilters: [],
             filteringStateColumnExtensions: [
-                { columnName: 'action', filteringEnabled: false },
             ]
         };
     }
 
     render() {
-
-        // eslint-disable-next-line no-unused-vars
-        const cellComponent = ({ cellProps, ...restProps }) => {
-            return <Table.Cell {...restProps} style={{ wordBreak: "break-word", whiteSpace: "pre-wrap" }} />;
-          };
 
         const {
             tableColumnExtensions,
@@ -74,7 +54,6 @@ class DefineEmployeeReportsTableComponent extends Component {
             sortingStateColumnExtensions,
             filteringStateColumnExtensions,
             defaultFilters,
-            pageSizes
         } = this.state;
 
         const { rows, columns, showFilter } = this.props;
@@ -84,11 +63,9 @@ class DefineEmployeeReportsTableComponent extends Component {
                 <Grid rows={rows} columns={columns}>
                     <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions} />
                     <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions} />
-                    <PagingState defaultCurrentPage={0} defaultPageSize={5} />
                     <IntegratedFiltering />
                     <IntegratedSorting />
-                    <IntegratedPaging />
-                    <Table cellComponent={cellComponent} columnExtensions={tableColumnExtensions} />
+                    <Table columnExtensions={tableColumnExtensions} />
                     <TableHeaderRow
                         showSortingControls={true}
                         titleComponent={(props) => (
@@ -103,25 +80,24 @@ class DefineEmployeeReportsTableComponent extends Component {
                         :
                         ""
                     }
-                    <PagingPanel pageSizes={pageSizes} />
                 </Grid>
             </Paper>
         );
     }
 }
 
-DefineEmployeeReportsTableComponent.propTypes = {
+AssignSectionToStudentFormTableComponentForCentric.propTypes = {
     columns: PropTypes.array,
     rows: PropTypes.array,
-    showFilter: PropTypes.bool
+    showFilter: PropTypes.bool,
 
 
 }
 
-DefineEmployeeReportsTableComponent.defaultProps = {
+AssignSectionToStudentFormTableComponentForCentric.defaultProps = {
     columns: [],
     rows: [],
-    showFilter: false
+    showFilter: false,
 }
 
-export default DefineEmployeeReportsTableComponent;
+export default AssignSectionToStudentFormTableComponentForCentric;

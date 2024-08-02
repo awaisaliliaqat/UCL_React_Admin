@@ -411,7 +411,7 @@ class R217FeedbackReports extends Component {
               if (json.CODE === 1) {
                 let dataTable = json.DATA || [];
                 this.setState({dataTable:dataTable});
-                let categoryLabel = json.DATA[0].categoryLabel || "";
+                let categoryLabel = json.DATA[0]?.categoryLabel || "";
                 this.setState({categoryLabel:categoryLabel});
                 console.log(dataTable);
               } else {

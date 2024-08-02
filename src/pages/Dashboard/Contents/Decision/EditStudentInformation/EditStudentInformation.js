@@ -72,7 +72,6 @@ class EditStudentInformation extends Component {
 				files: [],
 				admissionData: [],
 				studentId: "",
-				studentId: "",
 				studentName: "",
 				studentStatus: 1,
         pictureStatus: 0,
@@ -263,8 +262,22 @@ class EditStudentInformation extends Component {
       };
 
     componentDidMount() {
-        this.getProgrammeGroups();
+      const query = new URLSearchParams(this.props.location.search);
+      const studentId = query.get("studentId") || ""; 
+      const isActive = query.get("isActive") || 0; 
+      
+      this.getProgrammeGroups();
         // this.getData();
+
+        if (studentId != "") {
+          this.setState(
+            {
+              studentId,
+              studentStatus: isActive
+            },
+            () => this.getData()
+          );
+        }
     }
 
     render() {

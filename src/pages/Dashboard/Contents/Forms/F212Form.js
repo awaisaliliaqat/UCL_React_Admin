@@ -1,19 +1,33 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
 import { withStyles, makeStyles } from "@material-ui/styles";
-import {Divider, IconButton, Tooltip, CircularProgress, Grid, Button,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
-  Paper, Collapse, Fab, } from "@material-ui/core";
-import {Typography, TextField, MenuItem} from "@material-ui/core";
+import {
+  Divider,
+  IconButton,
+  Tooltip,
+  CircularProgress,
+  Grid,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Collapse,
+  Fab,
+} from "@material-ui/core";
+import { Typography, TextField, MenuItem } from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
 import FilterIcon from "mdi-material-ui/FilterOutline";
-import FilterListOutlinedIcon from '@material-ui/icons/FilterListOutlined';
+import FilterListOutlinedIcon from "@material-ui/icons/FilterListOutlined";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import F212FormChangeStatusPopup from "./F212FormChangeStatusPopup";
 import F212FormPopupComponent from "./F212FormPopupComponent";
 import F212FormTableComponent from "./F212FormTableComponent";
-import InputBase from '@material-ui/core/InputBase';
-import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
+import InputBase from "@material-ui/core/InputBase";
+import SaveOutlinedIcon from "@material-ui/icons/SaveOutlined";
 import AddIcon from "@material-ui/icons/Add";
 
 const styles = () => ({
@@ -42,7 +56,7 @@ const styles = () => ({
   },
   table: {
     //minWidth: 750,
-  }
+  },
 });
 
 class F212Form extends Component {
@@ -60,9 +74,9 @@ class F212Form extends Component {
       tableData: [],
       academicSessionMenuItems: [],
       academicSessionId: "",
-      sessionSortOrder:"",
+      sessionSortOrder: "",
       academicSessionIdError: "",
-      mainPagestudentNucleusId:"",
+      mainPagestudentNucleusId: "",
       programmeGroupId: "",
       programmeGroupIdError: "",
       programmeGroupsMenuItems: [],
@@ -98,25 +112,25 @@ class F212Form extends Component {
       preCourseSelectionItems: [],
       f212FormPopupIsOpen: false,
       f212FormPopupData: {
-        studentId: "", 
-        studentNucleusId: "", 
-        studentName: ""
+        studentId: "",
+        studentNucleusId: "",
+        studentName: "",
       },
       f212FormChangeStatusPopupIsOpen: false,
       f212FormChangeStatusPopupData: {
         studentId: "",
         programmeGroupId: "",
-        studentNucleusId: "", 
+        studentNucleusId: "",
         studentName: "",
         applicationStatusId: "",
         renewalStatusId: "",
         examEntryStatusId: "",
-        courseCompletionStatusId:"",
-        endYearAchievementId:"",
+        courseCompletionStatusId: "",
+        endYearAchievementId: "",
         pathwayId: "",
         uolNumber: "",
-        candidateNo: ""
-      }
+        candidateNo: "",
+      },
     };
   }
 
@@ -129,11 +143,13 @@ class F212Form extends Component {
   };
 
   handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {  return; }
+    if (reason === "clickaway") {
+      return;
+    }
     this.setState({ isOpenSnackbar: false });
   };
 
-  loadAcademicSessions = async () => {
+  loadAcademicSessions = async (sessionId) => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicSessionsView`;
     await fetch(url, {
@@ -149,22 +165,37 @@ class F212Form extends Component {
         return res.json();
       })
       .then(
-        (json) => {
+        async (json) => {
           if (json.CODE === 1) {
             let array = json.DATA || [];
-            let arrayLength = array.length;
-            let res = array.find( (obj) => obj.isActive === 1 );
-            if(res){
+
+            let res2 = array.find((obj) => obj.ID == sessionId);
+            if (sessionId && res2) {
               this.setState({
-                academicSessionId:res.ID,
-                sessionSortOrder:res.SortOrder
-              
+                academicSessionId: res2.ID,
+                sessionSortOrder: res2.SortOrder,
               });
-              this.loadProgrammeGroups(res.ID);
+              await this.loadProgrammeGroups(res2.ID);
+            } else {
+              let res = array.find((obj) => obj.isActive === 1);
+              if (res) {
+                this.setState({
+                  academicSessionId: res.ID,
+                  sessionSortOrder: res.SortOrder,
+                });
+                await this.loadProgrammeGroups(res.ID);
+              }
             }
             this.setState({ academicSessionMenuItems: array });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadAcademicSessions", json);
         },
@@ -176,7 +207,10 @@ class F212Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -184,7 +218,7 @@ class F212Form extends Component {
   };
 
   loadProgrammeGroups = async (academicsSessionId) => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsSessionsOfferedProgrammesGroupView`;
@@ -199,15 +233,22 @@ class F212Form extends Component {
         if (!res.ok) {
           throw res;
         }
-        return res.json(); 
+        return res.json();
       })
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({programmeGroupsMenuItems: json.DATA || []});
+            this.setState({ programmeGroupsMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadSections", json);
         },
@@ -219,16 +260,19 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   loadProgrammes = async (programmeGroupId) => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     let data = new FormData();
     data.append("programmeGroupId", programmeGroupId);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonProgrammesView`;
@@ -248,10 +292,17 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({programmeMenuItems: json.DATA || []});
+            this.setState({ programmeMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadProgrammes", json);
         },
@@ -263,16 +314,19 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   loadCourse = async (academicsSessionId, programmeGroupId) => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicsSessionId", academicsSessionId);
     data.append("programmeGroupId", programmeGroupId);
@@ -293,10 +347,17 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({coursesMenuItems: json.DATA || []});
+            this.setState({ coursesMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadCourse", json);
         },
@@ -308,16 +369,19 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   loadApplicationStatusFilter = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentApplicationStatusFilterView`;
     await fetch(url, {
       method: "POST",
@@ -334,10 +398,19 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({applicationStatusFilterMenuItems: json.DATA || []});
+            this.setState({
+              applicationStatusFilterMenuItems: json.DATA || [],
+            });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadApplicationStatusFilter", json);
         },
@@ -349,16 +422,19 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   loadApplicationStatus = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentApplicationStatusView`;
     await fetch(url, {
       method: "POST",
@@ -375,10 +451,17 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({applicationStatusMenuItems: json.DATA || []});
+            this.setState({ applicationStatusMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadApplicationStatus", json);
         },
@@ -390,16 +473,19 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   loadRenewalStatus = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentRenewalStatusView`;
     await fetch(url, {
       method: "POST",
@@ -416,10 +502,17 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({renewalStatusMenuItems: json.DATA || []});
+            this.setState({ renewalStatusMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadRenewalStatus", json);
         },
@@ -431,16 +524,19 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   loadExamEntryStatus = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentExamEntryStatusView`;
     await fetch(url, {
       method: "POST",
@@ -457,10 +553,17 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({examEntryStatusMenuItems: json.DATA || []});
+            this.setState({ examEntryStatusMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadExamEntryStatus", json);
         },
@@ -472,15 +575,18 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
   loadCourseCompletionStatus = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentCoursesCompletionStatusView`;
     await fetch(url, {
       method: "POST",
@@ -497,10 +603,17 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({courseCompletionStatusMenuItems: json.DATA || []});
+            this.setState({ courseCompletionStatusMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadCourseCompletionStatus", json);
         },
@@ -512,15 +625,18 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
   loadEndYearAchievement = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentYearEndAchievementView`;
     await fetch(url, {
       method: "POST",
@@ -537,10 +653,17 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({endYearAchievementMenuItems: json.DATA || []});
+            this.setState({ endYearAchievementMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadEndYearAchievement", json);
         },
@@ -552,16 +675,19 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   loadPathway = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentPathwayView`;
     await fetch(url, {
       method: "POST",
@@ -578,10 +704,17 @@ class F212Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({pathwayMenuItems: json.DATA || []});
+            this.setState({ pathwayMenuItems: json.DATA || [] });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadPathway", json);
         },
@@ -593,12 +726,15 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   loadModules = async (academicsSessionId, programmeId) => {
@@ -626,7 +762,7 @@ class F212Form extends Component {
             this.setState({ preModuleMenuItems: json.DATA || [] });
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -640,7 +776,10 @@ class F212Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -672,7 +811,7 @@ class F212Form extends Component {
             this.setState({ preCourseMenuItems: json.DATA || [] });
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -686,36 +825,38 @@ class F212Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
     this.setState({ isLoading: false });
   };
 
-
-  
-
   loadData = async () => {
-    this.setState({isLoading: true});
+    this.setState({ isLoading: true });
     let data = new FormData();
     data.append("academicSessionId", this.state.academicSessionId);
     data.append("programmeGroupId", this.state.programmeGroupId);
     data.append("programmeId", this.state.programmeId);
     data.append("courseId", this.state.courseId);
-    data.append("applicationStatusFilterId", this.state.applicationStatusFilterId);
+    data.append(
+      "applicationStatusFilterId",
+      this.state.applicationStatusFilterId
+    );
     data.append("renewalStatusId", this.state.renewalStatus);
     data.append("examEntryStatusId", this.state.examEntryStatus);
     data.append("courseCompletionStatusId", this.state.courseCompletionStatus);
     data.append("endYearAchievementId", this.state.endYearAchievement);
     data.append("pathwayId", this.state.pathway);
-     data.append("studentId", this.state.mainPagestudentNucleusId || 0);
-    
-    
+    data.append("studentId", this.state.mainPagestudentNucleusId || 0);
+
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonStudentsView`;
     await fetch(url, {
       method: "POST",
-      body:data,
+      body: data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -725,46 +866,47 @@ class F212Form extends Component {
           throw res;
         }
         return res.json();
-      }) 
+      })
       .then(
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
             let dataLength = data.length || 0;
-            if(dataLength!=0){
-              if(this.state.mainPagestudentNucleusId){
+            if (dataLength != 0) {
+              if (this.state.mainPagestudentNucleusId) {
                 this.setState({
-                    programmeId:data[0].programmeId
+                  programmeId: data[0].programmeId,
                 });
-                this.loadModules(this.state.academicSessionId,data[0].programmeId)
-                this.loadProgrammeCourses(this.state.academicSessionId,data[0].programmeId)
+                this.loadModules(
+                  this.state.academicSessionId,
+                  data[0].programmeId
+                );
+                this.loadProgrammeCourses(
+                  this.state.academicSessionId,
+                  data[0].programmeId
+                );
               }
             }
-            
-            for (let i=0; i<dataLength; i++) {
 
+            for (let i = 0; i < dataLength; i++) {
               let f212FormPopupData = {
                 studentId: data[i].id,
                 studentNucleusId: data[i].studentId,
-                studentName: data[i].displayName
+                studentName: data[i].displayName,
               };
 
               data[i].action = (
                 <IconButton
                   color="primary"
                   aria-label="Add"
-                  onClick={()=>this.f212FormPopupSetData(f212FormPopupData)}
+                  onClick={() => this.f212FormPopupSetData(f212FormPopupData)}
                   variant="outlined"
                   component="span"
-                  style={{padding:5}}
+                  style={{ padding: 5 }}
                 >
                   <Tooltip title="Add / Change">
-                    <Fab 
-                      color="primary" 
-                      aria-label="add" 
-                      size="small"
-                    >
-                      <AddIcon fontSize="small"/>
+                    <Fab color="primary" aria-label="add" size="small">
+                      <AddIcon fontSize="small" />
                     </Fab>
                   </Tooltip>
                 </IconButton>
@@ -783,35 +925,41 @@ class F212Form extends Component {
                 pathwayId: data[i].pathwayId,
                 uolNumber: data[i].uolNumber,
                 candidateNo: data[i].candidateNo,
-                courseIds: data[i].courseIds
+                courseIds: data[i].courseIds,
               };
 
               data[i].changeStatusAction = (
                 <IconButton
                   color="primary"
                   aria-label="Add"
-                  onClick={()=>this.f212FormChangeStatusPopupSetData(f212FormChangeStatusPopupData)}
+                  onClick={() =>
+                    this.f212FormChangeStatusPopupSetData(
+                      f212FormChangeStatusPopupData
+                    )
+                  }
                   variant="outlined"
                   component="span"
-                  style={{padding:5}}
+                  style={{ padding: 5 }}
                 >
                   <Tooltip title="Add / Change">
-                    <Fab 
-                      color="primary" 
-                      aria-label="add" 
-                      size="small"
-                    >
-                      <AddIcon fontSize="small"/>
+                    <Fab color="primary" aria-label="add" size="small">
+                      <AddIcon fontSize="small" />
                     </Fab>
                   </Tooltip>
                 </IconButton>
               );
-
             }
-            this.setState({tableData: data});
+            this.setState({ tableData: data });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadData", json);
         },
@@ -823,69 +971,71 @@ class F212Form extends Component {
             });
           } else {
             //alert('Failed to fetch, Please try again later.');
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
             console.log(error);
           }
         }
       );
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
-  getSessionSortOrder=(value)=>{
-
-    let obj =this.state.academicSessionMenuItems.find(((element) => {
+  getSessionSortOrder = (value) => {
+    let obj = this.state.academicSessionMenuItems.find((element) => {
       return element.ID === value;
-    }))
-    
-    this.setState({
-      sessionSortOrder:obj.SortOrder
     });
-  }
+
+    this.setState({
+      sessionSortOrder: obj.SortOrder,
+    });
+  };
   onHandleChange = (e) => {
     const { name, value } = e.target;
     const errName = `${name}Error`;
     switch (name) {
-        case "academicSessionId":
-          this.setState({
-            programmeGroupId: "",
-            programmeGroupsMenuItems: [],
-            courseId: "",
-            coursesMenuItems: [],
-            tableData:[],
-            sessionSortOrder:value
-          });
-          this.getSessionSortOrder(value);
-          this.loadProgrammeGroups(value);
+      case "academicSessionId":
+        this.setState({
+          programmeGroupId: "",
+          programmeGroupsMenuItems: [],
+          courseId: "",
+          coursesMenuItems: [],
+          tableData: [],
+          sessionSortOrder: value,
+        });
+        this.getSessionSortOrder(value);
+        this.loadProgrammeGroups(value);
         break;
-        case "programmeGroupId":
-            this.setState({
-              programmeGroupId: "",
-              courseId:"",
-              coursesMenuItems:[],
-              tableData: []
-            });
-            //this.loadCourse(this.state.academicSessionId, value);
-            this.loadProgrammes(value);
+      case "programmeGroupId":
+        this.setState({
+          programmeGroupId: "",
+          courseId: "",
+          coursesMenuItems: [],
+          tableData: [],
+        });
+        //this.loadCourse(this.state.academicSessionId, value);
+        this.loadProgrammes(value);
         break;
-        case "programmeId":
-          this.setState({
-            programmeId: "",
-            preCourseMenuItems: [],
-            preCourseSelectionItems:[],
-            tableData: []
-          });
-          this.loadModules(this.state.academicSessionId, value);
-          this.loadProgrammeCourses(this.state.academicSessionId, value);
+      case "programmeId":
+        this.setState({
+          programmeId: "",
+          preCourseMenuItems: [],
+          preCourseSelectionItems: [],
+          tableData: [],
+        });
+        this.loadModules(this.state.academicSessionId, value);
+        this.loadProgrammeCourses(this.state.academicSessionId, value);
         break;
-        case "mainPagestudentNucleusId":
-          this.setState({
-            [name]: value,
-          });
+      case "mainPagestudentNucleusId":
+        this.setState({
+          [name]: value,
+        });
         break;
-        case "courseId":
-          this.setState({
-            courseId: "",
-            tableData: []
-          });
+      case "courseId":
+        this.setState({
+          courseId: "",
+          tableData: [],
+        });
         break;
       default:
     }
@@ -912,22 +1062,24 @@ class F212Form extends Component {
 
   isProgrammeGroupValid = () => {
     let isValid = true;
-    if(this.state.sessionSortOrder>23){
+    if (this.state.sessionSortOrder > 23) {
       if (!this.state.programmeGroupId) {
-        this.setState({ programmeGroupIdError: "Please select programme group." });
+        this.setState({
+          programmeGroupIdError: "Please select programme group.",
+        });
         document.getElementById("programmeGroupId").focus();
         isValid = false;
       } else {
         this.setState({ programmeGroupIdError: "" });
       }
     }
-  
+
     return isValid;
   };
 
   isProgrammeValid = () => {
     let isValid = true;
-    if(this.state.sessionSortOrder>23){
+    if (this.state.sessionSortOrder > 23) {
       if (!this.state.programmeId) {
         this.setState({ programmeIdError: "Please select programme." });
         document.getElementById("programmeId").focus();
@@ -940,7 +1092,7 @@ class F212Form extends Component {
   };
 
   // isCourseValid = () => {
-  //   let isValid = true;        
+  //   let isValid = true;
   //   if (!this.state.courseId) {
   //       this.setState({courseIdError:"Please select course."});
   //       document.getElementById("courseId");
@@ -952,21 +1104,22 @@ class F212Form extends Component {
   //   return isValid;
   // }
 
-  
   handleGetData = () => {
-    if(!this.state.mainPagestudentNucleusId){
-      if(
-        !this.isAcademicSessionValid()
-        || !this.isProgrammeGroupValid()
-        || !this.isProgrammeValid
+    if (!this.state.mainPagestudentNucleusId) {
+      if (
+        !this.isAcademicSessionValid() ||
+        !this.isProgrammeGroupValid() ||
+        !this.isProgrammeValid
         // || !this.isCourseValid()
-      ){return;}
+      ) {
+        return;
+      }
     }
-    
-    this.setState({tableData:[]});
+
+    this.setState({ tableData: [] });
     this.loadData();
-  }
-  
+  };
+
   handleToggleTableFilter = () => {
     this.setState({ showTableFilter: !this.state.showTableFilter });
   };
@@ -976,40 +1129,40 @@ class F212Form extends Component {
   };
 
   f212FormPopupOpen = () => {
-    this.setState({f212FormPopupIsOpen: true});
-  }
+    this.setState({ f212FormPopupIsOpen: true });
+  };
 
   f212FormPopupClose = () => {
-    this.setState({f212FormPopupIsOpen: false});
-  }
+    this.setState({ f212FormPopupIsOpen: false });
+  };
 
   f212FormPopupSetData = (data) => {
     this.setState({
       f212FormPopupData: {
         studentId: data.studentId,
-        programmeGroupId: this.state.programmeGroupId, 
+        programmeGroupId: this.state.programmeGroupId,
         studentNucleusId: data.studentNucleusId,
         studentName: data.studentName,
         academicSessionId: this.state.academicSessionId,
-        courseIds: data.courseIds
-      }
+        courseIds: data.courseIds,
+      },
     });
     this.f212FormPopupOpen();
-  }
+  };
 
   f212FormChangeStatusPopupOpen = () => {
-    this.setState({f212FormChangeStatusPopupIsOpen: true});
-  }
+    this.setState({ f212FormChangeStatusPopupIsOpen: true });
+  };
 
   f212FormChangeStatusPopupClose = () => {
-    this.setState({f212FormChangeStatusPopupIsOpen: false});
-  }
+    this.setState({ f212FormChangeStatusPopupIsOpen: false });
+  };
 
   f212FormChangeStatusPopupSetData = (data) => {
     this.setState({
       f212FormChangeStatusPopupData: {
         studentId: data.studentId,
-        programmeGroupId: this.state.programmeGroupId, 
+        programmeGroupId: this.state.programmeGroupId,
         studentNucleusId: data.studentNucleusId,
         studentName: data.studentName,
         applicationStatusId: data.applicationStatusId,
@@ -1020,67 +1173,78 @@ class F212Form extends Component {
         pathwayId: data.pathwayId,
         uolNumber: data.uolNumber,
         candidateNo: data.candidateNo,
-        courseIds: data.courseIds
-      }
+        courseIds: data.courseIds,
+      },
     });
     this.f212FormChangeStatusPopupOpen();
-  }
+  };
 
   onChangeStatusFormSubmit = async () => {
-
     // if (
-    //   !this.isAcademicSessionValid() 
+    //   !this.isAcademicSessionValid()
     //   || !this.isProgrammeGroupValid()
     //   || !this.isProgrammeValid()
     //   // || !this.isCourseValid()
     // ) { return; }
 
     let studentId = document.getElementById("studentId").value;
-    let applicationStatusId = document.getElementById("applicationStatusId").value;
+    let applicationStatusId = document.getElementById(
+      "applicationStatusId"
+    ).value;
     let renewalStatusId = document.getElementById("renewalStatusId").value;
     let examEntryStatusId = document.getElementById("examEntryStatusId").value;
-    let courseCompletionStatusId = document.getElementById("courseCompletionStatusId").value;
+    let courseCompletionStatusId = document.getElementById(
+      "courseCompletionStatusId"
+    ).value;
     // let endYearAchievementId = document.getElementById("endYearAchievementId").value;
     let pathwayId = document.getElementById("pathwayId").value;
     let UOLNo = document.getElementById("UOLNo").value;
     let candidateNoEle = document.getElementById("candidateNo");
     let candidateNo = "";
-    if(candidateNoEle){
+    if (candidateNoEle) {
       candidateNo = candidateNoEle.value;
     }
     let courseIds = document.getElementById("courseIds").value;
-    let applicationStatusLabel = ""; 
-    let asObj = this.state.applicationStatusMenuItems.find( (obj) => obj.id == applicationStatusId);
-    if(asObj){
+    let applicationStatusLabel = "";
+    let asObj = this.state.applicationStatusMenuItems.find(
+      (obj) => obj.id == applicationStatusId
+    );
+    if (asObj) {
       applicationStatusLabel = asObj.label;
     }
 
-    let renewalStatusLabel = ""; 
-    let rsObj = this.state.renewalStatusMenuItems.find( (obj) => obj.id == renewalStatusId);
-    if(rsObj){
+    let renewalStatusLabel = "";
+    let rsObj = this.state.renewalStatusMenuItems.find(
+      (obj) => obj.id == renewalStatusId
+    );
+    if (rsObj) {
       renewalStatusLabel = rsObj.label;
     }
-    
-    let examEntryStatusLabel = ""; 
-    let eesObj = this.state.examEntryStatusMenuItems.find( (obj) => obj.id == examEntryStatusId);
-    if(eesObj){
+
+    let examEntryStatusLabel = "";
+    let eesObj = this.state.examEntryStatusMenuItems.find(
+      (obj) => obj.id == examEntryStatusId
+    );
+    if (eesObj) {
       examEntryStatusLabel = eesObj.label;
     }
-    
-    let  courseCompletionStatusLabel = ""; 
-    let ccsObj = this.state. courseCompletionStatusMenuItems.find( (obj) => obj.id ==  courseCompletionStatusId);
-    if(ccsObj){
+
+    let courseCompletionStatusLabel = "";
+    let ccsObj = this.state.courseCompletionStatusMenuItems.find(
+      (obj) => obj.id == courseCompletionStatusId
+    );
+    if (ccsObj) {
       courseCompletionStatusLabel = ccsObj.label;
     }
-    // let  endYearAchievementLabel = ""; 
+    // let  endYearAchievementLabel = "";
     // let eyaObj = this.state. endYearAchievementMenuItems.find( (obj) => obj.id ==  endYearAchievementId);
     // if(eyaObj){
     //   endYearAchievementLabel = eyaObj.label;
     // }
-    
-    let pathwayLabel = ""; 
-    let pwObj = this.state.pathwayMenuItems.find( (obj) => obj.id == pathwayId);
-    if(pwObj){
+
+    let pathwayLabel = "";
+    let pwObj = this.state.pathwayMenuItems.find((obj) => obj.id == pathwayId);
+    if (pwObj) {
       pathwayLabel = pwObj.label;
     }
 
@@ -1096,15 +1260,13 @@ class F212Form extends Component {
     data.append("uolNumber", UOLNo);
     data.append("candidateNo", candidateNo);
     data.append("courseIds", courseIds);
-    
+
     let tableData = [...this.state.tableData];
-    
-    let tableDataNewInstance = tableData.map((row, index) => { 
-      
+
+    let tableDataNewInstance = tableData.map((row, index) => {
       let row10 = { ...row };
-      
-      if(row.id == studentId){
-        
+
+      if (row.id == studentId) {
         row10.applicationStatusId = applicationStatusId;
         row10.applicationStatusLabel = applicationStatusLabel;
         row10.renewalStatusId = renewalStatusId;
@@ -1127,45 +1289,42 @@ class F212Form extends Component {
           applicationStatusId: applicationStatusId,
           renewalStatusId: renewalStatusId,
           examEntryStatusId: examEntryStatusId,
-          courseCompletionStatusId:  courseCompletionStatusId,
+          courseCompletionStatusId: courseCompletionStatusId,
           // endYearAchievementId:  endYearAchievementId,
           pathwayId: pathwayId,
           uolNumber: UOLNo,
           candidateNo: candidateNo,
-          courseIds : courseIds
+          courseIds: courseIds,
         };
 
         row10.changeStatusAction = (
           <IconButton
             color="primary"
             aria-label="Add"
-            onClick={()=>this.f212FormChangeStatusPopupSetData(f212FormChangeStatusPopupData)}
+            onClick={() =>
+              this.f212FormChangeStatusPopupSetData(
+                f212FormChangeStatusPopupData
+              )
+            }
             variant="outlined"
             component="span"
-            style={{padding:5}}
+            style={{ padding: 5 }}
           >
             <Tooltip title="Add1 / Change1">
-              <Fab 
-                color="primary" 
-                aria-label="add" 
-                size="small"
-              >
-                <AddIcon fontSize="small"/>
+              <Fab color="primary" aria-label="add" size="small">
+                <AddIcon fontSize="small" />
               </Fab>
             </Tooltip>
           </IconButton>
         );
-
       }
-      
-      return ( 
-        row.id == studentId ? { ...row10 } : row 
-      )
+
+      return row.id == studentId ? { ...row10 } : row;
     }); // tableData.map ends
-  
-    this.setState({ 
+
+    this.setState({
       tableData: tableDataNewInstance,
-      isLoading: true 
+      isLoading: true,
     });
 
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonUolEnrollmentSave`;
@@ -1188,7 +1347,10 @@ class F212Form extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             this.f212FormChangeStatusPopupClose();
           } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -1200,7 +1362,10 @@ class F212Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to Save ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -1208,26 +1373,29 @@ class F212Form extends Component {
   };
 
   onStudentAchievementFormSubmit = async (e) => {
-
     // if (
-    //     !this.isAcademicSessionValid() 
+    //     !this.isAcademicSessionValid()
     //     || !this.isProgrammeValid()
     // ) { return; }
 
-    
-    let academicSessionId = document.getElementById("academicSessionIdSA").value;
+    let academicSessionId = document.getElementById(
+      "academicSessionIdSA"
+    ).value;
     let studentId = document.getElementById("studentId").value;
     let moduleNumber = document.getElementsByName("moduleNumber");
     let programmeCourseId = document.getElementsByName("programmeCourseId");
     let marks = document.getElementsByName("marks");
     let resetMarks = document.getElementsByName("resetMarks");
-    let endYearAchievementId = document.getElementById("endYearAchievementId").value;
+    let endYearAchievementId = document.getElementById(
+      "endYearAchievementId"
+    ).value;
 
-
-    let  endYearAchievementLabel = ""; 
-    let eyaObj = this.state.endYearAchievementMenuItems.find( (obj) => obj.id ==  endYearAchievementId);
-    console.log("Yooo ",eyaObj);
-    if(eyaObj){
+    let endYearAchievementLabel = "";
+    let eyaObj = this.state.endYearAchievementMenuItems.find(
+      (obj) => obj.id == endYearAchievementId
+    );
+    console.log("Yooo ", eyaObj);
+    if (eyaObj) {
       endYearAchievementLabel = eyaObj.label;
     }
 
@@ -1240,30 +1408,27 @@ class F212Form extends Component {
 
     let recordLength = moduleNumber.length || 0;
 
-    if (recordLength>0) {
-      for (let i=0; i<recordLength; i++) {
+    if (recordLength > 0) {
+      for (let i = 0; i < recordLength; i++) {
         data.append("moduleNumber", moduleNumber[i].value);
         data.append("programmeCourseId", programmeCourseId[i].value);
         data.append("marks", marks[i].value);
         data.append("resetMarks", resetMarks[i].value);
       }
     }
-    
-    console.log("1=> ",[...this.state.tableData]);
+
+    console.log("1=> ", [...this.state.tableData]);
 
     let tableData = [...this.state.tableData];
-    
-    let tableDataNewInstance = tableData.map((row, index) => { 
-      
+
+    let tableDataNewInstance = tableData.map((row, index) => {
       let row10 = { ...row };
-      
-      if(row.id == studentId){
-        
-       console.log(endYearAchievementId, endYearAchievementLabel);
+
+      if (row.id == studentId) {
+        console.log(endYearAchievementId, endYearAchievementLabel);
         row10.endYearAchievementId = endYearAchievementId;
         row10.endYearAchievementIdLabel = endYearAchievementLabel;
-      
-       
+
         let f212FormChangeStatusPopupData = {
           studentId: row.id,
           studentNucleusId: row.studentId,
@@ -1271,48 +1436,46 @@ class F212Form extends Component {
           applicationStatusId: row.applicationStatusId,
           renewalStatusId: row.renewalStatusId,
           examEntryStatusId: row.examEntryStatusId,
-          courseCompletionStatusId:  row.courseCompletionStatusId,
-          endYearAchievementId:  endYearAchievementId,
+          courseCompletionStatusId: row.courseCompletionStatusId,
+          endYearAchievementId: endYearAchievementId,
           pathwayId: row.pathwayId,
           uolNumber: row.UOLNo,
           candidateNo: row.candidateNo,
-          courseIds : row.courseIds
+          courseIds: row.courseIds,
         };
 
         row10.changeStatusAction = (
           <IconButton
             color="primary"
             aria-label="Add"
-            onClick={()=>this.f212FormChangeStatusPopupSetData(f212FormChangeStatusPopupData)}
+            onClick={() =>
+              this.f212FormChangeStatusPopupSetData(
+                f212FormChangeStatusPopupData
+              )
+            }
             variant="outlined"
             component="span"
-            style={{padding:5}}
+            style={{ padding: 5 }}
           >
             <Tooltip title="Add2 / Change">
-              <Fab 
-                color="primary" 
-                aria-label="add" 
-                size="small"
-              >
-                <AddIcon fontSize="small"/>
+              <Fab color="primary" aria-label="add" size="small">
+                <AddIcon fontSize="small" />
               </Fab>
             </Tooltip>
           </IconButton>
         );
-        console.log("row10   ",row10)
+        console.log("row10   ", row10);
       }
-      
-      return ( 
-        row.id == studentId ? { ...row10 } : row 
-      )
+
+      return row.id == studentId ? { ...row10 } : row;
     }); // tableData.map ends
-  
-    this.setState({ 
+
+    this.setState({
       // tableData: tableDataNewInstance,
-      isLoading: true 
+      isLoading: true,
     });
 
-    console.log("2=> ",[...tableDataNewInstance]);
+    console.log("2=> ", [...tableDataNewInstance]);
 
     // this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C212CommonAcademicsCoursesStudentsAchievementsSave`;
@@ -1334,11 +1497,14 @@ class F212Form extends Component {
           if (json.CODE === 1) {
             this.setState({
               tableData: tableDataNewInstance,
-            })
+            });
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             this.f212FormPopupClose();
           } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,"error");
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -1350,7 +1516,10 @@ class F212Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to Save ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -1359,7 +1528,17 @@ class F212Form extends Component {
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    this.loadAcademicSessions();
+    this.onLoadAllData();
+  }
+
+  onLoadAllData = async () => {
+    const query = new URLSearchParams(this.props.location.search);
+    const studentId = query.get("studentId") || "";
+    const academicSessionId = query.get("academicSessionId") || "";
+
+    await this.loadAcademicSessions(
+      academicSessionId
+    );
     this.loadApplicationStatusFilter();
     this.loadApplicationStatus();
     this.loadRenewalStatus();
@@ -1367,10 +1546,18 @@ class F212Form extends Component {
     this.loadCourseCompletionStatus();
     this.loadEndYearAchievement();
     this.loadPathway();
-  }
+
+    if (studentId != "") {
+      this.setState(
+        {
+          mainPagestudentNucleusId: studentId,
+        },
+        () => this.handleGetData()
+      );
+    }
+  };
 
   render() {
-
     const { classes } = this.props;
 
     return (
@@ -1380,16 +1567,20 @@ class F212Form extends Component {
           open={this.state.isLoginMenu}
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
-        <div style={{padding:20}}>
+        <div style={{ padding: 20 }}>
           <Grid container justify="space-between">
             <F212FormChangeStatusPopup
               isOpen={this.state.f212FormChangeStatusPopupIsOpen}
               data={this.state.f212FormChangeStatusPopupData}
               applicationStatusMenuItems={this.state.applicationStatusMenuItems}
-              renewalStatusMenuItems={this.state.renewalStatusMenuItems} 
+              renewalStatusMenuItems={this.state.renewalStatusMenuItems}
               examEntryStatusMenuItems={this.state.examEntryStatusMenuItems}
-              courseCompletionStatusMenuItems={this.state.courseCompletionStatusMenuItems}
-              endYearAchievementMenuItems={this.state.endYearAchievementMenuItems} 
+              courseCompletionStatusMenuItems={
+                this.state.courseCompletionStatusMenuItems
+              }
+              endYearAchievementMenuItems={
+                this.state.endYearAchievementMenuItems
+              }
               pathwayMenuItems={this.state.pathwayMenuItems}
               isLoading={this.state.isLoading}
               onFormSubmit={() => this.onChangeStatusFormSubmit}
@@ -1405,9 +1596,11 @@ class F212Form extends Component {
               academicSessionMenuItems={this.state.academicSessionMenuItems}
               preModuleMenuItems={this.state.preModuleMenuItems}
               preCourseMenuItems={this.state.preCourseMenuItems}
-              endYearAchievementMenuItems={this.state.endYearAchievementMenuItems} 
+              endYearAchievementMenuItems={
+                this.state.endYearAchievementMenuItems
+              }
               isLoading={this.state.isLoading}
-              onFormSubmit ={() => this.onStudentAchievementFormSubmit}
+              onFormSubmit={() => this.onStudentAchievementFormSubmit}
               handleOpenSnackbar={this.handleOpenSnackbar}
               f212FormPopupClose={this.f212FormPopupClose}
             />
@@ -1421,24 +1614,28 @@ class F212Form extends Component {
                 variant="h5"
               >
                 UOL Enrolment
-                <span style={{ 
+                <span
+                  style={{
                     float: "right",
                     marginBottom: -6,
-                    marginTop: -12
-                }}>
+                    marginTop: -12,
+                  }}
+                >
                   <Tooltip title="Search Filter">
-                    <IconButton 
-                      onClick={this.handleToggleSearchFilter} 
-                      style={{padding:5,marginTop:10}}
+                    <IconButton
+                      onClick={this.handleToggleSearchFilter}
+                      style={{ padding: 5, marginTop: 10 }}
                     >
-                      <FilterListOutlinedIcon fontSize="default" color="primary" />
+                      <FilterListOutlinedIcon
+                        fontSize="default"
+                        color="primary"
+                      />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Table Filter">
-                    <IconButton 
-                      style={{padding:5,marginTop:10}}
-                      onClick={this.handleToggleTableFilter} 
-                      
+                    <IconButton
+                      style={{ padding: 5, marginTop: 10 }}
+                      onClick={this.handleToggleTableFilter}
                     >
                       <FilterIcon fontSize="default" color="primary" />
                     </IconButton>
@@ -1451,12 +1648,12 @@ class F212Form extends Component {
                   opacity: "0.3",
                 }}
               />
-              <br/>
+              <br />
             </Grid>
             <Grid item xs={12}>
-              <Collapse 
-                in={this.state.showSearchFilter} 
-                timeout="auto" 
+              <Collapse
+                in={this.state.showSearchFilter}
+                timeout="auto"
                 unmountOnExit
               >
                 <Grid container spacing={2}>
@@ -1476,7 +1673,7 @@ class F212Form extends Component {
                     >
                       {this.state.academicSessionMenuItems.map((dt, i) => (
                         <MenuItem
-                          key={"academicSessionMenuItems"+dt.ID}
+                          key={"academicSessionMenuItems" + dt.ID}
                           value={dt.ID}
                         >
                           {dt.Label}
@@ -1484,17 +1681,17 @@ class F212Form extends Component {
                       ))}
                     </TextField>
                   </Grid>
-                  <Grid item xs={12}  md={3}>
-                   <TextField
-                    id="mainPagestudentNucleusId"
-                    name="mainPagestudentNucleusId"
-                    variant="outlined"
-                    label="Student ID"
-                    value={this.state.mainPagestudentNucleusId}
-                    onChange={this.onHandleChange}
-                    defaultValue={""}
-                    fullWidth
-                   />
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      id="mainPagestudentNucleusId"
+                      name="mainPagestudentNucleusId"
+                      variant="outlined"
+                      label="Student ID"
+                      value={this.state.mainPagestudentNucleusId}
+                      onChange={this.onHandleChange}
+                      defaultValue={""}
+                      fullWidth
+                    />
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <TextField
@@ -1512,12 +1709,12 @@ class F212Form extends Component {
                       disabled={!this.state.academicSessionId}
                     >
                       {this.state.programmeGroupsMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"programmeGroupsMenuItems"+dt.Id}
-                            value={dt.Id}
-                          >
-                            {dt.Label}
-                          </MenuItem>
+                        <MenuItem
+                          key={"programmeGroupsMenuItems" + dt.Id}
+                          value={dt.Id}
+                        >
+                          {dt.Label}
+                        </MenuItem>
                       ))}
                     </TextField>
                   </Grid>
@@ -1536,12 +1733,12 @@ class F212Form extends Component {
                       select
                     >
                       {this.state.programmeMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"programmeMenuItems"+dt.ID}
-                            value={dt.ID}
-                          >
-                            {dt.Label}
-                          </MenuItem>
+                        <MenuItem
+                          key={"programmeMenuItems" + dt.ID}
+                          value={dt.ID}
+                        >
+                          {dt.Label}
+                        </MenuItem>
                       ))}
                     </TextField>
                     {/* 
@@ -1576,10 +1773,8 @@ class F212Form extends Component {
                       }
                     </TextField> 
                     */}
-
-                  
                   </Grid>
-                  
+
                   <Grid item xs={12} md={3}>
                     <TextField
                       id="applicationStatusFilterId"
@@ -1595,18 +1790,18 @@ class F212Form extends Component {
                       disabled={!this.state.programmeGroupId}
                     >
                       <MenuItem value={0}>Any</MenuItem>
-                      {this.state.applicationStatusFilterMenuItems ? 
-                        this.state.applicationStatusFilterMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"applicationStatusFilterMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
+                      {this.state.applicationStatusFilterMenuItems
+                        ? this.state.applicationStatusFilterMenuItems.map(
+                            (dt, i) => (
+                              <MenuItem
+                                key={"applicationStatusFilterMenuItems" + dt.id}
+                                value={dt.id}
+                              >
+                                {dt.label}
+                              </MenuItem>
+                            )
+                          )
+                        : ""}
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={2}>
@@ -1624,18 +1819,16 @@ class F212Form extends Component {
                       disabled={!this.state.programmeGroupId}
                     >
                       <MenuItem value={0}>Any</MenuItem>
-                      {this.state.renewalStatusMenuItems ? 
-                        this.state.renewalStatusMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"renewalStatusMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
+                      {this.state.renewalStatusMenuItems
+                        ? this.state.renewalStatusMenuItems.map((dt, i) => (
+                            <MenuItem
+                              key={"renewalStatusMenuItems" + dt.id}
+                              value={dt.id}
+                            >
+                              {dt.label}
+                            </MenuItem>
+                          ))
+                        : ""}
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={4}>
@@ -1653,18 +1846,18 @@ class F212Form extends Component {
                       disabled={!this.state.programmeGroupId}
                     >
                       <MenuItem value={0}>Any</MenuItem>
-                      {this.state.courseCompletionStatusMenuItems ? 
-                        this.state.courseCompletionStatusMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"courseCompletionStatusMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
+                      {this.state.courseCompletionStatusMenuItems
+                        ? this.state.courseCompletionStatusMenuItems.map(
+                            (dt, i) => (
+                              <MenuItem
+                                key={"courseCompletionStatusMenuItems" + dt.id}
+                                value={dt.id}
+                              >
+                                {dt.label}
+                              </MenuItem>
+                            )
+                          )
+                        : ""}
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={3}>
@@ -1682,18 +1875,18 @@ class F212Form extends Component {
                       disabled={!this.state.programmeGroupId}
                     >
                       <MenuItem value={0}>Any</MenuItem>
-                      {this.state.endYearAchievementMenuItems ? 
-                        this.state.endYearAchievementMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"endYearAchievementMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
+                      {this.state.endYearAchievementMenuItems
+                        ? this.state.endYearAchievementMenuItems.map(
+                            (dt, i) => (
+                              <MenuItem
+                                key={"endYearAchievementMenuItems" + dt.id}
+                                value={dt.id}
+                              >
+                                {dt.label}
+                              </MenuItem>
+                            )
+                          )
+                        : ""}
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={3}>
@@ -1711,18 +1904,16 @@ class F212Form extends Component {
                       disabled={!this.state.programmeGroupId}
                     >
                       <MenuItem value={0}>Any</MenuItem>
-                      {this.state.examEntryStatusMenuItems ? 
-                        this.state.examEntryStatusMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"examEntryStatusMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
+                      {this.state.examEntryStatusMenuItems
+                        ? this.state.examEntryStatusMenuItems.map((dt, i) => (
+                            <MenuItem
+                              key={"examEntryStatusMenuItems" + dt.id}
+                              value={dt.id}
+                            >
+                              {dt.label}
+                            </MenuItem>
+                          ))
+                        : ""}
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={3}>
@@ -1740,29 +1931,39 @@ class F212Form extends Component {
                       disabled={!this.state.programmeGroupId}
                     >
                       <MenuItem value={0}>Any</MenuItem>
-                      {this.state.pathwayMenuItems ? 
-                        this.state.pathwayMenuItems.map((dt, i) => (
-                          <MenuItem
-                            key={"pathwayMenuItems"+dt.id}
-                            value={dt.id}
-                          >
-                            {dt.label}
-                          </MenuItem>
-                        ))
-                        :
-                        ""
-                      }
+                      {this.state.pathwayMenuItems
+                        ? this.state.pathwayMenuItems.map((dt, i) => (
+                            <MenuItem
+                              key={"pathwayMenuItems" + dt.id}
+                              value={dt.id}
+                            >
+                              {dt.label}
+                            </MenuItem>
+                          ))
+                        : ""}
                     </TextField>
                   </Grid>
                   <Grid item xs={12} md={1}>
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={ this.state.isLoading || (!this.state.programmeId && this.state.sessionSortOrder>23 && !this.state.mainPagestudentNucleusId) }
+                      disabled={
+                        this.state.isLoading ||
+                        (!this.state.programmeId &&
+                          this.state.sessionSortOrder > 23 &&
+                          !this.state.mainPagestudentNucleusId)
+                      }
                       onClick={() => this.handleGetData()}
-                      style={{width:"100%", height:54, marginBottom:24}}
-                    > 
-                      {this.state.isLoading ? <CircularProgress style={{color:'white'}} size={36}/> : "Search"}
+                      style={{ width: "100%", height: 54, marginBottom: 24 }}
+                    >
+                      {this.state.isLoading ? (
+                        <CircularProgress
+                          style={{ color: "white" }}
+                          size={36}
+                        />
+                      ) : (
+                        "Search"
+                      )}
                     </Button>
                   </Grid>
                   <Divider
@@ -1791,7 +1992,6 @@ class F212Form extends Component {
       </Fragment>
     );
   }
-
 }
 
-export default  withStyles(styles)(F212Form);
+export default withStyles(styles)(F212Form);

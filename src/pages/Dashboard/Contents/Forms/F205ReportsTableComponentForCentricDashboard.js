@@ -1,11 +1,23 @@
 import React, { Component } from "react";
-import { Paper } from "@material-ui/core";
-import { FilteringState, IntegratedFiltering, IntegratedPaging,
-  IntegratedSorting, PagingState, SortingState } from "@devexpress/dx-react-grid";
-import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
 import PropTypes from "prop-types";
+import { Paper } from "@material-ui/core";
+import {
+  FilteringState,
+  IntegratedFiltering,
+  IntegratedPaging,
+  IntegratedSorting,
+  PagingState,
+  SortingState,
+} from "@devexpress/dx-react-grid";
+import {
+  Grid,
+  PagingPanel,
+  Table,
+  TableFilterRow,
+  TableHeaderRow,
+} from "@devexpress/dx-react-grid-material-ui";
 
-class F201FormTableComponentForCentric extends Component {
+class F205ReportsTableComponentForCentricDashboard extends Component {
   constructor(props) {
     super(props);
 
@@ -25,21 +37,20 @@ class F201FormTableComponentForCentric extends Component {
       pageSizes: [5, 10, 15, 20],
       defaultSorting: [],
       sortingStateColumnExtensions: [
-        { columnName: "action", sortingEnabled: false }
+        { columnName: "action", sortingEnabled: false },
+        { columnName: "fileDownload", sortingEnabled: false },
       ],
       tableColumnExtensions: [
-        { columnName: "academicsSessionLabel", wordWrapEnabled: true },
-        { columnName: "programmeGroupLabel", wordWrapEnabled: true },
-        { columnName: "sessionTermLabel", wordWrapEnabled: true },
+        { columnName: "SRNo", width: 100 },
         { columnName: "sectionLabel", wordWrapEnabled: true },
-        { columnName: "noOfAssessment", width: 100, align:"center" },
-        { columnName: "action", width: 100, align:"center"}
+        { columnName: "courseLabel", wordWrapEnabled: true },
+        { columnName: "label", wordWrapEnabled: true },
       ],
       defaultColumnWidths: [],
       resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
-        { columnName: "action", filteringEnabled: false },
+        { columnName: "fileDownload", filteringEnabled: false },
       ],
     };
   }
@@ -61,8 +72,14 @@ class F201FormTableComponentForCentric extends Component {
     return (
       <Paper>
         <Grid rows={rows} columns={columns}>
-          <FilteringState defaultFilters={defaultFilters} columnExtensions={filteringStateColumnExtensions}/>
-          <SortingState defaultSorting={defaultSorting} columnExtensions={sortingStateColumnExtensions}/>
+          <FilteringState
+            defaultFilters={defaultFilters}
+            columnExtensions={filteringStateColumnExtensions}
+          />
+          <SortingState
+            defaultSorting={defaultSorting}
+            columnExtensions={sortingStateColumnExtensions}
+          />
           <PagingState defaultCurrentPage={0} defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
@@ -71,7 +88,7 @@ class F201FormTableComponentForCentric extends Component {
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
-              props.children!="Action" ? (
+              props.children!="Action" && props.children!="Solution" ? (
                 <b>{props.children}</b>
               ) : (
                 <b>&emsp;{props.children}</b>
@@ -86,18 +103,17 @@ class F201FormTableComponentForCentric extends Component {
   }
 }
 
-F201FormTableComponentForCentric.propTypes = {
-  columns: PropTypes.array,
+
+F205ReportsTableComponentForCentricDashboard.propTypes = {
   data: PropTypes.array,
-  showFilter: PropTypes.bool,
+  columns: PropTypes.array,
+  showFilter: PropTypes.bool
+};
 
-
-}
-
-F201FormTableComponentForCentric.defaultProps = {
-  columns: [],
+F205ReportsTableComponentForCentricDashboard.defaultProps = {
   data: [],
-  showFilter: false,
-}
+  columns: [],
+  showFilter: false
+};
 
-export default F201FormTableComponentForCentric;
+export default F205ReportsTableComponentForCentricDashboard;

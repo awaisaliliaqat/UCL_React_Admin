@@ -71,7 +71,7 @@ class ChangeStudentStatus extends Component {
     });
   };
 
-  loadAcademicSessions = async () => {
+  loadAcademicSessions = async (sessionId) => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C05CommonAcademicSessionsView`;
     await fetch(url, {
@@ -91,9 +91,14 @@ class ChangeStudentStatus extends Component {
           if (json.CODE === 1) {
             let array = json.DATA || [];
             // let arrayLength = array.length;
-            let res = array.find( (obj) => obj.isActive === 1 );
-            if(res){
-              this.setState({academicSessionId:res.ID});
+           let res2 = array.find((obj) => obj.ID == sessionId);
+            if (sessionId && res2) {
+              this.setState({ academicSessionId: sessionId });
+            } else {
+              let res = array.find((obj) => obj.isActive === 1);
+              if (res) {
+                this.setState({ academicSessionId: res.ID });
+              }
             }
             this.setState({ academicSessionMenuItems: array });
             
@@ -398,13 +403,32 @@ class ChangeStudentStatus extends Component {
   };
 
   componentDidMount() {
-    this.loadAcademicSessions();
+    this.onLoadAllData();
+    //this.getData();
+  }
+
+  onLoadAllData = async () => {
+    
+
+    const query = new URLSearchParams(this.props.location.search);
+    const studentId = query.get("studentId") || "";
+    const academicSessionId = query.get("academicSessionId") || "";
+
+    await this.loadAcademicSessions(academicSessionId);
     this.getProgrammeGroups();
     this.getSessionData();
     this.getReasonsData();
     this.getOtherReasonsData();
-    
-    //this.getData();
+
+    if (studentId != "") {
+      this.setState(
+        {
+          studentId,
+          studentStatus: 2
+        },
+        () => this.getData()
+      );
+    }
   }
 
   render() {
