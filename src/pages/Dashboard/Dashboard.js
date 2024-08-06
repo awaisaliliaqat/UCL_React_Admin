@@ -196,6 +196,8 @@ import R318EmployeeActivationHistory from "./Contents/Reports/EmployeeActivation
 import F319DefineEmployeeSalaryAllowancesLabelFrom from "./Contents/Forms/DefineEmployeeSalaryAllowancesLabel/F319DefineEmployeeSalaryAllowancesLabelFrom";
 import F320DefineEmployeeSalaryDeductionsLabelFrom from "./Contents/Forms/DefineEmployeeSalaryDeductionsLabel/F320DefineEmployeeSalaryDeductionsLabelFrom";
 import F321DefineEmployeesMonthlySalary from "./Contents/Forms/DefineEmployeesMonthlySalary/F321DefineEmployeesMonthlySalary";
+import F322HourlySheetsForCoordinators from "./Contents/Forms/HourlySheetsForCoordinators/F322HourlySheetsForCoordinators";
+
 
 const drawerWidth = 283;
 
@@ -2761,6 +2763,21 @@ const Dashboard = (props) => {
                 }}
               />
               
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F322HourlySheetForCoordinators"
+                exact
+                path="/dashboard/F322HourlySheetForCoordinators"
+                render={(props) => {
+                  return (
+                    <F322HourlySheetsForCoordinators
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"
