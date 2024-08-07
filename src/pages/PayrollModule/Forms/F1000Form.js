@@ -1344,7 +1344,7 @@ class F1000Form extends Component {
         }
 
         if (name === "appliedFor") {
-            if (value !== 17) {
+            if (value !== 32) {
                 this.setState({
                     aLevelAcademicError: "",
                     aLevelAcademicRecordsArray: [],
@@ -2377,7 +2377,7 @@ class F1000Form extends Component {
         } else {
             checkMedicalError = ""
         }
-        if (this.state.appliedFor === 17) {
+        if (this.state.appliedFor === 32) {
 
             // if (this.state.checkSubjectsGroup19.length <= 0) {
             //     //checkSubjectsGroup19Error = "Please select 1 subject."
@@ -3233,7 +3233,7 @@ class F1000Form extends Component {
             firstNameError = "";
         }
 
-        if (this.state.appliedFor === 11 && !this.state.chessSubDegree) {
+        if (this.state.appliedFor === 8 && !this.state.chessSubDegree) {
             chessSubDegreeError = "Please select degree"
             document.getElementById("chessSubDegree").focus();
             document.body.scrollTop = 0;
@@ -3243,7 +3243,7 @@ class F1000Form extends Component {
             chessSubDegreeError = "";
         }
 
-        if (this.state.appliedFor === 17 && !this.state.yearAlevel) {
+        if (this.state.appliedFor === 32 && !this.state.yearAlevel) {
             yearAlevelError = "Please select A level year"
             document.getElementById("yearAlevel").focus();
             document.body.scrollTop = 0;
@@ -3840,7 +3840,7 @@ class F1000Form extends Component {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        {this.state.appliedFor === 17 && <Grid item xs={12} sm={6}>
+                        {this.state.appliedFor === 32 && <Grid item xs={12} sm={6}>
                             <FormControl error={!!this.state.yearAlevelError} className={classes.formControl}>
                                 <InputLabel htmlFor="yearAlevel">Select Year for ‘A’ Level Admission</InputLabel>
                                 <Select value={this.state.yearAlevel} onChange={this.handleChange} name="yearAlevel" id="yearAlevel">
@@ -3851,7 +3851,7 @@ class F1000Form extends Component {
                         </Grid>
                         }
 
-                        {this.state.appliedFor === 11 && <Grid item xs={12} sm={6}>
+                        {this.state.appliedFor === 8 && <Grid item xs={12} sm={6}>
                             <FormControl error={!!this.state.chessSubDegreeError} className={classes.formControl}>
                                 <InputLabel htmlFor="chessSubDegree">Specify the degree to	transfer after completing  the CHESS</InputLabel>
                                 <Select onChange={this.handleChange} value={this.state.chessSubDegree} name="chessSubDegree" id="chessSubDegree">
