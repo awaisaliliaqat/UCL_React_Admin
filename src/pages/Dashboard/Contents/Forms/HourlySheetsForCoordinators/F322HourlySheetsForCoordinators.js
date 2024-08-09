@@ -13,6 +13,8 @@ import {
   MenuItem,
 } from "@material-ui/core";
 import F322HourlySheetsForCoordinatorsTableComponent from "./chunks/F322HourlySheetsForCoordinatorsTableComponent";
+import { IsEmpty } from "../../../../../utils/helper";
+import BottomBar from "../../../../../components/BottomBar/BottomBar";
 
 const styles = () => ({
   mainContainer: {
@@ -64,17 +66,27 @@ class F322HourlySheetsForCoordinators extends Component {
       programmeGroupId: "",
       programmeGroupIdError: "",
 
+      monthsData: [
+        { id: 1, label: "January" },
+        { id: 2, label: "February" },
+        { id: 3, label: "March" },
+        { id: 4, label: "April" },
+        { id: 5, label: "May" },
+        { id: 6, label: "June" },
+        { id: 7, label: "July" },
+        { id: 8, label: "August" },
+        { id: 9, label: "September" },
+        { id: 10, label: "October" },
+        { id: 11, label: "November" },
+        { id: 12, label: "December" },
+      ],
+      monthsDataLoading: false,
+      monthId: "",
+      monthIdError: "",
+
       expandedGroupsData: [],
 
-      teachersAttendanceSheetData: [
-
-        {teacherLabel: "Abc", subjectLabel: "A", totalSchedules: 5, totalAttended: 5, durationPerSession: 2, totalHours: 10, ratePerHour: 100, totalAmount: 1000 },
-        {teacherLabel: "Abc", subjectLabel: "B", totalSchedules: 6, totalAttended: 4, durationPerSession: 2, totalHours: 8, ratePerHour: 80, totalAmount: 640 },
-        {teacherLabel: "Mnp", subjectLabel: "M", totalSchedules: 7, totalAttended: 7, durationPerSession: 2, totalHours: 14, ratePerHour: 140, totalAmount: 1960 },
-        {teacherLabel: "Xyz", subjectLabel: "Y", totalSchedules: 9, totalAttended: 4, durationPerSession: 1.5, totalHours: 6, ratePerHour: 60, totalAmount: 360 },
-        {teacherLabel: "Xyz", subjectLabel: "Z", totalSchedules: 10, totalAttended: 9, durationPerSession: 2, totalHours: 18, ratePerHour: 180, totalAmount: 3240 }
-
-      ],
+      teachersAttendanceSheetData: [],
     };
   }
   componentDidMount() {
@@ -168,17 +180,6 @@ class F322HourlySheetsForCoordinators extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.setState({ programmeGroupsData: json.DATA });
-
-
-            let myExpandedGroupsData = []; 
-            for(let i=0; i<this.state.teachersAttendanceSheetData.length; i++){
-              myExpandedGroupsData.push(this.state.teachersAttendanceSheetData[i]["teacherLabel"]);
-            }
-
-            this.setState({
-              expandedGroupsData: myExpandedGroupsData
-            })
-
           } else {
             this.handleSnackbar(
               true,
@@ -207,6 +208,74 @@ class F322HourlySheetsForCoordinators extends Component {
         }
       );
     this.setState({ programmeGroupsDataLoading: false });
+  };
+
+  onSearchClick = async (e) => {
+    if (!IsEmpty(e)) {
+      e.preventDefault();
+    }
+
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322TeachersProgrammeGroupAttandance`;
+    var data = new FormData();
+    data.append("academicsSessionId", this.state.academicSessionId);
+    data.append("programmeGroupId", this.state.programmeGroupId);
+    data.append("month", this.state.monthId);
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let array = json.DATA || [];
+
+            let myExpandedGroupsData = [];
+            for (let i = 0; i < array.length; i++) {
+              myExpandedGroupsData.push(array[i]["teacherLabel"]);
+            }
+
+            this.setState({
+              teachersAttendanceSheetData: array,
+              expandedGroupsData: myExpandedGroupsData,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
   };
 
   handleSnackbar = (open, msg, severity) => {
@@ -275,7 +344,7 @@ class F322HourlySheetsForCoordinators extends Component {
 
     const columns = [
       { name: "teacherLabel", title: "Teacher Name" },
-      { name: "subjectLabel", title: "Subjects" },
+      { name: "courseLabel", title: "Subjects" },
       { name: "totalSchedules", title: "Total" },
       { name: "totalAttended", title: "Attended" },
       { name: "durationPerSession", title: "Duration Per Session" },
@@ -301,7 +370,7 @@ class F322HourlySheetsForCoordinators extends Component {
           <Divider className={classes.divider} />
           <br />
           <Grid container justify="left" alignItems="left" spacing={2}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
               <TextField
                 id="academicSessionId"
                 name="academicSessionId"
@@ -323,7 +392,7 @@ class F322HourlySheetsForCoordinators extends Component {
               </TextField>
             </Grid>
             <br />
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
               <TextField
                 id="programmeGroupId"
                 name="programmeGroupId"
@@ -344,7 +413,28 @@ class F322HourlySheetsForCoordinators extends Component {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
+              <TextField
+                id="monthId"
+                name="monthId"
+                variant="outlined"
+                label="Month"
+                onChange={this.onHandleChange}
+                value={this.state.monthId}
+                error={!!this.state.monthIdError}
+                helperText={this.state.monthIdError}
+                required
+                fullWidth
+                select
+              >
+                {this.state.monthsData?.map((item) => (
+                  <MenuItem key={item} value={item.id}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={3}>
               <div className={classes.actions}>
                 <Button
                   variant="contained"
@@ -355,8 +445,10 @@ class F322HourlySheetsForCoordinators extends Component {
                     this.state.academicSessionsDataLoading ||
                     this.state.programmeGroupsDataLoading ||
                     !this.state.academicSessionId ||
-                    !this.state.programmeGroupId
+                    !this.state.programmeGroupId ||
+                    !this.state.monthId
                   }
+                  onClick={(e) => this.onSearchClick(e)}
                 >
                   {" "}
                   {this.state.isLoading ? (
@@ -389,7 +481,10 @@ class F322HourlySheetsForCoordinators extends Component {
           </Grid>
 
           <Grid item xs={12}>
-          <F322HourlySheetsForCoordinatorsTableComponent columns={columns} data={this.state} />
+            <F322HourlySheetsForCoordinatorsTableComponent
+              columns={columns}
+              data={this.state}
+            />
           </Grid>
 
           <CustomizedSnackbar
@@ -398,6 +493,8 @@ class F322HourlySheetsForCoordinators extends Component {
             severity={this.state.snackbarSeverity}
             handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
           />
+
+          <BottomBar left_button_hide right_button_text={"Approve"} />
         </div>
       </Fragment>
     );
