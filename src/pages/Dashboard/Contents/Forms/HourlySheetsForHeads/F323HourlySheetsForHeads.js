@@ -12,9 +12,8 @@ import {
   TextField,
   MenuItem,
 } from "@material-ui/core";
-import F322HourlySheetsForCoordinatorsTableComponent from "./chunks/F322HourlySheetsForCoordinatorsTableComponent";
+import F323HourlySheetsForHeadsTableComponent from "./chunks/F323HourlySheetsForHeadsTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
-import BottomBar from "../../../../../components/BottomBar/BottomBar";
 
 const styles = () => ({
   mainContainer: {
@@ -43,7 +42,7 @@ const styles = () => ({
   },
 });
 
-class F322HourlySheetsForCoordinators extends Component {
+class F323HourlySheetsForHeads extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -98,7 +97,7 @@ class F322HourlySheetsForCoordinators extends Component {
 
   getAcademicSessions = async () => {
     this.setState({ academicSessionsDataLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C323CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -164,7 +163,7 @@ class F322HourlySheetsForCoordinators extends Component {
     });
     let data = new FormData();
     data.append("academicsSessionId", mySessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicsProgrammesGroupsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C323CommonAcademicsProgrammesGroupsView`;
     await fetch(url, {
       method: "POST",
       body: data,
@@ -218,7 +217,7 @@ class F322HourlySheetsForCoordinators extends Component {
     }
 
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322TeachersProgrammeGroupAttandance`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C323EmployeeHourlySheetApprovedView`;
     var data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
     data.append("programmeGroupId", this.state.programmeGroupId);
@@ -256,65 +255,6 @@ class F322HourlySheetsForCoordinators extends Component {
               expandedGroupsData: myExpandedGroupsData,
               isApproved
             });
-          } else {
-            this.handleSnackbar(
-              true,
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
-          }
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            this.handleSnackbar(
-              true,
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  onApproveClick = async (e) => {
-    if (!IsEmpty(e)) {
-      e.preventDefault();
-    }
-
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322TeachersProgrammeGroupAttandanceAprrovalSave`;
-    var data = new FormData();
-    data.append("academicsSessionId", this.state.academicSessionId);
-    data.append("programmeGroupId", this.state.programmeGroupId);
-    data.append("month", this.state.monthId);
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.onSearchClick();
-            this.handleSnackbar(true, "Approved", "success");
           } else {
             this.handleSnackbar(
               true,
@@ -548,7 +488,7 @@ class F322HourlySheetsForCoordinators extends Component {
           </Grid>
 
           <Grid item xs={12}>
-            <F322HourlySheetsForCoordinatorsTableComponent
+            <F323HourlySheetsForHeadsTableComponent
               columns={columns}
               data={this.state}
             />
@@ -560,32 +500,19 @@ class F322HourlySheetsForCoordinators extends Component {
             severity={this.state.snackbarSeverity}
             handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
           />
-
-          <BottomBar
-            left_button_hide
-            right_button_text={this.state.isApproved ? "Approved" : "Approve"}
-            disableRightButton={
-              !this.state.academicSessionId ||
-              !this.state.programmeGroupId ||
-              !this.state.monthId ||
-              this.state.teachersAttendanceSheetData?.length <= 0
-              || this.state.isApproved
-            }
-            bottomRightButtonAction={() => this.onApproveClick()}
-          />
         </div>
       </Fragment>
     );
   }
 }
 
-F322HourlySheetsForCoordinators.propTypes = {
+F323HourlySheetsForHeads.propTypes = {
   classes: PropTypes.object,
   setDrawerOpen: PropTypes.func,
 };
 
-F322HourlySheetsForCoordinators.defaultProps = {
+F323HourlySheetsForHeads.defaultProps = {
   classes: {},
   setDrawerOpen: (fn) => fn,
 };
-export default withStyles(styles)(F322HourlySheetsForCoordinators);
+export default withStyles(styles)(F323HourlySheetsForHeads);
