@@ -370,7 +370,7 @@ class F323HourlySheetsForHeads extends Component {
         <div className={classes.mainContainer}>
           <div className={classes.titleContainer}>
             <Typography className={classes.title} variant="h5">
-              {"Hourly Sheet For Coordinators"}
+              {"Hourly Sheet For Heads"}
               <br />
             </Typography>
           </div>
