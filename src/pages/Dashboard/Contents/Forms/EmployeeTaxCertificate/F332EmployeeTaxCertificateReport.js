@@ -16,6 +16,7 @@ import F332EmployeeTaxCertificateReportTableComponent from "./chunks/F332Employe
 import { IsEmpty } from "../../../../../utils/helper";
 import F331EmployeeMonthlySallaryChallanView from "./F332EmployeeTaxCertificateView";
 import { Link } from "react-router-dom/cjs/react-router-dom";
+import { BorderRadius } from "mdi-material-ui";
 
 const styles = () => ({
   mainContainer: {
@@ -218,10 +219,9 @@ class F332EmployeeTaxCertificateReport extends Component {
     }
 
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonEmployeePayRoleView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C332CommonEmployeePayRoleView`;
     var data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
-    data.append("month", this.state.monthId);
     data.append("employeeId", this.state.employeeObject);
 
     // data.append("programmeGroupId", this.state.programmeGroupId);
@@ -402,24 +402,31 @@ class F332EmployeeTaxCertificateReport extends Component {
       // { name: "backAccount2", title: "Bank 2 Account #" },
       // { name: "hourlyAmount", title: "Hourly Amount" },
       // { name: "monthlyAmount", title: "Monthly Amount" },
+      
+      { name: "totalPayableAmountLabel", title: "Gross Salary" },
       {
         name: "printSalarySlip",
-        title: "Salary Slip",
+        title: "Tax Certificate",
         getCellValue: (rowData) => {
           console.log(this.state);
 
           return (
             <>
-              <Link
-                to={`/dashboard/F331GeneratedSalarySlip/${this.state.academicSessionId}T${this.state.monthId}T${this.state.employeeObject}`}
+              <Link style={{
+                textDecoration:'none',
+                padding: '10px 15px',
+                backgroundColor: "#174A84",
+                color: 'white',
+                BorderRadius: '10px'
+              }}
+                to={`/dashboard/F332GeneratedTaxCertificate/${this.state.academicSessionId}T${this.state.employeeObject}`}
               >
-                Print
+                Generate
               </Link>
             </>
           );
         },
       },
-      { name: "totalPayableAmountLabel", title: "Total Payable Amount" },
     ];
 
     return (
@@ -432,7 +439,7 @@ class F332EmployeeTaxCertificateReport extends Component {
         <div className={classes.mainContainer}>
           <div className={classes.titleContainer}>
             <Typography className={classes.title} variant="h5">
-              {"Employee Salary Slip Report"}
+              {"Employee Tax Certificate "}
               <br />
             </Typography>
           </div>
@@ -505,7 +512,7 @@ class F332EmployeeTaxCertificateReport extends Component {
               </TextField>
             </Grid>
             */}
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <TextField
                 id="monthId"
                 name="monthId"
@@ -525,7 +532,7 @@ class F332EmployeeTaxCertificateReport extends Component {
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <div className={classes.actions}>
                 <Button

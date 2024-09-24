@@ -3019,7 +3019,7 @@ const Dashboard = (props) => {
                 setValue={(value) => handleValueChange(value)}
                 name="F331EmployeeMonthlySallaryChallanView"
                 exact
-                path="/dashboard/F332GeneratedTaxCertificate/"
+                path="/dashboard/F332GeneratedTaxCertificate/:id"
                 // :id
                 render={(props) => {
                   return (

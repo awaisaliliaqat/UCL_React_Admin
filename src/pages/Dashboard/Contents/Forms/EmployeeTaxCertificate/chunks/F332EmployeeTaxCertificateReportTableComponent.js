@@ -31,6 +31,10 @@ const F332EmployeeTaxCertificateReportTableComponent = (props) => {
     { columnName: "hourlyAmount", align: "right" },
     { columnName: "monthlyAmount", align: "right" },
     { columnName: "totalPayableAmountLabel", align: "right" },
+    {
+      columnName: "printSalarySlip", align: 'right'
+      
+    },
   ]);
 
   const [groupSummaryItems] = useState([

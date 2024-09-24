@@ -30,7 +30,7 @@ const F331EmployeeSalarySlipReportTableComponent = (props) => {
     { columnName: "backAccount2", align: "left" },
     { columnName: "hourlyAmount", align: "right" },
     { columnName: "monthlyAmount", align: "right" },
-    { columnName: "totalPayableAmountLabel", align: "right" },
+    { columnName: "totalPayableAmountLabel", align: "left" },
   ]);
 
   const [groupSummaryItems] = useState([

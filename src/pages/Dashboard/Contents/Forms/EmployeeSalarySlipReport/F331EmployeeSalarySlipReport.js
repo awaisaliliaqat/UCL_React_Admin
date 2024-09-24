@@ -362,7 +362,7 @@ class F331EmployeeSalarySlipReport extends Component {
       { name: "userLabel", title: "Employee Name" },
       { name: "departmentsLabel", title: "Department" },
       { name: "designationsLabel", title: "Designation" },
-
+      { name: "totalPayableAmountLabel", title: "Total Payable Amount" },
       // {
       //   name: "paymentThrough",
       //   title: "Payment Through",
@@ -419,7 +419,7 @@ class F331EmployeeSalarySlipReport extends Component {
           );
         },
       },
-      { name: "totalPayableAmountLabel", title: "Total Payable Amount" },
+     
     ];
 
     return (
