@@ -24,6 +24,13 @@ const CurrencyTypeProvider = (props) => (
 );
 
 const F322HourlySheetsForCoordinatorsTableComponent = (props) => {
+  // const filteredColumns = props.columns.filter(
+  //   (column) => column.name !== "totalAmount" && column.name !== "ratePerHour"
+  // );
+  // const updatedData = {
+  //   ...props,
+  //   columns: filteredColumns,
+  // };
   const [tableColumnExtensions] = useState([
     { columnName: "totalSchedules", align: "right" },
     { columnName: "totalAttended", align: "right" },
@@ -31,20 +38,22 @@ const F322HourlySheetsForCoordinatorsTableComponent = (props) => {
     { columnName: "totalHours", align: "right" },
     { columnName: "ratePerHour", align: "right" },
     { columnName: "totalAmount", align: "right" },
+    { columnName: "adjustedHours", align: "right" },
+    { columnName: "netHours", align: "right" },
   ]);
 
   const [tableGroupColumn] = useState([{ columnName: "teacherLabel" }]);
 
   const [groupSummaryItems] = useState([
-    { columnName: "totalHours", type: "sum" },
+    { columnName: "netHours", type: "sum" },
     { columnName: "ratePerHour", type: "avg" },
-    { columnName: "totalAmount", type: "sum" },
+    // { columnName: "totalHours", type: "sum" },
   ]);
 
   const [totalSummaryItems] = useState([
-    { columnName: "totalHours", type: "sum" },
+    { columnName: "netHours", type: "sum" },
     { columnName: "ratePerHour", type: "avg" },
-    { columnName: "totalAmount", type: "sum" },
+    // { columnName: "totalAmount", type: "sum" },
   ]);
 
   const { data, columns } = props;
@@ -65,12 +74,15 @@ const F322HourlySheetsForCoordinatorsTableComponent = (props) => {
         <CurrencyTypeProvider for={currencyColumns} />
         <GroupingState
           defaultGrouping={tableGroupColumn}
-          defaultExpandedGroups = {expandedGroups}
+          defaultExpandedGroups={expandedGroups}
           expandedGroups={expandedGroups}
           onExpandedGroupsChange={onExpandedGroupChange}
           grouping={tableGroupColumn}
         />
-        <SummaryState  totalItems={totalSummaryItems} groupItems={groupSummaryItems} />
+        <SummaryState
+          totalItems={totalSummaryItems}
+          groupItems={groupSummaryItems}
+        />
         <IntegratedGrouping />
         <IntegratedSummary />
         <Table columnExtensions={tableColumnExtensions} />
@@ -98,7 +110,7 @@ F322HourlySheetsForCoordinatorsTableComponent.propTypes = {
 };
 
 F322HourlySheetsForCoordinatorsTableComponent.defaultProps = {
- data: {},
+  data: {},
   columns: [],
   expandedGroups: [],
   showFilter: false,

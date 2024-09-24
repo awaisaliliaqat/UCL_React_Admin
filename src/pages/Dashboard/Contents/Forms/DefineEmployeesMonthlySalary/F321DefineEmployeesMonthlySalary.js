@@ -10,13 +10,15 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Button,
   Paper,
   CircularProgress,
   TextField,
-  MenuItem
+  MenuItem,
 } from "@material-ui/core";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import BottomBar from "../../../../../components/BottomBar/BottomBar";
 
 const styles = () => ({
   table: {
@@ -64,43 +66,73 @@ class F321DefineEmployeesMonthlySalary extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
+      sessionData: [],
+      sessionId: "",
 
       monthId: "",
       monthIdError: "",
       monthsData: [
-        {id: 1, label: "January"},
-        {id: 2, label: "February"},
-        {id: 3, label: "March"},
-        {id: 4, label: "April"},
-        {id: 5, label: "May"},
-        {id: 6, label: "June"},
-        {id: 7, label: "July"},
-        {id: 8, label: "August"},
-        {id: 9, label: "September"},
-        {id: 10, label: "October"},
-        {id: 11, label: "November"},
-        {id: 12, label: "December"},
+        { id: 1, label: "January" },
+        { id: 2, label: "February" },
+        { id: 3, label: "March" },
+        { id: 4, label: "April" },
+        { id: 5, label: "May" },
+        { id: 6, label: "June" },
+        { id: 7, label: "July" },
+        { id: 8, label: "August" },
+        { id: 9, label: "September" },
+        { id: 10, label: "October" },
+        { id: 11, label: "November" },
+        { id: 12, label: "December" },
       ],
       monthsDataLoading: false,
+
+      allowances: [],
+      deductions: [],
 
       isColumnsLoading: false,
       columns: [
         { id: 1, name: "id", title: "ID", colspan: 1 },
         { id: 2, name: "userLabel", title: "Employee", colspan: 1 },
-        { id: 3, name: "payrollMonths", title: "Number of Months", colspan: 1 },
+        // { id: 3, name: "payrollMonths", title: "Number of Months", colspan: 1 },
         {
           id: 4,
           name: "perMonthSalary",
           title: "Per Month Salary",
           colspan: 1,
         },
+
         {
           id: 5,
-          name: "homeRent",
-          title: "Home Rent",
-          colspan: 1,
+          name: "leaveInCashment",
+          title: "Leave Encashment",
+          colspan: 2,
+          subColumns: [
+            {
+              id: 1,
+              label: "Days",
+              isActive: 1,
+            },
+            {
+              id: 2,
+              label: "Amount",
+              isActive: 1,
+            },
+          ],
         },
-        { id: 6, name: "grossSalary", title: "Gross Salary", colspan: 1 },
+        // {
+        //   id: 6,
+        //   name: "",
+        //   title: "Loan",
+        //   colspan: 1,
+        //   subColumns: [
+        //     {
+        //       id: 1,
+        //       label: "Amount",
+        //       isActive: 1,
+        //     },
+        //   ],
+        // },
         {
           id: 7,
           name: "allowances",
@@ -108,6 +140,8 @@ class F321DefineEmployeesMonthlySalary extends Component {
           colspan: 1,
           subColumns: [],
         },
+        { id: 6, name: "grossSalary", title: "Gross Salary", colspan: 1 },
+
         {
           id: 8,
           name: "deductions",
@@ -132,7 +166,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
     this.setState({
       isLoading: true,
     });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C321CommonEmployeesSalaryAllowancesLabelView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonEmployeesSalaryAllowancesLabelView`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -149,12 +183,14 @@ class F321DefineEmployeesMonthlySalary extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
+
             let { columns } = this.state;
             let index = columns.findIndex((item) => item.id == 7);
             columns[index]["subColumns"] = data;
             columns[index]["colspan"] = data.length == 0 ? 1 : data.length;
             this.setState({
               columns,
+              allowances: data,
             });
           } else {
             this.handleSnackbar(
@@ -163,7 +199,6 @@ class F321DefineEmployeesMonthlySalary extends Component {
               "error"
             );
           }
-          console.log(json);
         },
         (error) => {
           if (error.status === 401) {
@@ -213,6 +248,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
             columns[index]["colspan"] = data.length == 0 ? 1 : data.length;
             this.setState({
               columns,
+              deductions: data,
             });
           } else {
             this.handleSnackbar(
@@ -221,7 +257,6 @@ class F321DefineEmployeesMonthlySalary extends Component {
               "error"
             );
           }
-          console.log(json);
         },
         (error) => {
           if (error.status === 401) {
@@ -248,7 +283,101 @@ class F321DefineEmployeesMonthlySalary extends Component {
     this.setState({
       isLoading: true,
     });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C316CommonUsersEmployeesPayrollView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonUsersEmployeesPayrollView`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            const allowances = this.state.allowances.map((item) => ({
+              ...item,
+              allowanceValue: 0,
+            }));
+            const deductions = this.state.deductions.map((item) => ({
+              ...item,
+              deductionValue: 0,
+            }));
+
+            const transformedData = data.map((item) => ({
+              employeeId: item.userId.toString(),
+              userLabel: item.userLabel,
+              payrollMonths: item.payrollMonths,
+              perMonthSalary: Number(item.perMonthSalary) || 0,
+              homeRent: 0,
+              fakeGrossSallary: Number(item.perMonthSalary) || 0,
+              id: item.userId,
+              grossSalary: Number(item.perMonthSalary) || 0,
+              netSalary: Number(item.perMonthSalary) || 0,
+              leaveInCashDays: 0,
+              leaveInCashAmount: 0,
+              loan: 0,
+              leaveInCashment: [
+                {
+                  id: 1,
+                  label: "Days",
+                  isActive: 1,
+                  value: 0,
+                },
+                {
+                  id: 2,
+                  label: "Amount",
+                  isActive: 1,
+                  value: 0,
+                },
+              ],
+              allowances: [...allowances],
+              deductions: [...deductions],
+            }));
+
+            console.log(transformedData);
+            this.setState({
+              employeePayrollsData: transformedData,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
+    });
+  };
+
+  getSessionData = async () => {
+    this.setState({
+      isLoading: true,
+    });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C321CommonAcademicsSessionsView`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -266,7 +395,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
           if (json.CODE === 1) {
             let data = json.DATA || [];
             this.setState({
-              employeePayrollsData: data,
+              sessionData: data,
             });
           } else {
             this.handleSnackbar(
@@ -275,7 +404,6 @@ class F321DefineEmployeesMonthlySalary extends Component {
               "error"
             );
           }
-          console.log(json);
         },
         (error) => {
           if (error.status === 401) {
@@ -303,9 +431,13 @@ class F321DefineEmployeesMonthlySalary extends Component {
     this.setState({
       [name]: value,
     });
+    if (name === "monthId") {
+      this.getData();
+    }
   };
 
   componentDidMount() {
+    this.getSessionData();
     this.loadAllData();
   }
 
@@ -318,12 +450,219 @@ class F321DefineEmployeesMonthlySalary extends Component {
     this.setState({
       isColumnsLoading: false,
     });
-    this.getData();
+    // this.getData();
+  };
+
+  handleAllowanceDeductionChange = (
+    type,
+    employeeIndex,
+    allowanceOrDeductionIndex,
+    value
+  ) => {
+    this.setState((prevState) => {
+      const updatedEmployeePayrollsData = [...prevState.employeePayrollsData];
+      if (type === "allowances" || type === "deductions") {
+        updatedEmployeePayrollsData[employeeIndex][type][
+          allowanceOrDeductionIndex
+        ] = {
+          ...updatedEmployeePayrollsData[employeeIndex][type][
+            allowanceOrDeductionIndex
+          ],
+          [`${type === "allowances" ? "allowanceValue" : "deductionValue"}`]:
+            value ? parseFloat(value) : 0,
+        };
+      } else {
+        updatedEmployeePayrollsData[employeeIndex][type] = value
+          ? parseFloat(value)
+          : 0;
+      }
+
+      const totalAllowances = updatedEmployeePayrollsData[
+        employeeIndex
+      ].allowances.reduce(
+        (acc, allowance) => acc + allowance.allowanceValue,
+        0
+      );
+      const totalDeductions = updatedEmployeePayrollsData[
+        employeeIndex
+      ].deductions.reduce(
+        (acc, deduction) => acc + deduction.deductionValue,
+        0
+      );
+
+      console.log(totalDeductions, totalAllowances);
+
+      updatedEmployeePayrollsData[employeeIndex].grossSalary =
+        Number(updatedEmployeePayrollsData[employeeIndex].fakeGrossSallary) +
+        Number(totalAllowances);
+      updatedEmployeePayrollsData[employeeIndex].netSalary =
+        Number(updatedEmployeePayrollsData[employeeIndex].fakeGrossSallary) +
+        Number(totalAllowances) -
+        Number(totalDeductions);
+
+      return { employeePayrollsData: updatedEmployeePayrollsData };
+    });
+  };
+  handleLeaveEncashmentChange = (
+    type,
+    leaveIndex,
+    allowanceOrDeductionIndex,
+    value
+  ) => {
+    this.setState((prevState) => {
+      const updatedEmployeePayrollsData = [...prevState.employeePayrollsData];
+      const employee = updatedEmployeePayrollsData[leaveIndex];
+
+      if (type === "leaveInCashment") {
+        employee[type][allowanceOrDeductionIndex] = {
+          ...employee[type][allowanceOrDeductionIndex],
+          value: value ? parseFloat(parseFloat(value).toFixed(2)) : 0,
+        };
+
+        const days = parseFloat(employee.leaveInCashment[0].value) || 0;
+        const leaveInCashAmount = (employee.perMonthSalary / 30.5) * days;
+        const leaveIn = parseFloat(leaveInCashAmount.toFixed(0));
+        console.log(leaveIn);
+
+        if (allowanceOrDeductionIndex === 0) {
+          const days = parseFloat(employee.leaveInCashment[0].value) || 0;
+          const leaveInCashAmount = (employee.perMonthSalary / 30.5) * days;
+          const leaveIn = parseFloat(leaveInCashAmount.toFixed(0));
+          console.log(leaveIn);
+          employee.leaveInCashment[1].value = leaveIn;
+          employee.leaveInCashAmount = leaveIn;
+          employee.leaveInCashDays = days;
+        }
+      } else {
+        employee[type] = value ? parseFloat(value) : 0;
+      }
+
+      const totalAllowancesSum = employee.allowances.reduce(
+        (acc, allowance) => acc + (allowance.allowanceValue || 0),
+        0
+      );
+      const totalDeductionsSum = employee.deductions.reduce(
+        (acc, allowance) => acc + (allowance.deductionValue || 0),
+        0
+      );
+
+      const days = parseFloat(employee.leaveInCashment[0].value) || 0;
+      const leaveInCashAmount = (employee.perMonthSalary / 30.5) * days;
+      const leaveIn = parseFloat(leaveInCashAmount.toFixed(0));
+
+      employee.grossSalary = Number(
+        (
+          Number(employee.perMonthSalary) +
+          leaveIn +
+          totalAllowancesSum -
+          totalDeductionsSum
+        ).toFixed(0)
+      );
+
+      employee.netSalary = Number(
+        (
+          Number(employee.perMonthSalary) +
+          leaveIn +
+          totalAllowancesSum -
+          totalDeductionsSum
+        ).toFixed(0)
+      );
+
+      employee.fakeGrossSallary = Number(
+        (Number(employee.perMonthSalary) + leaveIn).toFixed(0)
+      );
+
+      return { employeePayrollsData: updatedEmployeePayrollsData };
+    });
+  };
+
+  onApproveClick = async (e) => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonEmployeesMonthlyPayrollVoucherSave`;
+
+    const result = {
+      sessionId: this.state.sessionId,
+      monthId: this.state.monthId,
+      employeePayrolls: this.state.employeePayrollsData.map((employee) => ({
+        employeeId: employee.employeeId,
+        homeRent: Number(employee.homeRent.toFixed(0)),
+        grossSalary: Number(employee.grossSalary.toFixed(0)),
+        netSalary: Number(employee.netSalary.toFixed(0)),
+        leaveInCashDays: employee.leaveInCashDays,
+        leaveInCashAmount: employee.leaveInCashAmount,
+        allowances: employee.allowances.map((allowance) => ({
+          allowanceId: allowance.id,
+          allowanceValue: Number(allowance.allowanceValue.toFixed(2)),
+        })),
+        deductions: employee.deductions.map((deduction) => ({
+          deductionId: deduction.id,
+          deductionValue: Number(deduction.deductionValue.toFixed(2)),
+        })),
+      })),
+    };
+
+    await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(result),
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+        "Content-Type": "application/json",
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.getData();
+            this.setState({
+              sessionId: "",
+              monthId: "",
+              isLoading: true,
+            });
+
+            this.handleSnackbar(true, "Saved", "success");
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  viewReport = () => {
+    window.location = "#/dashboard/F321DefineEmployeesMonthlySalaryView/0";
   };
 
   render() {
     const { classes } = this.props;
-
+    const { employeePayrollsData } = this.state;
     return (
       <Fragment>
         <LoginMenu
@@ -360,31 +699,86 @@ class F321DefineEmployeesMonthlySalary extends Component {
               marginBottom: 20,
             }}
           />
-          <div>
-            <TextField
-              id="monthId"
-              name="monthId"
-              label="Month"
-              required
-              style={{
-                width: "50%",
-                marginBottom: 20
-              }}
-              variant="outlined"
-              onChange={this.onHandleChange}
-              value={this.state.monthId}
-              helperText={this.state.monthIdError}
-              error={this.state.monthIdError}
-              select
-            >
-              {this.state.monthsData.map((item) => {
-                return (
-                  <MenuItem key={item.id} value={item.id}>
-                    {item.label}
-                  </MenuItem>
-                );
-              })}
-            </TextField>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <TextField
+                id="sessionId"
+                name="sessionId"
+                label="Session"
+                required
+                style={{
+                  width: "300px",
+                  marginBottom: 20,
+                  marginRight: 20,
+                }}
+                variant="outlined"
+                onChange={this.onHandleChange}
+                value={this.state.sessionId}
+                // helperText={this.state.monthIdError}
+                // error={this.state.monthIdError}
+                select
+              >
+                {this.state.sessionData.map((item) => {
+                  return (
+                    <MenuItem key={item.ID} value={item.ID}>
+                      {item.Label}
+                    </MenuItem>
+                  );
+                })}
+              </TextField>
+            </div>
+            <div>
+              <TextField
+                id="monthId"
+                name="monthId"
+                label="Month"
+                disabled={!this.state.sessionId}
+                required
+                style={{
+                  width: "300px",
+                  marginBottom: 20,
+                  marginRight: 20,
+                }}
+                variant="outlined"
+                onChange={this.onHandleChange}
+                value={this.state.monthId}
+                helperText={this.state.monthIdError}
+                error={this.state.monthIdError}
+                select
+              >
+                {this.state.monthsData.map((item) => {
+                  return (
+                    <MenuItem key={item.id} value={item.id}>
+                      {item.label}
+                    </MenuItem>
+                  );
+                })}
+              </TextField>
+            </div>
+            {/* <div className={classes.actions}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                disabled={this.state.isLoading}
+                // onClick={(e) => this.onSearchClick(e)}
+              >
+                {" "}
+                {this.state.isLoading ? (
+                  <CircularProgress style={{ color: "white" }} size={24} />
+                ) : (
+                  "Search"
+                )}
+              </Button>
+            </div> */}
           </div>
           <Divider
             style={{
@@ -393,152 +787,236 @@ class F321DefineEmployeesMonthlySalary extends Component {
               marginBottom: 20,
             }}
           />
-          <TableContainer component={Paper}>
-            {this.state.isColumnsLoading ? (
-              <div className={classes.columnsLoader}>
-                {" "}
-                <CircularProgress />{" "}
-              </div>
-            ) : (
-              <Table
-                stickyHeader
-                className={classes.table}
-                aria-label="spanning table"
-              >
-                <TableHead>
-                  <TableRow>
-                    {this.state.columns?.map((item) => {
-                      return (
-                        <StyledTableCell
-                          colSpan={item.colspan || 1}
-                          className={classes.headerTitle}
-                          key={item}
-                        >
-                          {item.title || "N/A"}
-                        </StyledTableCell>
-                      );
-                    })}
-                  </TableRow>
-                  <TableRow>
-                    {this.state.columns?.map((col) => {
-                      if (col.subColumns && col.subColumns.length > 0) {
-                        return (
-                          <>
-                            {col.subColumns?.map((item) => {
-                              return (
-                                <StyledTableCell
-                                  className={classes.headerTitle}
-                                  key={item}
-                                >
-                                  {item.label || ""}
-                                </StyledTableCell>
-                              );
-                            })}
-                          </>
-                        );
-                      } else {
-                        return <StyledTableCell>{""}</StyledTableCell>;
-                      }
-                    })}
-                  </TableRow>
-                </TableHead>
-                {!this.state.isColumnsLoading && !this.state.isLoading && (
-                  <TableBody>
-                    {this.state.employeePayrollsData?.map((item) => {
+          <TableContainer
+            component={Paper}
+            style={{
+              paddingBottom: "30px",
+            }}
+          >
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow
+                  style={{
+                    border: "1px solid white",
+                  }}
+                >
+                  {this.state.columns?.map((item) => {
+                    console.log(item);
+                    return (
+                      <StyledTableCell
+                        style={{
+                          border: "1px solid white",
+                        }}
+                        colSpan={item.colspan || 1}
+                        className={classes.headerTitle}
+                        key={item}
+                      >
+                        {item.title || "N/A"}
+                      </StyledTableCell>
+                    );
+                  })}
+                </TableRow>
+                <TableRow>
+                  {this.state.columns?.map((col) => {
+                    if (col.subColumns && col.subColumns.length > 0) {
                       return (
                         <>
-                          <StyledTableRow>
-                            {this.state.columns?.map((col) => {
-                              if(col.id == 5){
-                                return (
-                                        <>
-                                          <TableCell>
-                                            <TextField
-                                              size="small"
-                                              type="number"
-                                              placeholder={col.title}
-                                            />
-                                          </TableCell>
-                                        </>
-                                      )
-                              } else if (col.id == 7) {
-                                if(col.subColumns && col.subColumns.length > 0){
-                                return (
-                                  <>
-                                    {col.subColumns?.map((subCol) => {
-                                      return (
-                                        <>
-                                          <TableCell>
-                                            <TextField
-                                              size="small"
-                                              type="number"
-                                              placeholder={subCol.label}
-                                            />
-                                          </TableCell>
-                                        </>
-                                      )
-                                    })}
-                                  </>
-                                )} else {
-                                  return (
-                                    <TableCell>N/A</TableCell>
-                                  )
-                                }
-                              } else if (col.id == 8) {
-                                if(col.subColumns && col.subColumns.length > 0){
-                                return (
-                                  <>
-                                    {col.subColumns?.map((subCol) => {
-                                      return (
-                                        <>
-                                          <TableCell>
-                                            <TextField
-                                              size="small"
-                                              type="number"
-                                              fullWidth
-                                              placeholder={subCol.label}
-                                            />
-                                          </TableCell>
-                                        </>
-                                      );
-                                    })}
-                                  </>
-                                )}  else {
-                                  return (
-                                    <TableCell>N/A</TableCell>
-                                  )
-                                }
-                              } else {
-                                const value = item[col.name] || "0";
-                                return (
-                                  <>
-                                    <TableCell>{value}</TableCell>
-                                  </>
-                                );
-                              }
-                            })}
-                          </StyledTableRow>
+                          {col.subColumns?.map((item) => {
+                            return (
+                              <StyledTableCell
+                                className={classes.headerTitle}
+                                key={item}
+                                style={{
+                                  border: "1px solid white",
+                                }}
+                              >
+                                {item.label || ""}
+                              </StyledTableCell>
+                            );
+                          })}
                         </>
                       );
-                    })}
-                  </TableBody>
-                )}
-              </Table>
-            )}
-            <>
-              {!this.state.isColumnsLoading && this.state.isLoading && (
-                <div className={classes.columnsLoader}>
-                  {" "}
-                  <CircularProgress />{" "}
-                </div>
-              )}
-            </>
+                    } else {
+                      return <StyledTableCell>{""}</StyledTableCell>;
+                    }
+                  })}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {employeePayrollsData.map((employee, employeeIndex) => (
+                  <StyledTableRow key={employee.employeeId}>
+                    <TableCell className={classes.subColumnCell}>
+                      {employee.employeeId}
+                    </TableCell>
+                    <TableCell className={classes.subColumnCell}>
+                      {employee.userLabel}
+                    </TableCell>
+                    {/* <TableCell className={classes.subColumnCell}>
+                      {/* <TextField
+                        size="small"
+                        variant="outlined"
+                        value={ || ""}
+                        onChange={(e) =>
+                          this.handleAllowanceDeductionChange(
+                            "payrollMonths",
+                            employeeIndex,
+                            null,
+                            e.target.value
+                          )
+                        }
+                      />
+
+                      {employee.payrollMonths}
+                    </TableCell> */}
+                    <TableCell className={classes.subColumnCell}>
+                      {employee.perMonthSalary}
+                    </TableCell>
+                    {/* <TableCell className={classes.subColumnCell}>
+                      <TextField
+                        size="small"
+                        type="number"
+                        variant="outlined"
+                        value={employee.leaveInCashDays || ""}
+                        onChange={(e) =>
+                          this.handleAllowanceDeductionChange(
+                            "leaveInCashDays",
+                            employeeIndex,
+                            null,
+                            e.target.value
+                          )
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className={classes.subColumnCell}>
+                      <TextField
+                        size="small"
+                        variant="outlined"
+                        type="number"
+                        value={employee.leaveInCashAmount || ""}
+                        name=""
+                        onChange={(e) =>
+                          this.handleAllowanceDeductionChange(
+                            "leaveInCashAmount",
+                            employeeIndex,
+                            null,
+                            e.target.value
+                          )
+                        }
+                      />
+                    </TableCell> */}
+                    {employee.leaveInCashment.map((leave, leaveIndex) => (
+                      <TableCell
+                        key={`allowance-${leaveIndex}`}
+                        className={classes.subColumnCell}
+                      >
+                        <TextField
+                          size="small"
+                          style={{
+                            width: leave.label === "Days" ? "50px" : "100px",
+                          }}
+                          variant="outlined"
+                          value={leave.value}
+                          disabled={leave.label === "Amount"}
+                          onChange={(e) =>
+                            this.handleLeaveEncashmentChange(
+                              "leaveInCashment",
+                              employeeIndex,
+                              leaveIndex,
+                              Math.max(0, parseFloat(e.target.value) || 0)
+                            )
+                          }
+                        />
+                      </TableCell>
+                    ))}
+
+                    {employee.allowances.length > 0 ? (
+                      employee.allowances.map((allowance, allowanceIndex) => (
+                        <TableCell
+                          key={`allowance-${allowanceIndex}`}
+                          className={classes.subColumnCell}
+                        >
+                          <TextField
+                            size="small"
+                            variant="outlined"
+                            style={{
+                              width: "100px",
+                            }}
+                            value={allowance.allowanceValue}
+                            onChange={(e) =>
+                              this.handleAllowanceDeductionChange(
+                                "allowances",
+                                employeeIndex,
+                                allowanceIndex,
+                                e.target.value
+                              )
+                            }
+                          />
+                        </TableCell>
+                      ))
+                    ) : (
+                      <TableCell className={classes.subColumnCell}>
+                        N/A
+                      </TableCell>
+                    )}
+                    <TableCell className={classes.subColumnCell}>
+                      {employee.grossSalary}
+                    </TableCell>
+                    {employee.deductions.length > 0 ? (
+                      employee.deductions.map((deduction, deductionIndex) => (
+                        <TableCell
+                          key={`deduction-${deductionIndex}`}
+                          className={classes.subColumnCell}
+                        >
+                          <TextField
+                            size="small"
+                            variant="outlined"
+                            value={deduction.deductionValue}
+                            style={{
+                              width: "100px",
+                            }}
+                            onChange={(e) =>
+                              this.handleAllowanceDeductionChange(
+                                "deductions",
+                                employeeIndex,
+                                deductionIndex,
+                                e.target.value
+                              )
+                            }
+                          />
+                        </TableCell>
+                      ))
+                    ) : (
+                      <TableCell className={classes.subColumnCell}>
+                        N/A
+                      </TableCell>
+                    )}
+                    <TableCell className={classes.subColumnCell}>
+                      {employee.netSalary}
+                    </TableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
           </TableContainer>
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}
             severity={this.state.snackbarSeverity}
             handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
+          />
+        </div>
+
+        <div>
+          <BottomBar
+            // left_button_hide
+            left_button_text="View"
+            left_button_hide={false}
+            bottomLeftButtonAction={this.viewReport}
+            right_button_text={this.state.isApproved ? "Saved" : "Save"}
+            loading={this.state.isLoading}
+            isDrawerOpen={this.props.isDrawerOpen}
+            disableRightButton={!this.state.sessionId || !this.state.monthId}
+            bottomRightButtonAction={() => this.onApproveClick()}
           />
         </div>
       </Fragment>

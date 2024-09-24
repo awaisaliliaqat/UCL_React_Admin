@@ -198,7 +198,26 @@ import F320DefineEmployeeSalaryDeductionsLabelFrom from "./Contents/Forms/Define
 import F321DefineEmployeesMonthlySalary from "./Contents/Forms/DefineEmployeesMonthlySalary/F321DefineEmployeesMonthlySalary";
 import F322HourlySheetsForCoordinators from "./Contents/Forms/HourlySheetsForCoordinators/F322HourlySheetsForCoordinators";
 import F323HourlySheetsForHeads from "./Contents/Forms/HourlySheetsForHeads/F323HourlySheetsForHeads";
-
+// import F324HourlySheetsForHOD from "./Contents/Forms/HourlySheetsForHOD/F324HourlySheetsForHOD";
+import F322HourlySheetReportForCoordinator from "./Contents/Forms/HourlySheetsForCoordinators/Report/F322HourlySheetReportForCoordinator";
+import F324HourlySheetsForHOD from "./Contents/Forms/HourlySheetsForHOD/F324HourlySheetReportForHOD";
+import F322ViewRecordForCoordinators from "./Contents/Forms/HourlySheetsForCoordinators/View/F322ViewRecordForCoordinators";
+import F324ViewRecordForHOD from "./Contents/Forms/HourlySheetsForHOD/View/F324ViewRecordForHOD";
+import F323HourlySheetsForHead from "./Contents/Forms/HourlySheetsForHeads/F323HourlySheetReportForHead";
+import F323ViewRecordForHead from "./Contents/Forms/HourlySheetsForHeads/View/F323ViewRecordForHead";
+import R325PaidStudentList from "./Contents/Decision/R325PaidStudentList/R325PaidStudentList";
+import F326ConsolitdatedSheetsForDirector from "./Contents/Forms/ConsolidatedSheetForDirector/F326ConsolitdatedSheetsForDirector";
+import F321DefineEmployeesMonthlySalaryView from "./Contents/Forms/DefineEmployeesMonthlySalary/F321DefineEmployeesMonthlySalaryView/F321DefineEmployeesMonthlySalaryView";
+import R327UploadedFeeVoucher from "./Contents/Decision/R327UploadedFeeVoucher/R327UploadedFeeVoucher";
+import F327DefineEmployeesLoan from "./Contents/Forms/StudentLoanRequest/F327DefineEmployeesLoan";
+import R327EmployeesLoanView from "./Contents/Forms/StudentLoanRequest/R327EmployeesLoanView";
+import R328EmployeesLoanApprovalReview from "./Contents/Forms/LoanRecommendationReport/R328EmployeesLoanApprovalReview";
+import R329EmployeesLoanApprovalReview from "./Contents/Forms/LoanApprovalReview/R329EmployeesLoanApprovalReview";
+import F330ConsolitdatedSheetsForPayroll from "./Contents/Forms/ConsolidatedSheetForPayroll/F330ConsolitdatedSheetsForPayroll";
+import F331EmployeeSalarySlipReport from "./Contents/Forms/EmployeeSalarySlipReport/F331EmployeeSalarySlipReport";
+import F331EmployeeMonthlySallaryChallanView from "./Contents/Forms/EmployeeSalarySlipReport/F331EmployeeMonthlySallaryChallanView";
+import F332EmployeeTaxCertificateView from "./Contents/Forms/EmployeeTaxCertificate/F332EmployeeTaxCertificateView";
+import F332EmployeeTaxCertificateReport from "./Contents/Forms/EmployeeTaxCertificate/F332EmployeeTaxCertificateReport";
 
 const drawerWidth = 283;
 
@@ -488,6 +507,38 @@ const Dashboard = (props) => {
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="F324ViewRecordData"
+                exact
+                path="/dashboard/F324ViewRecordData/:recordId"
+                render={(props) => {
+                  return (
+                    <F324ViewRecordForHOD
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F323ViewRecordData"
+                exact
+                path="/dashboard/F323ViewRecordData/:recordId"
+                render={(props) => {
+                  return (
+                    <F323ViewRecordForHead
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="F308DefineEmployeeRolesFrom"
                 exact
                 path="/dashboard/F308DefineEmployeeRolesFrom/:recordId"
@@ -569,6 +620,52 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F06Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F322Reports"
+                exact
+                path="/dashboard/F322Reports"
+                render={(props) => {
+                  return (
+                    <F322HourlySheetReportForCoordinator
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F322ViewRecordData"
+                exact
+                path="/dashboard/F322ViewRecordData/:recordId"
+                render={(props) => {
+                  return (
+                    <F322ViewRecordForCoordinators
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F324Reports"
+                exact
+                path="/dashboard/F324HourlySheetsForHOD"
+                render={(props) => {
+                  return (
+                    <F324HourlySheetsForHOD
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -1518,6 +1615,21 @@ const Dashboard = (props) => {
                 path="/dashboard/R303Due-Tuition-Fee"
                 component={R303DueTuitionFee}
               />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R327Uploaded-Fee-Voucher"
+                exact
+                path="/dashboard/R327Uploaded-Fee-Voucher/:id"
+                component={R327UploadedFeeVoucher}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R325Paid-Student-List"
+                exact
+                path="/dashboard/R325Paid-Student-List"
+                component={R325PaidStudentList}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="tuition-fee-approval"
@@ -1578,6 +1690,21 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F327DefineEmployeesLoan"
+                exact
+                path="/dashboard/F327DefineEmployeesLoan/:id"
+                render={(props) => {
+                  return (
+                    <F327DefineEmployeesLoan
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="R316EmployeesPayrollView"
@@ -1586,6 +1713,20 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R316EmployeesPayrollView
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R327EmployeesLoanView"
+                exact
+                path="/dashboard/R327EmployeesLoanView"
+                render={(props) => {
+                  return (
+                    <R327EmployeesLoanView
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                     />
@@ -2639,7 +2780,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F205ReportsForCentricDashboard"
@@ -2715,7 +2856,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F319DefineEmployeeSalaryAllowanceLabelsFrom"
@@ -2731,7 +2872,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F320DefineEmployeeSalaryDeductionLabelsFrom"
@@ -2747,7 +2888,7 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F321DefineEmployeesMonthlySalary"
@@ -2763,7 +2904,23 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F321DefineEmployeesMonthlySalaryView"
+                exact
+                path="/dashboard/F321DefineEmployeesMonthlySalaryView/:id"
+                render={(props) => {
+                  return (
+                    <F321DefineEmployeesMonthlySalaryView
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F322HourlySheetForCoordinators"
@@ -2779,15 +2936,14 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="F323HourlySheetForHeads"
+                name="R326ConsolidatedHourlySheetForDirector"
                 exact
-                path="/dashboard/F323HourlySheetForHeads"
+                path="/dashboard/R326ConsolidatedHourlySheetForDirector"
                 render={(props) => {
                   return (
-                    <F323HourlySheetsForHeads
+                    <F326ConsolitdatedSheetsForDirector
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -2795,7 +2951,151 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F330ConsolitdatedSheetsForPayroll"
+                exact
+                path="/dashboard/F330ConsolitdatedSheetsForPayroll"
+                render={(props) => {
+                  return (
+                    <F330ConsolitdatedSheetsForPayroll
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F331EmployeeSalarySlipReport"
+                exact
+                path="/dashboard/F331EmployeeSalarySlipReport"
+                render={(props) => {
+                  return (
+                    <F331EmployeeSalarySlipReport
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F332EmployeeTaxCertificateReport"
+                exact
+                path="/dashboard/F332EmployeeTaxCertificateReport"
+                render={(props) => {
+                  return (
+                    <F332EmployeeTaxCertificateReport
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F331EmployeeMonthlySallaryChallanView"
+                exact
+                path="/dashboard/F331GeneratedSalarySlip/:id"
+                render={(props) => {
+                  return (
+                    <F331EmployeeMonthlySallaryChallanView
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F331EmployeeMonthlySallaryChallanView"
+                exact
+                path="/dashboard/F332GeneratedTaxCertificate/"
+                // :id
+                render={(props) => {
+                  return (
+                    <F332EmployeeTaxCertificateView
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              {/* <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F324HourlySheetsForHOD"
+                exact
+                path="/dashboard/F324HourlySheetsForHOD"
+                render={(props) => {
+                  return (
+                    <F324HourlySheetsForHOD
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              /> */}
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F323HourlySheetForHeads"
+                exact
+                path="/dashboard/F323HourlySheetForDirector"
+                render={(props) => {
+                  return (
+                    <F323HourlySheetsForHead
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F323HourlySheetForHeads"
+                exact
+                path="/dashboard/F329EmployeesLoanApproval"
+                render={(props) => {
+                  return (
+                    <R329EmployeesLoanApprovalReview
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F323HourlySheetForHeads"
+                exact
+                path="/dashboard/F328EmployeesLoanRecommendation"
+                render={(props) => {
+                  return (
+                    <R328EmployeesLoanApprovalReview
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="home"

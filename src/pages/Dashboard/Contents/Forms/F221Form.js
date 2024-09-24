@@ -210,7 +210,6 @@ class F221Form extends Component {
         els3[i].checked = false;
       }
     }
-    console.log(e.target.checked == true);
   };
   onAllClick = () => {
     var els = document.getElementsByName("promote");
@@ -230,20 +229,17 @@ class F221Form extends Component {
   };
   onCheckClickB = (index) => {
     // this.saveButtonValidate();
-    console.log(document.getElementById("widthdrawn" + index));
     document.getElementById("widthdrawn" + index).checked = false;
     document.getElementById("graduate" + index).checked = false;
   };
   onCheckClickA = (index) => {
     // this.saveButtonValidate();
-    console.log(document.getElementById("promote" + index));
     document.getElementById("promote" + index).checked = false;
     document.getElementById("graduate" + index).checked = false;
   };
 
   onCheckClickGraduate = (index) => {
     // this.saveButtonValidate();
-    console.log(document.getElementById("widthdrawn" + index));
     document.getElementById("promote" + index).checked = false;
     document.getElementById("widthdrawn" + index).checked = false;
   };
@@ -294,7 +290,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadAcademicSessions", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -303,7 +298,6 @@ class F221Form extends Component {
               isReload: false,
             });
           } else {
-            console.log(error);
             this.handleOpenSnackbar(
               "Failed to fetch ! Please try Again later.",
               "error"
@@ -356,7 +350,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadAcademicSessions", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -365,7 +358,6 @@ class F221Form extends Component {
               isReload: false,
             });
           } else {
-            console.log(error);
             this.handleOpenSnackbar(
               "Failed to fetch ! Please try Again later.",
               "error"
@@ -399,14 +391,14 @@ class F221Form extends Component {
         return res.json();
       })
       .then(
-       async (json) => {
+        async (json) => {
           if (json.CODE === 1) {
             this.setState({
               programmeGroupsMenuItems: json.DATA || [],
               programmeGroupId: programmeGroupId || "",
             });
-            if(programmeGroupId){
-             await this.loadProgrammes(programmeGroupId, programmeId);
+            if (programmeGroupId) {
+              await this.loadProgrammes(programmeGroupId, programmeId);
             }
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
@@ -419,7 +411,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadSections", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -433,7 +424,6 @@ class F221Form extends Component {
               "Failed to fetch, Please try again later.",
               "error"
             );
-            console.log(error);
           }
         }
       );
@@ -475,7 +465,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadSections", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -489,7 +478,6 @@ class F221Form extends Component {
               "Failed to fetch, Please try again later.",
               "error"
             );
-            console.log(error);
           }
         }
       );
@@ -517,7 +505,10 @@ class F221Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ programmeMenuItems: json.DATA || [], programmeId: programmeId || "" });
+            this.setState({
+              programmeMenuItems: json.DATA || [],
+              programmeId: programmeId || "",
+            });
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(
@@ -529,7 +520,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadProgrammes", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -543,7 +533,6 @@ class F221Form extends Component {
               "Failed to fetch, Please try again later.",
               "error"
             );
-            console.log(error);
           }
         }
       );
@@ -584,7 +573,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("newProgrammeMenuItems", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -598,7 +586,6 @@ class F221Form extends Component {
               "Failed to fetch, Please try again later.",
               "error"
             );
-            console.log(error);
           }
         }
       );
@@ -637,7 +624,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadApplicationStatusFilter", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -651,7 +637,6 @@ class F221Form extends Component {
               "Failed to fetch, Please try again later.",
               "error"
             );
-            console.log(error);
           }
         }
       );
@@ -688,7 +673,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadApplicationStatus", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -739,7 +723,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadRenewalStatus", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -790,7 +773,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadExamEntryStatus", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -840,7 +822,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadCourseCompletionStatus", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -890,7 +871,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadEndYearAchievement", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -941,7 +921,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadPathway", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -991,7 +970,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadModules", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -1040,7 +1018,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadProgrammeCourses", json);
         },
         (error) => {
           if (error.status == 401) {
@@ -1188,7 +1165,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log("loadData", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -1426,7 +1402,6 @@ class F221Form extends Component {
       var countWithDraw = 0;
       var countGraduated = 0;
       for (var i = 0, len = students.length; i < len; i++) {
-        console.log("isPromoted[i]", isPromoted[i]);
         // console.log("isPromoted[i]",isPromoted[i]);
         var isPromte = isPromoted[i].checked;
         var isWithdr = isWithdrawn[i].checked;
@@ -1542,7 +1517,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log(json);
         },
         (error) => {
           if (error.status == 401) {
@@ -1551,7 +1525,6 @@ class F221Form extends Component {
               isReload: false,
             });
           } else {
-            console.log(error);
             this.handleOpenSnackbar(
               "Failed to Save ! Please try Again later.",
               "error"
@@ -1748,7 +1721,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log(json);
         },
         (error) => {
           if (error.status == 401) {
@@ -1757,7 +1729,6 @@ class F221Form extends Component {
               isReload: false,
             });
           } else {
-            console.log(error);
             this.handleOpenSnackbar(
               "Failed to Save ! Please try Again later.",
               "error"
@@ -1825,7 +1796,6 @@ class F221Form extends Component {
               "error"
             );
           }
-          console.log(json);
         },
         (error) => {
           if (error.status == 401) {
@@ -1834,7 +1804,6 @@ class F221Form extends Component {
               isReload: false,
             });
           } else {
-            console.log(error);
             this.handleOpenSnackbar(
               "Failed to Save ! Please try Again later.",
               "error"

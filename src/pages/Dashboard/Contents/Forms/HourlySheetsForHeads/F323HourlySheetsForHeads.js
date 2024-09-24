@@ -87,7 +87,7 @@ class F323HourlySheetsForHeads extends Component {
 
       teachersAttendanceSheetData: [],
 
-      isApproved: false
+      isApproved: false,
     };
   }
   componentDidMount() {
@@ -246,14 +246,14 @@ class F323HourlySheetsForHeads extends Component {
             }
 
             let isApproved = false;
-            if(array.length > 0){
+            if (array.length > 0) {
               isApproved = array[0]["isApproved"] || false;
             }
 
             this.setState({
               teachersAttendanceSheetData: array,
               expandedGroupsData: myExpandedGroupsData,
-              isApproved
+              isApproved,
             });
           } else {
             this.handleSnackbar(
@@ -370,7 +370,7 @@ class F323HourlySheetsForHeads extends Component {
         <div className={classes.mainContainer}>
           <div className={classes.titleContainer}>
             <Typography className={classes.title} variant="h5">
-              {"Hourly Sheet For Heads"}
+              {"Hourly Sheet For Director"}
               <br />
             </Typography>
           </div>

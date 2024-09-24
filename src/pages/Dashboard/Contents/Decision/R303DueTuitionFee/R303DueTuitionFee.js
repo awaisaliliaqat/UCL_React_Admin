@@ -75,7 +75,10 @@ class R303DueTuitionFee extends Component {
       pathwayId: "",
       pathwayIdError: "",
 
-      isActiveMenuItems: [{id: 1, label: "Active"}, { id: 0, label: "Inactive"}],
+      isActiveMenuItems: [
+        { id: 1, label: "Active" },
+        { id: 0, label: "Inactive" },
+      ],
       isActive: 1,
       isActiveError: "",
     };
@@ -184,13 +187,16 @@ class R303DueTuitionFee extends Component {
           if (json.CODE === 1) {
             let array = json.DATA || [];
             // let arrayLength = array.length;
+            let resData = array.filter((obj) => obj.isActive === 1);
+
+            console.log();
             let res = array.find((obj) => obj.isActive === 1);
             if (res) {
               this.setState({ academicSessionId: res.ID }, () =>
                 this.getData()
               );
             }
-            this.setState({ academicSessionMenuItems: array });
+            this.setState({ academicSessionMenuItems: resData });
           } else {
             this.handleOpenSnackbar(
               <span>
@@ -221,7 +227,7 @@ class R303DueTuitionFee extends Component {
   };
 
   onClearFilters = () => {
-const {academicSessionMenuItems=[] } = this.state;
+    const { academicSessionMenuItems = [] } = this.state;
 
     let res = academicSessionMenuItems.find((obj) => obj.isActive === 1);
     let sessionId = 0;
@@ -229,35 +235,38 @@ const {academicSessionMenuItems=[] } = this.state;
       sessionId = res.ID;
     }
 
-    this.setState({
-      academicSessionId: sessionId,
-      academicSessionIdError: "",
-      academicsDataLoading: false,
+    this.setState(
+      {
+        academicSessionId: sessionId,
+        academicSessionIdError: "",
+        academicsDataLoading: false,
 
-      schoolId: "",
-      schoolIdError: "",
-      
-      programmeGroupId: "",
-      programmeGroupIdError: "",
-      programmeGroupsMenuItems: [],
-      
-      programmeId: "",
-      programmeIdError: "",
-      programmeMenuItems: [],
-      
-      programId: "",
-      programIdError: "",
-      
-      coursesMenuItems: [],
-      courseObject: {},
-      courseObjectError: "",
-      
-      pathwayId: "",
-      pathwayIdError: "",
+        schoolId: "",
+        schoolIdError: "",
 
-      isActive: 1,
-      isActiveError: "",
-    }, () => this.getData());
+        programmeGroupId: "",
+        programmeGroupIdError: "",
+        programmeGroupsMenuItems: [],
+
+        programmeId: "",
+        programmeIdError: "",
+        programmeMenuItems: [],
+
+        programId: "",
+        programIdError: "",
+
+        coursesMenuItems: [],
+        courseObject: {},
+        courseObjectError: "",
+
+        pathwayId: "",
+        pathwayIdError: "",
+
+        isActive: 1,
+        isActiveError: "",
+      },
+      () => this.getData()
+    );
   };
 
   handleDateChange = (date) => {

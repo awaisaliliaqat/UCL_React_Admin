@@ -330,7 +330,13 @@ class EditStudentInformation extends Component {
         name: "Name",
         renderer: (rowData) => {
           return (
-            <Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>
+            <Fragment>{`${rowData.firstName} ${
+              rowData.middleName !== null &&
+              rowData.middleName !== "" &&
+              rowData.middleName !== false
+                ? rowData.middleName
+                : ""
+            } ${rowData.lastName}`}</Fragment>
           );
         },
         sortable: false,

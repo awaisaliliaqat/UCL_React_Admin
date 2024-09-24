@@ -15,6 +15,7 @@ import {
 import F322HourlySheetsForCoordinatorsTableComponent from "./chunks/F322HourlySheetsForCoordinatorsTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
+import ViewTableRecord from "../../../../../components/EditDeleteTableRecord/ViewTableRecord";
 
 const styles = () => ({
   mainContainer: {
@@ -88,7 +89,7 @@ class F322HourlySheetsForCoordinators extends Component {
 
       teachersAttendanceSheetData: [],
 
-      isApproved: false
+      isApproved: false,
     };
   }
   componentDidMount() {
@@ -241,20 +242,29 @@ class F322HourlySheetsForCoordinators extends Component {
           if (json.CODE === 1) {
             let array = json.DATA || [];
 
+            array = array.map((item) => {
+              return {
+                ...item,
+                adjustedHours: 0,
+                netHours: item.totalHours,
+                adjustedRemarks: "",
+              };
+            });
+
             let myExpandedGroupsData = [];
             for (let i = 0; i < array.length; i++) {
               myExpandedGroupsData.push(array[i]["teacherLabel"]);
             }
 
             let isApproved = false;
-            if(array.length > 0){
+            if (array.length > 0) {
               isApproved = array[0]["isApproved"] || false;
             }
 
             this.setState({
               teachersAttendanceSheetData: array,
               expandedGroupsData: myExpandedGroupsData,
-              isApproved
+              isApproved,
             });
           } else {
             this.handleSnackbar(
@@ -293,15 +303,102 @@ class F322HourlySheetsForCoordinators extends Component {
 
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322TeachersProgrammeGroupAttandanceAprrovalSave`;
-    var data = new FormData();
-    data.append("academicsSessionId", this.state.academicSessionId);
-    data.append("programmeGroupId", this.state.programmeGroupId);
-    data.append("month", this.state.monthId);
+    // var data = new FormData();
+    const groupedData = this.state.teachersAttendanceSheetData.reduce(
+      (acc, current) => {
+        const { teacherId, payRollId } = current;
+
+        let teacher = acc.find(
+          (item) => item.teacherId === teacherId && item.payRollId === payRollId
+        );
+
+        if (!teacher) {
+          teacher = {
+            teacherId,
+            payRollId,
+            payRollDetail: [],
+          };
+          acc.push(teacher);
+        }
+
+        const payRollDetail = {
+          courseId: current.courseId,
+          totalScheduled: current.totalSchedules,
+          totalAttended: current.totalAttended,
+          durationPerSession: current.durationPerSession,
+          totalHours: current.totalHours,
+          ratePerHour: current.ratePerHour,
+          totalAmount: current.totalAmount,
+          adjustedHours: Number(current.adjustedHours),
+          netHoursAfterAdjustmentHours: Number(current.netHours),
+          adjustmentRemarks: current.adjustedRemarks,
+        };
+
+        teacher.payRollDetail.push(payRollDetail);
+        return acc;
+      },
+      []
+    );
+
+    const data = {
+      academicsSessionId: this.state.academicSessionId,
+      programmeGroupId: this.state.programmeGroupId,
+      month: this.state.monthId,
+      teachers: [...groupedData],
+    };
+
+    console.log(data, "data is coming");
+    // data.append("academicsSessionId", this.state.academicSessionId);
+    // data.append("programmeGroupId", this.state.programmeGroupId);
+    // data.append("month", this.state.monthId);
+    // for (let i = 0; i <= this.state.teachersAttendanceSheetData; i++) {
+    //   data.append(
+    //     "courseId",
+    //     this.state.teachersAttendanceSheetData[i].courseId
+    //   );
+    //   data.append(
+    //     "totalScheduled",
+    //     this.state.teachersAttendanceSheetData[i].totalScheduled
+    //   );
+    //   data.append(
+    //     "totalAttended",
+    //     this.state.teachersAttendanceSheetData[i].totalAttended
+    //   );
+    //   data.append(
+    //     "durationPerSession",
+    //     this.state.teachersAttendanceSheetData[i].durationPerSession
+    //   );
+    //   data.append(
+    //     "totalHours",
+    //     this.state.teachersAttendanceSheetData[i].totalHours
+    //   );
+    //   data.append(
+    //     "ratePerHour",
+    //     this.state.teachersAttendanceSheetData[i].ratePerHour
+    //   );
+    //   data.append(
+    //     "totalAmount",
+    //     this.state.teachersAttendanceSheetData[i].totalAmount
+    //   );
+    //   data.append(
+    //     "adjustedHours",
+    //     this.state.teachersAttendanceSheetData[i].adjustedHours
+    //   );
+    //   data.append(
+    //     "netHoursAfterAdjustmentHours",
+    //     this.state.teachersAttendanceSheetData[i].netHours
+    //   );
+    //   data.append(
+    //     "adjustmentRemarks",
+    //     this.state.teachersAttendanceSheetData[i].adjustedRemarks
+    //   );
+    // }
     await fetch(url, {
       method: "POST",
-      body: data,
+      body: JSON.stringify(data),
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+        "Content-Type": "application/json",
       }),
     })
       .then((res) => {
@@ -351,6 +448,9 @@ class F322HourlySheetsForCoordinators extends Component {
       snackbarMessage: msg,
       snackbarSeverity: severity,
     });
+  };
+  viewReport = () => {
+    window.location = "#/dashboard/F322Reports";
   };
 
   onClearAllData = () => {
@@ -406,6 +506,36 @@ class F322HourlySheetsForCoordinators extends Component {
     });
   };
 
+  handleRatePerHourChange = (value, rowData) => {
+    const { courseId } = rowData;
+    const updatedData = this.state.teachersAttendanceSheetData.map((item) =>
+      item.courseId === courseId
+        ? {
+            ...item,
+            adjustedHours: value,
+            netHours: (parseFloat(value) || 0) + item.totalHours,
+          }
+        : item
+    );
+    this.setState({
+      teachersAttendanceSheetData: updatedData,
+    });
+  };
+  handleAdjustedHourChange = (value, rowData) => {
+    const { courseId } = rowData;
+    const updatedData = this.state.teachersAttendanceSheetData.map((item) =>
+      item.courseId === courseId
+        ? {
+            ...item,
+            adjustedRemarks: value,
+          }
+        : item
+    );
+    this.setState({
+      teachersAttendanceSheetData: updatedData,
+    });
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -416,8 +546,68 @@ class F322HourlySheetsForCoordinators extends Component {
       { name: "totalAttended", title: "Attended" },
       { name: "durationPerSession", title: "Duration Per Session" },
       { name: "totalHours", title: "Total Hours" },
-      { name: "ratePerHour", title: "Rate Per Hour" },
-      { name: "totalAmount", title: "Total Amount" },
+
+      // { name: "totalHours", title: "Adjustment Hours" },
+      // { name: "totalHours", title: "Net Hours" },
+      // { name: "totalHours", title: "Adjustment Remarks" },
+
+      {
+        name: "adjustedHours",
+        title: "Adjusted Hours",
+        getCellValue: (rowData) => {
+          console.log(rowData);
+
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              name="adjustedHours"
+              disabled={
+                !this.state.academicSessionId ||
+                !this.state.programmeGroupId ||
+                !this.state.monthId ||
+                this.state.teachersAttendanceSheetData?.length <= 0 ||
+                this.state.isApproved
+              }
+              type="number"
+              value={rowData.adjustedHours || ""}
+              onChange={(event) =>
+                this.handleRatePerHourChange(event.target.value, rowData)
+              }
+            />
+          );
+        },
+      },
+
+      { name: "netHours", title: "Net Hours" },
+      {
+        name: "adjustmentRemarks",
+        title: "Adjusted Remarks",
+        getCellValue: (rowData) => {
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              name="adjustedRemarks"
+              disabled={
+                !this.state.academicSessionId ||
+                !this.state.programmeGroupId ||
+                !this.state.monthId ||
+                this.state.teachersAttendanceSheetData?.length <= 0 ||
+                this.state.isApproved
+              }
+              type="text"
+              value={rowData.adjustedRemarks || ""}
+              onChange={(event) =>
+                this.handleAdjustedHourChange(event.target.value, rowData)
+              }
+            />
+          );
+        },
+      },
+
+      // { name: "ratePerHour", title: "Rate Per Hour" },
+      // { name: "totalAmount", title: "Total Amount" },
     ];
 
     return (
@@ -562,15 +752,22 @@ class F322HourlySheetsForCoordinators extends Component {
           />
 
           <BottomBar
-            left_button_hide
-            right_button_text={this.state.isApproved ? "Approved" : "Approve"}
+            // left_button_hide
+            left_button_text="View"
+            left_button_hide={false}
+            bottomLeftButtonAction={this.viewReport}
+            right_button_text={
+              this.state.isApproved ? "Approved" : "Send For Approval"
+            }
             disableRightButton={
               !this.state.academicSessionId ||
               !this.state.programmeGroupId ||
               !this.state.monthId ||
-              this.state.teachersAttendanceSheetData?.length <= 0
-              || this.state.isApproved
+              this.state.teachersAttendanceSheetData?.length <= 0 ||
+              this.state.isApproved
             }
+            loading={this.state.isLoading}
+            isDrawerOpen={this.props.isDrawerOpen}
             bottomRightButtonAction={() => this.onApproveClick()}
           />
         </div>
