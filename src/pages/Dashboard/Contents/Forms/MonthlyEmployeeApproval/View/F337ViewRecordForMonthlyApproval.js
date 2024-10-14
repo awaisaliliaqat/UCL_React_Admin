@@ -16,7 +16,7 @@ import {
   IconButton,
   MenuItem,
 } from "@material-ui/core";
-import F323ViewRecordForHeadsTableComponent from "./chunks/F323ViewRecordForHeadTableComponent";
+import F337ViewRecordForMonthlyApprovalTableComponent from "./chunks/F337ViewRecordForMonthlyApprovalTableComponent";
 import { IsEmpty } from "../../../../../../utils/helper";
 import BottomBar from "../../../../../../components/BottomBar/BottomBar";
 import { withRouter } from "react-router-dom";
@@ -56,7 +56,7 @@ const styles = () => ({
   },
 });
 
-class F323ViewRecordForHeads extends Component {
+class F337ViewRecordForMonthlyApproval extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -239,12 +239,12 @@ class F323ViewRecordForHeads extends Component {
       e.preventDefault();
     }
     var data = new FormData();
-    data.append("recordId", this.state.recordId);
+    // data.append("recordId", this.state.recordId);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C323EmployeeHourlySheetApprovedView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C337CommonEmployeeAttendanceApprovalView?recordId=${this.state.recordId}`;
     await fetch(url, {
-      method: "POST",
-      body: data,
+      method: "GET",
+      // body: data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -258,7 +258,7 @@ class F323ViewRecordForHeads extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let array = json.DATA[0].detail || [];
+            let array = json.DATA[0].attendanceDetail || [];
 
             let myExpandedGroupsData = [];
             for (let i = 0; i < array.length; i++) {
@@ -272,13 +272,13 @@ class F323ViewRecordForHeads extends Component {
 
             this.setState({
               teachersAttendanceSheetData: array,
-              expandedGroupsData: myExpandedGroupsData,
-              academicSessionId: json.DATA[0].sessionLabel,
-              programmeGroupId: json.DATA[0].programmeGroupLabel,
+              expandedGroupsData: array,
+              academicSessionId: json.DATA[0].academicSessionLabel,
+              // programmeGroupId: json.DATA[0].programmeGroupLabel,
               monthId: json.DATA[0].monthLabel,
-              isApprovedByHead: json.DATA[0].isApproved,
-              yearId: json.DATA[0].year,
-              isApproved,
+              // isApprovedByHead: json.DATA[0].isApproved,
+              yearId: json.DATA[0].yearId,
+              isApproved: json.DATA[0].isApproved === 0 ? false : true,
             });
           } else {
             this.handleSnackbar(
@@ -316,49 +316,50 @@ class F323ViewRecordForHeads extends Component {
     }
 
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C323TeachersProgrammeGroupAttandanceAprrovalSave`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C337CommonEmployeeAttendanceApproval`;
     // var data = new FormData();
-    const { teachersAttendanceSheetData } = this.state;
+    // const { teachersAttendanceSheetData } = this.state;
 
-    const groupedData = teachersAttendanceSheetData.reduce((acc, current) => {
-      const { hourlySheetEmployeesId } = current;
+    // const groupedData = teachersAttendanceSheetData.reduce((acc, current) => {
+    //   const { hourlySheetEmployeesId } = current;
 
-      let employee = acc.find(
-        (item) => item.hourlySheetEmployeesId === hourlySheetEmployeesId
-      );
+    //   let employee = acc.find(
+    //     (item) => item.hourlySheetEmployeesId === hourlySheetEmployeesId
+    //   );
 
-      if (!employee) {
-        employee = {
-          hourlySheetEmployeesId,
-          hourlySheetEmployeesCourses: [],
-        };
-        acc.push(employee);
-      }
+    //   if (!employee) {
+    //     employee = {
+    //       hourlySheetEmployeesId,
+    //       hourlySheetEmployeesCourses: [],
+    //     };
+    //     acc.push(employee);
+    //   }
 
-      const courseDetail = {
-        hourlySheetEmployeesCourseId: current.hourlySheetEmployeesCourseId,
-        totalAdjustedHours: current.totalAdjustedHours,
-        totalNetHours: current.totalNetHours,
-        totalAmount: current.totalAmount,
-        adjustmentRemarks: current.adjustmentRemarks || "",
-      };
+    //   const courseDetail = {
+    //     hourlySheetEmployeesCourseId: current.hourlySheetEmployeesCourseId,
+    //     totalAdjustedHours: current.totalAdjustedHours,
+    //     totalNetHours: current.totalNetHours,
+    //     totalAmount: current.totalAmount,
+    //     adjustmentRemarks: current.adjustmentRemarks || "",
+    //   };
 
-      employee.hourlySheetEmployeesCourses.push(courseDetail);
+    //   employee.hourlySheetEmployeesCourses.push(courseDetail);
 
-      return acc;
-    }, []);
+    //   return acc;
+    // }, []);
 
-    const data = {
-      hourlySheetId: this.state.recordId,
-      hourlyEmployees: groupedData,
-    };
+    // const data = {
+    //   hourlySheetId: this.state.recordId,
+    //   hourlyEmployees: groupedData,
+    // };
+    const formData = new FormData();
+    formData.append("recordId", this.state.recordId);
 
     await fetch(url, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: formData,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-        "Content-Type": "application/json",
       }),
     })
       .then((res) => {
@@ -486,43 +487,89 @@ class F323ViewRecordForHeads extends Component {
     const { classes } = this.props;
 
     const columns = [
-      { name: "teacherLabel", title: "Teacher Name" },
-      { name: "courseLabel", title: "Subjects" },
-      { name: "totalSchedules", title: "Total" },
-      { name: "totalAttended", title: "Attended" },
-      { name: "durationPerSession", title: "Duration Per Session" },
-      { name: "totalHours", title: "Total Hours" },
+      { name: "id", title: "ID" },
+      { name: "displayName", title: "Name" },
+      { name: "totalWorkingDays", title: "Working Days" },
+      { name: "totalAttendedDays", title: "Attended" },
+      { name: "totalAttendanceMissingDays", title: "Att. Missing" },
       {
-        name: "totalAdjustedHours",
-        title: "Adjusted Hours",
-        getCellValue: (rowData) => {
-          console.log(rowData);
+        name: "missingAttendanceDates",
+        title: "Att. Missing Dates",
+        // getCellValue: (rowData) => {
+        //   const splitStringByLength = (str, length) => {
+        //     let result = [];
+        //     for (let i = 0; i < str.length; i += length) {
+        //       result.push(str.substring(i, i + length));
+        //     }
+        //     return result;
+        //   };
 
-          return (
-            <TextField
-              variant="outlined"
-              size="small"
-              name="adjustedHours"
-              disabled={
-                !this.state.academicSessionId ||
-                !this.state.programmeGroupId ||
-                !this.state.monthId ||
-                this.state.teachersAttendanceSheetData?.length <= 0 ||
-                this.state.isApproved
-              }
-              type="number"
-              value={rowData.totalAdjustedHours || ""}
-              onChange={(event) =>
-                this.handleRatePerHourChange(event.target.value, rowData)
-              }
-            />
-          );
-        },
+        //   const attendanceDates = rowData?.missingAttendanceDates || [];
+        //   const chunkSize = 16;
+
+        //   return (
+        //     <div>
+        //       {/* {attendanceDates.map((item, index) => (
+        //         <div key={`item-${index}`}>
+        //           {splitStringByLength(item, chunkSize).map(
+        //             (chunk, chunkIndex) => (
+        //               <div key={`chunk-${chunkIndex}`}>
+        //                 {chunk}
+        //                 <br />
+        //               </div>
+        //             )
+        //           )}
+        //         </div>
+        //       ))} */}
+        //     </div>
+        //   );
+        // },
       },
-      { name: "totalNetHours", title: "Net Hours" },
-      { name: "ratePerHour", title: "Rate Per Hour" },
-      { name: "totalAmount", title: "Total Amount" },
-      { name: "adjustmentRemarks", title: "Adjustment Remarks" },
+      { name: "totalLateDays", title: "Late" },
+      {
+        name: "lateDates",
+        title: "Late Dates",
+        // getCellValue: (rowData) => {
+        //   const splitStringByLength = (str, length) => {
+        //     let result = [];
+        //     for (let i = 0; i < str.length; i += length) {
+        //       result.push(str.substring(i, i + length));
+        //     }
+        //     return result;
+        //   };
+
+        //   const attendanceDates = rowData?.lateDates || [];
+        //   const chunkSize = 16;
+
+        //   return (
+        //     <div>
+        //       {/* {attendanceDates?.map((item, index) => (
+        //         <div key={`item-${index}`}>
+        //           {splitStringByLength(item, chunkSize).map(
+        //             (chunk, chunkIndex) => (
+        //               <div key={`chunk-${chunkIndex}`}>
+        //                 {chunk}
+        //                 <br />
+        //               </div>
+        //             )
+        //           )}
+        //         </div>
+        //       ))} */}
+        //     </div>
+        //   );
+        // },
+      },
+
+      // { name: "durationPerSession", title: "Late Days" },
+
+      {
+        name: "adjustedLateDays",
+        title: "Adjusted Late Days",
+      },
+      {
+        name: "remarks",
+        title: "Remarks",
+      },
     ];
 
     return (
@@ -540,7 +587,7 @@ class F323ViewRecordForHeads extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              {"Hourly Sheet For Director"}
+              {"Monthly Employee Attendance Approval"}
               <br />
             </Typography>
           </div>
@@ -573,7 +620,7 @@ class F323ViewRecordForHeads extends Component {
               </TextField>
             </Grid>
             <br />
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <TextField
                 id="programmeGroupId"
                 name="programmeGroupId"
@@ -595,9 +642,9 @@ class F323ViewRecordForHeads extends Component {
                   <MenuItem key={item} value={item.Id}>
                     {item.Label}
                   </MenuItem>
-                ))} */}
+                ))} 
               </TextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <TextField
                 id="yearId"
@@ -655,7 +702,7 @@ class F323ViewRecordForHeads extends Component {
           </Grid>
 
           <Grid item xs={12}>
-            <F323ViewRecordForHeadsTableComponent
+            <F337ViewRecordForMonthlyApprovalTableComponent
               columns={columns}
               data={this.state}
             />
@@ -673,8 +720,8 @@ class F323ViewRecordForHeads extends Component {
             // left_button_text="View"
             // left_button_hide={false}
             // bottomLeftButtonAction={this.viewReport}
-            right_button_text={this.state.isApproved ? "Saved" : "Save"}
-            disableRightButton={this.state.isApprovedByHead === 1}
+            right_button_text={this.state.isApproved ? "Approved" : "Approve"}
+            disableRightButton={this.state.isApproved}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
             bottomRightButtonAction={() => this.onApproveClick()}
@@ -685,13 +732,13 @@ class F323ViewRecordForHeads extends Component {
   }
 }
 
-F323ViewRecordForHeads.propTypes = {
+F337ViewRecordForMonthlyApproval.propTypes = {
   classes: PropTypes.object,
   setDrawerOpen: PropTypes.func,
 };
 
-F323ViewRecordForHeads.defaultProps = {
+F337ViewRecordForMonthlyApproval.defaultProps = {
   classes: {},
   setDrawerOpen: (fn) => fn,
 };
-export default withRouter(withStyles(styles)(F323ViewRecordForHeads));
+export default withRouter(withStyles(styles)(F337ViewRecordForMonthlyApproval));

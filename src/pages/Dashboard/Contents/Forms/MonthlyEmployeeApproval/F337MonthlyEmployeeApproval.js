@@ -8,8 +8,8 @@ import {
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import ExcelIcon from "../../../../../assets/Images/excel.png";
-import F322HourlySheetReportFilterForCoordinator from "./F323HourlySheetReportFilterForHead";
-import F322HourlySheetReportTableComponentForCoordinator from "./F323HourlySheetReportTableComponentForHead";
+import F337MonthlyEmployeeApprovalReportFilter from "./F337MonthlyEmployeeApprovalReportFilter";
+import F337MonthlyEmployeeApprovalReportTableComponent from "./F337MonthlyEmployeeApprovalReportTableComponent";
 import TablePanel from "../../../../../components/ControlledTable/RerenderTable/TablePanel";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import { format } from "date-fns";
@@ -19,7 +19,8 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import EditDeleteTableRecord from "../../../../../components/EditDeleteTableRecord/EditDeleteTableRecord";
 import ViewTableRecord from "../../../../../components/EditDeleteTableRecord/ViewTableRecord";
-
+import Button from "@material-ui/core/Button";
+import { Link } from "react-router-dom";
 function isEmpty(obj) {
   if (obj == null) return true;
   if (obj.length > 0) return false;
@@ -31,7 +32,7 @@ function isEmpty(obj) {
   return true;
 }
 
-class F323HourlySheetsForHead extends Component {
+class F337MonthlyEmployeeApproval extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -326,7 +327,7 @@ class F323HourlySheetsForHead extends Component {
     const eventDataQuery = this.state.eventDate
       ? `&eventDate=${format(this.state.eventDate, "dd-MMM-yyyy")}`
       : "";
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C323TeachersProgrammeGroupAttandanceAprrovalView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C337CommonEmployeeAttendanceApprovalListView`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -345,16 +346,16 @@ class F323HourlySheetsForHead extends Component {
             this.setState({
               admissionData: json.DATA || [],
             });
-            for (var i = 0; i < json.DATA.length; i++) {
-              json.DATA[i].action = (
-                <ViewTableRecord
-                  recordId={json.DATA[i].id}
-                  DeleteData={this.DeleteData}
-                  onEditURL={`/dashboard/F323ViewRecordData/${json.DATA[i].id}`}
-                  handleOpenSnackbar={this.handleOpenSnackbar}
-                />
-              );
-            }
+            // for (var i = 0; i < json.DATA.length; i++) {
+            //   json.DATA[i].action = (
+            //     // <ViewTableRecord
+            //     //   recordId={json.DATA[i].id}
+            //     //   DeleteData={this.DeleteData}
+            //     //   onEditURL={`/dashboard/F323ViewRecordData/${json.DATA[i].id}`}
+            //     //   handleOpenSnackbar={this.handleOpenSnackbar}
+            //     // />
+            //   );
+            // }
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(
@@ -533,18 +534,32 @@ class F323HourlySheetsForHead extends Component {
     // ]
 
     const columns = [
-      { name: "sessionLabel", title: "Session" },
-      {
-        name: "programGroupLabel",
-        title: "Program Label",
-        customStyleHeader: { width: "20%", textAlign: "center" },
-        align: "center",
-      },
-      { name: "year", title: "Year" },
-      { name: "month", title: "Month" },
+      { name: "academicSessionLabel", title: "Session" },
+      // {
+      //   name: "programGroupLabel",
+      //   title: "Program Label",
+      //   customStyleHeader: { width: "20%", textAlign: "center" },
+      //   align: "center",
+      // },
+      { name: "yearId", title: "Year" },
+      { name: "monthLabel", title: "Month" },
       // { name: "approvedByHodLabel", title: "Approved by HOD" },
-      { name: "approvedByHodLabel", title: "Approved" },
-      { name: "approvedByHodOn", title: "Approved On" },
+      {
+        name: "approvedOn",
+        title: "Approved On",
+        getCellValue: (rowData) => {
+          const displayDate = rowData.approvedOn
+            ? Number(`${new Date(rowData.approvedOn).getDate()}`)
+              ? `${new Date(rowData.approvedOn).getDate()}/${
+                  new Date(rowData.approvedOn).getMonth() + 1
+                }/${new Date(rowData.approvedOn).getFullYear()}`
+              : rowData.approvedOn
+            : "";
+
+          return <>{displayDate}</>;
+        },
+      },
+      { name: "approvedBy", title: "Approved By" },
 
       // { name: "fromDate", title: "From Date" },
       // { name: "toDate", title: "To Date" },
@@ -554,7 +569,28 @@ class F323HourlySheetsForHead extends Component {
 
       // { name: "label", title: "School\xa0Name - Short\xa0Name" },
       // // { name: "shortLabel", title: "Short\xa0Name" },
-      { name: "action", title: "Action" },
+      {
+        name: "action",
+        title: "Action",
+
+        getCellValue: (rowData) => {
+          console.log(rowData);
+
+          return (
+            <Button
+              style={{ fontSize: 12, textTransform: "capitalize" }}
+              variant="outlined"
+            >
+              <Link
+                style={{ textDecoration: "none", color: "black" }}
+                to={`/dashboard/F337ViewRecordForMonthlyApproval/${rowData.recordId}`}
+              >
+                View Summary
+              </Link>
+            </Button>
+          );
+        },
+      },
     ];
 
     return (
@@ -583,7 +619,7 @@ class F323HourlySheetsForHead extends Component {
               }}
               variant="h5"
             >
-              Hourly Sheet For Director
+              Monthly Employee Attendance Approval
             </Typography>
             {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,
@@ -617,7 +653,7 @@ class F323HourlySheetsForHead extends Component {
             }}
           />
           {this.state.showSearchBar ? (
-            <F322HourlySheetReportFilterForCoordinator
+            <F337MonthlyEmployeeApprovalReportFilter
               isLoading={this.state.isLoading}
               handleDateChange={this.handleDateChange}
               onClearFilters={this.onClearFilters}
@@ -629,7 +665,7 @@ class F323HourlySheetsForHead extends Component {
             <br />
           )}
           {this.state.admissionData ? (
-            <F322HourlySheetReportTableComponentForCoordinator
+            <F337MonthlyEmployeeApprovalReportTableComponent
               data={this.state.admissionData}
               columns={columns}
               showFilter={this.state.showTableFilter}
@@ -650,4 +686,4 @@ class F323HourlySheetsForHead extends Component {
     );
   }
 }
-export default F323HourlySheetsForHead;
+export default F337MonthlyEmployeeApproval;

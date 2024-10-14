@@ -1,6 +1,8 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import Logo from "../../../../../assets/Images/logo.png";
 import PropTypes from "prop-types";
+import { Tooltip, IconButton } from "@material-ui/core";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ReactToPrint from "react-to-print";
@@ -14,20 +16,29 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
   const { id } = useParams();
   const [isLoading, setLoading] = useState(false);
   useEffect(() => {
-    const sessionId = id.split("T")[0];
-    const monthId = id.split("T")[1];
-    const employeeObject = id.split("T")[2];
+    const sessionId = id.split("T")[0]; // sessionId is a string
+    if (sessionId !== "0") {
+      console.log("1");
 
-    if (sessionId && monthId && employeeObject) {
-      getData(sessionId, monthId, employeeObject);
+      const monthId = id.split("T")[1];
+      const employeeObject = id.split("T")[2];
+      const year = id.split("T")[3];
+
+      if (sessionId && monthId && employeeObject) {
+        getData(sessionId, monthId, employeeObject, year);
+      }
+    } else {
+      console.log("2");
+      getDatas();
     }
   }, []);
-  const getData = async (sessionId, monthId, employeeObject) => {
+  const getData = async (sessionId, monthId, employeeObject, year) => {
     setLoading(true);
     const formData = new FormData();
     formData.append("sessionId", sessionId);
     formData.append("monthId", monthId);
     formData.append("employeeId", employeeObject);
+    formData.append("year", year);
 
     let url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonEmployeesMonthlyPayrollVoucherView`;
     await fetch(url, {
@@ -65,38 +76,90 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
     setLoading(false);
   };
 
+  const getDatas = async () => {
+    setLoading(true);
+    // const formData = new FormData();
+    // formData.append("sessionId", sessionId);
+    // formData.append("monthId", monthId);
+    // formData.append("employeeId", employeeObject);
+    // formData.append("year", year);
+
+    let url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonEmployeesMonthlyPayrollVoucherSlipView`;
+    await fetch(url, {
+      method: "POST",
+      // body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then((json) => {
+        if (json.CODE === 1) {
+          console.log(json.DATA);
+          setChallanData(json.DATA[0]);
+        } else {
+          alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
+        }
+      })
+      .catch((error) => {
+        if (error.status == 401) {
+          // this.setState({
+          //   isLoginMenu: true,
+          //   isReload: true,
+          // });
+        } else {
+          alert("Operation Failed, Please try again later.");
+        }
+        console.log(error);
+      });
+    setLoading(false);
+  };
+
   return (
     <Fragment>
-      <ReactToPrint
-        trigger={() => {
-          return (
-            <Button
-              style={{
-                float: "right",
-                marginTop: 10,
-                marginRight: 20,
-                textTransform: "capitalize",
-                opacity: 0.8,
-              }}
-              color="primary"
-              variant="contained"
-            >
-              <PrintIcon style={{ paddingRight: 5 }} /> Print
-            </Button>
-          );
-        }}
-        content={() => componentRef.current}
-        pageStyle="@page { size: landscape; margin: 0mm;}"
-      />
+      <div>
+        <Tooltip title="Back">
+          <IconButton onClick={() => window.history.back()}>
+            <ArrowBackIcon fontSize="small" color="primary" />
+          </IconButton>
+        </Tooltip>
+        <ReactToPrint
+          trigger={() => {
+            return (
+              <Button
+                style={{
+                  float: "right",
+                  marginTop: 10,
+                  marginRight: 20,
+                  textTransform: "capitalize",
+                  opacity: 0.8,
+                }}
+                color="primary"
+                variant="contained"
+              >
+                <PrintIcon style={{ paddingRight: 5 }} /> Print
+              </Button>
+            );
+          }}
+          content={() => componentRef.current}
+          pageStyle="@page { size: landscape; margin: 0mm;}"
+        />
+      </div>
 
       {challanData ? (
         <div
           ref={componentRef}
           style={{
-            display: "flex",
-            justifyContent: "space-around",
+            width: "50%",
             fontFamily: "inherit",
             marginTop: 50,
+            marginLeft: "25%",
+            marginRight: "25%",
           }}
         >
           <Fragment>
@@ -145,7 +208,8 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                       marginBottom: 3,
                     }}
                   >
-                    <b>Salary Slip:</b> {"   "} <b>{"August 2024" || ""}</b>
+                    <b>Salary Slip:</b> {"   "}{" "}
+                    <b>{challanData.salarySlipMonth || ""}</b>
                   </span>
                 </div>
               </div>
@@ -240,10 +304,10 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                     style={{
                       fontSize: 14,
                       marginBottom: 3,
-                      width: 130,
+                      width: 50,
                     }}
                   >
-                    <b>ID</b>
+                    <b>ID:</b>
                   </span>
                   <span
                     style={{
@@ -262,7 +326,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                     style={{
                       fontSize: 14,
                       marginBottom: 3,
-                      width: 130,
+                      width: 50,
                     }}
                   >
                     <b>Name: </b>
@@ -331,9 +395,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                       marginLeft: 40,
                       fontSize: 14,
                     }}
-                  >
-                    Rs.
-                  </span>
+                  ></span>
                   <span
                     style={{
                       width: 85,
@@ -341,7 +403,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                       fontSize: 14,
                     }}
                   >
-                    {challanData.perMonthSalary || 0}
+                    Rs. {challanData.perMonthSalary || 0}
                   </span>
                 </div>
                 <div
@@ -402,9 +464,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                           marginLeft: 40,
                           fontSize: 14,
                         }}
-                      >
-                        Rs.
-                      </span>
+                      ></span>
                       <span
                         style={{
                           width: 85,
@@ -412,7 +472,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                           fontSize: 14,
                         }}
                       >
-                        {item.amount || 0}
+                        Rs. {item.amount || 0}
                       </span>
                     </div>
                   );
@@ -569,16 +629,14 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                       width: 100,
                     }}
                   >
-                    <b>Gross Sallary</b>
+                    <b>Gross Salary</b>
                   </span>
                   <span
                     style={{
                       marginLeft: 40,
                       fontSize: 14,
                     }}
-                  >
-                    Rs.
-                  </span>
+                  ></span>
                   <span
                     style={{
                       width: 85,
@@ -586,7 +644,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                       fontSize: 14,
                     }}
                   >
-                    {challanData.grossSalary || 0}
+                    Rs. {challanData.grossSalary || 0}
                   </span>
                 </div>
 
@@ -630,9 +688,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                         marginLeft: 40,
                         fontSize: 14,
                       }}
-                    >
-                      Rs.
-                    </span>
+                    ></span>
                     <span
                       style={{
                         width: 85,
@@ -640,7 +696,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                         fontSize: 14,
                       }}
                     >
-                      {item.amount || 0}
+                      Rs. {item.amount || 0}
                     </span>
                   </div>
                 ))}
@@ -772,9 +828,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                       marginLeft: 40,
                       fontSize: 14,
                     }}
-                  >
-                    Rs.
-                  </span>
+                  ></span>
                   <span
                     style={{
                       width: 85,
@@ -782,7 +836,7 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
                       fontSize: 14,
                     }}
                   >
-                    {data.tuitionFee || "489,630"}
+                    Rs. {data.tuitionFee || "489,630"}
                   </span>
                 </div>
 
@@ -1101,11 +1155,68 @@ const F331EmployeeMonthlySallaryChallanView = (props) => {
   >
     See overleaf / Fee Structure for further information
   </span> */}
+              <div
+                style={{
+                  display: "block",
+                  float: "right",
+                  marginLeft: "82%",
+                  marginTop: "2%",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "600",
+                    width: 200,
+                    textAlign: "left",
+                    float: "right",
+                  }}
+                >
+                  <b> Issuing Authority: </b>
+                </span>
+                <br />
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "600",
+                    width: 180,
+                    textAlign: "left",
+                    float: "right",
+                  }}
+                >
+                  <b>Accounts Department</b>
+                  <br />
+                  <b>This is a system generated report</b>
+                  <br />
+                  <b>No signature required</b>
+                </span>
+              </div>
             </div>
           </Fragment>
         </div>
       ) : (
-        ""
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            fontFamily: "inherit",
+            marginTop: 50,
+          }}
+        >
+          <Fragment>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <p style={{}}>
+                Salary slip is currently not available for this employee for the
+                selected month and session.
+              </p>
+            </div>
+          </Fragment>
+        </div>
       )}
     </Fragment>
   );

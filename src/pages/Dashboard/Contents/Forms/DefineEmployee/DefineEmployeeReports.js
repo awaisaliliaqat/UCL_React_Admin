@@ -169,11 +169,14 @@ class DefineEmployeeReports extends Component {
 
   render() {
     const columns = [
+      { name: "action", title: "Action" },
       { name: "id", title: "ID" },
       { name: "displayName", title: "Name" },
       { name: "mobileNo", title: "Mobile No" },
       { name: "email", title: "Email" },
       { name: "jobStatusLabel", title: "Job Status" },
+      { name: "shiftLabel", title: "Shift Label" },
+
       //   { name: "reportingToId", title: "Reporting To ID" },
       { name: "reportingToLabel", title: "Reporting To" },
       { name: "coordinationLabel", title: "Coordination To" },
@@ -211,7 +214,6 @@ class DefineEmployeeReports extends Component {
       { name: "departmentsLabel", title: "Departments" },
       { name: "subDepartmentsLabel", title: "Sub Departments" },
       { name: "designationsLabel", title: "Designations" },
-      { name: "action", title: "Action" },
     ];
 
     return (

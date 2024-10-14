@@ -71,6 +71,8 @@ class F322ViewRecordForCoordinators extends Component {
       snackbarMessage: "",
       snackbarSeverity: "",
 
+      yearId: "",
+
       academicSessionsData: [],
       academicSessionsDataLoading: false,
       academicSessionId: "",
@@ -276,7 +278,7 @@ class F322ViewRecordForCoordinators extends Component {
               programmeGroupId: json.DATA[0].programmeGroupLabel,
               monthId: json.DATA[0].monthLabel,
               isApprovedByHOD: json.DATA[0].isApproved,
-
+              yearId: json.DATA[0].year,
               isApproved,
             });
           } else {
@@ -507,6 +509,31 @@ class F322ViewRecordForCoordinators extends Component {
                 value={this.state.programmeGroupId}
                 error={!!this.state.programmeGroupIdError}
                 helperText={this.state.programmeGroupIdError}
+                required
+                InputProps={{
+                  classes: { disabled: classes.disabledTextField },
+                }}
+                disabled
+                fullWidth
+                // select
+              >
+                {/* {this.state.programmeGroupsData?.map((item) => (
+                  <MenuItem key={item} value={item.Id}>
+                    {item.Label}
+                  </MenuItem>
+                ))} */}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                id="yearId"
+                name="yearId"
+                variant="outlined"
+                label="Year"
+                onChange={this.onHandleChange}
+                value={this.state.yearId}
+                // error={!!this.state.programmeGroupIdError}
+                // helperText={this.state.programmeGroupIdError}
                 required
                 InputProps={{
                   classes: { disabled: classes.disabledTextField },

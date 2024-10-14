@@ -1,9 +1,12 @@
-
-import React ,{Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
 import { Button } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
 import { useParams } from "react-router-dom/cjs/react-router-dom";
+import { CheckAll } from "mdi-material-ui";
+import { Tooltip, IconButton } from "@material-ui/core";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+
 const F332EmployeeTaxCertificateView = () => {
   const [challanData, setChallanData] = useState({});
   const componentRef = useRef(null);
@@ -15,10 +18,10 @@ const F332EmployeeTaxCertificateView = () => {
     const employeeObject = id.split("T")[1];
 
     if (sessionId && employeeObject) {
-      getData(sessionId,  employeeObject);
+      getData(sessionId, employeeObject);
     }
   }, []);
-  const getData = async (sessionId,  employeeObject) => {
+  const getData = async (sessionId, employeeObject) => {
     setLoading(true);
     const formData = new FormData();
     formData.append("sessionId", sessionId);
@@ -61,72 +64,147 @@ const F332EmployeeTaxCertificateView = () => {
     setLoading(false);
   };
 
+  const getCurrentFormattedDate = () => {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+
+    return `${day}.${month}.${year}`;
+  };
+
   return (
-
     <Fragment>
-           <ReactToPrint
-             trigger={() => {
-               return (
-                 <Button
-                   style={{
-                     float: "right",
-                     marginTop: 10,
-                     marginRight: 20,
-                     textTransform: "capitalize",
-                     opacity: 0.8,
-                   }}
-                   color="primary"
-                   variant="contained"
-                 >
-                   <PrintIcon style={{ paddingRight: 5 }} /> Print
-                 </Button>
-               );
-             }}
-             content={() => componentRef.current}
-             pageStyle="@page { size: landscape; margin: 0mm;}"
-           />
-    
-    <div style={styles.container} ref={componentRef}>
-      <h2 style={styles.heading}>TO WHOM IT MAY CONCERN</h2>
-      <p style={styles.paragraph}>
-        This is to certify that a sum of <strong>Rs. {challanData.grossSalary}/-</strong> has
-        been paid to
-        <strong> {challanData.employeeGender === 1 ? "Mr." : "Mrs."} {challanData.employeeLabel}</strong> on account of salary for the financial year
-        ended on
-        <strong> 30.06.2024</strong>, and <strong>Rs. {challanData.deductions}/-</strong> has
-        been deducted and duly deposited as income tax. Breakup of the salary is
-        given below:
-      </p>
-
-      <table style={styles.table}>
-        <tbody>
-          <tr>
-            <td style={styles.leftCell}>Amount on which Deducted</td>
-            <td style={styles.rightCell}>{challanData.grossSalaryWithoutMedicalAllowance
-            }</td>
-          </tr>
-          <tr>
-            <td style={styles.leftCell}>Exemption (Medical Allowance)</td>
-            <td style={styles.rightCell}>{challanData.medicalAllowance}</td>
-          </tr>
-          <tr>
-            <td style={styles.leftCell}>
-              <strong>Gross Salary</strong>
-            </td>
-            <td style={styles.rightCell}>
-              <strong>{challanData.grossSalary}</strong>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div style={styles.signature}>
-        <p>
-          <strong>Accounts Department</strong>
-        </p>
-        <p>Dated: 03.09.2024</p>
+      <div>
+        <Tooltip title="Back">
+          <IconButton onClick={() => window.history.back()}>
+            <ArrowBackIcon fontSize="small" color="primary" />
+          </IconButton>
+        </Tooltip>
+        <ReactToPrint
+          trigger={() => {
+            return (
+              <Button
+                style={{
+                  float: "right",
+                  marginTop: 10,
+                  marginRight: 20,
+                  textTransform: "capitalize",
+                  opacity: 0.8,
+                }}
+                color="primary"
+                variant="contained"
+              >
+                <PrintIcon style={{ paddingRight: 5 }} /> Print
+              </Button>
+            );
+          }}
+          content={() => componentRef.current}
+          pageStyle="@page { size: landscape; margin: 0mm;}"
+        />
       </div>
-    </div>
+      {challanData ? (
+        <div style={styles.container} ref={componentRef}>
+          <h2 style={styles.heading}>TO WHOM IT MAY CONCERN</h2>
+          <p style={styles.paragraph}>
+            This is to certify that a sum of{" "}
+            <strong>Rs. {challanData.grossSalary}/-</strong> has been paid to
+            <strong>
+              {" "}
+              {challanData.employeeGender === 1 ? "Mr." : "Mrs."}{" "}
+              {challanData.employeeLabel}
+            </strong>{" "}
+            on account of salary for the financial year ended on
+            <strong> {challanData.taxCertificateDate}</strong>, and{" "}
+            <strong>Rs. {challanData.deductions}/-</strong> has been deducted
+            and duly deposited as income tax. Breakup of the salary is given
+            below:
+          </p>
+
+          <table style={styles.table}>
+            <tbody>
+              <tr>
+                <td style={styles.leftCell}>Amount on which Deducted</td>
+                <td style={styles.rightCell}>
+                  {challanData.grossSalaryWithoutMedicalAllowance}
+                </td>
+              </tr>
+              <tr>
+                <td style={styles.leftCell}>Exemption (Medical Allowance)</td>
+                <td style={styles.rightCell}>{challanData.medicalAllowance}</td>
+              </tr>
+              <tr>
+                <td style={styles.leftCell}>
+                  <strong>Gross Salary</strong>
+                </td>
+                <td style={styles.rightCell}>
+                  <strong>{challanData.grossSalary}</strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style={styles.signature}>
+            <p>
+              <strong>Accounts Department</strong>
+            </p>
+            <p>Dated: {getCurrentFormattedDate()}</p>
+
+            <div>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: "600",
+                  width: 180,
+                  textAlign: "left",
+                  float: "right",
+                }}
+              >
+                <b> Issuing Authority: </b>
+              </span>
+              <br />
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: "600",
+                  width: 180,
+                  textAlign: "left",
+                  float: "right",
+                }}
+              >
+                <b>Accounts Department</b>
+                <br />
+                <b>This is a system generated report</b>
+                <br />
+                <b>No signature required</b>
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            fontFamily: "inherit",
+            marginTop: 50,
+          }}
+        >
+          <Fragment>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <p style={{}}>
+                Tax certificate is currently not available for this employee for
+                the selected session.
+              </p>
+            </div>
+          </Fragment>
+        </div>
+      )}
     </Fragment>
   );
 };

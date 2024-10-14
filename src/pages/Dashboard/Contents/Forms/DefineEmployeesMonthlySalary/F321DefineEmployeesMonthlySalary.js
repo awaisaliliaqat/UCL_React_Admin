@@ -69,6 +69,9 @@ class F321DefineEmployeesMonthlySalary extends Component {
       sessionData: [],
       sessionId: "",
 
+      yearData: [],
+      yearId: "",
+
       monthId: "",
       monthIdError: "",
       monthsData: [
@@ -426,11 +429,73 @@ class F321DefineEmployeesMonthlySalary extends Component {
     });
   };
 
+  getYearsData = async (value) => {
+    this.setState({
+      isLoading: true,
+    });
+
+    console.log(value);
+
+    const formData = new FormData();
+    formData.append("sessionId", value);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonYearsView`;
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({
+              yearData: data,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
+    });
+  };
+
   onHandleChange = (e) => {
     const { name, value } = e.target;
     this.setState({
       [name]: value,
     });
+    if (name === "sessionId") {
+      this.getYearsData(value);
+    }
     if (name === "monthId") {
       this.getData();
     }
@@ -438,6 +503,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 
   componentDidMount() {
     this.getSessionData();
+    // this.getYearsData();
     this.loadAllData();
   }
 
@@ -581,8 +647,9 @@ class F321DefineEmployeesMonthlySalary extends Component {
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonEmployeesMonthlyPayrollVoucherSave`;
 
     const result = {
-      sessionId: this.state.sessionId,
+      year: this.state.yearId,
       monthId: this.state.monthId,
+      sessionId: this.state.sessionId,
       employeePayrolls: this.state.employeePayrollsData.map((employee) => ({
         employeeId: employee.employeeId,
         homeRent: Number(employee.homeRent.toFixed(0)),
@@ -727,6 +794,34 @@ class F321DefineEmployeesMonthlySalary extends Component {
                 select
               >
                 {this.state.sessionData.map((item) => {
+                  return (
+                    <MenuItem key={item.ID} value={item.ID}>
+                      {item.Label}
+                    </MenuItem>
+                  );
+                })}
+              </TextField>
+            </div>
+            <div>
+              <TextField
+                id="yearId"
+                name="yearId"
+                label="Years"
+                required
+                disabled={!this.state.sessionId}
+                style={{
+                  width: "300px",
+                  marginBottom: 20,
+                  marginRight: 20,
+                }}
+                variant="outlined"
+                onChange={this.onHandleChange}
+                value={this.state.yearId}
+                // helperText={this.state.monthIdError}
+                // error={this.state.monthIdError}
+                select
+              >
+                {this.state.yearData.map((item) => {
                   return (
                     <MenuItem key={item.ID} value={item.ID}>
                       {item.Label}

@@ -58,6 +58,9 @@ class F332EmployeeTaxCertificateReport extends Component {
       snackbarMessage: "",
       snackbarSeverity: "",
 
+      yearData: [],
+      yearId: "",
+
       academicSessionsData: [],
       academicSessionsDataLoading: false,
       academicSessionId: "",
@@ -297,6 +300,63 @@ class F332EmployeeTaxCertificateReport extends Component {
     });
   };
 
+  getYearsData = async (value) => {
+    this.setState({
+      isLoading: true,
+    });
+
+    const formData = new FormData();
+    formData.append("sessionId", this.state.academicSessionId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonYearsView`;
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({
+              yearData: data,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
+    });
+  };
+
   onClearAllData = () => {
     let sessionId = "";
 
@@ -348,6 +408,9 @@ class F332EmployeeTaxCertificateReport extends Component {
         break;
     }
 
+    // if (name === "academicSessionId") {
+    //   this.getYearsData(value);
+    // }
     this.setState({
       [name]: value,
       [errName]: "",
@@ -402,7 +465,7 @@ class F332EmployeeTaxCertificateReport extends Component {
       // { name: "backAccount2", title: "Bank 2 Account #" },
       // { name: "hourlyAmount", title: "Hourly Amount" },
       // { name: "monthlyAmount", title: "Monthly Amount" },
-      
+
       { name: "totalPayableAmountLabel", title: "Gross Salary" },
       {
         name: "printSalarySlip",
@@ -412,13 +475,14 @@ class F332EmployeeTaxCertificateReport extends Component {
 
           return (
             <>
-              <Link style={{
-                textDecoration:'none',
-                padding: '10px 15px',
-                backgroundColor: "#174A84",
-                color: 'white',
-                BorderRadius: '10px'
-              }}
+              <Link
+                style={{
+                  textDecoration: "none",
+                  padding: "10px 15px",
+                  backgroundColor: "#174A84",
+                  color: "white",
+                  BorderRadius: "10px",
+                }}
                 to={`/dashboard/F332GeneratedTaxCertificate/${this.state.academicSessionId}T${this.state.employeeObject}`}
               >
                 Generate
@@ -467,6 +531,27 @@ class F332EmployeeTaxCertificateReport extends Component {
                 ))}
               </TextField>
             </Grid>
+            {/* <Grid item xs={12} md={3}>
+              <TextField
+                id="yearId"
+                name="yearId"
+                variant="outlined"
+                label="Years"
+                onChange={this.onHandleChange}
+                value={this.state.yearId}
+                // error={!!this.state.academicSessionIdError}
+                // helperText={this.state.academicSessionIdError}
+                required
+                fullWidth
+                select
+              >
+                {this.state.yearData?.map((item) => (
+                  <MenuItem key={item} value={item.ID}>
+                    {item.Label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <TextField
                 id="employeeObject"

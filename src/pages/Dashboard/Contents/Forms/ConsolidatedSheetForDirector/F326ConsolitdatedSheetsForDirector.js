@@ -350,7 +350,18 @@ class F323HourlySheetsForHeads extends Component {
     const { classes } = this.props;
 
     const columns = [
-      { name: "monthLabel", title: "Month" },
+      {
+        name: "monthLabel",
+        title: "Month",
+        // getCellValue: (rowData) => {
+        //   console.log(rowData);
+        //   return (
+        //     <>
+        //       {rowData.monthLabel}({rowData.year})
+        //     </>
+        //   );
+        // },
+      },
       { name: "teacherLabel", title: "Teacher Name" },
       { name: "courseLabel", title: "Subjects" },
       { name: "programmeGroupLabel", title: "Programme Group" },

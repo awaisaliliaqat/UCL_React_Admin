@@ -1,10 +1,8 @@
-import React, { Component, Fragment, useEffect } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import LoginMenu from "../../../../../../components/LoginMenu/LoginMenu";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-
-import CustomizedSnackbar from "../../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import {
   Divider,
   CircularProgress,
@@ -12,15 +10,12 @@ import {
   Button,
   Typography,
   TextField,
-  Tooltip,
-  IconButton,
   MenuItem,
 } from "@material-ui/core";
-import F323ViewRecordForHeadsTableComponent from "./chunks/F323ViewRecordForHeadTableComponent";
-import { IsEmpty } from "../../../../../../utils/helper";
-import BottomBar from "../../../../../../components/BottomBar/BottomBar";
-import { withRouter } from "react-router-dom";
-import { Record } from "mdi-material-ui";
+import F333ConsolitdatedSheetsForSalaryHistoryTableComponent from "./chunks/F333ConsolitdatedSheetsForSalaryHistoryTableComponent";
+import { IsEmpty } from "../../../../../utils/helper";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
+
 const styles = () => ({
   mainContainer: {
     padding: 20,
@@ -46,23 +41,13 @@ const styles = () => ({
     fontSize: 14,
     height: 45,
   },
-  disabledTextField: {
-    "& .MuiInputBase-input.Mui-disabled": {
-      color: "black", // Change the text color to black
-    },
-    "& .MuiOutlinedInput-notchedOutline.Mui-disabled": {
-      borderColor: "black", // Optionally, change the border color to black
-    },
-  },
 });
 
-class F323ViewRecordForHeads extends Component {
+class F333ConsolitdatedSheetsForSalaryHistory extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: false,
-      recordId: null,
-      isApprovedByHead: 0,
 
       isLoginMenu: false,
       isReload: false,
@@ -70,8 +55,9 @@ class F323ViewRecordForHeads extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-
+      yearData: [],
       yearId: "",
+
       academicSessionsData: [],
       academicSessionsDataLoading: false,
       academicSessionId: "",
@@ -108,19 +94,70 @@ class F323ViewRecordForHeads extends Component {
     };
   }
   componentDidMount() {
-    const { recordId } = this.props.match.params;
-
-    // this.props.setDrawerOpen(false);
-    // this.getAcademicSessions();
-
-    this.setState({ recordId: recordId }, () => {
-      this.onSearchClick();
-    });
+    this.props.setDrawerOpen(false);
+    this.getAcademicSessions();
   }
+
+  getYearsData = async (value) => {
+    this.setState({
+      isLoading: true,
+    });
+
+    const formData = new FormData();
+    formData.append("sessionId", value);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonYearsView`;
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({
+              yearData: data,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
+    });
+  };
 
   getAcademicSessions = async () => {
     this.setState({ academicSessionsDataLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -142,9 +179,9 @@ class F323ViewRecordForHeads extends Component {
             for (let i = 0; i < arrayLength; i++) {
               if (array[i].isActive == "1") {
                 const sessionId = array[i].ID;
-                this.setState({ academicSessionId: sessionId });
+                // this.setState({ academicSessionId: sessionId });
 
-                this.getProgrammeGroupsBySessionId(sessionId);
+                // this.getProgrammeGroupsBySessionId(sessionId);
               }
             }
           } else {
@@ -177,71 +214,20 @@ class F323ViewRecordForHeads extends Component {
     this.setState({ academicSessionsDataLoading: false });
   };
 
-  getProgrammeGroupsBySessionId = async (academicSessionId) => {
-    let mySessionId = academicSessionId;
-
-    this.setState({
-      programmeGroupsDataLoading: true,
-      programmeGroupsData: [],
-    });
-    let data = new FormData();
-    data.append("academicsSessionId", mySessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicsProgrammesGroupsView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({ programmeGroupsData: json.DATA });
-          } else {
-            this.handleSnackbar(
-              true,
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
-          }
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            this.handleSnackbar(
-              true,
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ programmeGroupsDataLoading: false });
-  };
-
   onSearchClick = async (e) => {
     if (!IsEmpty(e)) {
       e.preventDefault();
     }
-    var data = new FormData();
-    data.append("recordId", this.state.recordId);
+
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C323EmployeeHourlySheetApprovedView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C333CommonEmployeePayroleView`;
+    var data = new FormData();
+    data.append("academicsSessionId", this.state.academicSessionId);
+    data.append("month", this.state.monthId);
+    data.append("year", this.state.yearId);
+
+    // data.append("programmeGroupId", this.state.programmeGroupId);
+    // data.append("month", this.state.monthId);
     await fetch(url, {
       method: "POST",
       body: data,
@@ -258,11 +244,11 @@ class F323ViewRecordForHeads extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let array = json.DATA[0].detail || [];
+            let array = json.DATA || [];
 
             let myExpandedGroupsData = [];
             for (let i = 0; i < array.length; i++) {
-              myExpandedGroupsData.push(array[i]["teacherLabel"]);
+              myExpandedGroupsData.push(array[i]["monthLabel"]);
             }
 
             let isApproved = false;
@@ -273,105 +259,8 @@ class F323ViewRecordForHeads extends Component {
             this.setState({
               teachersAttendanceSheetData: array,
               expandedGroupsData: myExpandedGroupsData,
-              academicSessionId: json.DATA[0].sessionLabel,
-              programmeGroupId: json.DATA[0].programmeGroupLabel,
-              monthId: json.DATA[0].monthLabel,
-              isApprovedByHead: json.DATA[0].isApproved,
-              yearId: json.DATA[0].year,
               isApproved,
             });
-          } else {
-            this.handleSnackbar(
-              true,
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
-          }
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            this.handleSnackbar(
-              true,
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  onApproveClick = async (e) => {
-    if (!IsEmpty(e)) {
-      e.preventDefault();
-    }
-
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C323TeachersProgrammeGroupAttandanceAprrovalSave`;
-    // var data = new FormData();
-    const { teachersAttendanceSheetData } = this.state;
-
-    const groupedData = teachersAttendanceSheetData.reduce((acc, current) => {
-      const { hourlySheetEmployeesId } = current;
-
-      let employee = acc.find(
-        (item) => item.hourlySheetEmployeesId === hourlySheetEmployeesId
-      );
-
-      if (!employee) {
-        employee = {
-          hourlySheetEmployeesId,
-          hourlySheetEmployeesCourses: [],
-        };
-        acc.push(employee);
-      }
-
-      const courseDetail = {
-        hourlySheetEmployeesCourseId: current.hourlySheetEmployeesCourseId,
-        totalAdjustedHours: current.totalAdjustedHours,
-        totalNetHours: current.totalNetHours,
-        totalAmount: current.totalAmount,
-        adjustmentRemarks: current.adjustmentRemarks || "",
-      };
-
-      employee.hourlySheetEmployeesCourses.push(courseDetail);
-
-      return acc;
-    }, []);
-
-    const data = {
-      hourlySheetId: this.state.recordId,
-      hourlyEmployees: groupedData,
-    };
-
-    await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-        "Content-Type": "application/json",
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.onSearchClick();
-            this.handleSnackbar(true, "Approved", "success");
           } else {
             this.handleSnackbar(
               true,
@@ -409,9 +298,6 @@ class F323ViewRecordForHeads extends Component {
       snackbarSeverity: severity,
     });
   };
-  viewReport = () => {
-    window.location = "#/dashboard/F322Reports";
-  };
 
   onClearAllData = () => {
     let sessionId = "";
@@ -424,7 +310,7 @@ class F323ViewRecordForHeads extends Component {
       }
     }
 
-    this.getProgrammeGroupsBySessionId(sessionId);
+    // this.getProgrammeGroupsBySessionId(sessionId);
 
     this.setState({
       academicSessionId: sessionId,
@@ -449,7 +335,7 @@ class F323ViewRecordForHeads extends Component {
           programmeGroupId: "",
           programmeGroupIdError: "",
         });
-        this.getProgrammeGroupsBySessionId(value);
+        // this.getProgrammeGroupsBySessionId(value);
         break;
       case "programmeGroupId":
         this.setState({
@@ -460,25 +346,13 @@ class F323ViewRecordForHeads extends Component {
         break;
     }
 
+    if (name === "academicSessionId") {
+      this.getYearsData(value);
+    }
+
     this.setState({
       [name]: value,
       [errName]: "",
-    });
-  };
-  handleRatePerHourChange = (value, rowData) => {
-    const { courseId } = rowData;
-    const updatedData = this.state.teachersAttendanceSheetData.map((item) =>
-      item.courseId === courseId
-        ? {
-            ...item,
-            totalAdjustedHours: value,
-            totalNetHours: Number(value) + item.totalHours,
-            totalAmount: (Number(value) + item.totalHours) * item.ratePerHour,
-          }
-        : item
-    );
-    this.setState({
-      teachersAttendanceSheetData: updatedData,
     });
   };
 
@@ -486,43 +360,60 @@ class F323ViewRecordForHeads extends Component {
     const { classes } = this.props;
 
     const columns = [
-      { name: "teacherLabel", title: "Teacher Name" },
-      { name: "courseLabel", title: "Subjects" },
-      { name: "totalSchedules", title: "Total" },
-      { name: "totalAttended", title: "Attended" },
-      { name: "durationPerSession", title: "Duration Per Session" },
-      { name: "totalHours", title: "Total Hours" },
+      { name: "userId", title: "Employee ID" },
+      { name: "userLabel", title: "Employee Name" },
+      { name: "departmentsLabel", title: "Department" },
+      { name: "designationsLabel", title: "Designation" },
       {
-        name: "totalAdjustedHours",
-        title: "Adjusted Hours",
+        name: "paymentThrough",
+        title: "Payment Through",
         getCellValue: (rowData) => {
           console.log(rowData);
-
           return (
-            <TextField
-              variant="outlined"
-              size="small"
-              name="adjustedHours"
-              disabled={
-                !this.state.academicSessionId ||
-                !this.state.programmeGroupId ||
-                !this.state.monthId ||
-                this.state.teachersAttendanceSheetData?.length <= 0 ||
-                this.state.isApproved
-              }
-              type="number"
-              value={rowData.totalAdjustedHours || ""}
-              onChange={(event) =>
-                this.handleRatePerHourChange(event.target.value, rowData)
-              }
-            />
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                flexDirection: "row",
+              }}
+            >
+              {rowData.paymentThrough === "Cheque" ? "Cheque" : "Bank Account"}
+              <br />
+              {rowData.backAccount1 !== ""
+                ? `SCB : ${rowData.backAccount1}`
+                : ""}
+              <br />
+              {rowData.backAccount2 !== ""
+                ? `Faysal Bank : ${rowData.backAccount2}`
+                : ""}
+            </div>
           );
         },
       },
-      { name: "totalNetHours", title: "Net Hours" },
-      { name: "ratePerHour", title: "Rate Per Hour" },
-      { name: "totalAmount", title: "Total Amount" },
-      { name: "adjustmentRemarks", title: "Adjustment Remarks" },
+
+      // { name: "backAccount1", title: "Bank 1 Account #" },
+      // { name: "backAccount2", title: "Bank 2 Account #" },
+      { name: "hourlyAmount", title: "Hourly Amount" },
+      { name: "monthlyAmount", title: "Monthly Amount" },
+      { name: "totalPayableAmountLabel", title: "Total Payable Amount" },
+      {
+        name: "action",
+        title: "Actions",
+        getCellValue: (rowData) => {
+          console.log(rowData);
+          return (
+            <Fragment>
+              <a
+                href={`#/dashboard/F333SalaryHistoryView/${this.state.academicSessionId}T${this.state.yearId}T${this.state.monthId}T${rowData.userId}`}
+                target="_blank"
+                style={{ color: "green" }}
+              >
+                View
+              </a>
+            </Fragment>
+          );
+        },
+      },
     ];
 
     return (
@@ -535,12 +426,7 @@ class F323ViewRecordForHeads extends Component {
         <div className={classes.mainContainer}>
           <div className={classes.titleContainer}>
             <Typography className={classes.title} variant="h5">
-              <Tooltip title="Back">
-                <IconButton onClick={() => window.history.back()}>
-                  <ArrowBackIcon fontSize="small" color="primary" />
-                </IconButton>
-              </Tooltip>
-              {"Hourly Sheet For Director"}
+              {"Consolidated Salary History"}
               <br />
             </Typography>
           </div>
@@ -559,21 +445,17 @@ class F323ViewRecordForHeads extends Component {
                 helperText={this.state.academicSessionIdError}
                 required
                 fullWidth
-                InputProps={{
-                  classes: { disabled: classes.disabledTextField },
-                }}
-                disabled
-                // select
+                select
               >
-                {/* {this.state.academicSessionsData?.map((item) => (
+                {this.state.academicSessionsData?.map((item) => (
                   <MenuItem key={item} value={item.ID}>
                     {item.Label}
                   </MenuItem>
-                ))} */}
+                ))}
               </TextField>
             </Grid>
             <br />
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <TextField
                 id="programmeGroupId"
                 name="programmeGroupId"
@@ -584,43 +466,38 @@ class F323ViewRecordForHeads extends Component {
                 error={!!this.state.programmeGroupIdError}
                 helperText={this.state.programmeGroupIdError}
                 required
-                InputProps={{
-                  classes: { disabled: classes.disabledTextField },
-                }}
-                disabled
                 fullWidth
-                // select
+                select
               >
-                {/* {this.state.programmeGroupsData?.map((item) => (
+                {this.state.programmeGroupsData?.map((item) => (
                   <MenuItem key={item} value={item.Id}>
                     {item.Label}
                   </MenuItem>
-                ))} */}
+                ))}
               </TextField>
             </Grid>
+            */}
+
             <Grid item xs={12} md={3}>
               <TextField
                 id="yearId"
                 name="yearId"
                 variant="outlined"
                 label="Year"
+                disabled={!this.state.academicSessionId}
                 onChange={this.onHandleChange}
                 value={this.state.yearId}
-                // error={!!this.state.programmeGroupIdError}
-                // helperText={this.state.programmeGroupIdError}
+                // error={!!this.state.monthIdError}
+                // helperText={this.state.monthIdError}
                 required
-                InputProps={{
-                  classes: { disabled: classes.disabledTextField },
-                }}
-                disabled
                 fullWidth
-                // select
+                select
               >
-                {/* {this.state.programmeGroupsData?.map((item) => (
-                  <MenuItem key={item} value={item.Id}>
+                {this.state.yearData?.map((item) => (
+                  <MenuItem key={item} value={item.ID}>
                     {item.Label}
                   </MenuItem>
-                ))} */}
+                ))}
               </TextField>
             </Grid>
             <Grid item xs={12} md={3}>
@@ -634,28 +511,62 @@ class F323ViewRecordForHeads extends Component {
                 error={!!this.state.monthIdError}
                 helperText={this.state.monthIdError}
                 required
-                InputProps={{
-                  classes: { disabled: classes.disabledTextField },
-                }}
-                disabled
                 fullWidth
-                // select
+                select
               >
-                {/* {this.state.monthsData?.map((item) => (
+                {this.state.monthsData?.map((item) => (
                   <MenuItem key={item} value={item.id}>
                     {item.label}
                   </MenuItem>
-                ))} */}
+                ))}
               </TextField>
             </Grid>
-
+            <Grid item xs={12} md={3}>
+              <div className={classes.actions}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  disabled={
+                    this.state.isLoading ||
+                    this.state.academicSessionsDataLoading ||
+                    this.state.programmeGroupsDataLoading ||
+                    !this.state.academicSessionId
+                  }
+                  onClick={(e) => this.onSearchClick(e)}
+                >
+                  {" "}
+                  {this.state.isLoading ? (
+                    <CircularProgress style={{ color: "white" }} size={24} />
+                  ) : (
+                    "Search"
+                  )}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="default"
+                  className={classes.button}
+                  disabled={
+                    this.state.isLoading ||
+                    this.state.academicSessionsDataLoading ||
+                    this.state.programmeGroupsDataLoading
+                  }
+                  onClick={() => this.onClearAllData()}
+                  style={{
+                    marginLeft: 8,
+                  }}
+                >
+                  Clear
+                </Button>
+              </div>
+            </Grid>
             <Grid item xs={12}>
               <Divider className={classes.divider} />
             </Grid>
           </Grid>
 
           <Grid item xs={12}>
-            <F323ViewRecordForHeadsTableComponent
+            <F333ConsolitdatedSheetsForSalaryHistoryTableComponent
               columns={columns}
               data={this.state}
             />
@@ -667,31 +578,19 @@ class F323ViewRecordForHeads extends Component {
             severity={this.state.snackbarSeverity}
             handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
           />
-
-          <BottomBar
-            left_button_hide
-            // left_button_text="View"
-            // left_button_hide={false}
-            // bottomLeftButtonAction={this.viewReport}
-            right_button_text={this.state.isApproved ? "Saved" : "Save"}
-            disableRightButton={this.state.isApprovedByHead === 1}
-            loading={this.state.isLoading}
-            isDrawerOpen={this.props.isDrawerOpen}
-            bottomRightButtonAction={() => this.onApproveClick()}
-          />
         </div>
       </Fragment>
     );
   }
 }
 
-F323ViewRecordForHeads.propTypes = {
+F333ConsolitdatedSheetsForSalaryHistory.propTypes = {
   classes: PropTypes.object,
   setDrawerOpen: PropTypes.func,
 };
 
-F323ViewRecordForHeads.defaultProps = {
+F333ConsolitdatedSheetsForSalaryHistory.defaultProps = {
   classes: {},
   setDrawerOpen: (fn) => fn,
 };
-export default withRouter(withStyles(styles)(F323ViewRecordForHeads));
+export default withStyles(styles)(F333ConsolitdatedSheetsForSalaryHistory);

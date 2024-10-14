@@ -218,6 +218,16 @@ import F331EmployeeSalarySlipReport from "./Contents/Forms/EmployeeSalarySlipRep
 import F331EmployeeMonthlySallaryChallanView from "./Contents/Forms/EmployeeSalarySlipReport/F331EmployeeMonthlySallaryChallanView";
 import F332EmployeeTaxCertificateView from "./Contents/Forms/EmployeeTaxCertificate/F332EmployeeTaxCertificateView";
 import F332EmployeeTaxCertificateReport from "./Contents/Forms/EmployeeTaxCertificate/F332EmployeeTaxCertificateReport";
+import F333ConsolitdatedSheetsForSalaryHistory from "./Contents/Forms/ConsolidatedSalaryHistory/F333ConsolitdatedSheetsForSalaryHistory";
+import F333SalaryHistoryView from "./Contents/Forms/ConsolidatedSalaryHistory/Views/F333SalaryHistoryView";
+// import F334MonthlyEmployeeAttendance from "./Contents/Forms/MonthlyEmployeeAttendance/F334MonthlyEmployeeAttendance";
+import F335DefineShiftManagement from "./Contents/Forms/ShiftManagement/F335DefineShiftManagement";
+import R335ShiftManagementReport from "./Contents/Forms/ShiftManagement/R335ShiftManagementReport";
+import F336MonthlyEmployeeAttendance from "./Contents/Forms/MonthlyEmployeeAttendance/F336MonthlyEmployeeAttendance";
+import F337MonthlyEmployeeApproval from "./Contents/Forms/MonthlyEmployeeApproval/F337MonthlyEmployeeApproval";
+import F337ViewRecordForMonthlyApproval from "./Contents/Forms/MonthlyEmployeeApproval/View/F337ViewRecordForMonthlyApproval";
+import R338AttendanceDailyReport from "./Contents/Forms/R338AttendanceDailyReport";
+import F339AddManualAttendance from "./Contents/Forms/AddManualAttendance/F339AddManualAttendance";
 
 const drawerWidth = 283;
 
@@ -529,6 +539,38 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F323ViewRecordForHead
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F336MonthlyEmployeeAttendance"
+                exact
+                path="/dashboard/F336MonthlyEmployeeAttendance"
+                render={(props) => {
+                  return (
+                    <F336MonthlyEmployeeAttendance
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F335DefineShiftManagement"
+                exact
+                path="/dashboard/F335DefineShiftManagement/:id"
+                render={(props) => {
+                  return (
+                    <F335DefineShiftManagement
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -1727,6 +1769,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R327EmployeesLoanView
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R335ShiftManagementReport"
+                exact
+                path="/dashboard/R335ShiftManagementReport"
+                render={(props) => {
+                  return (
+                    <R335ShiftManagementReport
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                     />
@@ -2936,6 +2993,22 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F333SalaryHistoryView"
+                exact
+                path="/dashboard/F333SalaryHistoryView/:id"
+                render={(props) => {
+                  return (
+                    <F333SalaryHistoryView
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="R326ConsolidatedHourlySheetForDirector"
@@ -2960,6 +3033,22 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F330ConsolitdatedSheetsForPayroll
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F333ConsolitdatedSheetsForSalaryHistory"
+                exact
+                path="/dashboard/F333ConsolitdatedSheetsForSalaryHistory"
+                render={(props) => {
+                  return (
+                    <F333ConsolitdatedSheetsForSalaryHistory
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -3066,6 +3155,38 @@ const Dashboard = (props) => {
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="F337MonthlyEmployeeApproval"
+                exact
+                path="/dashboard/F337MonthlyEmployeeApproval"
+                render={(props) => {
+                  return (
+                    <F337MonthlyEmployeeApproval
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F337ViewRecordForMonthlyApproval"
+                exact
+                path="/dashboard/F337ViewRecordForMonthlyApproval/:recordId"
+                render={(props) => {
+                  return (
+                    <F337ViewRecordForMonthlyApproval
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="F323HourlySheetForHeads"
                 exact
                 path="/dashboard/F329EmployeesLoanApproval"
@@ -3088,6 +3209,38 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R328EmployeesLoanApprovalReview
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R338AttendanceDailyReport"
+                exact
+                path="/dashboard/R338AttendanceDailyReport"
+                render={(props) => {
+                  return (
+                    <R338AttendanceDailyReport
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F339AddManualAttendance"
+                exact
+                path="/dashboard/F339AddManualAttendance/0"
+                render={(props) => {
+                  return (
+                    <F339AddManualAttendance
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

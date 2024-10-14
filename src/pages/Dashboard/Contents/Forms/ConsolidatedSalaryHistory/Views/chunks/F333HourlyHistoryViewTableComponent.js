@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Paper } from "@material-ui/core";
@@ -22,96 +23,97 @@ const CurrencyTypeProvider = (props) => (
   <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
 );
 
-const F326ConsolitdatedSheetsForDirectorTableComponent = (props) => {
-  console.log(props);
+const F333HourlyHistoryViewTableComponent = (props) => {
+  // const filteredColumns = props.columns.filter(
+  //   (column) => column.name !== "totalAmount" && column.name !== "ratePerHour"
+  // );
+  // const updatedData = {
+  //   ...props,
+  //   columns: filteredColumns,
+  // };
   const [tableColumnExtensions] = useState([
-    { columnName: "monthLabel", align: "right" },
     { columnName: "totalSchedules", align: "right" },
     { columnName: "totalAttended", align: "right" },
     { columnName: "durationPerSession", align: "right" },
     { columnName: "totalHours", align: "right" },
     { columnName: "ratePerHour", align: "right" },
     { columnName: "totalAmount", align: "right" },
-    { columnName: "totalAdjustedHours", align: "right" },
-    { columnName: "adjustmentRemarks", align: "right" },
+    { columnName: "adjustedHours", align: "right" },
     { columnName: "totalNetHours", align: "right" },
   ]);
 
-  // const [groupSummaryItems] = useState([
-  //   { columnName: "totalHours", type: "sum" },
-  //   { columnName: "ratePerHour", type: "avg" },
-  //   { columnName: "totalAmount", type: "sum" },
-  // ]);
+  //   const [tableGroupColumn] = useState([{ columnName: "teacherLabel" }]);
+
+  const [groupSummaryItems] = useState([
+    { columnName: "netHours", type: "sum" },
+    { columnName: "ratePerHour", type: "avg" },
+    // { columnName: "totalHours", type: "sum" },
+  ]);
 
   const [totalSummaryItems] = useState([
-    { columnName: "totalNetHours", type: "sum" },
+    { columnName: "netHours", type: "sum" },
     { columnName: "ratePerHour", type: "avg" },
-    { columnName: "totalAmount", type: "sum" },
+    // { columnName: "totalAmount", type: "sum" },
   ]);
 
   const { data, columns } = props;
-  const [currencyColumns] = useState(["ratePerHour", "totalAmount"]);
+  const [currencyColumns] = useState(["perHourRate", "totalAmount"]);
   const [expandedGroups, setExpandedGroups] = useState([]);
 
   useEffect(() => {
-    setExpandedGroups(props.expandedGroups);
-  }, [props.expandedGroups]);
+    setExpandedGroups(data.expandedGroupsDataHourly);
+  }, [data]);
 
   const onExpandedGroupChange = (groups) => {
     setExpandedGroups(groups);
   };
-
-  // Transforming the data to include month labels
-  const transformedData = data.teachersAttendanceSheetData
-    .map((monthData) => {
-      return monthData.detail.map((item) => ({
-        ...item,
-        monthLabel: `${monthData.monthLabel} (${
-          monthData.year ? monthData.year : ""
-        })`,
-        teacherLabel: item.teacherLabel,
-      }));
-    })
-    .flat();
-
+  const rows = data.teachersAttendanceSheetDataHourly || [];
   return (
     <Paper>
-      <Grid rows={transformedData} columns={columns}>
+      <Grid rows={rows} columns={columns}>
         <CurrencyTypeProvider for={currencyColumns} />
         <GroupingState
-          defaultGrouping={[
-            { columnName: "monthLabel" },
-            { columnName: "teacherLabel" },
-          ]}
+          //   defaultGrouping={tableGroupColumn}
           defaultExpandedGroups={expandedGroups}
           expandedGroups={expandedGroups}
           onExpandedGroupsChange={onExpandedGroupChange}
+          //   grouping={tableGroupColumn}
         />
         <SummaryState
           totalItems={totalSummaryItems}
-          // groupItems={groupSummaryItems}
+          groupItems={groupSummaryItems}
         />
         <IntegratedGrouping />
         <IntegratedSummary />
         <Table columnExtensions={tableColumnExtensions} />
-        <TableHeaderRow />
-        <TableGroupRow />
+        <TableHeaderRow
+          titleComponent={(props) =>
+            props.children === "Action" ? (
+              <b>&emsp;{props.children}</b>
+            ) : (
+              <b>{props.children}</b>
+            )
+          }
+        />
+        <TableGroupRow icon />
         <TableSummaryRow />
       </Grid>
     </Paper>
   );
 };
 
-F326ConsolitdatedSheetsForDirectorTableComponent.propTypes = {
-  data: PropTypes.object.isRequired,
-  columns: PropTypes.array.isRequired,
+F333HourlyHistoryViewTableComponent.propTypes = {
+  data: PropTypes.object,
+  columns: PropTypes.array,
   expandedGroups: PropTypes.array,
   showFilter: PropTypes.bool,
 };
 
-F326ConsolitdatedSheetsForDirectorTableComponent.defaultProps = {
+F333HourlyHistoryViewTableComponent.defaultProps = {
+  data: {},
+  columns: [],
   expandedGroups: [],
   showFilter: false,
 };
 
-export default F326ConsolitdatedSheetsForDirectorTableComponent;
+export default F333HourlyHistoryViewTableComponent;
