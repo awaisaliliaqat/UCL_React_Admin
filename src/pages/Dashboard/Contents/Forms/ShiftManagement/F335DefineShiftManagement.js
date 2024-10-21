@@ -11,7 +11,10 @@ import {
   Tooltip,
   Card,
   CardContent,
+  Checkbox,
 } from "@material-ui/core";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
@@ -105,34 +108,56 @@ class F335DefineShiftManagement extends Component {
       showPass: false,
       request: "",
 
-      files3: [],
-      files3Error: "",
-      uploadLoading: false,
       // {id:"06:00:00",label:"06:00 AM"},
       //Time Format like Above
       selectedDate: new Date("2014-08-18T21:11:54"),
 
-      employeeData: [],
-      employeeDataLoading: false,
-      employeeObject: {},
-      employeeObjectError: "",
-
       label: "",
-      startTime: new Date("2014-08-18T09:15:54"),
-      endTime: new Date("2014-08-18T12:00:54"),
+      startTime: new Date("2014-08-18T09:00:54"),
+      endTime: new Date("2014-08-18T18:00:54"),
       startTimeToSend: new Date("2014-08-18T21:11:54"),
       endTimeToSend: new Date("2014-08-18T21:11:54"),
-
-      employeeId: "",
-      loanAmount: "",
-      months: "",
-      installmentPerMonth: "",
 
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
+
+      selectedDays: [
+        {
+          id: 1,
+          label: "Sunday",
+        },
+        {
+          id: 2,
+          label: "Monday",
+        },
+        {
+          id: 3,
+          label: "Tuesday",
+        },
+        {
+          id: 4,
+          label: "Wednesday",
+        },
+        {
+          id: 5,
+          label: "Thurday",
+        },
+        {
+          id: 6,
+          label: "Friday",
+        },
+        {
+          id: 7,
+          label: "Saturday",
+        },
+      ],
+      dayId: [],
     };
   }
+
+  // icon = (<CheckBoxOutlineBlankIcon fontSize="small" />);
+  // checkedIcon = (<CheckBoxIcon fontSize="small" />);
 
   componentDidMount() {
     console.log(this.state.recordId, "id is coming");
@@ -143,9 +168,9 @@ class F335DefineShiftManagement extends Component {
       recordId: data[0],
     });
     this.getEmployeesData();
-    if (Number(data[0]) > 0) {
-      this.loadData(Number(data[0]), data[1]);
-    }
+    // if (Number(data[0]) > 0) {
+    //   this.loadData(Number(data[0]), data[1]);
+    // }
   }
 
   handleDateChangeStartTime = (date) => {
@@ -177,70 +202,70 @@ class F335DefineShiftManagement extends Component {
     });
   };
 
-  loadData = async (recordId, string) => {
-    const data = new FormData();
-    data.append("recordId", recordId);
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C328CommonUsersEmployeesLoanView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            let data = json.DATA || [];
-            if (data.length > 0) {
-              let myDataObject = data[0] || {};
-              this.setState({
-                employeeObject: {
-                  id: myDataObject["userEmployeeId"],
-                  label: myDataObject["userEmployeeLabel"],
-                },
-                request: string,
-                recordId: recordId,
-                loanAmount: myDataObject["loanAmount"],
-                months: myDataObject["numberOfMonths"],
-                installmentPerMonth:
-                  myDataObject["loanAmount"] / myDataObject["numberOfMonths"],
-              });
-            }
-          } else {
-            this.handleSnackbar(
-              true,
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-              "error"
-            );
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            console.log(error);
-            this.handleSnackbar(
-              true,
-              "Failed to Load Data ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
+  // loadData = async (recordId, string) => {
+  //   const data = new FormData();
+  //   data.append("recordId", recordId);
+  //   this.setState({ isLoading: true });
+  //   const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C328CommonUsersEmployeesLoanView`;
+  //   await fetch(url, {
+  //     method: "POST",
+  //     body: data,
+  //     headers: new Headers({
+  //       Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+  //     }),
+  //   })
+  //     .then((res) => {
+  //       if (!res.ok) {
+  //         throw res;
+  //       }
+  //       return res.json();
+  //     })
+  //     .then(
+  //       (json) => {
+  //         if (json.CODE === 1) {
+  //           let data = json.DATA || [];
+  //           if (data.length > 0) {
+  //             let myDataObject = data[0] || {};
+  //             this.setState({
+  //               employeeObject: {
+  //                 id: myDataObject["userEmployeeId"],
+  //                 label: myDataObject["userEmployeeLabel"],
+  //               },
+  //               request: string,
+  //               recordId: recordId,
+  //               loanAmount: myDataObject["loanAmount"],
+  //               months: myDataObject["numberOfMonths"],
+  //               installmentPerMonth:
+  //                 myDataObject["loanAmount"] / myDataObject["numberOfMonths"],
+  //             });
+  //           }
+  //         } else {
+  //           this.handleSnackbar(
+  //             true,
+  //             json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+  //             "error"
+  //           );
+  //         }
+  //         console.log(json);
+  //       },
+  //       (error) => {
+  //         if (error.status == 401) {
+  //           this.setState({
+  //             isLoginMenu: true,
+  //             isReload: true,
+  //           });
+  //         } else {
+  //           console.log(error);
+  //           this.handleSnackbar(
+  //             true,
+  //             "Failed to Load Data ! Please try Again later.",
+  //             "error"
+  //           );
+  //         }
+  //       }
+  //     );
+  //   this.setState({ isLoading: false });
+  // };
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
@@ -297,83 +322,72 @@ class F335DefineShiftManagement extends Component {
     }
   };
 
-  isFormValid = () => {
-    let isValid = true;
-    let {
-      employeeObjectError,
-      payrollMonthsError,
-      perMonthSalaryError,
-      perHourRateError,
-      payrollCommentsError,
-    } = this.state;
+  // isFormValid = () => {
+  //   let isValid = true;
+  //   let {
+  //     employeeObjectError,
+  //     payrollMonthsError,
+  //     perMonthSalaryError,
+  //     perHourRateError,
+  //     payrollCommentsError,
+  //   } = this.state;
 
-    if (IsEmpty(this.state.employeeObject)) {
-      employeeObjectError = "Please select employee.";
-      isValid = false;
-    } else {
-      employeeObjectError = "";
-    }
+  //   if (IsEmpty(this.state.employeeObject)) {
+  //     employeeObjectError = "Please select employee.";
+  //     isValid = false;
+  //   } else {
+  //     employeeObjectError = "";
+  //   }
 
-    if (!this.state.payrollMonths) {
-      isValid = false;
-      payrollMonthsError = "Please enter number of months.";
-    } else {
-      payrollMonthsError = "";
-    }
+  //   if (!this.state.payrollMonths) {
+  //     isValid = false;
+  //     payrollMonthsError = "Please enter number of months.";
+  //   } else {
+  //     payrollMonthsError = "";
+  //   }
 
-    if (!this.state.perMonthSalary && !this.state.perHourRate) {
-      isValid = false;
-      perMonthSalaryError =
-        "Please enter Per Month Salary or Enter in Per Hour Rate field.";
-      perHourRateError =
-        "Please enter Per Hour Rate  or Enter in Per Month Salary field.";
-    } else {
-      perMonthSalaryError = "";
-      perHourRateError = "";
-    }
+  //   if (!this.state.perMonthSalary && !this.state.perHourRate) {
+  //     isValid = false;
+  //     perMonthSalaryError =
+  //       "Please enter Per Month Salary or Enter in Per Hour Rate field.";
+  //     perHourRateError =
+  //       "Please enter Per Hour Rate  or Enter in Per Month Salary field.";
+  //   } else {
+  //     perMonthSalaryError = "";
+  //     perHourRateError = "";
+  //   }
 
-    if (!this.state.payrollComments) {
-      isValid = false;
-      payrollCommentsError = "Please enter comments.";
-    } else {
-      payrollCommentsError = "";
-    }
+  //   if (!this.state.payrollComments) {
+  //     isValid = false;
+  //     payrollCommentsError = "Please enter comments.";
+  //   } else {
+  //     payrollCommentsError = "";
+  //   }
 
-    this.setState({
-      employeeObjectError,
-      payrollMonthsError,
-      perMonthSalaryError,
-      perHourRateError,
-      payrollCommentsError,
-    });
-    return isValid;
-  };
+  //   this.setState({
+  //     employeeObjectError,
+  //     payrollMonthsError,
+  //     perMonthSalaryError,
+  //     perHourRateError,
+  //     payrollCommentsError,
+  //   });
+  //   return isValid;
+  // };
 
   clickOnFormSubmit = () => {
-    if (this.isFormValid()) {
-      document.getElementById("btn-submit").click();
-    }
+    document.getElementById("btn-submit").click();
   };
 
   clearAllData = () => {
     this.setState({
-      employeeDataLoading: false,
-      employeeObject: {},
-      employeeObjectError: "",
-
-      employeeId: "",
-      loanAmount: "",
-      months: "",
-      installmentPerMonth: "",
-
       label: "",
-      startTime: new Date("2014-08-18T09:15:54"),
-      endTime: new Date("2014-08-18T12:00:54"),
+      startTime: new Date("2014-08-18T09:00:54"),
+      endTime: new Date("2014-08-18T18:00:54"),
       // startTimeToSend: new Date("2014-08-18T21:11:54"),
       // endTimeToSend: new Date("2014-08-18T21:11:54"),
 
-      files3: [],
-      files3Error: "",
+      label: "",
+      dayId: [],
       uploadLoading: false,
     });
   };
@@ -400,12 +414,12 @@ class F335DefineShiftManagement extends Component {
     // data.append("endTime", endingTime);
     // data.append("description", null);
     // console.log("state is coming", startingTime, endingTime);
-
     const objToSend = {
       startTime: startingTime,
       label: this.state.label,
       endTime: endingTime,
       description: "",
+      days: this.state.dayId,
       active: true,
     };
     // for (let i = 0; i < this.state.files3.length; i++) {
@@ -653,6 +667,11 @@ class F335DefineShiftManagement extends Component {
     }
   };
 
+  handleDaySelection = (value) => {
+    const selectedDayIds = value.map((day) => day.id);
+    this.setState({ dayId: selectedDayIds });
+  };
+
   getEmployeesData = async () => {
     this.setState({ employeeDataLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C327CommonUsersView`;
@@ -874,37 +893,53 @@ class F335DefineShiftManagement extends Component {
                   inputVariant="outlined"
                 />
               </Grid>
-
-              {this.state.recordId !== 0 ? (
-                ""
-              ) : (
-                <Grid item xs={12}>
-                  <MyDropzone
-                    name="contained-button-helping-material"
-                    label="Upload file"
-                    files={this.state.files3}
-                    onChange={(event) => this.handleFileChange(event)}
-                    disabled={this.state.uploadLoading}
-                    className={classes.inputFileFocused}
-                    multiple={true}
-                  />
-                  <div
-                    style={{
-                      textAlign: "left",
-                      marginTop: 5,
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: "#f44336",
-                      }}
-                    >
-                      &emsp;{this.state.files3Error}
-                    </span>
-                  </div>
-                </Grid>
-              )}
+              <Grid item xs={4}>
+                <Autocomplete
+                  multiple
+                  fullWidth
+                  id={"daySelector"}
+                  options={this.state.selectedDays}
+                  value={this?.state?.dayId.map((id) =>
+                    this.state.selectedDays.find((day) => day.id === id)
+                  )}
+                  onChange={(event, value) => this.handleDaySelection(value)}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.label}
+                  getOptionSelected={(option, selectedValue) =>
+                    option.id === selectedValue.id
+                  }
+                  renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                      <Chip
+                        label={option.label}
+                        color="primary"
+                        variant="outlined"
+                        {...getTagProps({ index })}
+                      />
+                    ))
+                  }
+                  renderOption={(option, { selected }) => (
+                    <Fragment>
+                      <Checkbox
+                        icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                        checkedIcon={<CheckBoxIcon fontSize="small" />}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                        color="primary"
+                      />
+                      {option.label}
+                    </Fragment>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Select Days"
+                      placeholder="Search and Select"
+                    />
+                  )}
+                />
+              </Grid>
             </Grid>
           </Grid>
           <input type="submit" style={{ display: "none" }} id="btn-submit" />
@@ -921,6 +956,9 @@ class F335DefineShiftManagement extends Component {
               : this.state.request === "isApproved"
               ? "Save & Approve"
               : "Save"
+          }
+          disableRightButton={
+            this.state.dayId.length === 0 || !this.state.label
           }
           bottomRightButtonAction={() =>
             Number(this.state.recordId) === 0

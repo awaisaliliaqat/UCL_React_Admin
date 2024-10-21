@@ -228,6 +228,8 @@ import F337MonthlyEmployeeApproval from "./Contents/Forms/MonthlyEmployeeApprova
 import F337ViewRecordForMonthlyApproval from "./Contents/Forms/MonthlyEmployeeApproval/View/F337ViewRecordForMonthlyApproval";
 import R338AttendanceDailyReport from "./Contents/Forms/R338AttendanceDailyReport";
 import F339AddManualAttendance from "./Contents/Forms/AddManualAttendance/F339AddManualAttendance";
+import R340Reports from "./Contents/Forms/R340Reports";
+import R341Reports from "./Contents/Forms/R341Reports";
 
 const drawerWidth = 283;
 
@@ -1299,6 +1301,38 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R66Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R340Reports"
+                exact
+                path="/dashboard/R340Reports"
+                render={(props) => {
+                  return (
+                    <R340Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R341Reports"
+                exact
+                path="/dashboard/R341Reports"
+                render={(props) => {
+                  return (
+                    <R341Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -3237,7 +3271,7 @@ const Dashboard = (props) => {
                 setValue={(value) => handleValueChange(value)}
                 name="F339AddManualAttendance"
                 exact
-                path="/dashboard/F339AddManualAttendance/0"
+                path="/dashboard/F339EmployeeManualAttendance"
                 render={(props) => {
                   return (
                     <F339AddManualAttendance

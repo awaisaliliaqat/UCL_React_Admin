@@ -506,8 +506,11 @@ class R338AttendanceDailyReport extends Component {
       // { name: "userName", title: "Employee Name", flex: 1 },
 
       { name: "attendanceDate", title: "Attendance Date", flex: 1 },
+      { name: "checkOut", title: "Check-out Time", flex: 1 },
+
       { name: "checkIn", title: "Check-in Time", flex: 1 },
       { name: "checkOut", title: "Check-out Time", flex: 1 },
+
       // { name: "rejectedBy", title: "Rejected By", flex: 1 },
       // {
       //   name: "hell",

@@ -1,614 +1,123 @@
 import React, { Component, Fragment } from "react";
-import { withStyles } from "@material-ui/styles";
-import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import {
-  TextField,
-  Grid,
-  Divider,
-  Typography,
-  Chip,
-  IconButton,
-  Tooltip,
-  Card,
-  CardContent,
-} from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import BottomBar from "../../../../../components/BottomBar/BottomBar";
-import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import {
-  numberExp,
-  numberWithDecimalExp,
-} from "../../../../../utils/regularExpression";
 import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { DatePicker, KeyboardTimePicker } from "@material-ui/pickers";
+import {
+  Divider,
+  CircularProgress,
+  Grid,
+  Button,
+  Typography,
+  TextField,
+  Chip,
+  MenuItem,
+} from "@material-ui/core";
+import F339AddManualAttendancesTableComponent from "./chunks/F339AddManualAttendancesTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
-import { withRouter } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
+import BottomBar from "../../../../../components/BottomBar/BottomBar";
+import ViewTableRecord from "../../../../../components/EditDeleteTableRecord/ViewTableRecord";
+import DeleteIcon from "@material-ui/icons/Delete";
 
-const styles = (theem) => ({
-  root: {
-    paddingBottom: 50,
-    paddingLeft: 20,
-    paddingRight: 20,
+const styles = () => ({
+  mainContainer: {
+    padding: 20,
   },
-  inputFileFocused: {
-    textAlign: "center",
-    "&:hover": {
-      color: theem.palette.primary.main,
-    },
+  titleContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  title: {
+    color: "#1d5f98",
+    fontWeight: 600,
+    textTransform: "capitalize",
+  },
+  divider: { backgroundColor: "rgb(58, 127, 187)", opacity: "0.3" },
+  actions: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    height: "100%",
+  },
+  button: {
+    textTransform: "capitalize",
+    fontSize: 14,
+    height: 45,
   },
 });
 
-function MyDropzone(props) {
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
-    accept:
-      // "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/pdf, image/*",
-    // multiple: props.multiple,
-  });
-
-  const files = acceptedFiles.map((file, index) => {
-    const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
-    return (
-      <Typography key={index} variant="subtitle1" color="primary">
-        {file.path} - {size} Kb
-        <input
-          type="hidden"
-          name={props.name + "-file-name"}
-          value={file.path}
-        ></input>
-      </Typography>
-    );
-  });
-
-  let msg = files || [];
-  if (msg.length <= 0 || props.files.length <= 0) {
-    msg = <Typography variant="subtitle1">{props.label}</Typography>;
-  }
-
-  return (
-    <div
-      id="contained-button-file-div"
-      {...getRootProps({
-        className: "dropzone " + `${props.className}`,
-        onChange: (event) => props.onChange(event),
-      })}
-    >
-      <Card style={{ backgroundColor: "#c7c7c7" }} className={props.className}>
-        <CardContent
-          style={{
-            paddingBottom: 14,
-            paddingTop: 14,
-            cursor: "pointer",
-          }}
-        >
-          <input
-            name={props.name + "-file"}
-            {...getInputProps()}
-            disabled={props.disabled}
-          />
-          {msg}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-class F339AddManualAttendance extends Component {
+class F339AddManualAttendances extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      recordId: 0,
       isLoading: false,
-      isReload: false,
-      showPass: false,
-      request: "",
 
-      files3: [],
-      files3Error: "",
-      uploadLoading: false,
+      isLoginMenu: false,
+      isReload: false,
+
+      isOpenSnackbar: false,
+      snackbarMessage: "",
+      snackbarSeverity: "",
+
+      employeePayrollsData: [],
+
+      yearData: [],
+      yearId: "",
+
+      isApproved: false,
 
       employeeData: [],
       employeeDataLoading: false,
       employeeObject: {},
       employeeObjectError: "",
 
-      employeeId: "",
-      loanAmount: "",
-      months: "",
-      installmentPerMonth: "",
+      startTime: null,
+      endTime: null,
+      startTimeToSend: null,
+      endTimeToSend: null,
 
-      isOpenSnackbar: false,
-      snackbarMessage: "",
-      snackbarSeverity: "",
+      enabledField: false,
+
+      fromDate: null,
+      fromDateToSend: null,
+
+      employeeId: "",
     };
   }
-
   componentDidMount() {
-    // console.log(this.state.recordId, "id is coming");
-    // const data = this.props.match.params.id.split("T");
-    // console.log(data);
-    this.setState({
-      ...this.state,
-      // recordId: data[0],
-    });
-    this.getEmployeesData();
-    // if (Number(data[0]) > 0) {
-    //   this.loadData(Number(data[0]), data[1]);
-    // }
+    this.props.setDrawerOpen(false);
+    this.getAcademicSessions();
+    // this.getData();
+    // this.getEmployeesData();
   }
 
-  // UNSAFE_componentWillReceiveProps(nextProps) {
-  //   if (this.props.match.params.recordId != nextProps.match.params.recordId) {
-  //     if (nextProps.match.params.recordId != 0) {
-  //       this.loadData(nextProps.match.params.recordId);
-  //       this.setState({
-  //         recordId: nextProps.match.params.recordId,
-  //       });
-  //     } else {
-  //       window.location.reload();
-  //     }
-  //   }
-  // }
+  onHandleChange = (event) => {
+    const { name, value } = event.target;
+    const dateStr = value;
+    const date = new Date(dateStr);
+    const formattedDate = date.toISOString().split("T")[0];
 
-  handleSnackbar = (open, msg, severity) => {
-    this.setState({
-      isOpenSnackbar: open,
-      snackbarMessage: msg,
-      snackbarSeverity: severity,
-    });
-  };
-
-  loadData = async (recordId, string) => {
-    const data = new FormData();
-    data.append("recordId", recordId);
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C328CommonUsersEmployeesLoanView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            let data = json.DATA || [];
-            if (data.length > 0) {
-              let myDataObject = data[0] || {};
-              this.setState({
-                employeeObject: {
-                  id: myDataObject["userEmployeeId"],
-                  label: myDataObject["userEmployeeLabel"],
-                },
-                request: string,
-                recordId: recordId,
-                loanAmount: myDataObject["loanAmount"],
-                months: myDataObject["numberOfMonths"],
-                installmentPerMonth:
-                  myDataObject["loanAmount"] / myDataObject["numberOfMonths"],
-              });
-            }
-          } else {
-            this.handleSnackbar(
-              true,
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-              "error"
-            );
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            console.log(error);
-            this.handleSnackbar(
-              true,
-              "Failed to Load Data ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  onHandleChange = (e) => {
-    const { name, value } = e.target;
-    const errName = `${name}Error`;
-
-    let regex = "";
-    switch (name) {
-      case "payrollMonths":
-        regex = new RegExp(numberExp);
-        if (value && !regex.test(value)) {
-          return;
-        }
-        break;
-      case "perMonthSalary":
-      case "perHourRate":
-        regex = new RegExp(numberWithDecimalExp);
-        if (value && !regex.test(value)) {
-          return;
-        }
-        break;
-      default:
-        break;
-    }
-
-    if (name === "loanAmount") {
-      if (this.state.months === "") {
-        this.setState({
-          [name]: value,
-          [errName]: "",
-          installmentPerMonth: Number(Number(value) / 1).toFixed(2),
-        });
-      } else {
-        this.setState({
-          [name]: value,
-          [errName]: "",
-          installmentPerMonth: Number(
-            Number(value) / Number(this.state.months)
-          ).toFixed(2),
-        });
-      }
-    } else if (name == "months") {
+    if (name === "fromDate") {
       this.setState({
-        [name]: value,
-        [errName]: "",
-        installmentPerMonth: Number(
-          Number(this.state.loanAmount) / Number(value)
-        ).toFixed(2),
+        fromDateToSend: formattedDate,
       });
     } else {
       this.setState({
-        [name]: value,
-        [errName]: "",
+        toDateToSend: formattedDate,
       });
     }
-  };
-
-  isFormValid = () => {
-    let isValid = true;
-    let {
-      employeeObjectError,
-      payrollMonthsError,
-      perMonthSalaryError,
-      perHourRateError,
-      payrollCommentsError,
-    } = this.state;
-
-    if (IsEmpty(this.state.employeeObject)) {
-      employeeObjectError = "Please select employee.";
-      isValid = false;
-    } else {
-      employeeObjectError = "";
-    }
-
-    if (!this.state.payrollMonths) {
-      isValid = false;
-      payrollMonthsError = "Please enter number of months.";
-    } else {
-      payrollMonthsError = "";
-    }
-
-    if (!this.state.perMonthSalary && !this.state.perHourRate) {
-      isValid = false;
-      perMonthSalaryError =
-        "Please enter Per Month Salary or Enter in Per Hour Rate field.";
-      perHourRateError =
-        "Please enter Per Hour Rate  or Enter in Per Month Salary field.";
-    } else {
-      perMonthSalaryError = "";
-      perHourRateError = "";
-    }
-
-    if (!this.state.payrollComments) {
-      isValid = false;
-      payrollCommentsError = "Please enter comments.";
-    } else {
-      payrollCommentsError = "";
-    }
 
     this.setState({
-      employeeObjectError,
-      payrollMonthsError,
-      perMonthSalaryError,
-      perHourRateError,
-      payrollCommentsError,
+      [name]: value,
     });
-    return isValid;
+
+    this.getEmployeesData(formattedDate);
   };
-
-  clickOnFormSubmit = () => {
-    if (this.isFormValid()) {
-      document.getElementById("btn-submit").click();
-    }
-  };
-
-  clearAllData = () => {
-    this.setState({
-      employeeDataLoading: false,
-      employeeObject: {},
-      employeeObjectError: "",
-
-      employeeId: "",
-      loanAmount: "",
-      months: "",
-      installmentPerMonth: "",
-
-      files3: [],
-      files3Error: "",
-      uploadLoading: false,
-    });
-  };
-
-  onFormSubmit = async () => {
-    console.log("save usc");
-    const data = new FormData();
-    data.append("userEmployeeId", this.state.employeeObject.id);
-    data.append("recordId", 0);
-    data.append("loanAmount", Number(this.state.loanAmount));
-    data.append("loanDurationInMonths", Number(this.state.months));
-
-    for (let i = 0; i < this.state.files3.length; i++) {
-      data.append("filesName", this.state.files3[i].name);
-      data.append("files", this.state.files3[i]);
-    }
-
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C327CommonUsersEmployeesLoanSave`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.handleSnackbar(true, json.USER_MESSAGE, "success");
-            if (this.state.recordId == 0) {
-              this.clearAllData();
-            } else {
-              this.clearAllData();
-
-              // setTimeout(() => {
-              //   window.location.replace("#/dashboard/R316EmployeesPayrollView");
-              // }, 1000);
-            }
-          } else {
-            this.handleSnackbar(
-              true,
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-              "error"
-            );
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.handleSnackbar(
-              true,
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  recommendFormSubmit = async () => {
-    const data = new FormData();
-    data.append("userEmployeeId", this.state.employeeObject.id);
-    data.append("recordId", this.state.recordId);
-    data.append("loanAmount", Number(this.state.loanAmount));
-    data.append("loanDurationInMonths", Number(this.state.months));
-
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C328CommonUsersEmployeesLoanUpdate`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.handleSnackbar(true, json.USER_MESSAGE, "success");
-            if (this.state.recordId == 0) {
-              this.clearAllData();
-            } else {
-              this.clearAllData();
-
-              setTimeout(() => {
-                window.location.replace(
-                  "#/dashboard/F328EmployeesLoanRecommendation"
-                );
-              }, 1000);
-            }
-          } else {
-            this.handleSnackbar(
-              true,
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-              "error"
-            );
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.handleSnackbar(
-              true,
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  approveFormSubmit = async () => {
-    const data = new FormData();
-    data.append("userEmployeeId", this.state.employeeObject.id);
-    data.append("recordId", this.state.recordId);
-    data.append("loanAmount", Number(this.state.loanAmount));
-    data.append("loanDurationInMonths", Number(this.state.months));
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C329CommonUsersEmployeesLoanUpdate`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.handleSnackbar(true, json.USER_MESSAGE, "success");
-            if (this.state.recordId == 0) {
-              this.clearAllData();
-            } else {
-              this.clearAllData();
-
-              setTimeout(() => {
-                window.location.replace(
-                  "#/dashboard/F329EmployeesLoanApproval"
-                );
-              }, 1000);
-            }
-          } else {
-            this.handleSnackbar(
-              true,
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-              "error"
-            );
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: false,
-            });
-          } else {
-            console.log(error);
-            this.handleSnackbar(
-              true,
-              "Failed to Save ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ isLoading: false });
-  };
-
-  handleFileChange = (event) => {
-    const { files = [] } = event.target;
-    const fileElement = event.target;
-    console.log("fileElement", fileElement);
-
-    if (files.length > 0) {
-      for (let i = 0; i < files.length; i++) {
-        if (
-          (files[i].type === "application/pdf" ||
-            files[i].type.startsWith("image/")) &&
-          files[i].size / 1000 < 10000
-        ) {
-          if (fileElement.getAttribute("name") === "contained-button-file") {
-            this.setState({ files, filesError: "" });
-          } else if (
-            fileElement.getAttribute("name") ===
-            "contained-button-solution-file"
-          ) {
-            this.setState({ files2: files, files2Error: "" });
-          } else if (
-            fileElement.getAttribute("name") ===
-            "contained-button-helping-material-file"
-          ) {
-            this.setState({ files3: files, files3Error: "" });
-          }
-        } else {
-          if (fileElement.getAttribute("name") === "contained-button-file") {
-            this.setState({
-              filesError:
-                "Please select only image or PDF files with size less than 10 MB.",
-            });
-          } else if (
-            fileElement.getAttribute("name") ===
-            "contained-button-solution-file"
-          ) {
-            this.setState({
-              files2Error:
-                "Please select only image or PDF files with size less than 10 MB.",
-            });
-          } else if (
-            fileElement.getAttribute("name") ===
-            "contained-button-helping-material-file"
-          ) {
-            this.setState({
-              files3Error:
-                "Please select only image or PDF files with size less than 10 MB.",
-            });
-          }
-          break;
-        }
-      }
-    }
-  };
-
-  getEmployeesData = async () => {
+  getEmployeesData = async (formattedDate) => {
     this.setState({ employeeDataLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C327CommonUsersView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/EmployeesForAttendanceView?date=${formattedDate}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -655,12 +164,528 @@ class F339AddManualAttendance extends Component {
     this.setState({ employeeDataLoading: false });
   };
 
+  getData = async () => {
+    this.setState({
+      isLoading: true,
+    });
+    // const formData = new FormData();
+    // formData.append("recordId", 0);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/EmployeesForAttendanceView?date`;
+    await fetch(url, {
+      method: "GET",
+      // body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+
+            this.setState({
+              // employeePayrollsData: data.slice(0, 30),
+              employeePayrollsData: data,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
+    });
+  };
+
+  getYearsData = async (value) => {
+    this.setState({
+      isLoading: true,
+    });
+
+    const formData = new FormData();
+    formData.append("sessionId", value);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonYearsView`;
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({
+              yearData: data,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
+    });
+  };
+
+  getAcademicSessions = async () => {
+    this.setState({ academicSessionsDataLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicSessionsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let array = json.DATA || [];
+            this.setState({ academicSessionsData: array });
+            let arrayLength = array.length;
+            for (let i = 0; i < arrayLength; i++) {
+              if (array[i].isActive == "1") {
+                const sessionId = array[i].ID;
+                // this.setState({ academicSessionId: sessionId });
+
+                this.getProgrammeGroupsBySessionId(sessionId);
+              }
+            }
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ academicSessionsDataLoading: false });
+  };
+
+  getProgrammeGroupsBySessionId = async (academicSessionId) => {
+    let mySessionId = academicSessionId;
+
+    this.setState({
+      programmeGroupsDataLoading: true,
+      programmeGroupsData: [],
+    });
+    let data = new FormData();
+    data.append("academicsSessionId", mySessionId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicsProgrammesGroupsView`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ programmeGroupsData: json.DATA });
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ programmeGroupsDataLoading: false });
+  };
+
+  onSearchClick = async (e) => {
+    if (!IsEmpty(e)) {
+      e.preventDefault();
+    }
+    this.setState({ isLoading: true });
+
+    let formattedStartTime = "";
+
+    if (this.state.startTime !== null) {
+      formattedStartTime = `${this?.state?.startTime
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${this?.state?.startTime
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${this.state.startTime
+        .getSeconds()
+        .toString()
+        .padStart(2, "0")}`;
+    }
+
+    let formattedEndTime = "";
+
+    if (this.state.endTime !== null) {
+      formattedEndTime = `${this.state.endTime
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${this.state.endTime
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${this.state.endTime
+        .getSeconds()
+        .toString()
+        .padStart(2, "0")}`;
+    }
+    console.log(
+      formattedEndTime,
+      formattedStartTime,
+      this.state.employeeObject
+    );
+
+    const obj = {
+      employeeID: this.state.employeeObject.id,
+      employeeName: this.state.employeeObject.name,
+      date: this.state.fromDateToSend,
+      checkIn: formattedStartTime,
+      checkOut: formattedEndTime,
+    };
+
+    this.setState({
+      isLoading: false,
+      employeePayrollsData: [...this.state.employeePayrollsData, obj],
+      employeeObject: {},
+      startTime: null,
+      endTime: null,
+      // fromDate: null,
+    });
+  };
+
+  onApproveClick = async (e) => {
+    if (!IsEmpty(e)) {
+      e.preventDefault();
+    }
+
+    const transformedData = this.state.employeePayrollsData.map((item) => {
+      return {
+        employeeId: item.employeeID,
+        attendanceDate: item.date,
+        checkIn: item.checkIn || null,
+        checkOut: item.checkOut || null,
+      };
+    });
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/EmployeeManualAttendanceSave`;
+    await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(transformedData),
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+        "Content-Type": "application/json",
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.onSearchClick();
+            this.handleSnackbar(true, "Approved", "success");
+            this.onClearAllData();
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  handleSnackbar = (open, msg, severity) => {
+    this.setState({
+      isOpenSnackbar: open,
+      snackbarMessage: msg,
+      snackbarSeverity: severity,
+    });
+  };
   viewReport = () => {
-    window.location = "#/dashboard/R327EmployeesLoanView";
+    window.location = "#/dashboard/F322Reports";
+  };
+
+  onClearAllData = () => {
+    let sessionId = "";
+
+    let array = this.state.academicSessionsData || [];
+    let arrayLength = array.length;
+    for (let i = 0; i < arrayLength; i++) {
+      if (array[i].isActive == "1") {
+        sessionId = array[i].ID || "";
+      }
+    }
+
+    this.getProgrammeGroupsBySessionId(sessionId);
+
+    this.setState({
+      employeePayrollsData: [],
+
+      yearData: [],
+      yearId: "",
+
+      isApproved: false,
+
+      employeeData: [],
+      employeeDataLoading: false,
+      employeeObject: {},
+      employeeObjectError: "",
+
+      startTime: null,
+      endTime: null,
+      startTimeToSend: null,
+      endTimeToSend: null,
+
+      enabledField: false,
+
+      fromDate: null,
+      fromDateToSend: null,
+
+      employeeId: "",
+    });
+  };
+
+  handleFormatChange = (time) => {
+    console.log(time, this.state.fromDateToSend);
+    const combinedDateTime = `${this.state.fromDateToSend}T${time}`;
+    const dateTimeObject = new Date(combinedDateTime);
+    const formattedDateTime = dateTimeObject.toString();
+    if (formattedDateTime === "Invalid Date") {
+      return formattedDateTime;
+    } else {
+      const dateObject = new Date(formattedDateTime);
+      return dateObject;
+    }
+  };
+
+  onHandleChanges = (e) => {
+    const { name, value } = e.target;
+    console.log(value);
+    const startTimetoPopulate = this.handleFormatChange(value.checkIn);
+    const endTimeToPopulate = this.handleFormatChange(value.checkOut);
+    if (
+      startTimetoPopulate !== "Invalid Date" &&
+      endTimeToPopulate !== "Invalid Date"
+    ) {
+      this.setState({
+        [name]: value,
+        startTime: startTimetoPopulate,
+        endTime: endTimeToPopulate,
+        enabledField: true,
+      });
+    } else if (
+      startTimetoPopulate !== "Invalid Date" &&
+      endTimeToPopulate === "Invalid Date"
+    ) {
+      this.setState({
+        [name]: value,
+        startTime: startTimetoPopulate,
+        endTime: null,
+        enabledField: false,
+      });
+    } else if (
+      startTimetoPopulate === "Invalid Date" &&
+      endTimeToPopulate !== "Invalid Date"
+    ) {
+      this.setState({
+        [name]: value,
+        startTime: null,
+        endTime: endTimeToPopulate,
+        enabledField: false,
+      });
+    } else {
+      this.setState({
+        [name]: value,
+        startTime: null,
+        endTime: null,
+        enabledField: false,
+      });
+    }
+  };
+
+  handleDateChangeStartTime = (date) => {
+    console.log(date);
+    this.setState({ startTime: date });
+  };
+
+  handleDateChangeEndTime = (date) => {
+    this.setState({ endTime: date });
+  };
+
+  handleDelete = (rowData) => {
+    const filterData = this.state.employeePayrollsData.filter(
+      (item) => item.employeeID !== rowData.employeeID
+    );
+
+    console.log(filterData);
+
+    this.setState({
+      employeePayrollsData: [...filterData],
+    });
   };
 
   render() {
     const { classes } = this.props;
+
+    const columns = [
+      { name: "employeeID", title: "Employee ID" },
+      { name: "employeeName", title: "Employee Name" },
+      {
+        name: "checkIn",
+        title: "Check-in Time",
+      },
+
+      {
+        name: "checkOut",
+        title: "Check-out Time",
+      },
+
+      {
+        name: "actions",
+        title: "Action",
+        getCellValue: (rowData) => {
+          // console.log(rowData);
+          return (
+            <button
+              onClick={() => this.handleDelete(rowData)}
+              style={{
+                padding: "0px",
+                background: "white",
+                border: "none",
+                color: "red",
+              }}
+            >
+              <DeleteIcon />
+            </button>
+          );
+        },
+      },
+    ];
 
     return (
       <Fragment>
@@ -669,241 +694,216 @@ class F339AddManualAttendance extends Component {
           open={this.state.isLoginMenu}
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
-        <form
-          noValidate
-          autoComplete="off"
-          id="myForm"
-          // onSubmit={this.onFormSubmit}
-        >
-          <TextField type="hidden" name="id" value={this.state.recordId} />
-          <Grid container component="main" className={classes.root}>
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                borderBottom: "1px solid #d2d2d2",
-                width: "98%",
-                marginBottom: 25,
-                fontSize: 20,
-              }}
-              variant="h5"
-            >
-              {this.state.recordId > 0 && (
-                <Tooltip title="Back">
-                  <IconButton
-                    onClick={() =>
-                      window.location.replace(
-                        "#/dashboard/F328EmployeesLoanRecommendation"
-                      )
-                    }
-                  >
-                    <ArrowBackIcon fontSize="small" color="primary" />
-                  </IconButton>
-                </Tooltip>
-              )}
-              Add Manual Attendance
+        <div className={classes.mainContainer}>
+          <div className={classes.titleContainer}>
+            <Typography className={classes.title} variant="h5">
+              {"Add Manual Attendance"}
+              <br />
             </Typography>
-            <Divider
-              style={{
-                backgroundColor: "rgb(58, 127, 187)",
-                opacity: "0.3",
-              }}
-            />
-            <Grid
-              container
-              spacing={2}
-              style={{
-                marginLeft: 5,
-                marginRight: 15,
-              }}
-            >
-              <Grid item xs={12}>
-                <Autocomplete
-                  id="employeeObject"
-                  getOptionLabel={(option) =>
-                    typeof option.label == "string" ? option.label : ""
-                  }
-                  getOptionSelected={(option, value) => option.id === value.id}
-                  fullWidth
-                  aria-autocomplete="none"
-                  options={this.state.employeeData}
-                  loading={this.state.employeeDataLoading}
-                  value={this.state.employeeObject}
-                  onChange={(e, value) =>
-                    this.onHandleChange({
-                      target: { name: "employeeObject", value },
-                    })
-                  }
-                  renderTags={(tagValue, getTagProps) =>
-                    tagValue.map((option, index) => (
-                      <Chip
-                        key={option}
-                        label={option.label}
-                        color="primary"
-                        variant="outlined"
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  renderInput={(params) => {
-                    const inputProps = params.inputProps;
-                    return (
-                      <TextField
-                        variant="outlined"
-                        error={!!this.state.employeeObjectError}
-                        helperText={this.state.employeeObjectError}
-                        inputProps={inputProps}
-                        label="Employee *"
-                        {...params}
-                      />
-                    );
-                  }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  id="loanAmount"
-                  name="loanAmount"
-                  label="Loan Amount"
-                  type="number"
-                  required
-                  fullWidth
-                  variant="outlined"
-                  onChange={this.onHandleChange}
-                  value={this.state.loanAmount}
-                  // helperText={this.state.loanAmount}
-                  // error={this.state.loanAmount}
-                  inputProps={{
-                    maxLength: 11,
-                    min: 0,
-                  }}
-                />
-              </Grid>
+          </div>
+          <Divider className={classes.divider} />
+          <br />
+          <Grid container justify="left" alignItems="left" spacing={2}>
+            <Grid item xs={12} md={2}>
+              <DatePicker
+                autoOk
+                id="fromDate"
+                disabled={this.state.fromDate}
+                name="fromDate"
+                label="Date"
+                invalidDateMessage=""
+                placeholder=""
+                variant="inline"
+                inputVariant="outlined"
+                format="dd-MM-yyyy"
+                fullWidth
+                required
+                value={this.state.fromDate}
+                onChange={(date) =>
+                  this.onHandleChange({
+                    target: { name: "fromDate", value: date },
+                  })
+                }
+              />
+            </Grid>
 
-              <Grid item xs={4}>
-                <TextField
-                  id="months"
-                  name="months"
-                  type="number"
-                  label="Months"
-                  required
-                  fullWidth
-                  variant="outlined"
-                  onChange={this.onHandleChange}
-                  value={this.state.months}
-                  // helperText={this.state.months}
-                  // error={this.state.months}
-                  inputProps={{
-                    maxLength: 11,
-                    min: 1,
-                  }}
-                />
-              </Grid>
+            <br />
+            <Grid item xs={12} md={2}>
+              <Autocomplete
+                id="employeeObject"
+                disabled={!this.state.fromDate}
+                getOptionLabel={(option) =>
+                  typeof option.name == "string" ? option.name : ""
+                }
+                getOptionSelected={(option, value) => option.id === value.id}
+                fullWidth
+                aria-autocomplete="none"
+                options={this.state.employeeData}
+                loading={this.state.employeeDataLoading}
+                value={this.state.employeeObject}
+                onChange={(e, value) =>
+                  this.onHandleChanges({
+                    target: { name: "employeeObject", value },
+                  })
+                }
+                renderTags={(tagValue, getTagProps) =>
+                  tagValue.map((option, index) => (
+                    <Chip
+                      key={option}
+                      label={option.name}
+                      color="primary"
+                      variant="outlined"
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
+                renderInput={(params) => {
+                  const inputProps = params.inputProps;
+                  return (
+                    <TextField
+                      variant="outlined"
+                      error={!!this.state.employeeObjectError}
+                      helperText={this.state.employeeObjectError}
+                      inputProps={inputProps}
+                      label="Employee *"
+                      {...params}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <KeyboardTimePicker
+                id="startTime"
+                name="startTime"
+                label="Check-in Time"
+                required
+                disabled={!this?.state?.employeeObject?.id}
+                // disabled={Object.keys(this.state.employeeObject.length === 0)}
+                fullWidth
+                style={{
+                  marginTop: "0px",
+                }}
+                variant="outlined"
+                margin="normal"
+                value={this.state.startTime}
+                onChange={this.handleDateChangeStartTime}
+                KeyboardButtonProps={{
+                  "aria-label": "change time",
+                }}
+                InputProps={{
+                  variant: "outlined",
+                }}
+                inputVariant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <KeyboardTimePicker
+                id="endTime"
+                name="endTime"
+                label="Check-out Time"
+                required
+                disabled={!this?.state?.employeeObject?.id}
+                fullWidth
+                style={{
+                  marginTop: "0px",
+                }}
+                variant="outlined"
+                margin="normal"
+                value={this.state.endTime}
+                onChange={this.handleDateChangeEndTime}
+                KeyboardButtonProps={{
+                  "aria-label": "change time",
+                }}
+                InputProps={{
+                  variant: "outlined",
+                }}
+                inputVariant="outlined"
+              />
+            </Grid>
 
-              <Grid item xs={4}>
-                <TextField
-                  id="installmentPerMonth"
-                  name="installmentPerMonth"
-                  label="Installment Per Month"
-                  required
-                  fullWidth
-                  type="number"
-                  variant="outlined"
-                  onChange={this.onHandleChange}
-                  value={this.state.installmentPerMonth}
-                  disabled
-                  // helperText={this.state.installmentPerMonth}
-                  // error={this.state.installmentPerMonth}
-                  inputProps={{
-                    maxLength: 11,
+            <Grid item xs={12} md={3}>
+              <div className={classes.actions}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  disabled={
+                    this.state.enabledField ||
+                    !this?.state?.employeeObject?.id ||
+                    !this?.state?.fromDate ||
+                    (!this?.state?.startTime && !this?.state?.endTime)
+                  }
+                  onClick={(e) => this.onSearchClick(e)}
+                >
+                  {" "}
+                  {this.state.isLoading ? (
+                    <CircularProgress style={{ color: "white" }} size={24} />
+                  ) : (
+                    "Add"
+                  )}
+                </Button>
+                {/* <Button
+                  variant="contained"
+                  color="default"
+                  className={classes.button}
+                  disabled={
+                    this.state.isLoading ||
+                    this.state.academicSessionsDataLoading ||
+                    this.state.programmeGroupsDataLoading
+                  }
+                  onClick={() => this.onClearAllData()}
+                  style={{
+                    marginLeft: 8,
                   }}
-                />
-              </Grid>
-
-              {/* {this.state.recordId !== 0 ? (
-                ""
-              ) : (
-                <Grid item xs={12}>
-                  <MyDropzone
-                    name="contained-button-helping-material"
-                    label="Upload file"
-                    files={this.state.files3}
-                    onChange={(event) => this.handleFileChange(event)}
-                    disabled={this.state.uploadLoading}
-                    className={classes.inputFileFocused}
-                    multiple={true}
-                  />
-                  <div
-                    style={{
-                      textAlign: "left",
-                      marginTop: 5,
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: "#f44336",
-                      }}
-                    >
-                      &emsp;{this.state.files3Error}
-                    </span>
-                  </div>
-                </Grid>
-              )} */}
+                >
+                  Clear
+                </Button> */}
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <Divider className={classes.divider} />
             </Grid>
           </Grid>
-          <input type="submit" style={{ display: "none" }} id="btn-submit" />
-        </form>
-        <BottomBar
-          // left_button_text="View"
-          // left_button_hide={this.state.recordId > 0 ? true : false}
-          // bottomLeftButtonAction={() => this.viewReport()}
-          left_button_hide={true}
-          right_button_text={
-            Number(this.state.recordId) === 0
-              ? "Save"
-              : this.state.request === "isRecommended"
-              ? "Save & Recommend"
-              : this.state.request === "isApproved"
-              ? "Save & Approve"
-              : "Save"
-          }
-          bottomRightButtonAction={() =>
-            Number(this.state.recordId) === 0
-              ? this.onFormSubmit()
-              : this.state.request === "isRecommended"
-              ? this.recommendFormSubmit()
-              : this.state.request === "isApproved"
-              ? this.approveFormSubmit()
-              : this.onFormSubmit()
-          }
-          loading={this.state.isLoading}
-          isDrawerOpen={this.props.isDrawerOpen}
-        />
-        <CustomizedSnackbar
-          isOpen={this.state.isOpenSnackbar}
-          message={this.state.snackbarMessage}
-          severity={this.state.snackbarSeverity}
-          handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
-        />
+
+          <Grid item xs={12}>
+            <F339AddManualAttendancesTableComponent
+              columns={columns}
+              data={this.state}
+            />
+          </Grid>
+
+          <CustomizedSnackbar
+            isOpen={this.state.isOpenSnackbar}
+            message={this.state.snackbarMessage}
+            severity={this.state.snackbarSeverity}
+            handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
+          />
+
+          <BottomBar
+            // left_button_hide
+            left_button_text="View"
+            left_button_hide={true}
+            bottomLeftButtonAction={this.viewReport}
+            right_button_text={this.state.isApproved ? "Saved" : "Save"}
+            disableRightButton={this.state.employeePayrollsData.length === 0}
+            loading={this.state.isLoading}
+            isDrawerOpen={this.props.isDrawerOpen}
+            bottomRightButtonAction={() => this.onApproveClick()}
+          />
+        </div>
       </Fragment>
     );
   }
 }
 
-F339AddManualAttendance.propTypes = {
-  isDrawerOpen: PropTypes.bool,
-  classes: PropTypes.object.isRequired,
-  match: PropTypes.object,
+F339AddManualAttendances.propTypes = {
+  classes: PropTypes.object,
+  setDrawerOpen: PropTypes.func,
 };
 
-F339AddManualAttendance.defaultProps = {
-  isDrawerOpen: true,
-  match: {
-    params: {
-      recordId: 0,
-    },
-  },
+F339AddManualAttendances.defaultProps = {
+  classes: {},
+  setDrawerOpen: (fn) => fn,
 };
-
-export default withRouter(withStyles(styles)(F339AddManualAttendance));
+export default withStyles(styles)(F339AddManualAttendances);

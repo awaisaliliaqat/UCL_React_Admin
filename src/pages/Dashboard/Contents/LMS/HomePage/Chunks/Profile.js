@@ -117,6 +117,30 @@ const Profile = (props) => {
           </span>
         )}
       </div>
+      <div
+        style={{
+          marginTop: "15px",
+        }}
+      >
+        <Link
+          href="#/dashboard/R338AttendanceDailyReport"
+          target="_blank"
+          variant="body1"
+          className={classes.handCursor}
+          style={{
+            fontSize: "14px",
+            marginLeft: "20%",
+            borderRadius: "5px",
+            // color: "#757575",
+            padding: "10px 25px",
+            background: "#1579AB",
+            color: "white",
+            textDecoration: "none",
+          }}
+        >
+          Track Gate Attendance
+        </Link>
+      </div>
       <CardContent style={{ paddingBottom: 0 }}>
         <Typography variant="caption">Quick Links</Typography>
         <Divider variant="fullWidth" />
@@ -148,15 +172,7 @@ const Profile = (props) => {
             Attendance Report
           </Link>
           <br />
-          <Link
-            href="#/dashboard/R338AttendanceDailyReport"
-            target="_blank"
-            variant="body1"
-            className={classes.handCursor}
-          >
-            Track My Attendance
-          </Link>
-          <br />
+
           <Link
             href="#/dashboard/F64Form/0"
             target="_blank"

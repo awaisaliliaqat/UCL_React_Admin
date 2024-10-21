@@ -9,6 +9,7 @@ import EditDeleteTableComponent from "../../../../../components/EditDeleteTableR
 import R335ShiftManagementViewTableComponent from "./Chunks/R335ShiftManagementViewTableComponent";
 import { withRouter } from "react-router-dom";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import { Rowing } from "mdi-material-ui";
 
 class R335ShiftManagementReport extends Component {
   constructor(props) {
@@ -266,6 +267,24 @@ class R335ShiftManagementReport extends Component {
       { name: "startTime", title: "From" },
 
       { name: "endTime", title: "To" },
+      {
+        name: "days",
+        title: "Days",
+        getCellValue: (rowData) => {
+          return (
+            <div>
+              {rowData.days.length > 0 &&
+                rowData.days.map((item, index) => (
+                  <span key={index}>
+                    {item.label}
+                    {index < rowData.days.length - 1 && ", "}
+                  </span>
+                ))}
+            </div>
+          );
+        },
+      },
+
       {
         name: "isActive",
         title: "Status",
