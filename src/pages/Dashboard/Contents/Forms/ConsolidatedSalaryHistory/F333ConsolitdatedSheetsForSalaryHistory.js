@@ -105,7 +105,7 @@ class F333ConsolitdatedSheetsForSalaryHistory extends Component {
 
     const formData = new FormData();
     formData.append("sessionId", value);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonYearsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonMonthsView`;
     await fetch(url, {
       method: "POST",
       body: formData,
@@ -123,8 +123,9 @@ class F333ConsolitdatedSheetsForSalaryHistory extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
+            const dataForMonths = this.getData(data);
             this.setState({
-              yearData: data,
+              yearData: dataForMonths,
             });
           } else {
             this.handleSnackbar(
@@ -223,8 +224,8 @@ class F333ConsolitdatedSheetsForSalaryHistory extends Component {
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C333CommonEmployeePayroleView`;
     var data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
-    data.append("month", this.state.monthId);
-    data.append("year", this.state.yearId);
+    data.append("monthEnum", this.state.monthId.monthName);
+    data.append("year", 0);
 
     // data.append("programmeGroupId", this.state.programmeGroupId);
     // data.append("month", this.state.monthId);
@@ -297,6 +298,30 @@ class F333ConsolitdatedSheetsForSalaryHistory extends Component {
       snackbarMessage: msg,
       snackbarSeverity: severity,
     });
+  };
+
+  getData = (data) => {
+    const formattedArray = Object.entries(data[0]).map(
+      ([monthName, dates]) => ({
+        fromDate: dates[0],
+        toDate: dates[1],
+        monthName,
+      })
+    );
+
+    const sortedArray = formattedArray.sort(
+      (a, b) => new Date(a.fromDate) - new Date(b.fromDate)
+    );
+
+    const augustIndex = sortedArray.findIndex((item) =>
+      item.monthName.includes("August")
+    );
+    const rearrangedArray = [
+      ...sortedArray.slice(augustIndex),
+      ...sortedArray.slice(0, augustIndex),
+    ];
+
+    return rearrangedArray;
   };
 
   onClearAllData = () => {
@@ -478,7 +503,7 @@ class F333ConsolitdatedSheetsForSalaryHistory extends Component {
             </Grid>
             */}
 
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <TextField
                 id="yearId"
                 name="yearId"
@@ -499,7 +524,7 @@ class F333ConsolitdatedSheetsForSalaryHistory extends Component {
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <TextField
                 id="monthId"
@@ -514,9 +539,9 @@ class F333ConsolitdatedSheetsForSalaryHistory extends Component {
                 fullWidth
                 select
               >
-                {this.state.monthsData?.map((item) => (
-                  <MenuItem key={item} value={item.id}>
-                    {item.label}
+                {this.state.yearData?.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item.monthName}
                   </MenuItem>
                 ))}
               </TextField>

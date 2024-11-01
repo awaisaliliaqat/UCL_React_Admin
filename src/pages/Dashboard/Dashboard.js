@@ -230,6 +230,11 @@ import R338AttendanceDailyReport from "./Contents/Forms/R338AttendanceDailyRepor
 import F339AddManualAttendance from "./Contents/Forms/AddManualAttendance/F339AddManualAttendance";
 import R340Reports from "./Contents/Forms/R340Reports";
 import R341Reports from "./Contents/Forms/R341Reports";
+import R342AllEmployeeGateAttendance from "./Contents/Forms/R342AllEmployeeGateAttendance";
+import F343LinkEnrollmentIds from "./Contents/Forms/LinkEnrollmentIds/F343LinkEnrollmentIds";
+import F343LinkEnrollmentIdsView from "./Contents/Forms/LinkEnrollmentIds/F343LinkEnrollmentIdsView";
+import F344MonthlyAttendanceFeature from "./Contents/Forms/F344MonthlyAttendanceFeature";
+import R345MasterAttendanceLogs from "./Contents/Forms/R345MasterAttendanceLogs";
 
 const drawerWidth = 283;
 
@@ -311,6 +316,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// userRoleIds
+// 1 === Teacher
+// 2 === Admin
+
 const SetRoute = ({ name, setValue, ...rest }) => {
   setValue(name);
   return <Route {...rest} />;
@@ -333,7 +342,7 @@ const Dashboard = (props) => {
   useEffect(() => {
     const check =
       adminData.isZoomVerified === 0 &&
-      adminData.userTypeId === 3 &&
+      adminData.isTeacher === 1 &&
       window.localStorage.getItem("isViewDialog") == 0;
     setDialogOpen(check);
   }, []);
@@ -348,9 +357,11 @@ const Dashboard = (props) => {
     setDrawerOpen(!prevFlag);
   };
 
+  const UserId = adminData.userRoleIds.filter((item) => item === 1);
+  const isUserIdPresent = UserId.length > 0;
   return (
     <Fragment>
-      <ControlledDialog
+      {/* <ControlledDialog
         open={isDialogOpen}
         handleClose={() => {
           setDialogOpen(false);
@@ -360,7 +371,7 @@ const Dashboard = (props) => {
         content={
           "Please accept zoom invitation sent on your registered email id "
         }
-      />
+      /> */}
       <NavBar
         setOpenMenu={(e) => setOpenMenu(e)}
         isOpenMenu={isDrawerOpen}
@@ -456,7 +467,7 @@ const Dashboard = (props) => {
                 name="home"
                 exact
                 path="/dashboard"
-                component={adminData.userTypeId === 3 ? HomePage : WelcomePage}
+                component={isUserIdPresent ? HomePage : WelcomePage}
               />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
@@ -963,6 +974,22 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F344MonthlyAttendanceFeature"
+                exact
+                path="/dashboard/F344MonthlyAttendanceFeature/:recordId"
+                render={(props) => {
+                  return (
+                    <F344MonthlyAttendanceFeature
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F34Form"
@@ -1333,6 +1360,37 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R341Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R342AllEmployeeGateAttendance"
+                exact
+                path="/dashboard/R342AllEmployeeGateAttendance"
+                render={(props) => {
+                  return (
+                    <R342AllEmployeeGateAttendance
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R345MasterAttendanceLogs"
+                exact
+                path="/dashboard/R345MasterAttendanceLogs"
+                render={(props) => {
+                  return (
+                    <R345MasterAttendanceLogs
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -1760,6 +1818,36 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F315DefineEmployeesPayroll
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F343LinkEnrollmentIds"
+                exact
+                path="/dashboard/F343LinkEnrollmentIds"
+                render={(props) => {
+                  return (
+                    <F343LinkEnrollmentIds
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F343LinkEnrollmentIdsView"
+                exact
+                path="/dashboard/F343LinkEnrollmentIdsView"
+                render={(props) => {
+                  return (
+                    <F343LinkEnrollmentIdsView
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                     />

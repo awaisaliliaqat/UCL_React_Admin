@@ -96,6 +96,49 @@ class F330ConsolidatedSheetForPayroll extends Component {
     this.props.setDrawerOpen(false);
     this.getAcademicSessions();
   }
+  getData = (data) => {
+    console.log(data);
+    // const formattedArray = Object.entries(data[0]).map(
+    //   ([monthName, dates]) => ({
+    //     fromDate: dates[0],
+    //     toDate: dates[1],
+    //     monthName,
+    //   })
+    // );
+    // const sortedArray = formattedArray.sort(
+    //   (a, b) => new Date(a.fromDate) - new Date(b.fromDate)
+    // );
+
+    // const augustIndex = sortedArray.findIndex(
+    //   (item) => item.monthName === "August"
+    // );
+    // const rearrangedArray = [
+    //   ...sortedArray.slice(augustIndex),
+    //   ...sortedArray.slice(0, augustIndex),
+    // ];
+
+    const formattedArray = Object.entries(data[0]).map(
+      ([monthName, dates]) => ({
+        fromDate: dates[0],
+        toDate: dates[1],
+        monthName,
+      })
+    );
+
+    const sortedArray = formattedArray.sort(
+      (a, b) => new Date(a.fromDate) - new Date(b.fromDate)
+    );
+
+    const augustIndex = sortedArray.findIndex((item) =>
+      item.monthName.includes("August")
+    );
+    const rearrangedArray = [
+      ...sortedArray.slice(augustIndex),
+      ...sortedArray.slice(0, augustIndex),
+    ];
+
+    return rearrangedArray;
+  };
 
   getYearsData = async (value) => {
     this.setState({
@@ -104,7 +147,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
 
     const formData = new FormData();
     formData.append("sessionId", value);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonYearsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonMonthsView`;
     await fetch(url, {
       method: "POST",
       body: formData,
@@ -122,8 +165,12 @@ class F330ConsolidatedSheetForPayroll extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
+
+            const updatedData = this.getData(data);
+
+            console.log(updatedData);
             this.setState({
-              yearData: data,
+              yearData: updatedData,
             });
           } else {
             this.handleSnackbar(
@@ -222,8 +269,8 @@ class F330ConsolidatedSheetForPayroll extends Component {
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonEmployeePayroleView`;
     var data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
-    data.append("month", this.state.monthId);
-    data.append("year", this.state.yearId);
+    data.append("monthEnum", this.state.monthId.monthName);
+    data.append("year", 0);
 
     // data.append("programmeGroupId", this.state.programmeGroupId);
     // data.append("month", this.state.monthId);
@@ -393,7 +440,14 @@ class F330ConsolidatedSheetForPayroll extends Component {
 
       // { name: "backAccount1", title: "Bank 1 Account #" },
       // { name: "backAccount2", title: "Bank 2 Account #" },
-      { name: "hourlyAmount", title: "Hourly Amount" },
+      {
+        name: "hourlyAmount",
+        title: "Hourly Amount",
+        getCellValue: (rowData) => {
+          console.log(rowData);
+          return <div>{rowData.hourlyAmount.toFixed(0)}</div>;
+        },
+      },
       { name: "monthlyAmount", title: "Monthly Amount" },
       { name: "totalPayableAmountLabel", title: "Total Payable Amount" },
     ];
@@ -459,7 +513,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
               </TextField>
             </Grid>
             */}
-
+            {/* 
             <Grid item xs={12} md={3}>
               <TextField
                 id="yearId"
@@ -481,7 +535,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <TextField
                 id="monthId"
@@ -496,9 +550,9 @@ class F330ConsolidatedSheetForPayroll extends Component {
                 fullWidth
                 select
               >
-                {this.state.monthsData?.map((item) => (
-                  <MenuItem key={item} value={item.id}>
-                    {item.label}
+                {this.state.yearData?.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item.monthName}
                   </MenuItem>
                 ))}
               </TextField>

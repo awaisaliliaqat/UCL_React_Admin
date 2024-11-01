@@ -5,6 +5,8 @@ import { TextField, Grid, Divider, Typography, Chip } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import { DatePicker, KeyboardTimePicker } from "@material-ui/pickers";
+
 import {
   numberExp,
   numberWithDecimalExp,
@@ -45,6 +47,7 @@ class F315DefineEmployeesPayroll extends Component {
 
       payrollComments: "",
       payrollCommentsError: "",
+      effectiveDate: new Date(),
 
       isOpenSnackbar: false,
       snackbarMessage: "",
@@ -106,8 +109,8 @@ class F315DefineEmployeesPayroll extends Component {
               let myDataObject = data[0] || {};
               this.setState({
                 employeeObject: {
-                  id:  myDataObject["userId"],
-                  label:  myDataObject["userLabel"],
+                  id: myDataObject["userId"],
+                  label: myDataObject["userLabel"],
                 },
                 employeeObjectError: "",
 
@@ -209,8 +212,14 @@ class F315DefineEmployeesPayroll extends Component {
       isValid = false;
       perMonthSalaryError =
         "Please enter Per Month Salary or Enter in Per Hour Rate field.";
-      perHourRateError =
-        "Please enter Per Hour Rate  or Enter in Per Month Salary field.";
+      // perHourRateError =
+      //   "Please enter Per Hour Rate  or Enter in Per Month Salary field.";
+    } else if (this.state.perMonthSalary && !this.state.perHourRate) {
+      perMonthSalaryError = "";
+      perHourRateError = "";
+    } else if (!this.state.perMonthSalary && this.state.perHourRate) {
+      perMonthSalaryError = "";
+      perHourRateError = "";
     } else {
       perMonthSalaryError = "";
       perHourRateError = "";
@@ -261,8 +270,12 @@ class F315DefineEmployeesPayroll extends Component {
 
   onFormSubmit = async (e) => {
     e.preventDefault();
+    // const dateStr = this.state.fromDate;
+    // const date = new Date(dateStr);
+    // const formattedDate = date.toISOString().split("T")[0];
     const data = new FormData(e.target);
     data.append("userId", this.state.employeeObject.id);
+    // data.append("effectiveDate", Object(formattedDate));
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C315CommonUsersEmployeesPayrollSave`;
     await fetch(url, {
@@ -315,6 +328,27 @@ class F315DefineEmployeesPayroll extends Component {
         }
       );
     this.setState({ isLoading: false });
+  };
+
+  onHandleChangeDate = (event) => {
+    const { name, value } = event.target;
+    // const dateStr = value;
+    // const date = new Date(dateStr);
+    // const formattedDate = date.toISOString().split("T")[0];
+
+    // if (name === "fromDate") {
+    //   this.setState({
+    //     fromDateToSend: formattedDate,
+    //   });
+    // } else {
+    //   this.setState({
+    //     toDateToSend: formattedDate,
+    //   });
+    // }
+
+    this.setState({
+      [name]: value,
+    });
   };
 
   getEmployeesData = async () => {
@@ -415,7 +449,7 @@ class F315DefineEmployeesPayroll extends Component {
                 marginRight: 15,
               }}
             >
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <Autocomplete
                   id="employeeObject"
                   getOptionLabel={(option) =>
@@ -458,11 +492,32 @@ class F315DefineEmployeesPayroll extends Component {
                   }}
                 />
               </Grid>
+              <Grid item xs={6}>
+                <DatePicker
+                  autoOk
+                  id="effectiveDate"
+                  name="effectiveDate"
+                  label="Effective Date"
+                  invalidDateMessage=""
+                  placeholder=""
+                  variant="inline"
+                  inputVariant="outlined"
+                  format="yyyy-MM-dd"
+                  fullWidth
+                  required
+                  value={this.state.effectiveDate}
+                  onChange={(date) =>
+                    this.onHandleChangeDate({
+                      target: { name: "effectiveDate", value: date },
+                    })
+                  }
+                />
+              </Grid>
               <Grid item xs={4}>
                 <TextField
                   id="payrollMonths"
                   name="payrollMonths"
-                  label="Payroll Months"
+                  label="No. of Months"
                   required
                   fullWidth
                   variant="outlined"

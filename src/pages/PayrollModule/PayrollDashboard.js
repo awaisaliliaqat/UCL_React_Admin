@@ -142,7 +142,7 @@ const PayrollDashboard = (props) => {
 
   return (
     <Fragment>
-      <ControlledDialog
+      {/* <ControlledDialog
         open={isDialogOpen}
         handleClose={() => {
           setDialogOpen(false);
@@ -152,7 +152,7 @@ const PayrollDashboard = (props) => {
         content={
           "Please accept zoom invitation sent on your registered email id "
         }
-      />
+      /> */}
       <NavBar
         setOpenMenu={(e) => setOpenMenu(e)}
         isOpenMenu={isDrawerOpen}

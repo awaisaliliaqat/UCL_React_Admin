@@ -134,9 +134,10 @@ class R340Reports extends Component {
 
   onHandleChangesDate = (event) => {
     const { name, value } = event.target;
-    const dateStr = value;
-    const date = new Date(dateStr);
-    const formattedDate = date.toISOString().split("T")[0];
+    const date = new Date(value);
+    const formattedDate = `${String(date.getDate()).padStart(2, "0")}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${date.getFullYear()}`;
 
     if (name === "fromDate") {
       this.setState({
@@ -462,19 +463,51 @@ class R340Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ tableData: json.DATA[0].StudentsDetail || [] });
-            let totalStudents = this.state.tableData.length;
-            this.setState({ totalStudents: totalStudents });
-            this.state.totalCourseStudent =
-              json.DATA[0].totalCourseStudent || "Total Students OF 0";
-            this.state.totalPathwayStudent =
-              json.DATA[0].totalPathwayStudent || "Total Students OF 0";
-            this.state.totalGroupStudent =
-              json.DATA[0].totalGroupStudent || "Total Students OF 0";
-            this.state.totalSchoolStudent =
-              json.DATA[0].totalSchoolStudent || "Total Students OF 0";
-            this.state.totalProgrammeStudent =
-              json.DATA[0].totalProgrammeStudent;
+            // const sortedStudents = json.DATA[0].StudentsDetail.sort((a, b) => {
+            //   if (a.checkIn && !a.checkOut) return -1;
+            //   if (!a.checkIn && !a.checkOut) return 0;
+            //   return 1;
+            // });
+            const sortedData = json.DATA[0].StudentsDetail.sort((a, b) => {
+              const aHasCheckIn = Boolean(a.checkIn);
+              const aHasCheckOut = Boolean(a.checkOut);
+              const bHasCheckIn = Boolean(b.checkIn);
+              const bHasCheckOut = Boolean(b.checkOut);
+
+              const aStatus =
+                aHasCheckIn && aHasCheckOut
+                  ? 0
+                  : aHasCheckIn && !aHasCheckOut
+                  ? 1
+                  : !aHasCheckIn && aHasCheckOut
+                  ? 2
+                  : 3;
+
+              const bStatus =
+                bHasCheckIn && bHasCheckOut
+                  ? 0
+                  : bHasCheckIn && !bHasCheckOut
+                  ? 1
+                  : !bHasCheckIn && bHasCheckOut
+                  ? 2
+                  : 3;
+
+              return aStatus - bStatus;
+            });
+
+            this.setState({ tableData: sortedData || [] });
+            // let totalStudents = this.state.tableData.length;
+            // this.setState({ totalStudents: totalStudents });
+            // this.state.totalCourseStudent =
+            //   json.DATA[0].totalCourseStudent || "Total Students OF 0";
+            // this.state.totalPathwayStudent =
+            //   json.DATA[0].totalPathwayStudent || "Total Students OF 0";
+            // this.state.totalGroupStudent =
+            //   json.DATA[0].totalGroupStudent || "Total Students OF 0";
+            // this.state.totalSchoolStudent =
+            //   json.DATA[0].totalSchoolStudent || "Total Students OF 0";
+            // this.state.totalProgrammeStudent =
+            //   json.DATA[0].totalProgrammeStudent;
           } else {
             //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(

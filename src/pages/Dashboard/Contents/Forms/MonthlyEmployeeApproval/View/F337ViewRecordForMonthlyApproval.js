@@ -645,7 +645,7 @@ class F337ViewRecordForMonthlyApproval extends Component {
                 ))} 
               </TextField>
             </Grid> */}
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <TextField
                 id="yearId"
                 name="yearId"
@@ -663,13 +663,13 @@ class F337ViewRecordForMonthlyApproval extends Component {
                 fullWidth
                 // select
               >
-                {/* {this.state.programmeGroupsData?.map((item) => (
+                 {this.state.programmeGroupsData?.map((item) => (
                   <MenuItem key={item} value={item.Id}>
                     {item.Label}
                   </MenuItem>
-                ))} */}
+                ))} 
               </TextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <TextField
                 id="monthId"

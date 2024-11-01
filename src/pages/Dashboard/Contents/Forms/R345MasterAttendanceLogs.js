@@ -7,8 +7,9 @@ import {
   TextField,
   Grid,
   Chip,
+  CircularProgress,
 } from "@material-ui/core";
-import { DatePicker, KeyboardTimePicker } from "@material-ui/pickers";
+import { DatePicker } from "@material-ui/pickers";
 
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
@@ -16,13 +17,8 @@ import FilterIcon from "mdi-material-ui/FilterOutline";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import EditDeleteTableComponent from "../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
-import R338AttendanceDailyReportViewTableComponent from "./R338AttendanceDailyReportViewTableComponent";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
-import { BorderRadius } from "mdi-material-ui";
-import EditIcon from "@material-ui/icons/Edit";
-import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import ThumbUpIcon from "@material-ui/icons/ThumbUp";
-import ThumbDownIcon from "@material-ui/icons/ThumbDown";
+import R345MasterAttendanceLogsViewTableComponent from "./R345MasterAttendanceLogsViewTableComponent";
+
 // import {
 //   TextField,
 //   Grid,
@@ -32,7 +28,7 @@ import ThumbDownIcon from "@material-ui/icons/ThumbDown";
 //   CardContent,
 // } from "@material-ui/core";
 
-class R338AttendanceDailyReport extends Component {
+class R345MasterAttendanceLogs extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -40,7 +36,7 @@ class R338AttendanceDailyReport extends Component {
       showTableFilter: false,
       employeePayrollsData: [],
       isLoginMenu: false,
-      isReload: false,
+      isReload: true,
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
@@ -66,87 +62,9 @@ class R338AttendanceDailyReport extends Component {
     this.setState({
       isLoading: true,
     });
-    const formatDate = (date) => {
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}-${month}-${year}`;
-    };
-    const currentDate = new Date();
-    const formattedCurrentDate = formatDate(currentDate);
-    const previousMonthDate = new Date(currentDate);
-    previousMonthDate.setMonth(previousMonthDate.getMonth() - 1);
-    if (previousMonthDate.getMonth() === currentDate.getMonth()) {
-      previousMonthDate.setDate(0);
-    }
-    const formattedPreviousMonthDate = formatDate(previousMonthDate);
-
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/CommonEmployeeAttendanceReportView?startDate=${formattedPreviousMonthDate}&endDate=${formattedCurrentDate}`;
-    await fetch(url, {
-      method: "GET",
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            let data = json.DATA || [];
-            const currentDate = new Date();
-            const previousMonthDate = new Date(currentDate);
-            previousMonthDate.setMonth(previousMonthDate.getMonth() - 1);
-
-            if (previousMonthDate.getMonth() === currentDate.getMonth()) {
-              previousMonthDate.setDate(0);
-            }
-            this.setState({
-              employeePayrollsData: data,
-              fromDate: previousMonthDate,
-              toDate: currentDate,
-            });
-          } else {
-            this.handleSnackbar(
-              true,
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status === 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            this.handleSnackbar(
-              true,
-              "Failed to fetch, Please try again later.",
-              "error"
-            );
-            console.log(error);
-          }
-        }
-      );
-    this.setState({
-      isLoading: false,
-    });
-  };
-
-  getDataThroughDate = async (formattedDate) => {
-    this.setState({
-      isLoading: true,
-    });
     // const formData = new FormData();
     // formData.append("recordId", 0);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/CommonEmployeeAttendanceReportView?startDate=${this.state.fromDateToSend}&endDate=${formattedDate}`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/CommonEmployeeAttendanceReportView?startDate=&endDate=`;
     await fetch(url, {
       method: "GET",
       // body: formData,
@@ -213,13 +131,69 @@ class R338AttendanceDailyReport extends Component {
     });
   };
 
+  getDataThroughDate = async (formattedDate) => {
+    this.setState({
+      isLoading: true,
+    });
+    // const formData = new FormData();/dashboard/R345MasterAttendanceLogs?fromDate=2024-10-09&toDate=2024-10-10
+
+    // formData.append("recordId", 0);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/dashboard/R345MasterAttendanceLogs?fromDate=${this.state.fromDateToSend}&toDate=${formattedDate}`;
+    await fetch(url, {
+      method: "GET",
+      // body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({
+              employeePayrollsData: data,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
+    });
+  };
+
   onHandleChange = (event) => {
     const { name, value } = event.target;
 
     const date = new Date(value);
-    const formattedDate = `${String(date.getDate()).padStart(2, "0")}-${String(
-      date.getMonth() + 1
-    ).padStart(2, "0")}-${date.getFullYear()}`;
+    const formattedDate = date.toISOString().split("T")[0];
 
     if (name === "fromDate") {
       if (this.state.toDate && value && this.state.toDate < value) {
@@ -253,7 +227,7 @@ class R338AttendanceDailyReport extends Component {
   };
 
   componentDidMount() {
-    this.getData();
+    // this.getData();
   }
 
   handleOpenSnackbar = (msg, severity) => {
@@ -278,9 +252,11 @@ class R338AttendanceDailyReport extends Component {
   };
   render() {
     const columns = [
-      { name: "attendanceDate", title: "Attendance Date", flex: 1 },
-      { name: "attendanceIn", title: "Check-in Time", flex: 1 },
-      { name: "attendanceOut", title: "Check-out Time", flex: 1 },
+      // { name: "ID", title: "ID", flex: 1 },
+      { name: "Name", title: "Name", flex: 1 },
+      { name: "Date", title: "Attendance Date", flex: 1 },
+      { name: "Time", title: "Time", flex: 1 },
+      { name: "Device Name", title: "Device Name", flex: 1 },
     ];
 
     return (
@@ -309,7 +285,7 @@ class R338AttendanceDailyReport extends Component {
               }}
               variant="h5"
             >
-              Daily Attendance Report
+              Master Attendance Rawdata
             </Typography>
             <div style={{ float: "right" }}>
               <Tooltip title="Table Filter">
@@ -342,6 +318,7 @@ class R338AttendanceDailyReport extends Component {
                 variant="inline"
                 inputVariant="outlined"
                 format="dd-MM-yyyy"
+                disabled={this.state.isLoading}
                 fullWidth
                 required
                 value={this.state.fromDate}
@@ -366,7 +343,7 @@ class R338AttendanceDailyReport extends Component {
                 format="dd-MM-yyyy"
                 fullWidth
                 required
-                disabled={!this.state.fromDate}
+                disabled={!this.state.fromDate || this.state.isLoading}
                 value={this.state.toDate}
                 onChange={(date) =>
                   this.onHandleChange({
@@ -386,52 +363,26 @@ class R338AttendanceDailyReport extends Component {
               marginBottom: 20,
             }}
           />
-          {/* <Typography
-            style={{
-              color: "#1d5f98",
-              fontWeight: 600,
-              textTransform: "capitalize",
-            }}
-            variant="h6"
-          >
-            {/* <Tooltip title="Back">
-                <IconButton
-                  onClick={() =>
-                    window.location.replace(
-                      "#/dashboard/F327DefineEmployeesLoan/0"
-                    )
-                  }
-                >
-                  <ArrowBackIcon fontSize="small" color="primary" />
-                </IconButton>
-              </Tooltip> 
-            ID : {this.state?.employeePayrollsData[0]?.id}
-          </Typography> */}
-          <Typography
-            style={{
-              color: "#1d5f98",
-              fontWeight: 600,
-              textTransform: "capitalize",
-            }}
-            variant="h6"
-          >
-            Employee ID : {this.state?.employeePayrollsData[0]?.userId}
-          </Typography>
-          <Typography
-            style={{
-              color: "#1d5f98",
-              fontWeight: 600,
-              textTransform: "capitalize",
-            }}
-            variant="h6"
-          >
-            Employee Name : {this.state?.employeePayrollsData[0]?.userName}
-          </Typography>
-          <R338AttendanceDailyReportViewTableComponent
-            rows={this.state.employeePayrollsData}
-            columns={columns}
-            showFilter={this.state.showTableFilter}
-          />
+
+          {this.state.isLoading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <CircularProgress color="primary" />
+            </div>
+          ) : (
+            <R345MasterAttendanceLogsViewTableComponent
+              rows={this.state.employeePayrollsData}
+              columns={columns}
+              showFilter={this.state.showTableFilter}
+            />
+          )}
+
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}
@@ -443,4 +394,4 @@ class R338AttendanceDailyReport extends Component {
     );
   }
 }
-export default R338AttendanceDailyReport;
+export default R345MasterAttendanceLogs;

@@ -506,7 +506,7 @@ class F323ViewRecordForHeads extends Component {
               disabled={
                 !this.state.academicSessionId ||
                 !this.state.programmeGroupId ||
-                !this.state.monthId ||
+                // !this.state.monthId ||
                 this.state.teachersAttendanceSheetData?.length <= 0 ||
                 this.state.isApproved
               }
@@ -598,7 +598,7 @@ class F323ViewRecordForHeads extends Component {
                 ))} */}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <TextField
                 id="yearId"
                 name="yearId"
@@ -616,13 +616,13 @@ class F323ViewRecordForHeads extends Component {
                 fullWidth
                 // select
               >
-                {/* {this.state.programmeGroupsData?.map((item) => (
+              {this.state.programmeGroupsData?.map((item) => (
                   <MenuItem key={item} value={item.Id}>
                     {item.Label}
                   </MenuItem>
-                ))} */}
+                ))} 
               </TextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <TextField
                 id="monthId"

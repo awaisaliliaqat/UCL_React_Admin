@@ -124,11 +124,11 @@ const NavBar = (props) => {
         setNotiCounter(unReadCountLabel);
       }
     } else {
-        if (res.statusCode == 401) {
-          setIsReload(true);
-          setOpenLoginMenu(true);
-        }
+      if (res.statusCode == 401) {
+        setIsReload(true);
+        setOpenLoginMenu(true);
       }
+    }
   };
 
   const getAndUpdateAllNotificationsStatus = async () => {

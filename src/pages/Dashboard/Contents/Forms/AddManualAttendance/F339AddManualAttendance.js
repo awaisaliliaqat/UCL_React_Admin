@@ -95,9 +95,10 @@ class F339AddManualAttendances extends Component {
 
   onHandleChange = (event) => {
     const { name, value } = event.target;
-    const dateStr = value;
-    const date = new Date(dateStr);
-    const formattedDate = date.toISOString().split("T")[0];
+    const date = new Date(value);
+    const formattedDate = `${String(date.getDate()).padStart(2, "0")}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${date.getFullYear()}`;
 
     if (name === "fromDate") {
       this.setState({
@@ -112,6 +113,8 @@ class F339AddManualAttendances extends Component {
     this.setState({
       [name]: value,
     });
+
+    console.log(formattedDate);
 
     this.getEmployeesData(formattedDate);
   };

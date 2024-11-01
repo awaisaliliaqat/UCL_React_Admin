@@ -540,7 +540,7 @@ class F324HourlySheetsForHOD extends Component {
         customStyleHeader: { width: "20%", textAlign: "center" },
         align: "center",
       },
-      { name: "year", title: "Year" },
+      // { name: "year", title: "Year" },
       { name: "month", title: "Month" },
       { name: "approvedByHodLabel", title: "Approved" },
       { name: "approvedByHodOn", title: "Approved On" },

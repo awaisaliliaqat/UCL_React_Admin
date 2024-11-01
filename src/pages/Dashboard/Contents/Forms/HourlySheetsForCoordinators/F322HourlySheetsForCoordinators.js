@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
+import { DatePicker } from "@material-ui/pickers";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import {
   Divider,
@@ -16,6 +17,8 @@ import F322HourlySheetsForCoordinatorsTableComponent from "./chunks/F322HourlySh
 import { IsEmpty } from "../../../../../utils/helper";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import ViewTableRecord from "../../../../../components/EditDeleteTableRecord/ViewTableRecord";
+import { TimerSand } from "mdi-material-ui";
+import { toDate } from "date-fns";
 
 const styles = () => ({
   mainContainer: {
@@ -88,6 +91,11 @@ class F322HourlySheetsForCoordinators extends Component {
       monthId: "",
       monthIdError: "",
 
+      fromDate: null,
+      toDate: null,
+
+      fromDateToSend: null,
+      toDateToSend: null,
       expandedGroupsData: [],
 
       teachersAttendanceSheetData: [],
@@ -100,6 +108,30 @@ class F322HourlySheetsForCoordinators extends Component {
     this.getAcademicSessions();
   }
 
+  getData = (data) => {
+    const formattedArray = Object.entries(data[0]).map(
+      ([monthName, dates]) => ({
+        fromDate: dates[0],
+        toDate: dates[1],
+        monthName,
+      })
+    );
+
+    const sortedArray = formattedArray.sort(
+      (a, b) => new Date(a.fromDate) - new Date(b.fromDate)
+    );
+
+    const augustIndex = sortedArray.findIndex((item) =>
+      item.monthName.includes("August")
+    );
+    const rearrangedArray = [
+      ...sortedArray.slice(augustIndex),
+      ...sortedArray.slice(0, augustIndex),
+    ];
+
+    return rearrangedArray;
+  };
+
   getYearsData = async (value) => {
     this.setState({
       isLoading: true,
@@ -107,7 +139,7 @@ class F322HourlySheetsForCoordinators extends Component {
 
     const formData = new FormData();
     formData.append("sessionId", value);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonYearsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonMonthsView`;
     await fetch(url, {
       method: "POST",
       body: formData,
@@ -125,6 +157,9 @@ class F322HourlySheetsForCoordinators extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
+            // const dataForMonths = this.getData(data);
+
+            // console.log(dataForMonths, "date is coming");
             this.setState({
               yearData: data,
             });
@@ -278,13 +313,17 @@ class F322HourlySheetsForCoordinators extends Component {
       e.preventDefault();
     }
 
+    const fromDate = this.approveDate(this.state.fromDateToSend);
+    const toDate = this.approveDate(this.state.toDateToSend);
+    console.log(fromDate, toDate);
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322TeachersProgrammeGroupAttandance`;
     var data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
     data.append("programmeGroupId", this.state.programmeGroupId);
-    data.append("month", this.state.monthId);
-    data.append("year", this.state.yearId);
+    data.append("monthWithYear", this.state.yearId.monthName);
+    data.append("fromDate", fromDate);
+    data.append("toDate", toDate);
 
     await fetch(url, {
       method: "POST",
@@ -358,6 +397,19 @@ class F322HourlySheetsForCoordinators extends Component {
     this.setState({ isLoading: false });
   };
 
+  approveDate = (inputDate) => {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    console.log(inputDate);
+    if (regex.test(inputDate)) {
+      return inputDate;
+    }
+    const [day, month, year] = inputDate.split("-");
+    const dateObj = new Date(`${year}-${month}-${day}`);
+    dateObj.setDate(dateObj.getDate());
+    const formattedDate = dateObj.toISOString().split("T")[0];
+    return formattedDate;
+  };
+
   onApproveClick = async (e) => {
     if (!IsEmpty(e)) {
       e.preventDefault();
@@ -366,6 +418,9 @@ class F322HourlySheetsForCoordinators extends Component {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322TeachersProgrammeGroupAttandanceAprrovalSave`;
     // var data = new FormData();
+
+    const fromDate = this.approveDate(this.state.fromDateToSend);
+    const toDate = this.approveDate(this.state.toDateToSend);
     const groupedData = this.state.teachersAttendanceSheetData.reduce(
       (acc, current) => {
         const { teacherId, payRollId } = current;
@@ -403,59 +458,18 @@ class F322HourlySheetsForCoordinators extends Component {
     );
 
     const data = {
+      monthWithYear: this.state.yearId.monthName,
+      fromDate: fromDate,
+      toDate: toDate,
+      // pojo: {
+
+      // },
       academicsSessionId: this.state.academicSessionId,
       programmeGroupId: this.state.programmeGroupId,
-      month: this.state.monthId,
-      year: this.state.yearId,
+
+      // year: this.state.yearId,
       teachers: [...groupedData],
     };
-
-    console.log(data, "data is coming");
-    // data.append("academicsSessionId", this.state.academicSessionId);
-    // data.append("programmeGroupId", this.state.programmeGroupId);
-    // data.append("month", this.state.monthId);
-    // for (let i = 0; i <= this.state.teachersAttendanceSheetData; i++) {
-    //   data.append(
-    //     "courseId",
-    //     this.state.teachersAttendanceSheetData[i].courseId
-    //   );
-    //   data.append(
-    //     "totalScheduled",
-    //     this.state.teachersAttendanceSheetData[i].totalScheduled
-    //   );
-    //   data.append(
-    //     "totalAttended",
-    //     this.state.teachersAttendanceSheetData[i].totalAttended
-    //   );
-    //   data.append(
-    //     "durationPerSession",
-    //     this.state.teachersAttendanceSheetData[i].durationPerSession
-    //   );
-    //   data.append(
-    //     "totalHours",
-    //     this.state.teachersAttendanceSheetData[i].totalHours
-    //   );
-    //   data.append(
-    //     "ratePerHour",
-    //     this.state.teachersAttendanceSheetData[i].ratePerHour
-    //   );
-    //   data.append(
-    //     "totalAmount",
-    //     this.state.teachersAttendanceSheetData[i].totalAmount
-    //   );
-    //   data.append(
-    //     "adjustedHours",
-    //     this.state.teachersAttendanceSheetData[i].adjustedHours
-    //   );
-    //   data.append(
-    //     "netHoursAfterAdjustmentHours",
-    //     this.state.teachersAttendanceSheetData[i].netHours
-    //   );
-    //   data.append(
-    //     "adjustmentRemarks",
-    //     this.state.teachersAttendanceSheetData[i].adjustedRemarks
-    //   );
-    // }
     await fetch(url, {
       method: "POST",
       body: JSON.stringify(data),
@@ -474,6 +488,7 @@ class F322HourlySheetsForCoordinators extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.onSearchClick();
+            this.onClearAllData();
             this.handleSnackbar(true, "Approved", "success");
           } else {
             this.handleSnackbar(
@@ -516,6 +531,16 @@ class F322HourlySheetsForCoordinators extends Component {
     window.location = "#/dashboard/F322Reports";
   };
 
+  dateToGetThrough = (date) => {
+    const [day, month, year] = date.split("-");
+
+    const dateObj = new Date(`${year}-${month}-${day}`);
+
+    const formattedDate = dateObj.toString();
+
+    return formattedDate;
+  };
+
   onClearAllData = () => {
     let sessionId = "";
 
@@ -536,8 +561,13 @@ class F322HourlySheetsForCoordinators extends Component {
 
       programmeGroupId: "",
       programmeGroupIdError: "",
-
+      expandedGroupsData: [],
       teachersAttendanceSheetData: [],
+      yearId: "",
+      fromDate: null,
+      toDate: null,
+      fromDateToSend: null,
+      toDateToSend: null,
     });
   };
 
@@ -567,9 +597,52 @@ class F322HourlySheetsForCoordinators extends Component {
       this.getYearsData(value);
     }
 
+    if (name === "yearId") {
+      const fromDate = this.dateToGetThrough(value.fromDate);
+      const toDate = this.dateToGetThrough(value.toDate);
+      console.log(fromDate, toDate, value.fromDate, value.toDate);
+      this.setState({
+        [name]: value,
+        fromDate: fromDate,
+        toDate: toDate,
+        fromDateToSend: value.fromDate,
+        toDateToSend: value.toDate,
+        [errName]: "",
+      });
+    } else {
+      this.setState({
+        [name]: value,
+        [errName]: "",
+      });
+    }
+
+    // this.setState({
+    //   [name]: value,
+    //   [errName]: "",
+    // });
+  };
+
+  onHandleChangeDate = (event) => {
+    const { name, value } = event.target;
+    console.log(value);
+    const dateStr = value;
+    const date = new Date(dateStr);
+    const formattedDate = date.toISOString().split("T")[0];
+
+    if (name === "fromDate") {
+      this.setState({
+        fromDateToSend: formattedDate,
+      });
+    } else {
+      this.setState({
+        toDateToSend: formattedDate,
+      });
+
+      // this.getDataThroughDate(formattedDate);
+    }
+
     this.setState({
       [name]: value,
-      [errName]: "",
     });
   };
 
@@ -609,7 +682,7 @@ class F322HourlySheetsForCoordinators extends Component {
     const columns = [
       { name: "teacherLabel", title: "Teacher Name" },
       { name: "courseLabel", title: "Subjects" },
-      { name: "totalSchedules", title: "Total" },
+      { name: "totalSchedules", title: "Scheduled" },
       { name: "totalAttended", title: "Attended" },
       { name: "durationPerSession", title: "Duration Per Session" },
       { name: "totalHours", title: "Total Hours" },
@@ -632,7 +705,7 @@ class F322HourlySheetsForCoordinators extends Component {
               disabled={
                 !this.state.academicSessionId ||
                 !this.state.programmeGroupId ||
-                !this.state.monthId ||
+                !this.state?.yearId?.monthName ||
                 this.state.teachersAttendanceSheetData?.length <= 0 ||
                 this.state.isApproved
               }
@@ -659,7 +732,7 @@ class F322HourlySheetsForCoordinators extends Component {
               disabled={
                 !this.state.academicSessionId ||
                 !this.state.programmeGroupId ||
-                !this.state.monthId ||
+                !this.state?.yearId?.monthName ||
                 this.state.teachersAttendanceSheetData?.length <= 0 ||
                 this.state.isApproved
               }
@@ -715,7 +788,6 @@ class F322HourlySheetsForCoordinators extends Component {
                 ))}
               </TextField>
             </Grid>
-
             <br />
             <Grid item xs={12} md={2}>
               <TextField
@@ -743,7 +815,7 @@ class F322HourlySheetsForCoordinators extends Component {
                 id="yearId"
                 name="yearId"
                 variant="outlined"
-                label="Year"
+                label="Month"
                 onChange={this.onHandleChange}
                 value={this.state.yearId}
                 // error={!!this.state.academicSessionIdError}
@@ -753,13 +825,111 @@ class F322HourlySheetsForCoordinators extends Component {
                 select
               >
                 {this.state.yearData?.map((item) => (
-                  <MenuItem key={item} value={item.ID}>
-                    {item.Label}
+                  <MenuItem key={item} value={item}>
+                    {item.monthName}
                   </MenuItem>
                 ))}
               </TextField>
             </Grid>
             <Grid item xs={12} md={2}>
+              <DatePicker
+                autoOk
+                id="fromDate"
+                name="fromDate"
+                label="From Date"
+                invalidDateMessage=""
+                disabled={Object.keys(this.state.yearId).length === 0}
+                placeholder=""
+                variant="inline"
+                inputVariant="outlined"
+                format="dd-MM-yyyy"
+                fullWidth
+                required
+                value={this.state.fromDate}
+                onChange={(date) =>
+                  this.onHandleChangeDate({
+                    target: { name: "fromDate", value: date },
+                  })
+                }
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <DatePicker
+                autoOk
+                id="toDate"
+                name="toDate"
+                label="To Date"
+                invalidDateMessage=""
+                disabled={Object.keys(this.state.yearId).length === 0}
+                placeholder=""
+                variant="inline"
+                inputVariant="outlined"
+                format="dd-MM-yyyy"
+                fullWidth
+                required
+                // disabled={!this.state.fromDate}
+                value={this.state.toDate}
+                onChange={(date) =>
+                  this.onHandleChangeDate({
+                    target: { name: "toDate", value: date },
+                  })
+                }
+                // disablePast
+                // shouldDisableDate={(day) => {
+                //   const fromDate = this.state.fromDate;
+                //   if (fromDate) {
+                //     console.log(fromDate);
+                //     return day <= fromDate;
+                //   }
+                //   return false;
+                // }}
+              />
+            </Grid>
+            {/* <Grid item xs={12} md={2}>
+              <TextField
+                // id="yearId"
+                // name="yearId"
+                variant="outlined"
+                label="From Date"
+                // onChange={this.onHandleChange}
+                value={this?.state?.yearId ? this?.state?.yearId?.fromDate : ""}
+                // error={!!this.state.academicSessionIdError}
+                // helperText={this.state.academicSessionIdError}
+                disabled
+                required
+                fullWidth
+                // select
+              >
+                {/* {this.state.yearData?.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item.monthName}
+                  </MenuItem>
+                ))} 
+              </TextField>
+            </Grid>{" "}
+            <Grid item xs={12} md={2}>
+              <TextField
+                // id="yearId"
+                // name="yearId"
+                variant="outlined"
+                label="To Date"
+                disabled
+                // onChange={this.onHandleChange}
+                value={this?.state?.yearId ? this?.state?.yearId?.toDate : ""}
+                // error={!!this.state.academicSessionIdError}
+                // helperText={this.state.academicSessionIdError}
+                required
+                fullWidth
+                // select
+              >
+                {/* {this.state.yearData?.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item.monthName}
+                  </MenuItem>
+                ))} *
+              </TextField>
+            </Grid> */}
+            {/* <Grid item xs={12} md={2}>
               <TextField
                 id="monthId"
                 name="monthId"
@@ -779,8 +949,7 @@ class F322HourlySheetsForCoordinators extends Component {
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
-
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <div className={classes.actions}>
                 <Button
@@ -793,7 +962,9 @@ class F322HourlySheetsForCoordinators extends Component {
                     this.state.programmeGroupsDataLoading ||
                     !this.state.academicSessionId ||
                     !this.state.programmeGroupId ||
-                    !this.state.monthId
+                    Object.keys(this.state.yearId).length === 0
+                    // ||
+                    // !this.state.monthId
                   }
                   onClick={(e) => this.onSearchClick(e)}
                 >
@@ -852,7 +1023,7 @@ class F322HourlySheetsForCoordinators extends Component {
             disableRightButton={
               !this.state.academicSessionId ||
               !this.state.programmeGroupId ||
-              !this.state.monthId ||
+              !this.state?.yearId?.monthName ||
               this.state.teachersAttendanceSheetData?.length <= 0 ||
               this.state.isApproved
             }

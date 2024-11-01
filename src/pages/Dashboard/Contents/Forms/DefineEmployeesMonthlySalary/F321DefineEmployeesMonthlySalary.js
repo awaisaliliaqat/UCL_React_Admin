@@ -165,6 +165,30 @@ class F321DefineEmployeesMonthlySalary extends Component {
     });
   };
 
+  getDataForMonths = (data) => {
+    const formattedArray = Object.entries(data[0]).map(
+      ([monthName, dates]) => ({
+        fromDate: dates[0],
+        toDate: dates[1],
+        monthName,
+      })
+    );
+
+    const sortedArray = formattedArray.sort(
+      (a, b) => new Date(a.fromDate) - new Date(b.fromDate)
+    );
+
+    const augustIndex = sortedArray.findIndex((item) =>
+      item.monthName.includes("August")
+    );
+    const rearrangedArray = [
+      ...sortedArray.slice(augustIndex),
+      ...sortedArray.slice(0, augustIndex),
+    ];
+
+    return rearrangedArray;
+  };
+
   getAllowancesColumnData = async () => {
     this.setState({
       isLoading: true,
@@ -438,7 +462,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 
     const formData = new FormData();
     formData.append("sessionId", value);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonYearsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonMonthsView`;
     await fetch(url, {
       method: "POST",
       body: formData,
@@ -456,8 +480,9 @@ class F321DefineEmployeesMonthlySalary extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
+            const dataForMonths = this.getDataForMonths(data);
             this.setState({
-              yearData: data,
+              yearData: dataForMonths,
             });
           } else {
             this.handleSnackbar(
@@ -802,7 +827,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
                 })}
               </TextField>
             </div>
-            <div>
+            {/* <div>
               <TextField
                 id="yearId"
                 name="yearId"
@@ -829,7 +854,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
                   );
                 })}
               </TextField>
-            </div>
+            </div> */}
             <div>
               <TextField
                 id="monthId"
@@ -849,10 +874,10 @@ class F321DefineEmployeesMonthlySalary extends Component {
                 error={this.state.monthIdError}
                 select
               >
-                {this.state.monthsData.map((item) => {
+                {this.state.yearData.map((item) => {
                   return (
-                    <MenuItem key={item.id} value={item.id}>
-                      {item.label}
+                    <MenuItem key={item.id} value={item}>
+                      {item.monthName}
                     </MenuItem>
                   );
                 })}

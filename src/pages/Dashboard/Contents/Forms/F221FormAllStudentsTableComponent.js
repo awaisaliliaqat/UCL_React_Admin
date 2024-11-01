@@ -1,8 +1,30 @@
 import React, { Component } from "react";
-import PropTypes from 'prop-types';
-import { Paper } from "@material-ui/core";
-import {FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
-import {Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow} from "@devexpress/dx-react-grid-material-ui";
+import PropTypes from "prop-types";
+import {
+  Button,
+  Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+} from "@material-ui/core";
+import {
+  FilteringState,
+  IntegratedFiltering,
+  IntegratedPaging,
+  IntegratedSorting,
+  PagingState,
+  SortingState,
+} from "@devexpress/dx-react-grid";
+import {
+  Grid,
+  PagingPanel,
+  Table,
+  TableFilterRow,
+  TableHeaderRow,
+} from "@devexpress/dx-react-grid-material-ui";
 
 class F221FormAllStudentsTableComponent extends Component {
   constructor(props) {
@@ -14,109 +36,144 @@ class F221FormAllStudentsTableComponent extends Component {
         { name: "degreeLabel", title: "Programme" },
         { name: "pathwayLabel", title: "Pathway" },
         { name: "statusLabel", title: "Status" },
+        {
+          name: "WithDrawn",
+          title: "WithDrawn",
+          getCellValue: (rowData) =>
+            rowData.statusLabel === "WithDrawn" ? (
+              <Button
+                variant="outlined"
+                style={{
+                  textTransform: "capitalize",
+                  background: "#174A84",
+                  color: "white",
+                }}
+                onClick={() => this.handleOpenDialog(rowData)}
+              >
+                Undo Withdrawal
+              </Button>
+            ) : null,
+        },
       ],
       rows: [],
-      formatColumns: [],
-      currencyColumns: [],
-      availableFilterOperations: [
-        "equal",
-        "notEqual",
-        "greaterThan",
-        "greaterThanOrEqual",
-        "lessThan",
-        "lessThanOrEqual",
-      ],
+      openDialog: false,
+      selectedStudent: null,
+      undoReason: "", // State for the reason text area
       pageSizes: [5, 10, 25],
-      defaultSorting: [],
-      sortingStateColumnExtensions: [],
-      tableColumnExtensions: [
-        { columnName: "studentId"},
-        { columnName: "displayName",  wordWrapEnabled: true },
-        { columnName: "degreeLabel", wordWrapEnabled: true },
-        { columnName: "pathwayLabel",  wordWrapEnabled: true },
-        { columnName: "statusLabel",  wordWrapEnabled: true },
-      ],
-      defaultColumnWidths: [],
-      defaultFilters: [],
-      filteringStateColumnExtensions: []
     };
   }
 
   componentDidUpdate(prevProps) {
-    // Typical usage (don't forget to compare props):
     if (this.props.rows !== prevProps.rows) {
-      this.setState({rows:this.props.rows});
+      this.setState({ rows: this.props.rows });
     }
   }
 
+  handleOpenDialog = (student) => {
+    this.setState({
+      openDialog: true,
+      selectedStudent: student,
+      undoReason: "",
+    });
+  };
+
+  handleCloseDialog = () => {
+    this.setState({ openDialog: false, selectedStudent: null, undoReason: "" });
+  };
+
+  handleUndoWithdrawal = () => {
+    const { selectedStudent, undoReason } = this.state;
+    if (selectedStudent) {
+      // Implement your undo logic here, passing along the reason if necessary
+      console.log(
+        "Undo Withdrawal for",
+        selectedStudent,
+        "with reason:",
+        undoReason
+      );
+    }
+    this.handleCloseDialog();
+  };
+
+  handleReasonChange = (event) => {
+    this.setState({ undoReason: event.target.value });
+  };
+
   render() {
-         
     const {
       rows,
       columns,
-      tableColumnExtensions,
-      defaultSorting,
-      sortingStateColumnExtensions,
-      filteringStateColumnExtensions,
-      defaultFilters,
-      pageSizes
+      pageSizes,
+      openDialog,
+      selectedStudent,
+      undoReason,
     } = this.state;
-
-    // const rowComponent = ({ tableRow, ...restProps }) => {
-    //   return <Table.Row {...restProps} style={{ backgroundColor: "LightBlue" }} />;
-    // };
 
     return (
       <Paper>
-        <Grid 
-        pagination={false}
-        showPaginationBottom={false}
-          rows={rows} 
+        <Grid
+          pagination={false}
+          showPaginationBottom={false}
+          rows={rows}
           columns={columns}
         >
-          <FilteringState
-            defaultFilters={defaultFilters}
-            columnExtensions={filteringStateColumnExtensions}
-          />
-          <SortingState
-            defaultSorting={defaultSorting}
-            columnExtensions={sortingStateColumnExtensions}
-          />
-          <PagingState 
-            defaultCurrentPage={0} 
-            // defaultPageSize={}
-          />
+          <FilteringState />
+          <SortingState />
+          <PagingState defaultCurrentPage={0} />
           <IntegratedFiltering />
           <IntegratedSorting />
-          {/* <IntegratedPaging /> */}
-          <Table 
-            columnExtensions={tableColumnExtensions} 
-          />
-          <TableHeaderRow
-            //rowComponent={rowComponent}
-            showSortingControls={true}
-            showPaginationBottom={false}
-            titleComponent={(props) =>
-              props.children!="Action" ?
-              <b>{props.children}</b>
-              :
-              <b>&emsp;{props.children}</b>
-            }
-          />
-          {this.props.showFilter && <TableFilterRow showFilterSelector={true} />}
-          {/* <PagingPanel  pageSizes={pageSizes} /> */}
+          <Table />
+          <TableHeaderRow showSortingControls />
+          {this.props.showFilter && <TableFilterRow showFilterSelector />}
         </Grid>
+
+        {/* Dialog for Undo Withdrawal Confirmation */}
+        <Dialog open={openDialog} onClose={this.handleCloseDialog}>
+          <DialogTitle>Undo Withdrawal</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to undo the withdrawal for{" "}
+              {selectedStudent?.displayName}?
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Reason for Undoing Withdrawal"
+              type="text"
+              fullWidth
+              multiline
+              minRows={3}
+              value={undoReason}
+              onChange={this.handleReasonChange}
+              variant="outlined"
+              required
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCloseDialog} color="primary">
+              Cancel
+            </Button>
+            <Button
+              onClick={this.handleUndoWithdrawal}
+              color="primary"
+              variant="contained"
+              disabled={!undoReason.trim()} // Disable button if no reason is provided
+            >
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Paper>
     );
   }
 }
 
-export default F221FormAllStudentsTableComponent;
-
 F221FormAllStudentsTableComponent.propTypes = {
   showFilter: PropTypes.bool,
-}
+};
 
 F221FormAllStudentsTableComponent.defaultProps = {
   showFilter: false,
-}
+};
+
+export default F221FormAllStudentsTableComponent;

@@ -1,39 +1,25 @@
 import React, { Component } from "react";
-import { Paper } from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
 import {
-  Column,
   FilteringState,
-  GroupingState,
   IntegratedFiltering,
-  IntegratedGrouping,
   IntegratedPaging,
-  IntegratedSelection,
   IntegratedSorting,
   PagingState,
-  SelectionState,
   SortingState,
-  DataTypeProvider,
-  DataTypeProviderProps,
 } from "@devexpress/dx-react-grid";
 import {
-  DragDropProvider,
   Grid,
-  GroupingPanel,
   PagingPanel,
   Table,
   TableFilterRow,
-  TableGroupRow,
   TableHeaderRow,
-  TableSelection,
-  Toolbar,
-  VirtualTable,
-  TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
+import PropTypes from "prop-types";
 
-class R66ReportsTableComponent extends Component {
+class R345MasterAttendanceLogsViewTableComponent extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       columns: [],
       rows: [],
@@ -50,54 +36,47 @@ class R66ReportsTableComponent extends Component {
       pageSizes: [5, 10, 15, 20],
       defaultSorting: [],
       sortingStateColumnExtensions: [
-        //{ columnName: "action", sortingEnabled: false },
+        { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
-        { columnName: "SRNo", width: 100 },
-        { columnName: "nucluesId", wordWrapEnabled: true },
-        { columnName: "studentName", wordWrapEnabled: true },
-        { columnName: "pathway", wordWrapEnabled: true },
-        // { columnName: "schoolLabel", wordWrapEnabled: true },
-        // { columnName: "programmeGroupLabel", wordWrapEnabled: true },
-        // { columnName: "dateOfAdmission", width: 150},
-        // { columnName: "statusLabel", width: 120}
+        { columnName: "id", width: 100 },
+        { columnName: "edit", width: 70 },
+        { columnName: "approve", width: 70 },
+        { columnName: "reject", width: 70 },
       ],
-      defaultColumnWidths: [],
+
       resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
-        //{ columnName: "action", filteringEnabled: false },
+        { columnName: "action", filteringEnabled: false },
       ],
     };
   }
 
   render() {
+    // eslint-disable-next-line no-unused-vars
+    const cellComponent = ({ cellProps, ...restProps }) => {
+      return (
+        <Table.Cell
+          {...restProps}
+          style={{ wordBreak: "break-word", whiteSpace: "pre-wrap" }}
+        />
+      );
+    };
+
     const {
-      formatColumns,
-      currencyColumns,
-      availableFilterOperations,
-      CurrencyEditor,
       tableColumnExtensions,
-      resizingMode,
       defaultSorting,
       sortingStateColumnExtensions,
       filteringStateColumnExtensions,
       defaultFilters,
-      defaultColumnWidths,
-      columnBands,
       pageSizes,
     } = this.state;
 
-    // const rows = this.props.data;
-    const rows = this.props.data
-      .sort((a, b) => {})
-      .map((row, index) => ({ ...row, SRNo: index + 1 }));
-
-    const columns = this.props.columns;
-    const showFilter = this.props.showFilter;
+    const { rows, columns, showFilter } = this.props;
 
     return (
-      <Paper>
+      <div style={{ overflowX: "auto", width: "100%" }}>
         <Grid rows={rows} columns={columns}>
           <FilteringState
             defaultFilters={defaultFilters}
@@ -107,17 +86,14 @@ class R66ReportsTableComponent extends Component {
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
           />
-          {/* <SelectionState />  */}
-          {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
-          <PagingState defaultCurrentPage={0} defaultPageSize={10} />
+          <PagingState defaultCurrentPage={0} defaultPageSize={5} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
-          {/* <IntegratedSelection /> */}
-          {/* <DragDropProvider /> */}
-          <Table columnExtensions={tableColumnExtensions} />
-          {/* <TableColumnResizing columnExtensions={defaultColumnWidths}/> */}
-          {/* <TableSelection showSelectAll={true} /> */}
+          <Table
+            cellComponent={cellComponent}
+            columnExtensions={tableColumnExtensions}
+          />
           <TableHeaderRow
             showSortingControls={true}
             titleComponent={(props) =>
@@ -130,11 +106,22 @@ class R66ReportsTableComponent extends Component {
           />
           {showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
           <PagingPanel pageSizes={pageSizes} />
-          {/* <Toolbar /> */}
         </Grid>
-      </Paper>
+      </div>
     );
   }
 }
 
-export default R66ReportsTableComponent;
+R345MasterAttendanceLogsViewTableComponent.propTypes = {
+  columns: PropTypes.array,
+  rows: PropTypes.array,
+  showFilter: PropTypes.bool,
+};
+
+R345MasterAttendanceLogsViewTableComponent.defaultProps = {
+  columns: [],
+  rows: [],
+  showFilter: false,
+};
+
+export default R345MasterAttendanceLogsViewTableComponent;

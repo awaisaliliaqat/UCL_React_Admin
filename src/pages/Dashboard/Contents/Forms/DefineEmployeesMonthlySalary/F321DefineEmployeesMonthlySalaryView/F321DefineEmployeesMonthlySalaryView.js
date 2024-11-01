@@ -163,6 +163,30 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
     });
   };
 
+  getDataForMonths = (data) => {
+    const formattedArray = Object.entries(data[0]).map(
+      ([monthName, dates]) => ({
+        fromDate: dates[0],
+        toDate: dates[1],
+        monthName,
+      })
+    );
+
+    const sortedArray = formattedArray.sort(
+      (a, b) => new Date(a.fromDate) - new Date(b.fromDate)
+    );
+
+    const augustIndex = sortedArray.findIndex((item) =>
+      item.monthName.includes("August")
+    );
+    const rearrangedArray = [
+      ...sortedArray.slice(augustIndex),
+      ...sortedArray.slice(0, augustIndex),
+    ];
+
+    return rearrangedArray;
+  };
+
   getYearsData = async (value) => {
     this.setState({
       isLoading: true,
@@ -190,8 +214,10 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
+            const dataForMonths = this.getDataForMonths(data);
+
             this.setState({
-              yearData: data,
+              yearData: dataForMonths,
             });
           } else {
             this.handleSnackbar(
@@ -849,7 +875,7 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
               </TextField>
             </div>
 
-            <div>
+            {/* <div>
               <TextField
                 id="yearId"
                 name="yearId"
@@ -876,7 +902,7 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
                   );
                 })}
               </TextField>
-            </div>
+            </div> */}
             <div>
               <TextField
                 id="monthId"
@@ -896,10 +922,10 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
                 error={this.state.monthIdError}
                 select
               >
-                {this.state.monthsData.map((item) => {
+                {this.state.yearData.map((item) => {
                   return (
-                    <MenuItem key={item.id} value={item.id}>
-                      {item.label}
+                    <MenuItem key={item.id} value={item}>
+                      {item.monthName}
                     </MenuItem>
                   );
                 })}

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import { DatePicker } from "@material-ui/pickers";
 
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import {
@@ -103,6 +104,11 @@ class F336MonthlyEmployeeAttendance extends Component {
 
       expandedGroupsData: [],
 
+      fromDate: null,
+      toDate: null,
+      fromDateToSend: null,
+      toDateToSend: null,
+
       teachersAttendanceSheetData: [],
 
       isApproved: false,
@@ -119,6 +125,16 @@ class F336MonthlyEmployeeAttendance extends Component {
     });
   }
 
+  dateToGetThrough = (date) => {
+    const [day, month, year] = date.split("-");
+
+    const dateObj = new Date(`${year}-${month}-${day}`);
+
+    const formattedDate = dateObj.toString();
+
+    return formattedDate;
+  };
+
   getYearsData = async (value) => {
     this.setState({
       isLoading: true,
@@ -126,7 +142,7 @@ class F336MonthlyEmployeeAttendance extends Component {
 
     const formData = new FormData();
     formData.append("sessionId", value);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonYearsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonMonthsView`;
     await fetch(url, {
       method: "POST",
       body: formData,
@@ -202,7 +218,7 @@ class F336MonthlyEmployeeAttendance extends Component {
                 const sessionId = array[i].ID;
                 this.setState({ academicSessionId: sessionId });
                 this.getYearsData(sessionId);
-                this.getProgrammeGroupsBySessionId(sessionId);
+                // this.getProgrammeGroupsBySessionId(sessionId);
               }
             }
           } else {
@@ -235,74 +251,77 @@ class F336MonthlyEmployeeAttendance extends Component {
     this.setState({ academicSessionsDataLoading: false });
   };
 
-  getProgrammeGroupsBySessionId = async (academicSessionId) => {
-    let mySessionId = academicSessionId;
+  // getProgrammeGroupsBySessionId = async (academicSessionId) => {
+  //   let mySessionId = academicSessionId;
 
-    this.setState({
-      programmeGroupsDataLoading: true,
-      programmeGroupsData: [],
-    });
-    let data = new FormData();
-    data.append("academicsSessionId", mySessionId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicsProgrammesGroupsView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({ programmeGroupsData: json.DATA });
-          } else {
-            this.handleSnackbar(
-              true,
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
-          }
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            this.handleSnackbar(
-              true,
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ programmeGroupsDataLoading: false });
-  };
+  //   this.setState({
+  //     programmeGroupsDataLoading: true,
+  //     programmeGroupsData: [],
+  //   });
+  //   let data = new FormData();
+  //   data.append("academicsSessionId", mySessionId);
+  //   const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicsProgrammesGroupsView`;
+  //   await fetch(url, {
+  //     method: "POST",
+  //     body: data,
+  //     headers: new Headers({
+  //       Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+  //     }),
+  //   })
+  //     .then((res) => {
+  //       if (!res.ok) {
+  //         throw res;
+  //       }
+  //       return res.json();
+  //     })
+  //     .then(
+  //       (json) => {
+  //         if (json.CODE === 1) {
+  //           this.setState({ programmeGroupsData: json.DATA });
+  //         } else {
+  //           this.handleSnackbar(
+  //             true,
+  //             <span>
+  //               {json.SYSTEM_MESSAGE}
+  //               <br />
+  //               {json.USER_MESSAGE}
+  //             </span>,
+  //             "error"
+  //           );
+  //         }
+  //       },
+  //       (error) => {
+  //         if (error.status == 401) {
+  //           this.setState({
+  //             isLoginMenu: true,
+  //             isReload: true,
+  //           });
+  //         } else {
+  //           this.handleSnackbar(
+  //             true,
+  //             "Failed to fetch ! Please try Again later.",
+  //             "error"
+  //           );
+  //         }
+  //       }
+  //     );
+  //   this.setState({ programmeGroupsDataLoading: false });
+  // };
 
   onSearchClick = async (e) => {
     if (!IsEmpty(e)) {
       e.preventDefault();
     }
-    var data = new FormData();
-    data.append("recordId", this.state.recordId);
+    // var data = new FormData();
+    // data.append("recordId", this.state.recordId);
+    // data.append("academicsSessionId", this.state.academicSessionId);
+    // data.append("monthEnum", this.state.monthId.monthName);
+    // data.append("year", 0);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceView?year=${this.state.yearId}&month=${this.state.monthId}`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceView?fromDate=${this.state.fromDateToSend}&toDate=${this.state.toDateToSend}`;
     await fetch(url, {
       method: "POST",
-      body: data,
+      // body: data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -389,7 +408,7 @@ class F336MonthlyEmployeeAttendance extends Component {
     const data = {
       academicSessionId: this.state.academicSessionId,
       yearId: this.state.yearId,
-      monthId: this.state.monthId,
+      monthId: this.state.monthId.id,
       attendanceDetail: array,
     };
 
@@ -506,11 +525,54 @@ class F336MonthlyEmployeeAttendance extends Component {
       this.getYearsData(value);
     }
 
-    this.setState({
-      [name]: value,
-      [errName]: "",
-    });
+    if (name === "monthId") {
+      console.log("data");
+      const fromDate = this.dateToGetThrough(value.fromDate);
+      const toDate = this.dateToGetThrough(value.toDate);
+      this.setState({
+        [name]: value,
+        fromDate: fromDate,
+        toDate: toDate,
+        fromDateToSend: value.fromDate,
+        toDateToSend: value.toDate,
+        [errName]: "",
+      });
+    } else {
+      this.setState({
+        [name]: value,
+        [errName]: "",
+      });
+    }
+
+    // this.setState({
+    //   [name]: value,
+    //   [errName]: "",
+    // });
   };
+
+  // getData = (data) => {
+  //   const formattedArray = Object.entries(data[0]).map(
+  //     ([monthName, dates]) => ({
+  //       fromDate: dates[0],
+  //       toDate: dates[1],
+  //       monthName,
+  //     })
+  //   );
+
+  //   const sortedArray = formattedArray.sort(
+  //     (a, b) => new Date(a.fromDate) - new Date(b.fromDate)
+  //   );
+
+  //   const augustIndex = sortedArray.findIndex((item) =>
+  //     item.monthName.includes("August")
+  //   );
+  //   const rearrangedArray = [
+  //     ...sortedArray.slice(augustIndex),
+  //     ...sortedArray.slice(0, augustIndex),
+  //   ];
+
+  //   return rearrangedArray;
+  // };
   handleRatePerHourChange = (value, rowData) => {
     const { id } = rowData;
     const updatedData = this.state.teachersAttendanceSheetData.map((item) =>
@@ -691,11 +753,11 @@ class F336MonthlyEmployeeAttendance extends Component {
         <div className={classes.mainContainer}>
           <div className={classes.titleContainer}>
             <Typography className={classes.title} variant="h5">
-              <Tooltip title="Back">
+              {/* <Tooltip title="Back">
                 <IconButton onClick={() => window.history.back()}>
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
               {"Monthly Employee Attendance"}
               <br />
             </Typography>
@@ -747,7 +809,7 @@ class F336MonthlyEmployeeAttendance extends Component {
                 ))}
               </TextField>
             </Grid> */}
-            <Grid item xs={12} md={2}>
+            {/* <Grid item xs={12} md={2}>
               <TextField
                 id="yearId"
                 name="yearId"
@@ -767,7 +829,7 @@ class F336MonthlyEmployeeAttendance extends Component {
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={2}>
               <TextField
                 id="monthId"
@@ -782,14 +844,67 @@ class F336MonthlyEmployeeAttendance extends Component {
                 fullWidth
                 select
               >
-                {this.state.monthsData?.map((item) => (
-                  <MenuItem key={item} value={item.id}>
-                    {item.label}
+                {this.state.yearData?.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item.monthName}
                   </MenuItem>
                 ))}
               </TextField>
             </Grid>
-
+            <Grid item xs={12} md={2}>
+              <DatePicker
+                autoOk
+                id="fromDate"
+                name="fromDate"
+                label="From Date"
+                invalidDateMessage=""
+                disabled={Object.keys(this.state.yearId).length === 0}
+                placeholder=""
+                variant="inline"
+                inputVariant="outlined"
+                format="dd-MM-yyyy"
+                fullWidth
+                required
+                value={this.state.fromDate}
+                onChange={(date) =>
+                  this.onHandleChangeDate({
+                    target: { name: "fromDate", value: date },
+                  })
+                }
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <DatePicker
+                autoOk
+                id="toDate"
+                name="toDate"
+                label="To Date"
+                invalidDateMessage=""
+                disabled={Object.keys(this.state.yearId).length === 0}
+                placeholder=""
+                variant="inline"
+                inputVariant="outlined"
+                format="dd-MM-yyyy"
+                fullWidth
+                required
+                // disabled={!this.state.fromDate}
+                value={this.state.toDate}
+                onChange={(date) =>
+                  this.onHandleChangeDate({
+                    target: { name: "toDate", value: date },
+                  })
+                }
+                // disablePast
+                // shouldDisableDate={(day) => {
+                //   const fromDate = this.state.fromDate;
+                //   if (fromDate) {
+                //     console.log(fromDate);
+                //     return day <= fromDate;
+                //   }
+                //   return false;
+                // }}
+              />
+            </Grid>
             <Grid item xs={12} md={3}>
               <div className={classes.actions}>
                 <Button
