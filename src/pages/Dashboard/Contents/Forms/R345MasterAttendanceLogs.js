@@ -207,6 +207,8 @@ class R345MasterAttendanceLogs extends Component {
         this.setState({
           fromDate: value,
           fromDateToSend: formattedDate,
+          toDate: null,
+          toDateToSend: null,
         });
       }
     } else if (name === "toDate") {

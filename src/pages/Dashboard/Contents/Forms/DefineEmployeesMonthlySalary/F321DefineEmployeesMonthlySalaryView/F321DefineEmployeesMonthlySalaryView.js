@@ -214,10 +214,10 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
-            const dataForMonths = this.getDataForMonths(data);
+            // const dataForMonths = this.getDataForMonths(data);
 
             this.setState({
-              yearData: dataForMonths,
+              yearData: data,
             });
           } else {
             this.handleSnackbar(
@@ -371,11 +371,11 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
     });
 
     const formData = new FormData();
-    formData.append("sessionId", this.state.sessionId);
-    formData.append("monthId", val);
-    formData.append("year", this.state.yearId);
+    // formData.append("sessionId", this.state.sessionId);
+    // formData.append("monthId", val);
+    // formData.append("year", this.state.yearId);
 
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonEmployeesMonthlyPayrollVoucherView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonEmployeesMonthlyPayrollVoucherView?sessionId=${this.state.sessionId}&sessionPayrollMonthId=${val.id}`;
     await fetch(url, {
       method: "POST",
       body: formData,

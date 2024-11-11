@@ -16,6 +16,7 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import { format, getDaysInMonth } from "date-fns";
+import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
 const styles = (theme) => ({
   tableContainer: {
@@ -94,6 +95,10 @@ class F344MonthlyAttendanceFeature extends Component {
       employees: [],
       dates: [],
       isLoading: false,
+
+      isOpenSnackbar: false,
+      snackbarMessage: "",
+      snackbarSeverity: "",
     };
   }
 
@@ -146,23 +151,31 @@ class F344MonthlyAttendanceFeature extends Component {
           if (json.CODE === 1) {
             let array = json.DATA || [];
             console.log(array, "data is coming");
-            const result = this.getFormattedAttendanceDates(
-              json.DATA[0].attendance
-            );
+            if (json.DATA[0]?.attendance.length > 0) {
+              const result = this?.getFormattedAttendanceDates(
+                json.DATA[0]?.attendance
+              );
+              console.log(result);
 
-            console.log(result);
-
-            this.setState({ employees: array, dates: [...result] });
+              this.setState({ employees: array, dates: [...result] });
+            } else {
+              this.setState({ employees: [], dates: [] });
+              this.handleSnackbar(
+                true,
+                <span>{"There is no record found againt this month!"}</span>,
+                "error"
+              );
+            }
           } else {
-            // this.handleSnackbar(
-            //   true,
-            //   <span>
-            //     {json.SYSTEM_MESSAGE}
-            //     <br />
-            //     {json.USER_MESSAGE}
-            //   </span>,
-            //   "error"
-            // );
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
         },
         (error) => {
@@ -172,11 +185,11 @@ class F344MonthlyAttendanceFeature extends Component {
               isReload: true,
             });
           } else {
-            // this.handleSnackbar(
-            //   true,
-            //   "Failed to fetch ! Please try Again later.",
-            //   "error"
-            // );
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -199,6 +212,14 @@ class F344MonthlyAttendanceFeature extends Component {
     return dates;
   };
 
+  handleSnackbar = (open, msg, severity) => {
+    this.setState({
+      isOpenSnackbar: open,
+      snackbarMessage: msg,
+      snackbarSeverity: severity,
+    });
+  };
+
   render() {
     const { classes } = this.props;
     const { employees, selectedDate } = this.state;
@@ -218,7 +239,7 @@ class F344MonthlyAttendanceFeature extends Component {
         >
           <div className={classes.titleContainer}>
             <Typography className={classes.title} variant="h5">
-              {"Monthly Gate Attendance Report"}
+              {"Employee Gate Attendance Monthly"}
               <br />
             </Typography>
           </div>
@@ -231,6 +252,9 @@ class F344MonthlyAttendanceFeature extends Component {
             onChange={this.handleDateChange}
             className={classes.monthSelect}
             variant="outlined"
+            style={{
+              width: "340px",
+            }}
           />
 
           <Divider
@@ -258,49 +282,82 @@ class F344MonthlyAttendanceFeature extends Component {
             >
               <CircularProgress />
             </div>
+          ) : this.state.employees.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                fontSize: "18px",
+                color: "gray",
+              }}
+            >
+              No records found
+            </div>
           ) : (
             <TableContainer
               component={Paper}
               className={classes.tableContainer}
             >
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.tableHeader}>
-                      Employee Name
-                    </TableCell>
-                    {this.state.dates.map((date, index) => (
-                      <TableCell key={index} className={classes.tableHeader}>
-                        {date}
+              <div
+                style={{
+                  maxHeight: "600px",
+                  overflowY: "auto",
+                  overflowX: "auto",
+                }}
+              >
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell className={classes.tableHeader}>
+                        Employee Name
                       </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {employees.map((employee, index) => (
-                    <TableRow key={index}>
-                      <TableCell
-                        className={classes.employeeNameCell}
-                        style={{
-                          height: "41px",
-                        }}
-                      >
-                        {employee.name}
-                      </TableCell>
-                      {employee.attendance.map((entry, idx) => (
-                        <TableCell key={idx} className={classes.attendanceCell}>
-                          {entry.checkIn && entry.checkOut
-                            ? `In: ${entry.checkIn}  Out: ${entry.checkOut}`
-                            : "N/A"}
+                      {this.state.dates.map((date, index) => (
+                        <TableCell key={index} className={classes.tableHeader}>
+                          {date}
                         </TableCell>
                       ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHead>
+
+                  <TableBody>
+                    {employees.map((employee, index) => (
+                      <TableRow key={index}>
+                        <TableCell
+                          className={classes.employeeNameCell}
+                          style={{
+                            height: "41px",
+                            position: "sticky",
+                            left: 0,
+                            backgroundColor: "#fff",
+                            zIndex: 1,
+                          }}
+                        >
+                          {employee.name}
+                        </TableCell>
+                        {employee.attendance.map((entry, idx) => (
+                          <TableCell
+                            key={idx}
+                            className={classes.attendanceCell}
+                          >
+                            {entry.checkIn || entry.checkOut
+                              ? `In: ${entry.checkIn}  Out: ${entry.checkOut}`
+                              : "N/A"}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </TableContainer>
           )}
         </div>
+        <CustomizedSnackbar
+          isOpen={this.state.isOpenSnackbar}
+          message={this.state.snackbarMessage}
+          severity={this.state.snackbarSeverity}
+          handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
+        />
       </Fragment>
     );
   }

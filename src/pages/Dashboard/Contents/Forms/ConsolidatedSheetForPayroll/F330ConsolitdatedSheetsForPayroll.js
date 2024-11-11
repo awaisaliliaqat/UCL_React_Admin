@@ -166,11 +166,11 @@ class F330ConsolidatedSheetForPayroll extends Component {
           if (json.CODE === 1) {
             let data = json.DATA || [];
 
-            const updatedData = this.getData(data);
+            // const updatedData = this.getData(data);
 
-            console.log(updatedData);
+            // console.log(updatedData);
             this.setState({
-              yearData: updatedData,
+              yearData: data,
             });
           } else {
             this.handleSnackbar(

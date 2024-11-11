@@ -235,6 +235,8 @@ import F343LinkEnrollmentIds from "./Contents/Forms/LinkEnrollmentIds/F343LinkEn
 import F343LinkEnrollmentIdsView from "./Contents/Forms/LinkEnrollmentIds/F343LinkEnrollmentIdsView";
 import F344MonthlyAttendanceFeature from "./Contents/Forms/F344MonthlyAttendanceFeature";
 import R345MasterAttendanceLogs from "./Contents/Forms/R345MasterAttendanceLogs";
+import F346StudentAttendanceFeature from "./Contents/Forms/StudentAttendanceFeature/F346StudentAttendanceFeature";
+import R346StudentDetailReport from "./Contents/Forms/StudentAttendanceFeature/R346StudentDetailReport/R346StudentDetailReport";
 
 const drawerWidth = 283;
 
@@ -357,8 +359,8 @@ const Dashboard = (props) => {
     setDrawerOpen(!prevFlag);
   };
 
-  const UserId = adminData.userRoleIds.filter((item) => item === 1);
-  const isUserIdPresent = UserId.length > 0;
+  const UserId = adminData?.userRoleIds?.filter((item) => item === 1);
+  const isUserIdPresent = UserId?.length > 0;
   return (
     <Fragment>
       {/* <ControlledDialog
@@ -983,6 +985,37 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F344MonthlyAttendanceFeature
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F346StudentAttendanceFeature"
+                exact
+                path="/dashboard/R346StudentAttendanceFeature"
+                render={(props) => {
+                  return (
+                    <F346StudentAttendanceFeature
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R346StudentDetailReport"
+                exact
+                path="/dashboard/R346StudentDetailReport/:id"
+                render={(props) => {
+                  return (
+                    <R346StudentDetailReport
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

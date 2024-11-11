@@ -480,9 +480,9 @@ class F321DefineEmployeesMonthlySalary extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
-            const dataForMonths = this.getDataForMonths(data);
+            // const dataForMonths = this.getDataForMonths(data);
             this.setState({
-              yearData: dataForMonths,
+              yearData: data,
             });
           } else {
             this.handleSnackbar(
@@ -673,7 +673,10 @@ class F321DefineEmployeesMonthlySalary extends Component {
 
     const result = {
       year: this.state.yearId,
-      monthId: this.state.monthId,
+      // monthId: this.state.monthId.monthName,
+      sessionPayrollMonthId: this.state.monthId.id,
+      fromDate: this.state.monthId.fromDate,
+      toDate: this.state.monthId.toDate,
       sessionId: this.state.sessionId,
       employeePayrolls: this.state.employeePayrollsData.map((employee) => ({
         employeeId: employee.employeeId,

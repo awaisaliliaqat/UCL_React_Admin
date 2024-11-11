@@ -123,9 +123,9 @@ class F333ConsolitdatedSheetsForSalaryHistory extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
-            const dataForMonths = this.getData(data);
+            // const dataForMonths = this.getData(data);
             this.setState({
-              yearData: dataForMonths,
+              yearData: data,
             });
           } else {
             this.handleSnackbar(

@@ -63,6 +63,67 @@ class F221FormAllStudentsTableComponent extends Component {
     };
   }
 
+  handleUndo = async (undoReason) => {
+    this.setState({ loading: true });
+    const formData = new FormData();
+    formData.append("reason", undoReason);
+    formData.append("studentId", this.state.selectedStudent.id);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C221CommonStudentsPromotionUndoWithdrawn`;
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+
+            // this.setState({
+            //   employeePayrollsData: data,
+            // });
+
+            this.handleCloseDialog();
+
+            window.location.reload();
+          } else {
+            // this.handleSnackbar(
+            //   true,
+            //   json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+            //   "error"
+            // );
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            // this.handleSnackbar(
+            //   true,
+            //   "Failed to fetch, Please try again later.",
+            //   "error"
+            // );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      loading: false,
+    });
+  };
+
   componentDidUpdate(prevProps) {
     if (this.props.rows !== prevProps.rows) {
       this.setState({ rows: this.props.rows });
@@ -91,8 +152,8 @@ class F221FormAllStudentsTableComponent extends Component {
         "with reason:",
         undoReason
       );
+      this.handleUndo(undoReason);
     }
-    this.handleCloseDialog();
   };
 
   handleReasonChange = (event) => {

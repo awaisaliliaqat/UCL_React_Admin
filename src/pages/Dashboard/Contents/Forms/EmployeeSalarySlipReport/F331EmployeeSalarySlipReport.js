@@ -281,9 +281,9 @@ class F331EmployeeSalarySlipReport extends Component {
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonEmployeePayRoleView`;
     var data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
-    data.append("month", this.state.monthId);
+    // data.append("sessionPayrollMonthId", this.state.monthId);
     data.append("employeeId", this.state.employeeObject);
-    data.append("year", this.state.yearId);
+    data.append("sessionPayrollMonthId", this.state.yearId.id);
 
     // data.append("programmeGroupId", this.state.programmeGroupId);
     // data.append("month", this.state.monthId);
@@ -355,6 +355,66 @@ class F331EmployeeSalarySlipReport extends Component {
       isOpenSnackbar: open,
       snackbarMessage: msg,
       snackbarSeverity: severity,
+    });
+  };
+
+  getYearsData = async (value) => {
+    this.setState({
+      isLoading: true,
+    });
+
+    const formData = new FormData();
+    formData.append("sessionId", value);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonMonthsView`;
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            // const dataForMonths = this.getData(data);
+
+            // console.log(dataForMonths, "date is coming");
+            this.setState({
+              yearData: data,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
     });
   };
 
@@ -537,7 +597,7 @@ class F331EmployeeSalarySlipReport extends Component {
                 id="yearId"
                 name="yearId"
                 variant="outlined"
-                label="Years"
+                label="Month"
                 onChange={this.onHandleChange}
                 value={this.state.yearId}
                 // error={!!this.state.academicSessionIdError}
@@ -547,8 +607,8 @@ class F331EmployeeSalarySlipReport extends Component {
                 select
               >
                 {this.state.yearData?.map((item) => (
-                  <MenuItem key={item} value={item.ID}>
-                    {item.Label}
+                  <MenuItem key={item} value={item}>
+                    {item.monthName}
                   </MenuItem>
                 ))}
               </TextField>
@@ -599,7 +659,7 @@ class F331EmployeeSalarySlipReport extends Component {
               </TextField>
             </Grid>
             */}
-            <Grid item xs={12} md={2}>
+            {/* <Grid item xs={12} md={2}>
               <TextField
                 id="monthId"
                 name="monthId"
@@ -619,7 +679,7 @@ class F331EmployeeSalarySlipReport extends Component {
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <div className={classes.actions}>
                 <Button

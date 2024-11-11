@@ -10,14 +10,17 @@ import {
   TextField,
   MenuItem,
 } from "@material-ui/core";
-import ExcelIcon from "../../../../assets/Images/excel.png";
-import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import R341ReportsTableComponent from "./R341ReportsTableComponent";
+import { DatePicker, KeyboardTimePicker } from "@material-ui/pickers";
+import { format, getDaysInMonth } from "date-fns";
+
+import ExcelIcon from "../../../../../assets/Images/excel.png";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
+import F346StudentAttendanceFeatureTableComponent from "./F346StudentAttendanceFeatureTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
-import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
-class R341Reports extends Component {
+class F346StudentAttendanceFeature extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -32,18 +35,8 @@ class R341Reports extends Component {
       snackbarMessage: "",
       snackbarSeverity: "",
       tableData: [],
-      schoolsMenuItems: [
-        {
-          label: "Pending",
-          id: 0,
-        },
-        {
-          label: "Submitted",
-          id: 1,
-        },
-      ],
-      statusId: 0,
-      schoolId: 0,
+      schoolsMenuItems: [],
+      schoolId: "",
       schoolIdError: "",
       programmeGroupId: "",
       programmeGroupIdError: "",
@@ -68,9 +61,10 @@ class R341Reports extends Component {
       pathwayMenuItems: [],
       pathwayId: "",
       pathwayIdError: "",
-
-      terms: [],
-      termId: "",
+      yearData: [],
+      fromDate: new Date(),
+      dateAsProp: "",
+      fromDateToSend: null,
     };
   }
 
@@ -89,65 +83,87 @@ class R341Reports extends Component {
     this.setState({ isOpenSnackbar: false });
   };
 
-  // getSchools = async () => {
-  //   this.setState({ isLoading: true });
-  //   const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonSchoolsView`;
-  //   await fetch(url, {
-  //     method: "POST",
-  //     headers: new Headers({
-  //       Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-  //     }),
-  //   })
-  //     .then((res) => {
-  //       if (!res.ok) {
-  //         throw res;
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(
-  //       (json) => {
-  //         if (json.CODE === 1) {
-  //           this.setState({ schoolsMenuItems: json.DATA || [] });
-  //         } else {
-  //           //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-  //           this.handleOpenSnackbar(
-  //             <span>
-  //               {json.SYSTEM_MESSAGE}
-  //               <br />
-  //               {json.USER_MESSAGE}
-  //             </span>,
-  //             "error"
-  //           );
-  //         }
-  //         console.log("getCourses", json);
-  //       },
-  //       (error) => {
-  //         if (error.status === 401) {
-  //           this.setState({
-  //             isLoginMenu: true,
-  //             isReload: true,
-  //           });
-  //         } else {
-  //           //alert('Failed to fetch, Please try again later.');
-  //           this.handleOpenSnackbar(
-  //             "Failed to fetch, Please try again later.",
-  //             "error"
-  //           );
-  //           console.log(error);
-  //         }
-  //       }
-  //     );
-  //   this.setState({ isLoading: false });
-  // };
+  getSchools = async () => {
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonSchoolsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState({ schoolsMenuItems: json.DATA || [] });
+          } else {
+            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+          console.log("getCourses", json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            //alert('Failed to fetch, Please try again later.');
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
+  onHandleChangesDate = (event) => {
+    const { name, value } = event.target;
+    const date = new Date(value);
+    const formattedDate = `${String(date.getDate()).padStart(2, "0")}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${date.getFullYear()}`;
+
+    if (name === "fromDate") {
+      this.setState({
+        fromDateToSend: formattedDate,
+      });
+    } else {
+      this.setState({
+        toDateToSend: formattedDate,
+      });
+    }
+
+    this.setState({
+      [name]: value,
+    });
+  };
 
   getProgramGroup = async (schoolId) => {
     this.setState({ isLoading: true, programmeGroupsMenuItems: [] });
     let data = new FormData();
-    // data.append("schoolId", schoolId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C341CommonProgrammeGroupsView`;
+    data.append("schoolId", schoolId);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeGroupsView`;
     await fetch(url, {
-      method: "GET",
-      // body: data,
+      method: "POST",
+      body: data,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -193,6 +209,7 @@ class R341Reports extends Component {
       );
     this.setState({ isLoading: false });
   };
+
   loadAcademicSessions = async () => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonAcademicSessionsViewV2`;
@@ -253,7 +270,7 @@ class R341Reports extends Component {
       let data = new FormData();
       data.append("programmeGroupId", programmeGroupId);
       data.append("sessionId", sessionId);
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C341CommonProgrammeView`;
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammesView`;
       await fetch(url, {
         method: "POST",
         body: data,
@@ -310,7 +327,7 @@ class R341Reports extends Component {
       let data = new FormData();
       data.append("programmeGroupId", programmeGroupId);
       data.append("sessionId", sessionId);
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C341ProgrammeCourseView`;
+      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonProgrammeCoursesView`;
       await fetch(url, {
         method: "POST",
         body: data,
@@ -328,63 +345,6 @@ class R341Reports extends Component {
           (json) => {
             if (json.CODE === 1) {
               this.setState({ coursesMenuItems: json.DATA || [] });
-            } else {
-              //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-              this.handleOpenSnackbar(
-                <span>
-                  {json.SYSTEM_MESSAGE}
-                  <br />
-                  {json.USER_MESSAGE}
-                </span>,
-                "error"
-              );
-            }
-            console.log("getCourse", json);
-          },
-          (error) => {
-            if (error.status === 401) {
-              this.setState({
-                isLoginMenu: true,
-                isReload: true,
-              });
-            } else {
-              //alert('Failed to fetch, Please try again later.');
-              this.handleOpenSnackbar(
-                "Failed to fetch, Please try again later.",
-                "error"
-              );
-              console.log(error);
-            }
-          }
-        );
-      this.setState({ isLoading: false });
-    }
-  };
-
-  getTerms = async (sessionId, programmeGroupId) => {
-    if (sessionId && programmeGroupId) {
-      this.setState({ isLoading: true, coursesMenuItems: [] });
-      let data = new FormData();
-      // data.append("programmeGroupId", programmeGroupId);
-      data.append("academicsSessionId", sessionId);
-      const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C341CommonSessionsTermView`;
-      await fetch(url, {
-        method: "POST",
-        body: data,
-        headers: new Headers({
-          Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-        }),
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw res;
-          }
-          return res.json();
-        })
-        .then(
-          (json) => {
-            if (json.CODE === 1) {
-              this.setState({ terms: json.DATA || [] });
             } else {
               //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
               this.handleOpenSnackbar(
@@ -471,9 +431,21 @@ class R341Reports extends Component {
 
   getData = async () => {
     this.setState({ isLoading: true });
-    this.setState({ statusId: this.state.schoolId });
-    console.log(this.state.programId);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C341CommonPendingStudentsFeedbackView?academicSessionId=${this.state.academicSessionId}&termId=${this.state.termId}&programmeGroupId=${this.state.programmeGroupId}&filter=${this.state.schoolId}`;
+    const formattedDate = this.state.fromDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+    });
+
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${
+      process.env.REACT_APP_SUB_API_NAME
+    }/payroll/C346StudentAttendanceFeature?academicSessionId=${
+      this.state.academicSessionId
+    }&schoolId=${this.state.schoolId}&programmeGroupId=${
+      this.state.programmeGroupId
+    }&programmeId=${this.state.programmeId}&courseId=${
+      this?.state?.courseId ? this.state.courseId.id : 0
+    }&month=${formattedDate}`;
+    console.log(url);
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -489,21 +461,11 @@ class R341Reports extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ tableData: json.DATA[0].StudentsDetail || [] });
-            let totalStudents = this.state.tableData.length;
-            this.setState({ totalStudents: totalStudents });
-            this.state.totalCourseStudent =
-              json.DATA[0].totalCourseStudent || "Total Students OF 0";
-            this.state.totalPathwayStudent =
-              json.DATA[0].totalPathwayStudent || "Total Students OF 0";
-            this.state.totalGroupStudent =
-              json.DATA[0].totalGroupStudent || "Total Students OF 0";
-            this.state.totalSchoolStudent =
-              json.DATA[0].totalSchoolStudent || "Total Students OF 0";
-            this.state.totalProgrammeStudent =
-              json.DATA[0].totalProgrammeStudent;
+            this.setState({
+              tableData: json.DATA || [],
+              dateAsProp: formattedDate,
+            });
           } else {
-            //alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
             this.handleOpenSnackbar(
               <span>
                 {json.SYSTEM_MESSAGE}
@@ -522,7 +484,6 @@ class R341Reports extends Component {
               isReload: false,
             });
           } else {
-            //alert('Failed to fetch, Please try again later.');
             this.handleOpenSnackbar(
               "Failed to fetch, Please try again later.",
               "error"
@@ -618,6 +579,7 @@ class R341Reports extends Component {
           programmeIdError: "",
           tableData: [],
         });
+
         break;
       case "schoolId":
         this.setState({
@@ -654,8 +616,6 @@ class R341Reports extends Component {
         });
         this.getProgrammes(this.state.academicSessionId, value);
         this.getCourse(this.state.academicSessionId, value);
-        this.getTerms(this.state.academicSessionId, value);
-
         break;
       case "programmeId":
         this.setState({
@@ -666,7 +626,6 @@ class R341Reports extends Component {
           totalProgrammeStudent: "Total Students OF 0",
           totalSchoolStudent: "Total Students OF 0",
         });
-
         break;
       case "courseId":
         this.setState({
@@ -691,8 +650,6 @@ class R341Reports extends Component {
       default:
         break;
     }
-
-    console.log(name, value);
     this.setState({
       [name]: value,
       [errName]: "",
@@ -738,13 +695,13 @@ class R341Reports extends Component {
   };
 
   handleGetData = () => {
-    // if (
-    //   !this.isSchoolValid()
-    //   //!this.isSectionValid() ||
-    //   //!this.isAssignmentValid()
-    // ) {
-    //   return;
-    // }
+    if (
+      !this.isSchoolValid()
+      //!this.isSectionValid() ||
+      //!this.isAssignmentValid()
+    ) {
+      return;
+    }
     this.getData();
   };
 
@@ -758,37 +715,47 @@ class R341Reports extends Component {
 
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    // this.getSchools();
+    this.getSchools();
     this.loadAcademicSessions();
-    this.getProgramGroup();
-    // this.loadPathway();
+    this.loadPathway();
   }
+
+  navigate = (id) => {
+    console.log(id);
+    window.open(
+      `#/dashboard/R346StudentDetailReport/${id}T${this.state.dateAsProp}`,
+      "_blank"
+    );
+  };
 
   render() {
     const columns = [
-      { name: "SRNo", title: "SR#" },
       { name: "nucluesId", title: "Nucleus ID" },
-      { name: "studentName", title: "Student\xa0Name" },
-      { name: "programmeLabel", title: "Programme Group" },
-      { name: "mobileNo", title: "Mobile Number" },
-      { name: "feedbacksSubmitted", title: "Total Feedback Submitted" },
+      { name: "studentName", title: "Student Name" },
+      { name: "programmeLabel", title: "Programme" },
+      { name: "presentDays", title: "Gate Attendance Days " },
+      { name: "scheduledDays", title: "Scheduled Days " },
+      { name: "attendedDays", title: "Attended Days" },
+      { name: "totalDays", title: "Total Days" },
       {
-        name: "status",
-        title: "Status",
+        name: "Actions",
+        title: "Details",
         getCellValue: (rowData) => {
           return (
-            <Fragment>
-              <div>
-                {this?.state?.statusId === 0 ? (
-                  <span style={{ color: "red" }}>Pending</span>
-                ) : (
-                  <span style={{ color: "green" }}>Submitted</span>
-                )}
-              </div>
-            </Fragment>
+            <Button
+              variant="outlined"
+              onClick={() => this.navigate(rowData.nucluesId)}
+            >
+              View
+            </Button>
           );
         },
       },
+
+      // { name: "schoolLabel", title: "School" },
+      // { name: "programmeGroupLabel", title: "Program Group" },
+      //{ name: "dateOfAdmission", title: "Date of Admission" },
+      // { name: "statusLabel", title: "Status" }
     ];
 
     return (
@@ -824,7 +791,7 @@ class R341Reports extends Component {
                 </IconButton>
               </Tooltip> 
               */}
-              Pending Feedback Report
+              Student Gate Attendance Summary
               <br />
             </Typography>
 
@@ -847,7 +814,7 @@ class R341Reports extends Component {
                   <FilterIcon fontSize="default" color="primary" />
                 </IconButton>
               </Tooltip>
-              {/* {this.state.programmeGroupId ? (
+              {this.state.programmeGroupId ? (
                 <Tooltip title="Export PDFD">
                   {this.state.isDownloadPdf ? (
                     <CircularProgress
@@ -877,7 +844,7 @@ class R341Reports extends Component {
                 </Tooltip>
               ) : (
                 ""
-              )} */}
+              )}
             </div>
           </div>
           <Divider
@@ -888,7 +855,7 @@ class R341Reports extends Component {
           />
           <br />
           <Grid container justify="left" alignItems="left" spacing={2}>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={2}>
               <TextField
                 id="academicSessionId"
                 name="academicSessionId"
@@ -917,12 +884,12 @@ class R341Reports extends Component {
                   ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={2}>
               <TextField
                 id="schoolId"
                 name="schoolId"
                 variant="outlined"
-                label="Status"
+                label="School"
                 onChange={this.onHandleChange}
                 value={this.state.schoolId}
                 error={!!this.state.schoolIdError}
@@ -936,13 +903,13 @@ class R341Reports extends Component {
               >
                 {this.state.schoolsMenuItems &&
                   this.state.schoolsMenuItems.map((dt) => (
-                    <MenuItem key={dt.id} value={dt.id}>
+                    <MenuItem key={"schoolsMenuItems" + dt.id} value={dt.id}>
                       {dt.label}
                     </MenuItem>
                   ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={2}>
               <TextField
                 id="programmeGroupId"
                 name="programmeGroupId"
@@ -958,7 +925,8 @@ class R341Reports extends Component {
                     ? this.state.programmeGroupIdError
                     : " "
                 }
-                // disabled={!this.state.schoolId || this.state.isLoading}
+                disabled={!this.state.schoolId || this.state.isLoading}
+                required
               >
                 {this.state.programmeGroupsMenuItems &&
                   this.state.programmeGroupsMenuItems.map((dt) => (
@@ -971,16 +939,16 @@ class R341Reports extends Component {
                   ))}
               </TextField>
             </Grid>
-            {/* <Grid item xs={12} md={2}>
+            <Grid item xs={12} md={2}>
               <TextField
-                id="programId"
-                name="programId"
+                id="programmeId"
+                name="programmeId"
                 variant="outlined"
                 label="Programme "
                 fullWidth
                 select
                 onChange={this.onHandleChange}
-                value={this.state.programId}
+                value={this.state.programmeId}
                 error={!!this.state.programmeIdError}
                 helperText={
                   this.state.programmeIdError
@@ -996,40 +964,9 @@ class R341Reports extends Component {
                     </MenuItem>
                   ))}
               </TextField>
-            </Grid> */}
-            {/* <Grid item xs={12} md={3}>
-                <TextField
-                  id="courseId"
-                  name="courseId"
-                  variant="outlined"
-                  label="Course"
-                  onChange={this.onHandleChange}
-                  value={this.state.courseId}
-                  error={!!this.state.courseIdError}
-                  helperText={this.state.courseIdError ? this.state.courseIdError : " "}
-                  fullWidth
-                  select
-                >
-                  {this.state.coursesMenuItems && !this.state.isLoading ? 
-                    this.state.coursesMenuItems.map((dt, i) => (
-                      <MenuItem
-                        key={"coursesMenuItems"+dt.id}
-                        value={dt.id}
-                      >
-                        {dt.label}
-                      </MenuItem>
-                    ))
-                  :
-                    <Grid 
-                      container 
-                      justify="center">
-                        <CircularProgress />
-                      </Grid>
-                  }
-                </TextField>
-              </Grid> */}
+            </Grid>
 
-            {/* <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={3}>
               <Autocomplete
                 fullWidth
                 id="courseId"
@@ -1056,83 +993,33 @@ class R341Reports extends Component {
                 name="userId"
                 value={this.state.userIds}
               />
-            </Grid> */}
-            <Grid item xs={12} md={3}>
-              <TextField
-                id="termId"
-                name="termId"
-                variant="outlined"
-                label="Term"
-                onChange={this.onHandleChange}
-                // value={this.state.schoolId}
-                // error={!!this.state.schoolIdError}
-                // helperText={
-                //   this.state.schoolIdError ? this.state.schoolIdError : " "
-                // }
-                disabled={this.state.isLoading}
-                required
-                fullWidth
-                select
-              >
-                {this.state.terms &&
-                  this?.state?.terms.map((dt) => (
-                    <MenuItem key={dt.id} value={dt.id}>
-                      {dt.label}
-                    </MenuItem>
-                  ))}
-              </TextField>
             </Grid>
           </Grid>
           <Grid container justify="left" alignItems="left" spacing={2}>
-            {/* <Grid item xs={12} md={2}>
-              <TextField
-                id="termId"
-                name="termId"
-                variant="outlined"
-                label="Term"
-                onChange={this.onHandleChange}
-                // value={this.state.schoolId}
-                // error={!!this.state.schoolIdError}
-                // helperText={
-                //   this.state.schoolIdError ? this.state.schoolIdError : " "
-                // }
-                disabled={this.state.isLoading}
+            <Grid item xs={12} md={2}>
+              <DatePicker
+                autoOk
+                id="fromDate"
+                // disabled={this.state.fromDate}
+                name="fromDate"
+                label="Month"
+                invalidDateMessage=""
+                placeholder=""
+                variant="inline"
+                inputVariant="outlined"
+                format="MM-yyyy"
+                views={["year", "month"]}
+                fullWidth
                 required
-                fullWidth
-                select
-              >
-                {this.state.terms &&
-                  this?.state?.terms.map((dt) => (
-                    <MenuItem key={dt.id} value={dt.id}>
-                      {dt.label}
-                    </MenuItem>
-                  ))}
-              </TextField>
-            </Grid> */}
-            {/* <Grid item xs={12} md={2}>
-              <TextField
-                id="pathwayId"
-                name="pathwayId"
-                variant="outlined"
-                label="Pathway"
-                onChange={this.onHandleChange}
-                value={this.state.pathwayId}
-                disabled={!this.state.schoolId || this.state.isLoading}
-                error={!!this.state.pathwayIdError}
-                helperText={
-                  this.state.pathwayIdError ? this.state.pathwayIdError : " "
+                value={this.state.fromDate}
+                onChange={(date) =>
+                  this.onHandleChangesDate({
+                    target: { name: "fromDate", value: date },
+                  })
                 }
-                fullWidth
-                select
-              >
-                {this.state.pathwayMenuItems &&
-                  this.state.pathwayMenuItems.map((dt) => (
-                    <MenuItem key={"pathwayMenuItems" + dt.id} value={dt.id}>
-                      {dt.label}
-                    </MenuItem>
-                  ))}
-              </TextField>
-            </Grid> */}
+              />
+            </Grid>
+
             <Grid item xs={12} md={1}>
               <Button
                 variant="contained"
@@ -1140,8 +1027,8 @@ class R341Reports extends Component {
                 disabled={
                   this.state.isLoading ||
                   !this.state.programmeGroupId ||
-                  // !this.state.schoolId ||
-                  !this.state.termId
+                  !this.state.fromDate
+                  // !this.state.programId
                 }
                 onClick={() => this.handleGetData()}
                 style={{ width: "100%", height: 54, marginBottom: 24 }}
@@ -1165,81 +1052,7 @@ class R341Reports extends Component {
               </Button>
             </Grid>
           </Grid>
-          {/* {this.state.totalSchoolStudent != "Total Students OF 0" ? (
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                textTransform: "capitalize",
-                textAlign: "left",
-              }}
-              variant="subtitle1"
-            >
-              {this.state.totalSchoolStudent}
-            </Typography>
-          ) : (
-            ""
-          )}
-          {this.state.totalGroupStudent != "Total Students OF 0" ? (
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                textTransform: "capitalize",
-                textAlign: "left",
-              }}
-              variant="subtitle1"
-            >
-              {this.state.totalGroupStudent}
-            </Typography>
-          ) : (
-            ""
-          )}
-          {this.state.totalProgrammeStudent != "Total Students OF 0" ? (
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                textTransform: "capitalize",
-                textAlign: "left",
-              }}
-              variant="subtitle1"
-            >
-              {this.state.totalProgrammeStudent}
-            </Typography>
-          ) : (
-            ""
-          )}
-          {this.state.totalPathwayStudent != "Total Students OF 0" ? (
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                textTransform: "capitalize",
-                textAlign: "left",
-              }}
-              variant="subtitle1"
-            >
-              {this.state.totalPathwayStudent}
-            </Typography>
-          ) : (
-            ""
-          )}
-          {this.state.totalCourseStudent != "Total Students OF 0" ? (
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                textTransform: "capitalize",
-                textAlign: "left",
-              }}
-              variant="subtitle1"
-            >
-              {this.state.totalCourseStudent}
-            </Typography>
-          ) : (
-            ""
-          )} */}
+
           <Divider
             style={{
               backgroundColor: "rgb(58, 127, 187)",
@@ -1248,7 +1061,7 @@ class R341Reports extends Component {
           />
 
           {this.state.tableData && !this.state.isLoading ? (
-            <R341ReportsTableComponent
+            <F346StudentAttendanceFeatureTableComponent
               data={this.state.tableData}
               columns={columns}
               showFilter={this.state.showTableFilter}
@@ -1272,4 +1085,4 @@ class R341Reports extends Component {
     );
   }
 }
-export default R341Reports;
+export default F346StudentAttendanceFeature;
