@@ -243,7 +243,6 @@ class R345MasterAttendanceLogs extends Component {
   shouldDisableDate = (date) => {
     const { fromDate } = this.state;
     if (fromDate) {
-      // Create new Date objects to avoid mutation
       const startOfFromDate = new Date(fromDate);
       startOfFromDate.setHours(0, 0, 0, 0);
       const compareDate = new Date(date);

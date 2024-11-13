@@ -141,12 +141,13 @@ const Appointment = ({ children, style, ...restProps }) => {
             marginTop: "13px",
           }}
         >
-          Classes Detail:
+          {/* Classes Detail: */}
           <br />
           {restProps.data.classesData.length !== 0 &&
             restProps?.data?.classesData?.map((item) => (
               <div>
-                Classname: {item.courseTitle}
+                {/* Classname:  */}
+                {item.courseTitle}
                 <br />
                 {item.classTime}-{item.status}
               </div>
