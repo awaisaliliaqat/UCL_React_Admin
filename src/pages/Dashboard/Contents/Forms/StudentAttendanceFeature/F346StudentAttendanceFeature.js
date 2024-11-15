@@ -814,7 +814,7 @@ class F346StudentAttendanceFeature extends Component {
                   <FilterIcon fontSize="default" color="primary" />
                 </IconButton>
               </Tooltip>
-              {this.state.programmeGroupId ? (
+              {/* {this.state.programmeGroupId ? (
                 <Tooltip title="Export PDFD">
                   {this.state.isDownloadPdf ? (
                     <CircularProgress
@@ -844,7 +844,7 @@ class F346StudentAttendanceFeature extends Component {
                 </Tooltip>
               ) : (
                 ""
-              )}
+              )} */}
             </div>
           </div>
           <Divider

@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import CustomizedSnackbar from "../../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import F33FormInitials from "./F346FormInitials";
 import Paper from "@material-ui/core/Paper";
 import { ViewState, EditingState } from "@devexpress/dx-react-scheduler";
 import {
@@ -55,8 +56,8 @@ const styles = () => ({
   },
 
   customTimeCell: {
-    height: "400px",
-    width: "200px",
+    height: "550px",
+    // width: "200px",
   },
   formControl: {
     minWidth: "100%",
@@ -102,7 +103,6 @@ const styles = () => ({
 
 const Header = withStyles(style, { name: "Header" })(
   ({ appointmentData, classes, ...restProps }) => {
-    console.log(appointmentData);
     return (
       <AppointmentTooltip.Header
         {...restProps}
@@ -112,14 +112,25 @@ const Header = withStyles(style, { name: "Header" })(
   }
 );
 
+const getStatusColor = (item) => {
+  if (item.classStatus === "Held") {
+    if (item.virtualClass === 1) {
+      return item.studentStatus === "Absent" ? "crimson" : "mediumseagreen";
+    } else {
+      return item.studentStatus === "Absent" ? "crimson" : "royalblue";
+    }
+  } else {
+    return item.virtualClass === 1 ? "orangered" : "darkred";
+  }
+};
+
 const Appointment = ({ children, style, ...restProps }) => {
-  console.log(restProps.data);
   return (
     <Appointments.Appointment
       {...restProps}
       style={
         !restProps.data.checkIn
-          ? { ...style, backgroundColor: "#FF8A7C" }
+          ? { ...style, backgroundColor: "#FFA499" }
           : { ...style }
       }
     >
@@ -144,14 +155,41 @@ const Appointment = ({ children, style, ...restProps }) => {
           {/* Classes Detail: */}
           <br />
           {restProps.data.classesData.length !== 0 &&
-            restProps?.data?.classesData?.map((item) => (
-              <div>
-                {/* Classname:  */}
-                {item.courseTitle}
-                <br />
-                {item.classTime}-{item.status}
-              </div>
-            ))}
+            restProps?.data?.classesData?.map((item) => {
+              console.log(item);
+              return (
+                <div>
+                  {/* Classname:  */}
+
+                  <span
+                    style={{
+                      color: getStatusColor(item),
+                    }}
+                  >
+                    {item.courseTitle}
+                    <br />
+                    {item.classTime} -{" "}
+                    {item.studentStatus === "Absent" ? (
+                      <span
+                        style={{
+                          color: "#585858",
+                        }}
+                      >
+                        {item.studentStatus}
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          color: "black",
+                        }}
+                      >
+                        {item.studentStatus}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              );
+            })}
         </div>
         {restProps.data.checkOut && (
           <div
@@ -305,8 +343,6 @@ class StudentAttendanceCalendar extends Component {
     const monthIndex = new Date(Date.parse(`${monthName} 1`)).getMonth();
     const selectedDate = new Date(year, monthIndex, 1);
 
-    console.log(selectedDate);
-
     this.setState({ monthEnum: selectedDate });
   };
 
@@ -330,7 +366,6 @@ class StudentAttendanceCalendar extends Component {
 
   render() {
     const { classes } = this.props;
-    console.log(this.state.timeTableDataArray, "Enum");
     return (
       <Fragment>
         <LoginMenu
@@ -376,7 +411,7 @@ class StudentAttendanceCalendar extends Component {
         <form id="myForm" onSubmit={this.isFormValid}>
           <TextField type="hidden" name="id" value={this.state.recordId} />
           <Grid container component="main" className={classes.root} spacing={2}>
-            <Grid item sm={12} md={12} lg={12}>
+            <Grid item sm={12} md={8} lg={9}>
               {this.state.timeTableDataArray.length !== 0 ? (
                 <Paper>
                   <Scheduler data={this.state.timeTableDataArray}>
@@ -412,6 +447,13 @@ class StudentAttendanceCalendar extends Component {
                   <CircularProgress />
                 </div>
               )}
+            </Grid>
+            <Grid item sm={12} md={4} lg={3}>
+              <F33FormInitials
+                data={this.state.upcomingClassesDataArray}
+                isLoading={this.state.isLoading}
+                onJoinClick={(e, data) => this.onJoinClick(e, data)}
+              />
             </Grid>
           </Grid>
         </form>
