@@ -70,14 +70,18 @@ const styles = (theme) => ({
 });
 
 const statusData = [
-  { label: "Class not held by teacher (In-Person)", color: "darkred" },
-  { label: "Class not held by teacher (Virtual)", color: "orangered" },
-  { label: "Class held by teacher (Virtual)", color: "mediumseagreen" },
-  { label: "Class held by teacher (In-Person)", color: "royalblue" },
+  { label: "Class not held by teacher", color: "darkred" },
+  // { label: "Class not held by teacher (Virtual)", color: "orangered" },
+  // { label: "Class held by teacher (Virtual)", color: "mediumseagreen" },
+  { label: "Class held by teacher", color: "royalblue" },
+
+  { label: "Present", color: "black" },
+  { label: "Absent", color: "orangered" },
+];
+
+const backgroundStatus = [
   { label: "Student gate-in exist", color: "darkgreen" },
   { label: "Student gate-in not exist", color: "crimson" },
-  { label: "Present", color: "black" },
-  { label: "Absent", color: "darkgrey" },
 ];
 
 const F33FormInitials = (props) => {
@@ -92,8 +96,14 @@ const F33FormInitials = (props) => {
           <Avatar className={classes.bigAvatar} src={ProfilePlaceHolder} />
         }
       />
+      {/* <CardHeader title={<Typography color="primary">Font Color</Typography>} /> */}
+
       <CardContent>
         {/* Status Legends */}
+        <CardHeader
+          title={<Typography color="primary">Font Color</Typography>}
+        />
+
         <List style={{ marginBottom: "20px" }}>
           {statusData.map((status, index) => (
             <ListItem key={index}>
@@ -104,52 +114,24 @@ const F33FormInitials = (props) => {
             </ListItem>
           ))}
         </List>
-
-        {/* Class List */}
-        <List>
-          {data.length > 0 ? (
-            data.map((dt, i) => (
-              <Fragment key={i}>
-                <ListItem style={{ paddingTop: 0 }} alignItems="flex-start">
-                  <ListItemAvatar>
-                    <Avatar
-                      alt="Img"
-                      src={BookAssignments}
-                      className={classes.smallAvatar}
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Typography component="legend" color="textPrimary">
-                        {dt.sectionLabel}
-                      </Typography>
-                    }
-                    secondary={
-                      <Typography
-                        variant="caption"
-                        style={{ paddingLeft: "2px" }}
-                      >
-                        {dt.startTime}
-                      </Typography>
-                    }
-                  />
-                  <ListItemSecondaryAction>
-                    <Button
-                      onClick={(e) => props.onJoinClick(e, dt)}
-                      color="primary"
-                      disabled={!dt.meetingStartUrl}
-                    >
-                      Join
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              </Fragment>
-            ))
-          ) : isLoading ? (
-            <Grid container justify="center">
-              <CircularProgress />
-            </Grid>
-          ) : null}
+        {/* 
+        <CardHeader
+          title={<Typography color="primary">background Color</Typography>}
+        /> */}
+        {/* </CardContent>
+      <CardContent> */}
+        <CardHeader
+          title={<Typography color="primary">Background Color</Typography>}
+        />
+        <List style={{ marginBottom: "20px" }}>
+          {backgroundStatus.map((status, index) => (
+            <ListItem key={index}>
+              <span
+                className={`${classes.statusBullet} ${classes[status.color]}`}
+              />{" "}
+              <Typography variant="body2">{status.label}</Typography>
+            </ListItem>
+          ))}
         </List>
       </CardContent>
       <Divider variant="middle" />

@@ -27,8 +27,8 @@ class ChangeStudentStatus extends Component {
       studentName: "",
       studentStatus: 1,
       sessionId: "",
-      reasonId:"",
-      otherReasonId:"",
+      reasonId: "",
+      otherReasonId: "",
       userDate: null,
       sessionData: [],
       reasonData: [],
@@ -39,18 +39,18 @@ class ChangeStudentStatus extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-      programmeGroupId:"",
-      programmeGroupsMenuItems:[],
+      programmeGroupId: "",
+      programmeGroupsMenuItems: [],
       totalStudents: [],
       academicSessionMenuItems: [],
       academicSessionId: 0,
-      academicSessionIdError: ""
+      academicSessionIdError: "",
     };
   }
 
   onClearFilters = () => {
-    this.setState({ 
-      studentId: ""
+    this.setState({
+      studentId: "",
     });
   };
 
@@ -91,7 +91,7 @@ class ChangeStudentStatus extends Component {
           if (json.CODE === 1) {
             let array = json.DATA || [];
             // let arrayLength = array.length;
-           let res2 = array.find((obj) => obj.ID == sessionId);
+            let res2 = array.find((obj) => obj.ID == sessionId);
             if (sessionId && res2) {
               this.setState({ academicSessionId: sessionId });
             } else {
@@ -101,9 +101,15 @@ class ChangeStudentStatus extends Component {
               }
             }
             this.setState({ academicSessionMenuItems: array });
-            
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
         },
         (error) => {
@@ -114,7 +120,10 @@ class ChangeStudentStatus extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -138,11 +147,18 @@ class ChangeStudentStatus extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({programmeGroupsMenuItems: json.DATA || []});
+            this.setState({ programmeGroupsMenuItems: json.DATA || [] });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
-          console.log("getProgrammeGroups",json);
+          console.log("getProgrammeGroups", json);
         },
         (error) => {
           if (error.status === 401) {
@@ -151,7 +167,10 @@ class ChangeStudentStatus extends Component {
               isReload: true,
             });
           } else {
-            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to load Students Data ! Please try Again later.",
+              "error"
+            );
             console.log(error);
           }
         }
@@ -159,7 +178,7 @@ class ChangeStudentStatus extends Component {
   };
 
   getData = async () => {
-    this.setState({isLoading:true});
+    this.setState({ isLoading: true });
     const reload = this.state.studentId === "";
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C50CommonStudentsView?studentId=${this.state.studentId}&studentName=${this.state.studentName}&programmeGroupId=${this.state.programmeGroupId}&isActive=${this.state.studentStatus}&academicSessionId=${this.state.academicSessionId}`;
     await fetch(url, {
@@ -178,18 +197,25 @@ class ChangeStudentStatus extends Component {
         (json) => {
           if (json.CODE === 1) {
             let studentData = json.DATA || [];
-            for(let i=0; i<studentData.length; i++) {
+            for (let i = 0; i < studentData.length; i++) {
               let fName = studentData[i].firstName;
               let lName = studentData[i].lastName;
-              studentData[i].firstName = fName+" "+lName;
+              studentData[i].firstName = fName + " " + lName;
             }
-            this.setState({studentData: json.DATA || []});
+            this.setState({ studentData: json.DATA || [] });
             let totalStudents = this.state.studentData.length;
-            this.setState({totalStudents: totalStudents});
+            this.setState({ totalStudents: totalStudents });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
-          this.setState({isLoading: false});
+          this.setState({ isLoading: false });
           console.log(json);
         },
         (error) => {
@@ -199,10 +225,13 @@ class ChangeStudentStatus extends Component {
               isReload: reload,
             });
           } else {
-            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to load Students Data ! Please try Again later.",
+              "error"
+            );
             console.log(error);
           }
-          this.setState({isLoading: false});
+          this.setState({ isLoading: false });
         }
       );
   };
@@ -228,7 +257,14 @@ class ChangeStudentStatus extends Component {
               sessionData: json.DATA || [],
             });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -239,7 +275,10 @@ class ChangeStudentStatus extends Component {
               isReload: true,
             });
           } else {
-            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to load Students Data ! Please try Again later.",
+              "error"
+            );
             console.log(error);
           }
         }
@@ -266,7 +305,14 @@ class ChangeStudentStatus extends Component {
               reasonData: json.DATA || [],
             });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -277,7 +323,10 @@ class ChangeStudentStatus extends Component {
               isReload: true,
             });
           } else {
-            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to load Students Data ! Please try Again later.",
+              "error"
+            );
             console.log(error);
           }
         }
@@ -304,7 +353,14 @@ class ChangeStudentStatus extends Component {
               otherReasonData: json.DATA || [],
             });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -315,7 +371,10 @@ class ChangeStudentStatus extends Component {
               isReload: true,
             });
           } else {
-            this.handleOpenSnackbar("Failed to load Students Data ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to load Students Data ! Please try Again later.",
+              "error"
+            );
             console.log(error);
           }
         }
@@ -346,7 +405,14 @@ class ChangeStudentStatus extends Component {
             this.handleOpenSnackbar(json.USER_MESSAGE, "success");
             setTimeout(() => window.location.reload(), 1000);
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -358,7 +424,10 @@ class ChangeStudentStatus extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to Save ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -380,9 +449,9 @@ class ChangeStudentStatus extends Component {
   };
   handleDateChange = (date) => {
     this.setState({
-      userDate : date
-      });
-}
+      userDate: date,
+    });
+  };
 
   onCheckClick = (e, row = {}) => {
     const { checked } = e.target;
@@ -408,8 +477,6 @@ class ChangeStudentStatus extends Component {
   }
 
   onLoadAllData = async () => {
-    
-
     const query = new URLSearchParams(this.props.location.search);
     const studentId = query.get("studentId") || "";
     const academicSessionId = query.get("academicSessionId") || "";
@@ -424,33 +491,39 @@ class ChangeStudentStatus extends Component {
       this.setState(
         {
           studentId,
-          studentStatus: 2
+          studentStatus: 2,
         },
         () => this.getData()
       );
     }
-  }
+  };
 
   render() {
-    const userDate = format(this.state.userDate || new Date("2000-01-01"),"dd-MM-yyyy");
+    const userDate = format(
+      this.state.userDate || new Date("2000-01-01"),
+      "dd-MM-yyyy"
+    );
     const columns = [
       { name: "studentId", title: "Nucleus Id" },
       { name: "accountsId", title: "Accounts Id" },
       //{ name: "firstName", title: "Name", getCellValue: (rowData) => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}},
-      { name: "firstName", title: "First Name"},
-      { name: "middleName", title: "Middle Name"},
-      { name: "lastName", title: "Last Name"},
+      { name: "firstName", title: "First Name" },
+      { name: "middleName", title: "Middle Name" },
+      { name: "lastName", title: "Last Name" },
       { name: "genderLabel", title: "Gender" },
       { name: "degreeLabel", title: "Degree Programme" },
       { name: "mobileNo", title: "Mobile No" },
       { name: "email", title: "Email" },
       { name: "sessionLabel", title: "Session" },
       { name: "uolNumber", title: "UOL #" },
-      
+
       { name: "statusLabel", title: "Status" },
       { name: "statusChangeDate", title: "Status Changed On" },
-      { name: "action", title: "Selection", 
-        getCellValue: (rowData) => { return (
+      {
+        name: "action",
+        title: "Selection",
+        getCellValue: (rowData) => {
+          return (
             <Checkbox
               icon={<CheckBoxOutlineBlankIcon style={{ fontSize: 30 }} />}
               checkedIcon={<CheckBoxIcon style={{ fontSize: 30 }} />}
@@ -500,9 +573,7 @@ class ChangeStudentStatus extends Component {
                   <FilterIcon fontSize="default" color="primary" />
                 </IconButton>
               </Tooltip>
-              
             </div>
-            
           </div>
           <Divider
             style={{
@@ -510,7 +581,7 @@ class ChangeStudentStatus extends Component {
               opacity: "0.3",
             }}
           />
-          
+
           <ChangeStudentStatusFilter
             isLoading={this.state.isLoading}
             onClearFilters={() => this.onClearFilters}
@@ -528,36 +599,39 @@ class ChangeStudentStatus extends Component {
               letterSpacing: "1.8px",
             }}
           >
-            {this.state.totalStudents>1? 
-            <Typography
-              style={{
-                color: "#1d5f98",
-                fontWeight: 600,
-                textTransform: "capitalize",
-                textAlign: "left"
-              }}
-              variant="h6"
-            >
-              Total Students: {this.state.totalStudents}
-            </Typography>
-            :
-            ""
-            }
-            
+            {this.state.totalStudents > 1 ? (
+              <Typography
+                style={{
+                  color: "#1d5f98",
+                  fontWeight: 600,
+                  textTransform: "capitalize",
+                  textAlign: "left",
+                }}
+                variant="h6"
+              >
+                Total Students: {this.state.totalStudents}
+              </Typography>
+            ) : (
+              ""
+            )}
           </div>
           <ChangeStatusTableComponent
             columns={columns}
             rows={this.state.studentData}
             showFilter={this.state.showTableFilter}
           />
-          <br/>
-          <br/>
+          <br />
+          <br />
         </div>
         <form noValidate onSubmit={this.onFormSubmit}>
           <input type="hidden" name="sessionId" value={this.state.sessionId} />
           <input type="hidden" name="reasonId" value={this.state.reasonId} />
-          <input type="hidden" name="otherReasonId" value={this.state.otherReasonId||0} />
-          <input type="hidden" name="userDate" value={userDate||""} />
+          <input
+            type="hidden"
+            name="otherReasonId"
+            value={this.state.otherReasonId || 0}
+          />
+          <input type="hidden" name="userDate" value={userDate || ""} />
           <input type="hidden" id="statusValue" name="status" value="" />
           {this.state.editRecord.map((item) => {
             if (item.checked) {
@@ -579,7 +653,7 @@ class ChangeStudentStatus extends Component {
           right_button_text="Activate"
           disableRightButton={
             !this.state.sessionId ||
-            // !this.state.reasonId || 
+            // !this.state.reasonId ||
             this.state.editRecord.length <= 0
           }
           bottomRightButtonAction={() => this.clickOnFormSubmit(1)}
@@ -590,7 +664,7 @@ class ChangeStudentStatus extends Component {
                 disabled={
                   !this.state.sessionId ||
                   !this.state.reasonId ||
-                  !this.state.userDate||
+                  !this.state.userDate ||
                   this.state.editRecord.length <= 0 ||
                   this.state.isLoading
                 }
@@ -599,16 +673,16 @@ class ChangeStudentStatus extends Component {
                 color="secondary"
                 onClick={() => this.clickOnFormSubmit(0)}
               >
-                {this.state.isLoading ? 
+                {this.state.isLoading ? (
                   <CircularProgress
                     style={{
                       color: "white",
                     }}
                     size={28}
                   />
-                 : 
+                ) : (
                   "Deactivate"
-                }
+                )}
               </Button>
             </Fragment>
           }

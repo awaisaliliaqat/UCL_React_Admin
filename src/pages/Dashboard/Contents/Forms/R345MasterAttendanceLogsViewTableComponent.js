@@ -33,7 +33,7 @@ class R345MasterAttendanceLogsViewTableComponent extends Component {
         "lessThan",
         "lessThanOrEqual",
       ],
-      pageSizes: [5, 10, 15, 20],
+      pageSizes: [200, 400, 600, 800],
       defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
@@ -86,7 +86,7 @@ class R345MasterAttendanceLogsViewTableComponent extends Component {
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
           />
-          <PagingState defaultCurrentPage={0} defaultPageSize={5} />
+          <PagingState defaultCurrentPage={0} defaultPageSize={200} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />

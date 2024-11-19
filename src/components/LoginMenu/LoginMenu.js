@@ -123,6 +123,7 @@ const LoginMenu = (props) => {
     window.localStorage.removeItem("adminData");
     window.localStorage.removeItem("uclAdminToken");
     window.location.replace("#/login");
+    window.location.reload();
   };
 
   const { email = "" } = window.localStorage.getItem("adminData")

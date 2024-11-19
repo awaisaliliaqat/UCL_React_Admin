@@ -12,6 +12,7 @@ import {
   Card,
   CardContent,
   Checkbox,
+  Button,
 } from "@material-ui/core";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
@@ -28,7 +29,7 @@ import { IsEmpty } from "../../../../../utils/helper";
 import { withRouter } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { DatePicker, KeyboardTimePicker } from "@material-ui/pickers";
-
+import R335DefineShiftManagementTableComponent from "./Chunks/R335DefineShiftManagementTableComponent";
 const styles = (theem) => ({
   root: {
     paddingBottom: 50,
@@ -126,38 +127,50 @@ class F335DefineShiftManagement extends Component {
         {
           id: 1,
           label: "Sunday",
+          startTime: new Date("2014-08-18T09:00:54"),
+          endTime: new Date("2014-08-18T18:00:54"),
         },
         {
           id: 2,
           label: "Monday",
+          startTime: new Date("2014-08-18T09:00:54"),
+          endTime: new Date("2014-08-18T18:00:54"),
         },
         {
           id: 3,
           label: "Tuesday",
+          startTime: new Date("2014-08-18T09:00:54"),
+          endTime: new Date("2014-08-18T18:00:54"),
         },
         {
           id: 4,
           label: "Wednesday",
+          startTime: new Date("2014-08-18T09:00:54"),
+          endTime: new Date("2014-08-18T18:00:54"),
         },
         {
           id: 5,
           label: "Thurday",
+          startTime: new Date("2014-08-18T09:00:54"),
+          endTime: new Date("2014-08-18T18:00:54"),
         },
         {
           id: 6,
           label: "Friday",
+          startTime: new Date("2014-08-18T09:00:54"),
+          endTime: new Date("2014-08-18T18:00:54"),
         },
         {
           id: 7,
           label: "Saturday",
+          startTime: new Date("2014-08-18T09:00:54"),
+          endTime: new Date("2014-08-18T18:00:54"),
         },
       ],
       dayId: [],
+      daysArray: [],
     };
   }
-
-  // icon = (<CheckBoxOutlineBlankIcon fontSize="small" />);
-  // checkedIcon = (<CheckBoxIcon fontSize="small" />);
 
   componentDidMount() {
     console.log(this.state.recordId, "id is coming");
@@ -167,10 +180,7 @@ class F335DefineShiftManagement extends Component {
       ...this.state,
       recordId: data[0],
     });
-    this.getEmployeesData();
-    // if (Number(data[0]) > 0) {
-    //   this.loadData(Number(data[0]), data[1]);
-    // }
+    // this.getEmployeesData();
   }
 
   handleDateChangeStartTime = (date) => {
@@ -181,19 +191,6 @@ class F335DefineShiftManagement extends Component {
     this.setState({ endTime: date });
   };
 
-  // UNSAFE_componentWillReceiveProps(nextProps) {
-  //   if (this.props.match.params.recordId != nextProps.match.params.recordId) {
-  //     if (nextProps.match.params.recordId != 0) {
-  //       this.loadData(nextProps.match.params.recordId);
-  //       this.setState({
-  //         recordId: nextProps.match.params.recordId,
-  //       });
-  //     } else {
-  //       window.location.reload();
-  //     }
-  //   }
-  // }
-
   handleSnackbar = (open, msg, severity) => {
     this.setState({
       isOpenSnackbar: open,
@@ -201,71 +198,6 @@ class F335DefineShiftManagement extends Component {
       snackbarSeverity: severity,
     });
   };
-
-  // loadData = async (recordId, string) => {
-  //   const data = new FormData();
-  //   data.append("recordId", recordId);
-  //   this.setState({ isLoading: true });
-  //   const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C328CommonUsersEmployeesLoanView`;
-  //   await fetch(url, {
-  //     method: "POST",
-  //     body: data,
-  //     headers: new Headers({
-  //       Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-  //     }),
-  //   })
-  //     .then((res) => {
-  //       if (!res.ok) {
-  //         throw res;
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(
-  //       (json) => {
-  //         if (json.CODE === 1) {
-  //           let data = json.DATA || [];
-  //           if (data.length > 0) {
-  //             let myDataObject = data[0] || {};
-  //             this.setState({
-  //               employeeObject: {
-  //                 id: myDataObject["userEmployeeId"],
-  //                 label: myDataObject["userEmployeeLabel"],
-  //               },
-  //               request: string,
-  //               recordId: recordId,
-  //               loanAmount: myDataObject["loanAmount"],
-  //               months: myDataObject["numberOfMonths"],
-  //               installmentPerMonth:
-  //                 myDataObject["loanAmount"] / myDataObject["numberOfMonths"],
-  //             });
-  //           }
-  //         } else {
-  //           this.handleSnackbar(
-  //             true,
-  //             json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-  //             "error"
-  //           );
-  //         }
-  //         console.log(json);
-  //       },
-  //       (error) => {
-  //         if (error.status == 401) {
-  //           this.setState({
-  //             isLoginMenu: true,
-  //             isReload: true,
-  //           });
-  //         } else {
-  //           console.log(error);
-  //           this.handleSnackbar(
-  //             true,
-  //             "Failed to Load Data ! Please try Again later.",
-  //             "error"
-  //           );
-  //         }
-  //       }
-  //     );
-  //   this.setState({ isLoading: false });
-  // };
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
@@ -322,58 +254,6 @@ class F335DefineShiftManagement extends Component {
     }
   };
 
-  // isFormValid = () => {
-  //   let isValid = true;
-  //   let {
-  //     employeeObjectError,
-  //     payrollMonthsError,
-  //     perMonthSalaryError,
-  //     perHourRateError,
-  //     payrollCommentsError,
-  //   } = this.state;
-
-  //   if (IsEmpty(this.state.employeeObject)) {
-  //     employeeObjectError = "Please select employee.";
-  //     isValid = false;
-  //   } else {
-  //     employeeObjectError = "";
-  //   }
-
-  //   if (!this.state.payrollMonths) {
-  //     isValid = false;
-  //     payrollMonthsError = "Please enter number of months.";
-  //   } else {
-  //     payrollMonthsError = "";
-  //   }
-
-  //   if (!this.state.perMonthSalary && !this.state.perHourRate) {
-  //     isValid = false;
-  //     perMonthSalaryError =
-  //       "Please enter Per Month Salary or Enter in Per Hour Rate field.";
-  //     perHourRateError =
-  //       "Please enter Per Hour Rate  or Enter in Per Month Salary field.";
-  //   } else {
-  //     perMonthSalaryError = "";
-  //     perHourRateError = "";
-  //   }
-
-  //   if (!this.state.payrollComments) {
-  //     isValid = false;
-  //     payrollCommentsError = "Please enter comments.";
-  //   } else {
-  //     payrollCommentsError = "";
-  //   }
-
-  //   this.setState({
-  //     employeeObjectError,
-  //     payrollMonthsError,
-  //     perMonthSalaryError,
-  //     perHourRateError,
-  //     payrollCommentsError,
-  //   });
-  //   return isValid;
-  // };
-
   clickOnFormSubmit = () => {
     document.getElementById("btn-submit").click();
   };
@@ -383,12 +263,11 @@ class F335DefineShiftManagement extends Component {
       label: "",
       startTime: new Date("2014-08-18T09:00:54"),
       endTime: new Date("2014-08-18T18:00:54"),
-      // startTimeToSend: new Date("2014-08-18T21:11:54"),
-      // endTimeToSend: new Date("2014-08-18T21:11:54"),
 
       label: "",
       dayId: [],
       uploadLoading: false,
+      daysArray: [],
     });
   };
 
@@ -405,36 +284,34 @@ class F335DefineShiftManagement extends Component {
   };
 
   onFormSubmit = async () => {
-    const startingTime = this.timeFormatHandle(this.state.startTime);
-    const endingTime = this.timeFormatHandle(this.state.endTime);
+    // const startingTime = this.timeFormatHandle(this.state.startTime);
+    // const endingTime = this.timeFormatHandle(this.state.endTime);
 
-    // const data = new FormData();
-    // data.append("label", this.state.label);
-    // data.append("startTime", startingTime);
-    // data.append("endTime", endingTime);
-    // data.append("description", null);
-    // console.log("state is coming", startingTime, endingTime);
-    const objToSend = {
-      startTime: startingTime,
-      label: this.state.label,
-      endTime: endingTime,
-      description: "",
-      days: this.state.dayId,
-      active: true,
-    };
-    // for (let i = 0; i < this.state.files3.length; i++) {
-    //   data.append("filesName", this.state.files3[i].name);
-    //   data.append("files", this.state.files3[i]);
-    // }
+    const formData = new FormData();
 
+    formData.append("label", this.state.label);
+    formData.append("description", "");
+    formData.append("isActive", 1);
+
+    for (let i = 0; i < this.state.daysArray.length; i++) {
+      formData.append("dayId", this.state.daysArray[i].id);
+      formData.append(
+        "startTime",
+        this.timeFormatHandle(this.state.daysArray[i].startTime)
+      );
+      formData.append(
+        "endTime",
+        this.timeFormatHandle(this.state.daysArray[i].endTime)
+      );
+    }
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C335CommonEmployeeShiftScheduleSave`;
     await fetch(url, {
       method: "POST",
-      body: JSON.stringify(objToSend),
+      body: formData,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-        "Content-Type": "application/json",
+        // "Content-Type": "application/json",
       }),
     })
       .then((res) => {
@@ -669,64 +546,168 @@ class F335DefineShiftManagement extends Component {
 
   handleDaySelection = (value) => {
     const selectedDayIds = value.map((day) => day.id);
-    this.setState({ dayId: selectedDayIds });
+    console.log(this.state.daysArray);
+    this.setState({
+      dayId: selectedDayIds,
+      daysArray: [...value],
+    });
   };
 
-  getEmployeesData = async () => {
-    this.setState({ employeeDataLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C327CommonUsersView`;
-    await fetch(url, {
-      method: "GET",
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({
-              employeeData: json.DATA || [],
-            });
-          } else {
-            this.handleSnackbar(
-              true,
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-              "error"
-            );
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            console.log(error);
-            this.handleSnackbar(
-              true,
-              "Failed to Get Data ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ employeeDataLoading: false });
-  };
+  // getEmployeesData = async () => {
+  //   this.setState({ employeeDataLoading: true });
+  //   const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C327CommonUsersView`;
+  //   await fetch(url, {
+  //     method: "GET",
+  //     headers: new Headers({
+  //       Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+  //     }),
+  //   })
+  //     .then((res) => {
+  //       if (!res.ok) {
+  //         throw res;
+  //       }
+  //       return res.json();
+  //     })
+  //     .then(
+  //       (json) => {
+  //         if (json.CODE === 1) {
+  //           this.setState({
+  //             employeeData: json.DATA || [],
+  //           });
+  //         } else {
+  //           this.handleSnackbar(
+  //             true,
+  //             json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+  //             "error"
+  //           );
+  //         }
+  //         console.log(json);
+  //       },
+  //       (error) => {
+  //         if (error.status == 401) {
+  //           this.setState({
+  //             isLoginMenu: true,
+  //             isReload: true,
+  //           });
+  //         } else {
+  //           console.log(error);
+  //           this.handleSnackbar(
+  //             true,
+  //             "Failed to Get Data ! Please try Again later.",
+  //             "error"
+  //           );
+  //         }
+  //       }
+  //     );
+  //   this.setState({ employeeDataLoading: false });
+  // };
 
   viewReport = () => {
     window.location = "#/dashboard/R335ShiftManagementReport";
   };
+  handleRatePerHourChange = (value, rowData) => {
+    console.log(rowData);
+    const { id } = rowData;
+    const updatedData = this.state.daysArray.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            startTime: value,
+          }
+        : item
+    );
+    this.setState({
+      daysArray: updatedData,
+    });
+  };
+  handleAdjustedHourChange = (value, rowData) => {
+    const { id } = rowData;
+    const updatedData = this.state.daysArray.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            endTime: value,
+          }
+        : item
+    );
+    this.setState({
+      daysArray: updatedData,
+    });
+  };
 
   render() {
     const { classes } = this.props;
+
+    const columns = [
+      { name: "id", title: "ID" },
+      { name: "label", title: "Day" },
+
+      {
+        name: "startTime",
+        title: "Shift From",
+        getCellValue: (rowData) => {
+          return (
+            <KeyboardTimePicker
+              id="startTime"
+              name="startTime"
+              label="Shift From"
+              required
+              fullWidth
+              style={{
+                marginTop: "0px",
+              }}
+              variant="outlined"
+              margin="normal"
+              value={rowData.startTime || null}
+              onChange={(event) => this.handleRatePerHourChange(event, rowData)}
+              KeyboardButtonProps={{
+                "aria-label": "change time",
+              }}
+              InputProps={{
+                variant: "outlined",
+              }}
+              inputVariant="outlined"
+            />
+          );
+        },
+      },
+
+      {
+        name: "endTime",
+        title: "Shift To",
+
+        getCellValue: (rowData) => {
+          return (
+            <KeyboardTimePicker
+              id="endTime"
+              name="endTime"
+              label="Shift To"
+              required
+              fullWidth
+              style={{
+                marginTop: "0px",
+              }}
+              variant="outlined"
+              margin="normal"
+              value={rowData.endTime || null}
+              onChange={(event) =>
+                this.handleAdjustedHourChange(event, rowData)
+              }
+              KeyboardButtonProps={{
+                "aria-label": "change time",
+              }}
+              InputProps={{
+                variant: "outlined",
+              }}
+              inputVariant="outlined"
+            />
+            // <div>{rowData.isActive ? "Active" : "Inactive"}</div>;
+          );
+        },
+      },
+    ];
+
+    console.log(this.state.daysArray);
 
     return (
       <Fragment>
@@ -783,50 +764,7 @@ class F335DefineShiftManagement extends Component {
                 marginRight: 15,
               }}
             >
-              {/* <Grid item xs={12}>
-                <Autocomplete
-                  id="employeeObject"
-                  getOptionLabel={(option) =>
-                    typeof option.label == "string" ? option.label : ""
-                  }
-                  getOptionSelected={(option, value) => option.id === value.id}
-                  fullWidth
-                  aria-autocomplete="none"
-                  options={this.state.employeeData}
-                  loading={this.state.employeeDataLoading}
-                  value={this.state.employeeObject}
-                  onChange={(e, value) =>
-                    this.onHandleChange({
-                      target: { name: "employeeObject", value },
-                    })
-                  }
-                  renderTags={(tagValue, getTagProps) =>
-                    tagValue.map((option, index) => (
-                      <Chip
-                        key={option}
-                        label={option.label}
-                        color="primary"
-                        variant="outlined"
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  renderInput={(params) => {
-                    const inputProps = params.inputProps;
-                    return (
-                      <TextField
-                        variant="outlined"
-                        error={!!this.state.employeeObjectError}
-                        helperText={this.state.employeeObjectError}
-                        inputProps={inputProps}
-                        label="Employee *"
-                        {...params}
-                      />
-                    );
-                  }}
-                />
-              </Grid> */}
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
                   id="label"
                   name="label"
@@ -845,7 +783,7 @@ class F335DefineShiftManagement extends Component {
                   }}
                 />
               </Grid>
-
+              {/* 
               <Grid item xs={4}>
                 <KeyboardTimePicker
                   id="startTime"
@@ -892,8 +830,8 @@ class F335DefineShiftManagement extends Component {
                   }}
                   inputVariant="outlined"
                 />
-              </Grid>
-              <Grid item xs={4}>
+              </Grid> */}
+              <Grid item xs={6}>
                 <Autocomplete
                   multiple
                   fullWidth
@@ -938,6 +876,13 @@ class F335DefineShiftManagement extends Component {
                       placeholder="Search and Select"
                     />
                   )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <R335DefineShiftManagementTableComponent
+                  rows={this.state.daysArray}
+                  columns={columns}
+                  // showFilter={this.state.showTableFilter}
                 />
               </Grid>
             </Grid>

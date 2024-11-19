@@ -180,6 +180,8 @@ class R342AllEmployeeGateAttendance extends Component {
     if (name === "fromDate") {
       this.setState({
         fromDateToSend: formattedDate,
+        toDate: null,
+        toDateToSend: null,
       });
     } else {
       this.setState({
@@ -238,29 +240,64 @@ class R342AllEmployeeGateAttendance extends Component {
 
       { name: "attendanceDate", title: "Attendance Date", flex: 1 },
 
-      { name: "checkIn", title: "Check-in Time", flex: 1 },
-      { name: "checkOut", title: "Check-out Time", flex: 1 },
-
-      // {
-      //   name: "status",
-      //   title: "Status",
-      //   flex: 1,
-      //   getCellValue: (rowData) => {
-      //     return (
-      //       <div
-      //         style={{
-      //           color: "green",
-      //           padding: "7px 20px",
-      //           background: "#bbf7d0",
-      //           width: "17%",
-      //           borderRadius: "4px",
-      //         }}
-      //       >
-      //         {"Present"}
-      //       </div>
-      //     );
-      //   },
-      // },
+      {
+        name: "checkIn",
+        title: "Check-in Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.checkInCheckOut.length !== 0 ? (
+                rowData.checkInCheckOut.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.checkInCheckOut.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.checkIn}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      {
+        name: "checkOut",
+        title: "Check-out Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.checkInCheckOut.length !== 0 ? (
+                rowData.checkInCheckOut.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.checkInCheckOut.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.checkOut}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
     ];
 
     return (

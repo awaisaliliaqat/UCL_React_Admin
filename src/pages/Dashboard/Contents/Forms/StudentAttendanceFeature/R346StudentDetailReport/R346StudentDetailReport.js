@@ -56,7 +56,7 @@ const styles = () => ({
   },
 
   customTimeCell: {
-    height: "550px",
+    height: "300px",
     // width: "200px",
   },
   formControl: {
@@ -111,16 +111,11 @@ const Header = withStyles(style, { name: "Header" })(
     );
   }
 );
-
 const getStatusColor = (item) => {
   if (item.classStatus === "Held") {
-    if (item.virtualClass === 1) {
-      return item.studentStatus === "Absent" ? "crimson" : "mediumseagreen";
-    } else {
-      return item.studentStatus === "Absent" ? "crimson" : "royalblue";
-    }
+    return "royalblue";
   } else {
-    return item.virtualClass === 1 ? "orangered" : "darkred";
+    return "darkred";
   }
 };
 
@@ -130,8 +125,13 @@ const Appointment = ({ children, style, ...restProps }) => {
       {...restProps}
       style={
         !restProps.data.checkIn
-          ? { ...style, backgroundColor: "#FFA499" }
-          : { ...style }
+          ? {
+              ...style,
+              backgroundColor: "#FFA499",
+              overflowY: "auto",
+              scrollbarWidth: "thin",
+            }
+          : { ...style, overflowY: "auto", scrollbarWidth: "thin" }
       }
     >
       {/* {children} */}
@@ -140,6 +140,7 @@ const Appointment = ({ children, style, ...restProps }) => {
           color: "black",
           textAlign: "center",
           marginTop: "13px",
+          // overFlowY: "auto",
         }}
       >
         {restProps.data.checkIn && <>Gate-in: {restProps.data.checkIn}</>}
@@ -167,12 +168,13 @@ const Appointment = ({ children, style, ...restProps }) => {
                     }}
                   >
                     {item.courseTitle}
+                    {item.virtualClass === 1 && "(Virtual)"}
                     <br />
                     {item.classTime} -{" "}
                     {item.studentStatus === "Absent" ? (
                       <span
                         style={{
-                          color: "#585858",
+                          color: "orangered",
                         }}
                       >
                         {item.studentStatus}

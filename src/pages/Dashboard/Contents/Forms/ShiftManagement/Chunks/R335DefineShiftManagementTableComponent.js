@@ -16,11 +16,11 @@ import {
   TableHeaderRow,
 } from "@devexpress/dx-react-grid-material-ui";
 import PropTypes from "prop-types";
-import { CircularProgress } from "@material-ui/core";
 
-class R342AllEmployeeGateAttendanceViewTableComponent extends Component {
+class R335DefineShiftManagementTableComponent extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       columns: [],
       rows: [],
@@ -34,16 +34,16 @@ class R342AllEmployeeGateAttendanceViewTableComponent extends Component {
         "lessThan",
         "lessThanOrEqual",
       ],
-      pageSizes: [200, 400, 600, 800],
+      // pageSizes: [5, 10, 15, 20],
       defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
       ],
       tableColumnExtensions: [
-        { columnName: "id", width: 100 },
-        { columnName: "edit", width: 70 },
-        { columnName: "approve", width: 70 },
-        { columnName: "reject", width: 70 },
+        { columnName: "id", width: "20%" },
+        { columnName: "label", width: "20%" },
+        { columnName: "fromTime", width: "30%" },
+        { columnName: "endTime", width: "30%" },
       ],
 
       resizingMode: "widget",
@@ -71,13 +71,13 @@ class R342AllEmployeeGateAttendanceViewTableComponent extends Component {
       sortingStateColumnExtensions,
       filteringStateColumnExtensions,
       defaultFilters,
-      pageSizes,
+      // pageSizes,
     } = this.state;
 
     const { rows, columns, showFilter } = this.props;
 
     return (
-      <div style={{ overflowX: "auto", width: "100%" }}>
+      <Paper>
         <Grid rows={rows} columns={columns}>
           <FilteringState
             defaultFilters={defaultFilters}
@@ -87,7 +87,7 @@ class R342AllEmployeeGateAttendanceViewTableComponent extends Component {
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
           />
-          <PagingState defaultCurrentPage={0} defaultPageSize={200} />
+          <PagingState defaultCurrentPage={0} defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
@@ -105,25 +105,24 @@ class R342AllEmployeeGateAttendanceViewTableComponent extends Component {
               )
             }
           />
-
           {showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
-          <PagingPanel pageSizes={pageSizes} />
+          {/* <PagingPanel pageSizes={pageSizes} /> */}
         </Grid>
-      </div>
+      </Paper>
     );
   }
 }
 
-R342AllEmployeeGateAttendanceViewTableComponent.propTypes = {
+R335DefineShiftManagementTableComponent.propTypes = {
   columns: PropTypes.array,
   rows: PropTypes.array,
   showFilter: PropTypes.bool,
 };
 
-R342AllEmployeeGateAttendanceViewTableComponent.defaultProps = {
+R335DefineShiftManagementTableComponent.defaultProps = {
   columns: [],
   rows: [],
   showFilter: false,
 };
 
-export default R342AllEmployeeGateAttendanceViewTableComponent;
+export default R335DefineShiftManagementTableComponent;
