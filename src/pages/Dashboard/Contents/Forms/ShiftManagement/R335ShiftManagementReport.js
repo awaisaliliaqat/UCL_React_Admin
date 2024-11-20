@@ -253,10 +253,10 @@ class R335ShiftManagementReport extends Component {
   }
 
   changeStatus = (id, status) => {
-    if (status == true) {
-      this.statusUpdate(id, false);
+    if (status == 0) {
+      this.statusUpdate(id, 1);
     } else {
-      this.statusUpdate(id, true);
+      this.statusUpdate(id, 0);
     }
   };
 
@@ -264,26 +264,142 @@ class R335ShiftManagementReport extends Component {
     const columns = [
       { name: "id", title: "ID" },
       { name: "label", title: "Shift Name" },
-      { name: "startTime", title: "From" },
+      // { name: "startTime", title: "From" },
 
-      { name: "endTime", title: "To" },
+      // { name: "endTime", title: "To" },
       {
         name: "days",
         title: "Days",
+        flex: 1,
         getCellValue: (rowData) => {
           return (
-            <div>
-              {rowData.days.length > 0 &&
+            <>
+              {rowData.days.length !== 0 ? (
                 rowData.days.map((item, index) => (
-                  <span key={index}>
-                    {item.label}
-                    {index < rowData.days.length - 1 && ", "}
-                  </span>
-                ))}
-            </div>
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.days.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.dayLabel}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
           );
         },
       },
+      {
+        name: "startTime",
+        title: "Start Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.days.length !== 0 ? (
+                rowData.days.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.days.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.startTime}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      {
+        name: "endTime",
+        title: "End Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.days.length !== 0 ? (
+                rowData.days.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.days.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.endTime}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      // {
+      //   name: "checkOut",
+      //   title: "Check-out Time",
+      //   flex: 1,
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <>
+      //         {rowData.checkInCheckOut.length !== 0 ? (
+      //           rowData.checkInCheckOut.map((item, index) => (
+      //             <div
+      //               key={index}
+      //               style={{
+      //                 borderBottom:
+      //                   index === rowData.checkInCheckOut.length - 1
+      //                     ? "none"
+      //                     : "1px solid #DADBDD",
+      //                 minHeight: "30px",
+      //               }}
+      //             >
+      //               {item.checkOut}
+      //             </div>
+      //           ))
+      //         ) : (
+      //           <div style={{ minHeight: "30px" }}></div>
+      //         )}
+      //       </>
+      //     );
+      //   },
+      // },
+      // {
+      //   name: "days",
+      //   title: "Days",
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <div>
+      //         {rowData.days.length > 0 &&
+      //           rowData.days.map((item, index) => (
+      //             <span key={index}>
+      //               {item.label}
+      //               {index < rowData.days.length - 1 && ", "}
+      //             </span>
+      //           ))}
+      //       </div>
+      //     );
+      //   },
+      // },
 
       {
         name: "isActive",
@@ -300,7 +416,7 @@ class R335ShiftManagementReport extends Component {
         getCellValue: (rowData) => {
           return (
             <div>
-              {rowData.isActive ? (
+              {rowData.isActive === 0 ? (
                 <Button
                   variant="contained"
                   style={{
