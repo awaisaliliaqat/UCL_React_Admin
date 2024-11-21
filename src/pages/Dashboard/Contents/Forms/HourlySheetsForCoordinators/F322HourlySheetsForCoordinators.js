@@ -105,7 +105,7 @@ class F322HourlySheetsForCoordinators extends Component {
   }
   componentDidMount() {
     this.props.setDrawerOpen(false);
-    // this.getAcademicSessions();
+    this.getAcademicSessions();
   }
 
   getData = (data) => {
@@ -192,64 +192,64 @@ class F322HourlySheetsForCoordinators extends Component {
     });
   };
 
-  // getAcademicSessions = async () => {
-  //   this.setState({ academicSessionsDataLoading: true });
-  //   const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicSessionsView`;
-  //   await fetch(url, {
-  //     method: "POST",
-  //     headers: new Headers({
-  //       Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-  //     }),
-  //   })
-  //     .then((res) => {
-  //       if (!res.ok) {
-  //         throw res;
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(
-  //       (json) => {
-  //         if (json.CODE === 1) {
-  //           let array = json.DATA || [];
-  //           this.setState({ academicSessionsData: array });
-  //           let arrayLength = array.length;
-  //           for (let i = 0; i < arrayLength; i++) {
-  //             if (array[i].isActive == "1") {
-  //               const sessionId = array[i].ID;
-  //               // this.setState({ academicSessionId: sessionId });
+  getAcademicSessions = async () => {
+    this.setState({ academicSessionsDataLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicSessionsView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let array = json.DATA || [];
+            this.setState({ academicSessionsData: array });
+            let arrayLength = array.length;
+            for (let i = 0; i < arrayLength; i++) {
+              if (array[i].isActive == "1") {
+                const sessionId = array[i].ID;
+                // this.setState({ academicSessionId: sessionId });
 
-  //               this.getProgrammeGroupsBySessionId(sessionId);
-  //             }
-  //           }
-  //         } else {
-  //           this.handleSnackbar(
-  //             true,
-  //             <span>
-  //               {json.SYSTEM_MESSAGE}
-  //               <br />
-  //               {json.USER_MESSAGE}
-  //             </span>,
-  //             "error"
-  //           );
-  //         }
-  //       },
-  //       (error) => {
-  //         if (error.status == 401) {
-  //           this.setState({
-  //             isLoginMenu: true,
-  //             isReload: true,
-  //           });
-  //         } else {
-  //           this.handleSnackbar(
-  //             true,
-  //             "Failed to fetch ! Please try Again later.",
-  //             "error"
-  //           );
-  //         }
-  //       }
-  //     );
-  //   this.setState({ academicSessionsDataLoading: false });
-  // };
+                this.getProgrammeGroupsBySessionId(sessionId);
+              }
+            }
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ academicSessionsDataLoading: false });
+  };
 
   getProgrammeGroupsBySessionId = async (academicSessionId) => {
     let mySessionId = academicSessionId;

@@ -113,7 +113,7 @@ const Header = withStyles(style, { name: "Header" })(
 );
 const getStatusColor = (item) => {
   if (item.classStatus === "Held") {
-    return "royalblue";
+    return "#174A84";
   } else {
     return "darkred";
   }

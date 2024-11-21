@@ -167,8 +167,12 @@ class F335DefineShiftManagement extends Component {
           endTime: new Date("2014-08-18T18:00:54"),
         },
       ],
+
+      selectedDaysToShow: [],
       dayId: [],
       daysArray: [],
+
+      daysArrayToAdd: [],
     };
   }
 
@@ -179,6 +183,7 @@ class F335DefineShiftManagement extends Component {
     this.setState({
       ...this.state,
       recordId: data[0],
+      selectedDaysToShow: [...this.state.selectedDays],
     });
     // this.getEmployeesData();
   }
@@ -268,6 +273,7 @@ class F335DefineShiftManagement extends Component {
       dayId: [],
       uploadLoading: false,
       daysArray: [],
+      selectedDaysToShow: [...this.state.selectedDays],
     });
   };
 
@@ -546,10 +552,36 @@ class F335DefineShiftManagement extends Component {
 
   handleDaySelection = (value) => {
     const selectedDayIds = value.map((day) => day.id);
+
     console.log(this.state.daysArray);
     this.setState({
       dayId: selectedDayIds,
-      daysArray: [...value],
+      // daysArray: [...value],
+      daysArrayToAdd: [...value],
+    });
+  };
+
+  handleAddInToArray = () => {
+    const daysArray = this.state.daysArrayToAdd;
+    const newUpdatedArray = daysArray.map((day, index) => ({
+      id: day.id,
+      label: day.label,
+      startTime: this.state.startTime,
+      endTime: this.state.endTime,
+    }));
+
+    const excludedDays = this.state.selectedDaysToShow.filter(
+      (item) => !newUpdatedArray.some((newDay) => newDay.id === item.id)
+    );
+
+    console.log(excludedDays);
+
+    this.setState({
+      dayId: [],
+      startTime: new Date("2014-08-18T09:00:54"),
+      endTime: new Date("2014-08-18T18:00:54"),
+      daysArray: [...newUpdatedArray, ...this.state.daysArray],
+      selectedDaysToShow: [...excludedDays],
     });
   };
 
@@ -635,6 +667,17 @@ class F335DefineShiftManagement extends Component {
     });
   };
 
+  timeFormatChange = (value) => {
+    const date = new Date(value);
+    const formattedTime = date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    return formattedTime;
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -646,28 +689,30 @@ class F335DefineShiftManagement extends Component {
         name: "startTime",
         title: "Shift From",
         getCellValue: (rowData) => {
+          const time = this.timeFormatChange(rowData.startTime);
           return (
-            <KeyboardTimePicker
-              id="startTime"
-              name="startTime"
-              label="Shift From"
-              required
-              fullWidth
-              style={{
-                marginTop: "0px",
-              }}
-              variant="outlined"
-              margin="normal"
-              value={rowData.startTime || null}
-              onChange={(event) => this.handleRatePerHourChange(event, rowData)}
-              KeyboardButtonProps={{
-                "aria-label": "change time",
-              }}
-              InputProps={{
-                variant: "outlined",
-              }}
-              inputVariant="outlined"
-            />
+            <>{time}</>
+            // <KeyboardTimePicker
+            //   id="startTime"
+            //   name="startTime"
+            //   label="Shift From"
+            //   required
+            //   fullWidth
+            //   style={{
+            //     marginTop: "0px",
+            //   }}
+            //   variant="outlined"
+            //   margin="normal"
+            //   value={rowData.startTime || null}
+            //   onChange={(event) => this.handleRatePerHourChange(event, rowData)}
+            //   KeyboardButtonProps={{
+            //     "aria-label": "change time",
+            //   }}
+            //   InputProps={{
+            //     variant: "outlined",
+            //   }}
+            //   inputVariant="outlined"
+            // />
           );
         },
       },
@@ -677,30 +722,32 @@ class F335DefineShiftManagement extends Component {
         title: "Shift To",
 
         getCellValue: (rowData) => {
+          const time = this.timeFormatChange(rowData.endTime);
           return (
-            <KeyboardTimePicker
-              id="endTime"
-              name="endTime"
-              label="Shift To"
-              required
-              fullWidth
-              style={{
-                marginTop: "0px",
-              }}
-              variant="outlined"
-              margin="normal"
-              value={rowData.endTime || null}
-              onChange={(event) =>
-                this.handleAdjustedHourChange(event, rowData)
-              }
-              KeyboardButtonProps={{
-                "aria-label": "change time",
-              }}
-              InputProps={{
-                variant: "outlined",
-              }}
-              inputVariant="outlined"
-            />
+            <>{time}</>
+            // <KeyboardTimePicker
+            //   id="endTime"
+            //   name="endTime"
+            //   label="Shift To"
+            //   required
+            //   fullWidth
+            //   style={{
+            //     marginTop: "0px",
+            //   }}
+            //   variant="outlined"
+            //   margin="normal"
+            //   value={rowData.endTime || null}
+            //   onChange={(event) =>
+            //     this.handleAdjustedHourChange(event, rowData)
+            //   }
+            //   KeyboardButtonProps={{
+            //     "aria-label": "change time",
+            //   }}
+            //   InputProps={{
+            //     variant: "outlined",
+            //   }}
+            //   inputVariant="outlined"
+            // />
             // <div>{rowData.isActive ? "Active" : "Inactive"}</div>;
           );
         },
@@ -764,7 +811,7 @@ class F335DefineShiftManagement extends Component {
                 marginRight: 15,
               }}
             >
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <TextField
                   id="label"
                   name="label"
@@ -783,7 +830,7 @@ class F335DefineShiftManagement extends Component {
                   }}
                 />
               </Grid>
-              {/* 
+
               <Grid item xs={4}>
                 <KeyboardTimePicker
                   id="startTime"
@@ -830,15 +877,15 @@ class F335DefineShiftManagement extends Component {
                   }}
                   inputVariant="outlined"
                 />
-              </Grid> */}
-              <Grid item xs={6}>
+              </Grid>
+              <Grid item xs={4}>
                 <Autocomplete
                   multiple
                   fullWidth
                   id={"daySelector"}
-                  options={this.state.selectedDays}
+                  options={this.state.selectedDaysToShow}
                   value={this?.state?.dayId.map((id) =>
-                    this.state.selectedDays.find((day) => day.id === id)
+                    this.state.selectedDaysToShow.find((day) => day.id === id)
                   )}
                   onChange={(event, value) => this.handleDaySelection(value)}
                   disableCloseOnSelect
@@ -878,6 +925,18 @@ class F335DefineShiftManagement extends Component {
                   )}
                 />
               </Grid>
+              <Grid item xs={4}>
+                <Button
+                  variant="contained"
+                  style={{
+                    background: "#174a84",
+                    color: "white",
+                  }}
+                  onClick={() => this.handleAddInToArray()}
+                >
+                  Add
+                </Button>
+              </Grid>
               <Grid item xs={12}>
                 <R335DefineShiftManagementTableComponent
                   rows={this.state.daysArray}
@@ -903,7 +962,7 @@ class F335DefineShiftManagement extends Component {
               : "Save"
           }
           disableRightButton={
-            this.state.dayId.length === 0 || !this.state.label
+            this.state.daysArray.length === 0 || !this.state.label
           }
           bottomRightButtonAction={() =>
             Number(this.state.recordId) === 0

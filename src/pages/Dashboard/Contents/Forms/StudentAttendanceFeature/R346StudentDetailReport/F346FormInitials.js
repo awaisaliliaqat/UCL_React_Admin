@@ -53,7 +53,7 @@ const styles = (theme) => ({
     backgroundColor: "mediumseagreen",
   },
   royalblue: {
-    backgroundColor: "royalblue",
+    backgroundColor: "#174A84",
   },
   crimson: {
     backgroundColor: "#FFA499",
