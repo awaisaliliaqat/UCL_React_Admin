@@ -442,13 +442,13 @@ class F330ConsolidatedSheetForPayroll extends Component {
       // { name: "backAccount2", title: "Bank 2 Account #" },
       {
         name: "hourlyAmount",
-        title: "Hourly Amount",
+        title: "Claim Amount",
         getCellValue: (rowData) => {
           console.log(rowData);
           return <div>{rowData.hourlyAmount.toFixed(0)}</div>;
         },
       },
-      { name: "monthlyAmount", title: "Monthly Amount" },
+      { name: "monthlyAmount", title: "Salary Amount" },
       { name: "totalPayableAmountLabel", title: "Total Payable Amount" },
     ];
 

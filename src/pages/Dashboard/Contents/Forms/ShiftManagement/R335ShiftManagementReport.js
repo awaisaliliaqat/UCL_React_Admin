@@ -38,13 +38,11 @@ class R335ShiftManagementReport extends Component {
     this.setState({
       isLoading: true,
     });
-    // const formData = new FormData();
-    // formData.append("recordId", 0);
+
     const recordId = null;
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C335CommonEmployeeShiftScheduleView?id`;
     await fetch(url, {
       method: "GET",
-      // body: formData,
       headers: new Headers({
         Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
       }),
@@ -59,22 +57,6 @@ class R335ShiftManagementReport extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
-
-            // for (let i = 0; i < data.length; i++) {
-            //   const id = data[i].id;
-            //   data[i].action = (
-            //     <EditDeleteTableComponent
-            //       hideEditAction
-            //       recordId={id}
-            //       deleteRecord={this.DeleteData}
-            //       editRecord={() =>
-            //         window.location.replace(
-            //           `#/dashboard/F315DefineEmployeesPayroll/${id}`
-            //         )
-            //       }
-            //     />
-            //   );
-            // }
             this.setState({
               employeePayrollsData: data,
             });
@@ -260,6 +242,51 @@ class R335ShiftManagementReport extends Component {
     }
   };
 
+  deleteShift = async (id) => {
+    const formData = new FormData();
+    formData.append("id", 1000);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C335CommonEmployeeShiftScheduleDelete`;
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          console.log(json, "json is coming");
+          if (json.CODE === 1) {
+            this.handleSnackbar(true, "Delete", "success");
+            this.getData();
+          } else {
+            this.handleSnackbar(true, "Failed to Delete", "error");
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+  };
+
   render() {
     const columns = [
       { name: "id", title: "ID" },
@@ -354,52 +381,6 @@ class R335ShiftManagementReport extends Component {
           );
         },
       },
-      // {
-      //   name: "checkOut",
-      //   title: "Check-out Time",
-      //   flex: 1,
-      //   getCellValue: (rowData) => {
-      //     return (
-      //       <>
-      //         {rowData.checkInCheckOut.length !== 0 ? (
-      //           rowData.checkInCheckOut.map((item, index) => (
-      //             <div
-      //               key={index}
-      //               style={{
-      //                 borderBottom:
-      //                   index === rowData.checkInCheckOut.length - 1
-      //                     ? "none"
-      //                     : "1px solid #DADBDD",
-      //                 minHeight: "30px",
-      //               }}
-      //             >
-      //               {item.checkOut}
-      //             </div>
-      //           ))
-      //         ) : (
-      //           <div style={{ minHeight: "30px" }}></div>
-      //         )}
-      //       </>
-      //     );
-      //   },
-      // },
-      // {
-      //   name: "days",
-      //   title: "Days",
-      //   getCellValue: (rowData) => {
-      //     return (
-      //       <div>
-      //         {rowData.days.length > 0 &&
-      //           rowData.days.map((item, index) => (
-      //             <span key={index}>
-      //               {item.label}
-      //               {index < rowData.days.length - 1 && ", "}
-      //             </span>
-      //           ))}
-      //       </div>
-      //     );
-      //   },
-      // },
 
       {
         name: "isActive",
@@ -443,6 +424,18 @@ class R335ShiftManagementReport extends Component {
                   Activate
                 </Button>
               )}
+
+              <Button
+                style={{
+                  textTransform: "capitalize",
+                  background: "#E40808",
+                  marginLeft: "10px",
+                  color: "white",
+                }}
+                onClick={() => this.deleteShift(rowData.id)}
+              >
+                Delete
+              </Button>
             </div>
           );
         },

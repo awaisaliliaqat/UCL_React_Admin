@@ -237,6 +237,8 @@ import F344MonthlyAttendanceFeature from "./Contents/Forms/F344MonthlyAttendance
 import R345MasterAttendanceLogs from "./Contents/Forms/R345MasterAttendanceLogs";
 import F346StudentAttendanceFeature from "./Contents/Forms/StudentAttendanceFeature/F346StudentAttendanceFeature";
 import R346StudentDetailReport from "./Contents/Forms/StudentAttendanceFeature/R346StudentDetailReport/R346StudentDetailReport";
+import F347ShiftReassignment from "./Contents/Forms/ShiftReassignment/F347ShiftReassignment";
+import R347ShiftAssignmentView from "./Contents/Forms/ShiftReassignment/R347ShiftAssignmentView";
 
 const drawerWidth = 283;
 
@@ -1902,6 +1904,37 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F347ShiftReassignment"
+                exact
+                path="/dashboard/F347ShiftReassignment/:id"
+                render={(props) => {
+                  return (
+                    <F347ShiftReassignment
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R347ShiftAssignmentView"
+                exact
+                path="/dashboard/R347ShiftAssignmentView"
+                render={(props) => {
+                  return (
+                    <R347ShiftAssignmentView
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="R316EmployeesPayrollView"

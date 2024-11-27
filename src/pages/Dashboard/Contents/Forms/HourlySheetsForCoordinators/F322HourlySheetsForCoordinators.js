@@ -139,7 +139,7 @@ class F322HourlySheetsForCoordinators extends Component {
 
     const formData = new FormData();
     formData.append("sessionId", value);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C331CommonMonthsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C322CommonMonthsView`;
     await fetch(url, {
       method: "POST",
       body: formData,

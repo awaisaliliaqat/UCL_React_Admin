@@ -96,6 +96,9 @@ class DefineEmployeeForm extends Component {
       joiningDate: null,
       joiningDateError: "",
 
+      shiftActivationDateError: "",
+      shiftActivationDate: null,
+
       selectedDate: new Date("2014-08-18T21:11:54"),
 
       leavingDate: null,
@@ -439,6 +442,7 @@ class DefineEmployeeForm extends Component {
       jobStatusIdError,
       reportingToError,
       joiningDateError,
+      shiftActivationDateError,
       addressError,
       passwordError,
       employeesRolesArrayError,
@@ -565,6 +569,13 @@ class DefineEmployeeForm extends Component {
       joiningDateError = "";
     }
 
+    // if (!this.state.shiftActivationDate) {
+    //   shiftActivationDateError = "Please select Shift Activation date";
+    //   isValid = false;
+    // } else {
+    //   shiftActivationDateError = "";
+    // }
+
     // if (!this.state.address) {
     //     addressError = "Please enter present address"
     //     isValid = false;
@@ -667,6 +678,7 @@ class DefineEmployeeForm extends Component {
       leavingDateError,
       shiftError,
       reportingToError,
+      shiftActivationDateError,
     });
 
     return isValid;
@@ -704,6 +716,9 @@ class DefineEmployeeForm extends Component {
       reportingToError: "",
       joiningDate: null,
       joiningDateError: "",
+
+      shiftActivationDateError: "",
+      shiftActivationDate: null,
       leavingDate: null,
       leavingDateError: "",
       address: "",
@@ -1707,6 +1722,29 @@ class DefineEmployeeForm extends Component {
                   })}
                 </TextField>
               </Grid>
+              {/* <Grid item xs={12} md={4}>
+                <DatePicker
+                  autoOk
+                  id="shiftActivationDate"
+                  name="shiftActivationDate"
+                  label="Shift Activation Date"
+                  invalidDateMessage=""
+                  placeholder=""
+                  variant="inline"
+                  inputVariant="outlined"
+                  format="dd-MM-yyyy"
+                  fullWidth
+                  required
+                  value={this.state.shiftActivationDate}
+                  onChange={(date) =>
+                    this.onHandleChange({
+                      target: { name: "shiftActivationDate", value: date },
+                    })
+                  }
+                  error={!!this.state.shiftActivationDateError}
+                  helperText={this.state.shiftActivationDateError}
+                />
+              </Grid> */}
               {/* <Grid item xs={4}>
                 <KeyboardTimePicker
                   id="selectedDate"
