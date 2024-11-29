@@ -279,8 +279,66 @@ class R338AttendanceDailyReport extends Component {
   render() {
     const columns = [
       { name: "attendanceDate", title: "Attendance Date", flex: 1 },
-      { name: "attendanceIn", title: "Check-in Time", flex: 1 },
-      { name: "attendanceOut", title: "Check-out Time", flex: 1 },
+      // { name: "attendanceIn", title: "Check-in Time", flex: 1 },
+      // { name: "attendanceOut", title: "Check-out Time", flex: 1 },
+      {
+        name: "checkIn",
+        title: "Check-in Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.checkInCheckOut.length !== 0 ? (
+                rowData.checkInCheckOut.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.checkInCheckOut.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.checkIn}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      {
+        name: "checkOut",
+        title: "Check-out Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.checkInCheckOut.length !== 0 ? (
+                rowData.checkInCheckOut.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.checkInCheckOut.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.checkOut}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
     ];
 
     return (

@@ -25,6 +25,7 @@ import { IsEmpty } from "../../../../../utils/helper";
 import { withRouter } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { DatePicker } from "@material-ui/pickers";
+import { toDate } from "date-fns";
 
 const styles = (theem) => ({
   root: {
@@ -105,10 +106,6 @@ class F347ShiftReassignment extends Component {
       showPass: false,
       request: "",
 
-      files3: [],
-      files3Error: "",
-      uploadLoading: false,
-
       employeeData: [],
       employeeDataLoading: false,
       employeeObject: {},
@@ -125,6 +122,8 @@ class F347ShiftReassignment extends Component {
       months: "",
       installmentPerMonth: "",
 
+      toDate: null,
+
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
@@ -132,33 +131,20 @@ class F347ShiftReassignment extends Component {
   }
 
   componentDidMount() {
-    console.log(this.state.recordId, "id is coming");
-    const data = this.props.match.params.id.split("T");
-    console.log(data);
-    this.setState({
-      ...this.state,
-      recordId: data[0],
-    });
+    // console.log(this.state.recordId, "id is coming");
+    // const data = this.props.match.params.id.split("T");
+    // console.log(data);
+    // this.setState({
+    //   ...this.state,
+    //   recordId: data[0],
+    // });
     this.getEmployeesData();
     this.getShiftsData();
 
-    if (Number(data[0]) > 0) {
-      this.loadData(Number(data[0]), data[1]);
-    }
+    // if (Number(data[0]) > 0) {
+    //   this.loadData(Number(data[0]), data[1]);
+    // }
   }
-
-  // UNSAFE_componentWillReceiveProps(nextProps) {
-  //   if (this.props.match.params.recordId != nextProps.match.params.recordId) {
-  //     if (nextProps.match.params.recordId != 0) {
-  //       this.loadData(nextProps.match.params.recordId);
-  //       this.setState({
-  //         recordId: nextProps.match.params.recordId,
-  //       });
-  //     } else {
-  //       window.location.reload();
-  //     }
-  //   }
-  // }
 
   handleSnackbar = (open, msg, severity) => {
     this.setState({
@@ -168,69 +154,104 @@ class F347ShiftReassignment extends Component {
     });
   };
 
-  loadData = async (recordId, string) => {
-    const data = new FormData();
-    data.append("recordId", recordId);
-    this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C328CommonUsersEmployeesLoanView`;
-    await fetch(url, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
+  // loadData = async (recordId, string) => {
+  //   const data = new FormData();
+  //   data.append("recordId", recordId);
+  //   this.setState({ isLoading: true });
+  //   const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C328CommonUsersEmployeesLoanView`;
+  //   await fetch(url, {
+  //     method: "POST",
+  //     body: data,
+  //     headers: new Headers({
+  //       Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+  //     }),
+  //   })
+  //     .then((res) => {
+  //       if (!res.ok) {
+  //         throw res;
+  //       }
+  //       return res.json();
+  //     })
+  //     .then(
+  //       (json) => {
+  //         if (json.CODE === 1) {
+  //           let data = json.DATA || [];
+  //           if (data.length > 0) {
+  //             let myDataObject = data[0] || {};
+  //             this.setState({
+  //               employeeObject: {
+  //                 id: myDataObject["userEmployeeId"],
+  //                 label: myDataObject["userEmployeeLabel"],
+  //               },
+  //               request: string,
+  //               recordId: recordId,
+  //               loanAmount: myDataObject["loanAmount"],
+  //               months: myDataObject["numberOfMonths"],
+  //               installmentPerMonth:
+  //                 myDataObject["loanAmount"] / myDataObject["numberOfMonths"],
+  //             });
+  //           }
+  //         } else {
+  //           this.handleSnackbar(
+  //             true,
+  //             json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
+  //             "error"
+  //           );
+  //         }
+  //         console.log(json);
+  //       },
+  //       (error) => {
+  //         if (error.status == 401) {
+  //           this.setState({
+  //             isLoginMenu: true,
+  //             isReload: true,
+  //           });
+  //         } else {
+  //           console.log(error);
+  //           this.handleSnackbar(
+  //             true,
+  //             "Failed to Load Data ! Please try Again later.",
+  //             "error"
+  //           );
+  //         }
+  //       }
+  //     );
+  //   this.setState({ isLoading: false });
+  // };
+
+  onHandleChangeDate = (event) => {
+    const { name, value } = event.target;
+
+    // const date = new Date(value);
+    // const formattedDate = date.toISOString().split("T")[0];
+
+    if (name === "fromDate") {
+      if (this.state.toDate && value && this.state.toDate < value) {
+        this.setState({
+          fromDate: value,
+          // fromDateToSend: formattedDate,
+          toDate: null,
+          toDateToSend: null,
+        });
+      } else {
+        this.setState({
+          fromDate: value,
+          // fromDateToSend: formattedDate,
+          toDate: null,
+          toDateToSend: null,
+        });
+      }
+    } else if (name === "toDate") {
+      this.setState(
+        {
+          toDate: value,
+          // toDateToSend: formattedDate,
         }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            let data = json.DATA || [];
-            if (data.length > 0) {
-              let myDataObject = data[0] || {};
-              this.setState({
-                employeeObject: {
-                  id: myDataObject["userEmployeeId"],
-                  label: myDataObject["userEmployeeLabel"],
-                },
-                request: string,
-                recordId: recordId,
-                loanAmount: myDataObject["loanAmount"],
-                months: myDataObject["numberOfMonths"],
-                installmentPerMonth:
-                  myDataObject["loanAmount"] / myDataObject["numberOfMonths"],
-              });
-            }
-          } else {
-            this.handleSnackbar(
-              true,
-              json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-              "error"
-            );
-          }
-          console.log(json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            console.log(error);
-            this.handleSnackbar(
-              true,
-              "Failed to Load Data ! Please try Again later.",
-              "error"
-            );
-          }
-        }
+        // () => {
+        //   this.getDataThroughDate(formattedDate);
+        // }
       );
-    this.setState({ isLoading: false });
+    }
   };
 
   onHandleChange = (e) => {
@@ -294,17 +315,21 @@ class F347ShiftReassignment extends Component {
       months: "",
       installmentPerMonth: "",
 
-      files3: [],
-      files3Error: "",
-      uploadLoading: false,
+      toDate: null,
     });
   };
 
   onFormSubmit = async () => {
     console.log(this.state.employeeObject, this.state.shiftObject);
+    const date = new Date(this.state.toDate);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    const formattedDate = `${day}-${month}-${year}`;
     const data = new FormData();
     data.append("userId", this.state.employeeObject.id);
     data.append("shiftId", this.state.shiftObject.id);
+    data.append("shiftStartDate", formattedDate);
 
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C347CommonEmployeeShiftSave`;
@@ -701,12 +726,12 @@ class F347ShiftReassignment extends Component {
                   fullWidth
                   required
                   // disabled={!this.state.fromDate || this.state.isLoading}
-                  // value={this.state.toDate}
-                  // onChange={(date) =>
-                  //   this.onHandleChange({
-                  //     target: { name: "toDate", value: date },
-                  //   })
-                  // }
+                  value={this.state.toDate}
+                  onChange={(date) =>
+                    this.onHandleChangeDate({
+                      target: { name: "toDate", value: date },
+                    })
+                  }
                   // shouldDisableDate={this.shouldDisableDate}
                   // minDate={this.state.fromDate}
                 />
@@ -740,7 +765,9 @@ class F347ShiftReassignment extends Component {
             // : this.onFormSubmit()
           }
           // disableRightButton={
-          //   Object.keys(this.state.
+          //   Object.keys(this.state.employeeObject).length !==0 ||
+          //   Object.keys(this.state.shiftObject).length !==0 ||
+          //   !this.state.toDate
           // }
 
           loading={this.state.isLoading}

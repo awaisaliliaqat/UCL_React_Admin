@@ -62,7 +62,7 @@ class DefineEmployeeForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      recordId: this.props.match.params.recordId,
+      recordId: Number(this.props.match.params.recordId),
       isLoading: false,
       isReload: false,
       showPass: false,
@@ -1227,6 +1227,12 @@ class DefineEmployeeForm extends Component {
 
   onFormSubmit = async (e) => {
     e.preventDefault();
+
+    // const date = new Date();
+    // const day = String(date.getDate()).padStart(2, "0");
+    // const month = String(date.getMonth() + 1).padStart(2, "0");
+    // const year = date.getFullYear();
+    // const formattedDate = `${day}-${month}-${year}`;
     const data = new FormData(e.target);
     data.append("isActive", this.state.isActive);
     const roleIdsArray = this.state.employeesRolesArray || [];
@@ -1257,7 +1263,14 @@ class DefineEmployeeForm extends Component {
     data.append("coordinationId", this.state.coordinationId);
 
     data.append("isBankAccount", !this.state.isCheque ? 1 : 0);
-    data.append("shiftId", this.state.shiftId);
+
+    if (this.state.recordId !== 0) {
+      data.append("shiftId", null);
+    } else {
+      data.append("shiftId", this.state.shiftId);
+    }
+    // data.append("shiftStartDate", formattedDate);
+
     // data.append("leavingDate", null);
 
     // data.append("bankAccountNumber1", this.state.bankAccountNumber1);
@@ -1711,6 +1724,7 @@ class DefineEmployeeForm extends Component {
                   value={this.state.shiftId}
                   helperText={this.state.shiftError}
                   error={this.state.shiftError}
+                  disabled={this?.state?.recordId !== 0}
                   select
                 >
                   {this?.state?.allActiveShifts?.map((item) => {

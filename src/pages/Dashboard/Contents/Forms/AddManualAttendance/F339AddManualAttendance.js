@@ -589,8 +589,8 @@ class F339AddManualAttendances extends Component {
   onHandleChanges = (e) => {
     const { name, value } = e.target;
     console.log(value);
-    const startTimetoPopulate = this.handleFormatChange(value.checkIn);
-    const endTimeToPopulate = this.handleFormatChange(value.checkOut);
+    const startTimetoPopulate = this.handleFormatChange(value?.checkIn);
+    const endTimeToPopulate = this.handleFormatChange(value?.checkOut);
     if (
       startTimetoPopulate !== "Invalid Date" &&
       endTimeToPopulate !== "Invalid Date"
