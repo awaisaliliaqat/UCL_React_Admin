@@ -119,6 +119,7 @@ class R347ShiftAssignmentView extends Component {
       { name: "employeeId", title: "Employee Id" },
       { name: "employeeLabel", title: "Employee Name" },
       { name: "shiftLabel", title: "Shift Name" },
+      { name: "startDate", title: "Start Date" },
       {
         name: "days",
         title: "Days",

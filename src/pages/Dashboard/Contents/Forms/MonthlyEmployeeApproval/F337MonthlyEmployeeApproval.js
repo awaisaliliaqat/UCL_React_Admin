@@ -619,7 +619,7 @@ class F337MonthlyEmployeeApproval extends Component {
               }}
               variant="h5"
             >
-              Monthly Employee Attendance Approval
+              Monthly Employee Late Days Approval
             </Typography>
             {/* <img alt="" src={ExcelIcon} onClick={() => this.downloadExcelData()} style={{
                             height: 30, width: 32,

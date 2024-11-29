@@ -758,7 +758,7 @@ class F336MonthlyEmployeeAttendance extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip> */}
-              {"Monthly Employee Attendance"}
+              {"Monthly Employee Late Days"}
               <br />
             </Typography>
           </div>
