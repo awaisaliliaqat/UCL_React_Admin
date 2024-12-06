@@ -244,7 +244,7 @@ class R335ShiftManagementReport extends Component {
 
   deleteShift = async (id) => {
     const formData = new FormData();
-    formData.append("id", 1000);
+    formData.append("id", id);
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C335CommonEmployeeShiftScheduleDelete`;
     await fetch(url, {
       method: "POST",

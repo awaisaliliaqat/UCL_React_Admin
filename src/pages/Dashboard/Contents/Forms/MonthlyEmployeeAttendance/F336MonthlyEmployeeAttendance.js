@@ -648,36 +648,242 @@ class F336MonthlyEmployeeAttendance extends Component {
         },
       },
       { name: "totalLateDays", title: "Late" },
+      // {
+      //   name: "lateDates",
+      //   title: "Late Dates",
+      //   getCellValue: (rowData) => {
+      //     const splitStringByLength = (str, length) => {
+      //       let result = [];
+      //       for (let i = 0; i < str.length; i += length) {
+      //         result.push(str.substring(i, i + length));
+      //       }
+      //       return result;
+      //     };
+
+      //     const attendanceDates = rowData?.lateDates || [];
+      //     const chunkSize = 16;
+
+      //     return (
+      //       <div>
+      //         {attendanceDates.map((item, index) => (
+      //           <div key={`item-${index}`}>
+      //             {splitStringByLength(item, chunkSize).map(
+      //               (chunk, chunkIndex) => (
+      //                 <div key={`chunk-${chunkIndex}`}>
+      //                   {chunk}
+      //                   <br />
+      //                 </div>
+      //               )
+      //             )}
+      //           </div>
+      //         ))}
+      //       </div>
+      //     );
+      //   },
+      // },
+
       {
-        name: "lateDates",
+        name: "checkIn",
         title: "Late Dates",
+        flex: 1,
         getCellValue: (rowData) => {
-          const splitStringByLength = (str, length) => {
-            let result = [];
-            for (let i = 0; i < str.length; i += length) {
-              result.push(str.substring(i, i + length));
-            }
-            return result;
-          };
-
-          const attendanceDates = rowData?.lateDates || [];
-          const chunkSize = 16;
-
           return (
-            <div>
-              {attendanceDates.map((item, index) => (
-                <div key={`item-${index}`}>
-                  {splitStringByLength(item, chunkSize).map(
-                    (chunk, chunkIndex) => (
-                      <div key={`chunk-${chunkIndex}`}>
-                        {chunk}
-                        <br />
-                      </div>
-                    )
-                  )}
-                </div>
-              ))}
-            </div>
+            <>
+              {rowData.lateTimeDetails.length !== 0 ? (
+                rowData.lateTimeDetails.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.lateTimeDetails.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.lateDate}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      {
+        name: "checkOut",
+        title: "Late Minutes",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.lateTimeDetails.length !== 0 ? (
+                rowData.lateTimeDetails.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.lateTimeDetails.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.lateMinutes}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      {
+        name: "checkOut2",
+        title: "Early Departure Mins",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.lateTimeDetails.length !== 0 ? (
+                rowData.lateTimeDetails.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.lateTimeDetails.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.earlyDepartureMins}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+
+      {
+        name: "overtime",
+        title: "Ovetime",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.lateTimeDetails.length !== 0 ? (
+                rowData.lateTimeDetails.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.lateTimeDetails.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.overtime}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      {
+        name: "netLateMins",
+        title: "Net Late Mins",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.lateTimeDetails.length !== 0 ? (
+                rowData.lateTimeDetails.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.lateTimeDetails.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.netLateMins}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      {
+        name: "totalBreakTime",
+        title: "Total Break Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.lateTimeDetails.length !== 0 ? (
+                rowData.lateTimeDetails.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.lateTimeDetails.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.totalBreakTime}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+
+      {
+        name: "netOvertime",
+        title: "Net Over Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.lateTimeDetails.length !== 0 ? (
+                rowData.lateTimeDetails.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.lateTimeDetails.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.netOvertime}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
           );
         },
       },
@@ -738,6 +944,7 @@ class F336MonthlyEmployeeAttendance extends Component {
           );
         },
       },
+
       // { name: "ratePerHour", title: "Rate Per Hour" },
       // { name: "totalAmount", title: "Total Amount" },
       // { name: "adjustmentRemarks", title: "Adjustment Remarks" },

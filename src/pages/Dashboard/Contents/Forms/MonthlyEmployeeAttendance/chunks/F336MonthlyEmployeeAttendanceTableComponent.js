@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Paper } from "@material-ui/core";
@@ -23,14 +22,33 @@ const CurrencyTypeProvider = (props) => (
   <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
 );
 
+const CustomCell = ({ column, value, style, ...restProps }) => {
+  const isTopAligned =
+    column.name === "id" ||
+    column.name === "displayName" ||
+    column.name === "totalWorkingDays" ||
+    column.name === "totalAttendedDays" ||
+    column.name === "totalAttendanceMissingDays" ||
+    column.name === "missingAttendanceDates" ||
+    column.name === "totalLateDays" ||
+    column.name === "adjustedLateDays" ||
+    column.name === "remarks";
+  return (
+    <Table.Cell
+      {...restProps}
+      style={{
+        ...style,
+        verticalAlign: isTopAligned ? "top" : "inherit",
+        paddingTop: isTopAligned ? "20px" : "inherit",
+        height: isTopAligned ? "100%" : "inherit",
+      }}
+    >
+      {value}
+    </Table.Cell>
+  );
+};
+
 const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
-  // const filteredColumns = props.columns.filter(
-  //   (column) => column.name !== "totalAmount" && column.name !== "ratePerHour"
-  // );
-  // const updatedData = {
-  //   ...props,
-  //   columns: filteredColumns,
-  // };
   const [tableColumnExtensions] = useState([
     { columnName: "id", align: "left" },
     { columnName: "displayName", align: "left" },
@@ -40,22 +58,14 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
     { columnName: "missingAttendanceDates", align: "right" },
     { columnName: "totalLateDays", align: "right" },
     { columnName: "lateDates", align: "right" },
-    { columnName: "adjustedLateDays", align: "left" },
+    { columnName: "adjustedLateDays", align: "left", width: "150px" },
+    { columnName: "checkOut2", align: "left", width: "200px" },
     { columnName: "remarks", align: "left" },
   ]);
 
-  // const [tableGroupColumn] = useState([{ columnName: "teacherLabel" }]);
-
-  const [groupSummaryItems] = useState([
-    { columnName: "totalNetHours", type: "sum" },
-    { columnName: "ratePerHour", type: "avg" },
-    // { columnName: "totalNetHours", type: "sum" },
-  ]);
-
-  // const [totalSummaryItems] = useState([
+  // const [groupSummaryItems] = useState([
   //   { columnName: "totalNetHours", type: "sum" },
   //   { columnName: "ratePerHour", type: "avg" },
-  //   // { columnName: "totalNetHours", type: "sum" },
   // ]);
 
   const { data, columns } = props;
@@ -75,29 +85,21 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
       <Grid rows={rows} columns={columns}>
         <CurrencyTypeProvider for={currencyColumns} />
         <GroupingState
-          // defaultGrouping={tableGroupColumn}
           defaultExpandedGroups={expandedGroups}
           expandedGroups={expandedGroups}
           onExpandedGroupsChange={onExpandedGroupChange}
-          // grouping={tableGroupColumn}
         />
         <SummaryState
-          // totalItems={totalSummaryItems}
-          groupItems={groupSummaryItems}
+        //  groupItems={groupSummaryItems}
         />
         <IntegratedGrouping />
         <IntegratedSummary />
-        <Table columnExtensions={tableColumnExtensions} />
-        <TableHeaderRow
-          titleComponent={(props) =>
-            props.children === "Action" ? (
-              <b>&emsp;{props.children}</b>
-            ) : (
-              <b>{props.children}</b>
-            )
-          }
+        <Table
+          columnExtensions={tableColumnExtensions}
+          cellComponent={(props) => <CustomCell {...props} />}
         />
-        <TableGroupRow icon />
+        <TableHeaderRow />
+        <TableGroupRow />
         <TableSummaryRow />
       </Grid>
     </Paper>

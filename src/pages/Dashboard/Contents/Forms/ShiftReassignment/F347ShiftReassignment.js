@@ -734,6 +734,7 @@ class F347ShiftReassignment extends Component {
                   }
                   // shouldDisableDate={this.shouldDisableDate}
                   // minDate={this.state.fromDate}
+                  minDate={new Date()}
                 />
               </Grid>
             </Grid>

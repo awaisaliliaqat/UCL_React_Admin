@@ -225,10 +225,7 @@ class F229Form extends Component {
               ) {
                 this.handleOpenSnackbar("Class Already Exists.", "error");
               } else {
-                this.handleOpenSnackbar(
-                  json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-                  "error"
-                );
+                this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n", "error");
               }
             }
           },
