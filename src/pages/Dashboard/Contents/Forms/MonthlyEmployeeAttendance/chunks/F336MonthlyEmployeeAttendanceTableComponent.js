@@ -183,20 +183,27 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
   //   columns: filteredColumns,
   // };
   const [tableColumnExtensions] = useState([
-    { columnName: "id", align: "left" },
-    { columnName: "displayName", align: "left" },
-    { columnName: "totalWorkingDays", align: "right" },
-    { columnName: "totalAttendedDays", align: "right" },
-    { columnName: "totalAttendanceMissingDays", align: "right" },
-    { columnName: "missingAttendanceDates", align: "right" },
-    { columnName: "totalLateDays", align: "right" },
-    { columnName: "lateDates", align: "right" },
+    { columnName: "id", align: "left", width: "80px" },
+    { columnName: "displayName", align: "left", width: "100px" },
+    { columnName: "totalWorkingDays", align: "right", width: "50px" },
+    { columnName: "totalAttendedDays", align: "right", width: "70px" },
+    {
+      columnName: "totalAttendanceMissingDays",
+      align: "right",
+      width: "100px",
+    },
+    { columnName: "missingAttendanceDates", align: "right", width: "150px" },
+    { columnName: "totalLateDays", align: "right", width: "100px" },
+    { columnName: "lateDates", align: "right", width: "150px" },
     { columnName: "adjustedLateDays", align: "left", width: "150px" },
-    { columnName: "checkOut2", align: "left", width: "200px" },
-    { columnName: "adjustedAbsentDays", align: "left", width: "200px" },
-    { columnName: "sumEarlyDeparture", align: "left", width: "200px" },
-
-    { columnName: "remarks", align: "left" },
+    { columnName: "checkOut2", align: "left", width: "150px" },
+    { columnName: "sumLateTime", align: "left", width: "100px" },
+    { columnName: "sumEarlyDeparture", align: "left", width: "120px" },
+    { columnName: "sumBreakTime", align: "left", width: "100px" },
+    { columnName: "sumOverTime", align: "left", width: "100px" },
+    { columnName: "sumShortTime", align: "left", width: "100px" },
+    { columnName: "adjustedAbsentDays", align: "left", width: "150px" },
+    { columnName: "remarks", align: "left", width: "100px" },
   ]);
 
   // const [tableGroupColumn] = useState([{ columnName: "teacherLabel" }]);

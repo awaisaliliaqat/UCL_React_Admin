@@ -525,7 +525,7 @@ class F336MonthlyEmployeeAttendance extends Component {
     const columns = [
       { name: "id", title: "ID" },
       { name: "displayName", title: "Name" },
-      { name: "totalWorkingDays", title: "Working Days" },
+      { name: "totalWorkingDays", title: "Work Days" },
       { name: "totalAttendedDays", title: "Attended" },
       { name: "totalAttendanceMissingDays", title: "Att. Missing" },
       {
@@ -577,7 +577,7 @@ class F336MonthlyEmployeeAttendance extends Component {
       },
       {
         name: "sumLateTime",
-        title: "Total Late Time",
+        title: "Late Time",
         getCellValue: (rowData) => {
           const obj = rowData.lateTimeDetails;
           return (
@@ -591,7 +591,7 @@ class F336MonthlyEmployeeAttendance extends Component {
       },
       {
         name: "sumEarlyDeparture",
-        title: "Total Early Departure Mins",
+        title: "Early Departure",
         getCellValue: (rowData) => {
           const obj = rowData.lateTimeDetails;
           return (
@@ -605,7 +605,7 @@ class F336MonthlyEmployeeAttendance extends Component {
       },
       {
         name: "sumBreakTime",
-        title: "Total Break Time",
+        title: "Break Time",
         getCellValue: (rowData) => {
           const obj = rowData.lateTimeDetails;
           return (
@@ -619,7 +619,7 @@ class F336MonthlyEmployeeAttendance extends Component {
       },
       {
         name: "sumOverTime",
-        title: "Total Overtime",
+        title: "Over Time",
         getCellValue: (rowData) => {
           const obj = rowData.lateTimeDetails;
           return (
@@ -633,7 +633,7 @@ class F336MonthlyEmployeeAttendance extends Component {
       },
       {
         name: "sumShortTime",
-        title: "Total Short Time",
+        title: "Short Time",
         getCellValue: (rowData) => {
           const obj = rowData.lateTimeDetails;
           return (
@@ -1115,7 +1115,13 @@ class F336MonthlyEmployeeAttendance extends Component {
             </Grid>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+            style={{
+              marginBottom: "6%",
+            }}
+          >
             <F336MonthlyEmployeeAttendanceTableComponent
               columns={columns}
               data={this.state}

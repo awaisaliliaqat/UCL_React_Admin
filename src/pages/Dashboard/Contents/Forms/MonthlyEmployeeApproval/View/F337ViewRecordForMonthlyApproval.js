@@ -486,32 +486,174 @@ class F337ViewRecordForMonthlyApproval extends Component {
   render() {
     const { classes } = this.props;
 
+    // const columns = [
+    //   { name: "id", title: "ID" },
+    //   { name: "displayName", title: "Name" },
+    //   { name: "totalWorkingDays", title: "Working Days" },
+    //   { name: "totalAttendedDays", title: "Attended" },
+    //   { name: "totalAttendanceMissingDays", title: "Att. Missing" },
+    //   {
+    //     name: "missingAttendanceDates",
+    //     title: "Att. Missing Dates",
+    //   },
+    //   { name: "totalLateDays", title: "Late" },
+    //   {
+    //     name: "lateDates",
+    //     title: "Late Dates",
+    //   },
+
+    //   { name: "adjustedAbsentDays", title: "Adjusted Absent Days" },
+
+    //   {
+    //     name: "adjustedLateDays",
+    //     title: "Adjusted Late Days",
+    //   },
+    //   {
+    //     name: "remarks",
+    //     title: "Remarks",
+    //   },
+    // ];
+
     const columns = [
       { name: "id", title: "ID" },
       { name: "displayName", title: "Name" },
-      { name: "totalWorkingDays", title: "Working Days" },
+      { name: "totalWorkingDays", title: "Work Days" },
       { name: "totalAttendedDays", title: "Attended" },
       { name: "totalAttendanceMissingDays", title: "Att. Missing" },
       {
         name: "missingAttendanceDates",
         title: "Att. Missing Dates",
-      },
-      { name: "totalLateDays", title: "Late" },
-      {
-        name: "lateDates",
-        title: "Late Dates",
-      },
+        getCellValue: (rowData) => {
+          const splitStringByLength = (str, length) => {
+            let result = [];
+            for (let i = 0; i < str.length; i += length) {
+              result.push(str.substring(i, i + length));
+            }
+            return result;
+          };
 
-      { name: "adjustedAbsentDays", title: "Adjusted Absent Days" },
+          const attendanceDates = rowData?.missingAttendanceDates || [];
+          const chunkSize = 16;
+
+          return (
+            <div>
+              {attendanceDates.map((item, index) => (
+                <div key={`item-${index}`}>
+                  {splitStringByLength(item, chunkSize).map(
+                    (chunk, chunkIndex) => (
+                      <div key={`chunk-${chunkIndex}`}>
+                        {chunk}
+                        <br />
+                      </div>
+                    )
+                  )}
+                </div>
+              ))}
+            </div>
+          );
+        },
+      },
+      {
+        name: "totalLateDays",
+        title: "Late Days",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.totalLateDays}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumLateTime",
+        title: "Late Time",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumLateTime}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumEarlyDeparture",
+        title: "Early Departure",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumEarlyDeparture}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumBreakTime",
+        title: "Break Time",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumBreakTime}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumOverTime",
+        title: "Over Time",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumOverTime}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumShortTime",
+        title: "Short Time",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumShortTime}
+              </Button>
+            </div>
+          );
+        },
+      },
 
       {
         name: "adjustedLateDays",
         title: "Adjusted Late Days",
       },
       {
+        name: "adjustedAbsentDays",
+        title: "Adjusted Absent Days",
+      },
+      {
         name: "remarks",
         title: "Remarks",
       },
+
+      // { name: "ratePerHour", title: "Rate Per Hour" },
+      // { name: "totalAmount", title: "Total Amount" },
+      // { name: "adjustmentRemarks", title: "Adjustment Remarks" },
     ];
 
     return (
@@ -529,7 +671,7 @@ class F337ViewRecordForMonthlyApproval extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip>
-              {"Monthly Employee Attendance Approval"}
+              {"Monthly Employee Late Days Approval"}
               <br />
             </Typography>
           </div>
