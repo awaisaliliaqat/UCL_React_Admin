@@ -16,6 +16,16 @@ import {
   Tooltip,
   IconButton,
   MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@material-ui/core";
 import F336MonthlyEmployeeAttendanceTableComponent from "./chunks/F336MonthlyEmployeeAttendanceTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
@@ -71,6 +81,7 @@ class F336MonthlyEmployeeAttendance extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
+      isExisted: 1,
 
       yearId: "",
       yearData: [],
@@ -78,6 +89,9 @@ class F336MonthlyEmployeeAttendance extends Component {
       academicSessionsDataLoading: false,
       academicSessionId: "",
       academicSessionIdError: "",
+
+      openDialog: false,
+      selectedStudent: null,
 
       programmeGroupsData: [],
       programmeGroupsDataLoading: false,
@@ -135,6 +149,19 @@ class F336MonthlyEmployeeAttendance extends Component {
     return formattedDate;
   };
 
+  handleOpenDialog = (student) => {
+    console.log(student, "student");
+    this.setState({
+      openDialog: true,
+      selectedStudent: student,
+      undoReason: "",
+    });
+  };
+
+  handleCloseDialog = () => {
+    this.setState({ openDialog: false, selectedStudent: null });
+  };
+
   getYearsData = async (value) => {
     this.setState({
       isLoading: true,
@@ -142,7 +169,7 @@ class F336MonthlyEmployeeAttendance extends Component {
 
     const formData = new FormData();
     formData.append("sessionId", value);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonMonthsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonMonthsView`;
     await fetch(url, {
       method: "POST",
       body: formData,
@@ -251,74 +278,13 @@ class F336MonthlyEmployeeAttendance extends Component {
     this.setState({ academicSessionsDataLoading: false });
   };
 
-  // getProgrammeGroupsBySessionId = async (academicSessionId) => {
-  //   let mySessionId = academicSessionId;
-
-  //   this.setState({
-  //     programmeGroupsDataLoading: true,
-  //     programmeGroupsData: [],
-  //   });
-  //   let data = new FormData();
-  //   data.append("academicsSessionId", mySessionId);
-  //   const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C322CommonAcademicsProgrammesGroupsView`;
-  //   await fetch(url, {
-  //     method: "POST",
-  //     body: data,
-  //     headers: new Headers({
-  //       Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-  //     }),
-  //   })
-  //     .then((res) => {
-  //       if (!res.ok) {
-  //         throw res;
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(
-  //       (json) => {
-  //         if (json.CODE === 1) {
-  //           this.setState({ programmeGroupsData: json.DATA });
-  //         } else {
-  //           this.handleSnackbar(
-  //             true,
-  //             <span>
-  //               {json.SYSTEM_MESSAGE}
-  //               <br />
-  //               {json.USER_MESSAGE}
-  //             </span>,
-  //             "error"
-  //           );
-  //         }
-  //       },
-  //       (error) => {
-  //         if (error.status == 401) {
-  //           this.setState({
-  //             isLoginMenu: true,
-  //             isReload: true,
-  //           });
-  //         } else {
-  //           this.handleSnackbar(
-  //             true,
-  //             "Failed to fetch ! Please try Again later.",
-  //             "error"
-  //           );
-  //         }
-  //       }
-  //     );
-  //   this.setState({ programmeGroupsDataLoading: false });
-  // };
-
   onSearchClick = async (e) => {
     if (!IsEmpty(e)) {
       e.preventDefault();
     }
-    // var data = new FormData();
-    // data.append("recordId", this.state.recordId);
-    // data.append("academicsSessionId", this.state.academicSessionId);
-    // data.append("monthEnum", this.state.monthId.monthName);
-    // data.append("year", 0);
+    console.log(this.state.monthId);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceView?fromDate=${this.state.fromDateToSend}&toDate=${this.state.toDateToSend}`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceView?fromDate=${this.state.fromDateToSend}&toDate=${this.state.toDateToSend}&sessionId=${this.state.academicSessionId}&monthId=${this.state.monthId.id}`;
     await fetch(url, {
       method: "POST",
       // body: data,
@@ -335,27 +301,15 @@ class F336MonthlyEmployeeAttendance extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            let array = json.DATA || [];
+            let array = json.DATA[0].data || [];
 
-            // let myExpandedGroupsData = [];
-            // for (let i = 0; i < array.length; i++) {
-            //   myExpandedGroupsData.push(array[i]["teacherLabel"]);
-            // }
-
-            // let isApproved = false;
-            // if (array.length > 0) {
-            //   isApproved = array[0]["isApproved"] || false;
-            // }
-
+            array.forEach((item) => {
+              item.adjustedAbsentDays = 0;
+            });
             this.setState({
               teachersAttendanceSheetData: array,
               expandedGroupsData: array,
-              // academicSessionId: json.DATA[0].sessionLabel,
-              // programmeGroupId: json.DATA[0].programmeGroupLabel,
-              // monthId: json.DATA[0].monthLabel,
-              // isApprovedByHead: json.DATA[0].isApproved,
-              // yearId: json.DATA[0].year,
-              // isApproved,
+              isExisted: json.DATA[0].isExist,
             });
           } else {
             this.handleSnackbar(
@@ -550,53 +504,13 @@ class F336MonthlyEmployeeAttendance extends Component {
     // });
   };
 
-  // getData = (data) => {
-  //   const formattedArray = Object.entries(data[0]).map(
-  //     ([monthName, dates]) => ({
-  //       fromDate: dates[0],
-  //       toDate: dates[1],
-  //       monthName,
-  //     })
-  //   );
-
-  //   const sortedArray = formattedArray.sort(
-  //     (a, b) => new Date(a.fromDate) - new Date(b.fromDate)
-  //   );
-
-  //   const augustIndex = sortedArray.findIndex((item) =>
-  //     item.monthName.includes("August")
-  //   );
-  //   const rearrangedArray = [
-  //     ...sortedArray.slice(augustIndex),
-  //     ...sortedArray.slice(0, augustIndex),
-  //   ];
-
-  //   return rearrangedArray;
-  // };
-  handleRatePerHourChange = (value, rowData) => {
+  handleInputChange = (fieldName, value, rowData) => {
     const { id } = rowData;
     const updatedData = this.state.teachersAttendanceSheetData.map((item) =>
       item.id === id
         ? {
             ...item,
-            adjustedLateDays: Number(value),
-            // totalNetHours: Number(value) + item.totalHours,
-            // totalAmount: (Number(value) + item.totalHours) * item.ratePerHour,
-          }
-        : item
-    );
-    this.setState({
-      teachersAttendanceSheetData: updatedData,
-    });
-  };
-
-  handleAdjustedHourChange = (value, rowData) => {
-    const { id } = rowData;
-    const updatedData = this.state.teachersAttendanceSheetData.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            remarks: value,
+            [fieldName]: fieldName === "remarks" ? value : Number(value),
           }
         : item
     );
@@ -647,7 +561,90 @@ class F336MonthlyEmployeeAttendance extends Component {
           );
         },
       },
-      { name: "totalLateDays", title: "Late" },
+      {
+        name: "totalLateDays",
+        title: "Late Days",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.totalLateDays}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumLateTime",
+        title: "Total Late Time",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumLateTime}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumEarlyDeparture",
+        title: "Total Early Departure Mins",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumEarlyDeparture}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumBreakTime",
+        title: "Total Break Time",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumBreakTime}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumOverTime",
+        title: "Total Overtime",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumOverTime}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        name: "sumShortTime",
+        title: "Total Short Time",
+        getCellValue: (rowData) => {
+          const obj = rowData.lateTimeDetails;
+          return (
+            <div>
+              <Button onClick={() => this.handleOpenDialog(obj)}>
+                {rowData.sumShortTime}
+              </Button>
+            </div>
+          );
+        },
+      },
       // {
       //   name: "lateDates",
       //   title: "Late Dates",
@@ -682,211 +679,211 @@ class F336MonthlyEmployeeAttendance extends Component {
       //   },
       // },
 
-      {
-        name: "checkIn",
-        title: "Late Dates",
-        flex: 1,
-        getCellValue: (rowData) => {
-          return (
-            <>
-              {rowData.lateTimeDetails.length !== 0 ? (
-                rowData.lateTimeDetails.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      borderBottom:
-                        index === rowData.lateTimeDetails.length - 1
-                          ? "none"
-                          : "1px solid #DADBDD",
-                      minHeight: "30px",
-                    }}
-                  >
-                    {item.lateDate}
-                  </div>
-                ))
-              ) : (
-                <div style={{ minHeight: "30px" }}></div>
-              )}
-            </>
-          );
-        },
-      },
-      {
-        name: "checkOut",
-        title: "Late Minutes",
-        flex: 1,
-        getCellValue: (rowData) => {
-          return (
-            <>
-              {rowData.lateTimeDetails.length !== 0 ? (
-                rowData.lateTimeDetails.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      borderBottom:
-                        index === rowData.lateTimeDetails.length - 1
-                          ? "none"
-                          : "1px solid #DADBDD",
-                      minHeight: "30px",
-                    }}
-                  >
-                    {item.lateMinutes}
-                  </div>
-                ))
-              ) : (
-                <div style={{ minHeight: "30px" }}></div>
-              )}
-            </>
-          );
-        },
-      },
-      {
-        name: "checkOut2",
-        title: "Early Departure Mins",
-        flex: 1,
-        getCellValue: (rowData) => {
-          return (
-            <>
-              {rowData.lateTimeDetails.length !== 0 ? (
-                rowData.lateTimeDetails.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      borderBottom:
-                        index === rowData.lateTimeDetails.length - 1
-                          ? "none"
-                          : "1px solid #DADBDD",
-                      minHeight: "30px",
-                    }}
-                  >
-                    {item.earlyDepartureMins}
-                  </div>
-                ))
-              ) : (
-                <div style={{ minHeight: "30px" }}></div>
-              )}
-            </>
-          );
-        },
-      },
+      // {
+      //   name: "checkIn",
+      //   title: "Late Dates",
+      //   flex: 1,
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <>
+      //         {rowData.lateTimeDetails.length !== 0 ? (
+      //           rowData.lateTimeDetails.map((item, index) => (
+      //             <div
+      //               key={index}
+      //               style={{
+      //                 borderBottom:
+      //                   index === rowData.lateTimeDetails.length - 1
+      //                     ? "none"
+      //                     : "1px solid #DADBDD",
+      //                 minHeight: "30px",
+      //               }}
+      //             >
+      //               {item.lateDate}
+      //             </div>
+      //           ))
+      //         ) : (
+      //           <div style={{ minHeight: "30px" }}></div>
+      //         )}
+      //       </>
+      //     );
+      //   },
+      // },
+      // {
+      //   name: "checkOut",
+      //   title: "Late Minutes",
+      //   flex: 1,
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <>
+      //         {rowData.lateTimeDetails.length !== 0 ? (
+      //           rowData.lateTimeDetails.map((item, index) => (
+      //             <div
+      //               key={index}
+      //               style={{
+      //                 borderBottom:
+      //                   index === rowData.lateTimeDetails.length - 1
+      //                     ? "none"
+      //                     : "1px solid #DADBDD",
+      //                 minHeight: "30px",
+      //               }}
+      //             >
+      //               {item.lateMinutes}
+      //             </div>
+      //           ))
+      //         ) : (
+      //           <div style={{ minHeight: "30px" }}></div>
+      //         )}
+      //       </>
+      //     );
+      //   },
+      // },
+      // {
+      //   name: "checkOut2",
+      //   title: "Early Departure Mins",
+      //   flex: 1,
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <>
+      //         {rowData.lateTimeDetails.length !== 0 ? (
+      //           rowData.lateTimeDetails.map((item, index) => (
+      //             <div
+      //               key={index}
+      //               style={{
+      //                 borderBottom:
+      //                   index === rowData.lateTimeDetails.length - 1
+      //                     ? "none"
+      //                     : "1px solid #DADBDD",
+      //                 minHeight: "30px",
+      //               }}
+      //             >
+      //               {item.earlyDepartureMins}
+      //             </div>
+      //           ))
+      //         ) : (
+      //           <div style={{ minHeight: "30px" }}></div>
+      //         )}
+      //       </>
+      //     );
+      //   },
+      // },
 
-      {
-        name: "overtime",
-        title: "Ovetime",
-        flex: 1,
-        getCellValue: (rowData) => {
-          return (
-            <>
-              {rowData.lateTimeDetails.length !== 0 ? (
-                rowData.lateTimeDetails.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      borderBottom:
-                        index === rowData.lateTimeDetails.length - 1
-                          ? "none"
-                          : "1px solid #DADBDD",
-                      minHeight: "30px",
-                    }}
-                  >
-                    {item.overtime}
-                  </div>
-                ))
-              ) : (
-                <div style={{ minHeight: "30px" }}></div>
-              )}
-            </>
-          );
-        },
-      },
-      {
-        name: "netLateMins",
-        title: "Net Late Mins",
-        flex: 1,
-        getCellValue: (rowData) => {
-          return (
-            <>
-              {rowData.lateTimeDetails.length !== 0 ? (
-                rowData.lateTimeDetails.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      borderBottom:
-                        index === rowData.lateTimeDetails.length - 1
-                          ? "none"
-                          : "1px solid #DADBDD",
-                      minHeight: "30px",
-                    }}
-                  >
-                    {item.netLateMins}
-                  </div>
-                ))
-              ) : (
-                <div style={{ minHeight: "30px" }}></div>
-              )}
-            </>
-          );
-        },
-      },
-      {
-        name: "totalBreakTime",
-        title: "Total Break Time",
-        flex: 1,
-        getCellValue: (rowData) => {
-          return (
-            <>
-              {rowData.lateTimeDetails.length !== 0 ? (
-                rowData.lateTimeDetails.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      borderBottom:
-                        index === rowData.lateTimeDetails.length - 1
-                          ? "none"
-                          : "1px solid #DADBDD",
-                      minHeight: "30px",
-                    }}
-                  >
-                    {item.totalBreakTime}
-                  </div>
-                ))
-              ) : (
-                <div style={{ minHeight: "30px" }}></div>
-              )}
-            </>
-          );
-        },
-      },
+      // {
+      //   name: "overtime",
+      //   title: "Ovetime",
+      //   flex: 1,
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <>
+      //         {rowData.lateTimeDetails.length !== 0 ? (
+      //           rowData.lateTimeDetails.map((item, index) => (
+      //             <div
+      //               key={index}
+      //               style={{
+      //                 borderBottom:
+      //                   index === rowData.lateTimeDetails.length - 1
+      //                     ? "none"
+      //                     : "1px solid #DADBDD",
+      //                 minHeight: "30px",
+      //               }}
+      //             >
+      //               {item.overtime}
+      //             </div>
+      //           ))
+      //         ) : (
+      //           <div style={{ minHeight: "30px" }}></div>
+      //         )}
+      //       </>
+      //     );
+      //   },
+      // },
+      // {
+      //   name: "netLateMins",
+      //   title: "Net Late Mins",
+      //   flex: 1,
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <>
+      //         {rowData.lateTimeDetails.length !== 0 ? (
+      //           rowData.lateTimeDetails.map((item, index) => (
+      //             <div
+      //               key={index}
+      //               style={{
+      //                 borderBottom:
+      //                   index === rowData.lateTimeDetails.length - 1
+      //                     ? "none"
+      //                     : "1px solid #DADBDD",
+      //                 minHeight: "30px",
+      //               }}
+      //             >
+      //               {item.netLateMins}
+      //             </div>
+      //           ))
+      //         ) : (
+      //           <div style={{ minHeight: "30px" }}></div>
+      //         )}
+      //       </>
+      //     );
+      //   },
+      // },
+      // {
+      //   name: "totalBreakTime",
+      //   title: "Total Break Time",
+      //   flex: 1,
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <>
+      //         {rowData.lateTimeDetails.length !== 0 ? (
+      //           rowData.lateTimeDetails.map((item, index) => (
+      //             <div
+      //               key={index}
+      //               style={{
+      //                 borderBottom:
+      //                   index === rowData.lateTimeDetails.length - 1
+      //                     ? "none"
+      //                     : "1px solid #DADBDD",
+      //                 minHeight: "30px",
+      //               }}
+      //             >
+      //               {item.totalBreakTime}
+      //             </div>
+      //           ))
+      //         ) : (
+      //           <div style={{ minHeight: "30px" }}></div>
+      //         )}
+      //       </>
+      //     );
+      //   },
+      // },
 
-      {
-        name: "netOvertime",
-        title: "Net Over Time",
-        flex: 1,
-        getCellValue: (rowData) => {
-          return (
-            <>
-              {rowData.lateTimeDetails.length !== 0 ? (
-                rowData.lateTimeDetails.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      borderBottom:
-                        index === rowData.lateTimeDetails.length - 1
-                          ? "none"
-                          : "1px solid #DADBDD",
-                      minHeight: "30px",
-                    }}
-                  >
-                    {item.netOvertime}
-                  </div>
-                ))
-              ) : (
-                <div style={{ minHeight: "30px" }}></div>
-              )}
-            </>
-          );
-        },
-      },
+      // {
+      //   name: "netOvertime",
+      //   title: "Net Over Time",
+      //   flex: 1,
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <>
+      //         {rowData.lateTimeDetails.length !== 0 ? (
+      //           rowData.lateTimeDetails.map((item, index) => (
+      //             <div
+      //               key={index}
+      //               style={{
+      //                 borderBottom:
+      //                   index === rowData.lateTimeDetails.length - 1
+      //                     ? "none"
+      //                     : "1px solid #DADBDD",
+      //                 minHeight: "30px",
+      //               }}
+      //             >
+      //               {item.netOvertime}
+      //             </div>
+      //           ))
+      //         ) : (
+      //           <div style={{ minHeight: "30px" }}></div>
+      //         )}
+      //       </>
+      //     );
+      //   },
+      // },
 
       // { name: "durationPerSession", title: "Late Days" },
 
@@ -894,24 +891,41 @@ class F336MonthlyEmployeeAttendance extends Component {
         name: "adjustedLateDays",
         title: "Adjusted Late Days",
         getCellValue: (rowData) => {
-          console.log(rowData);
-
           return (
             <TextField
               variant="outlined"
               size="small"
-              name="adjustedHours"
-              // disabled={
-              //   !this.state.academicSessionId ||
-              //   !this.state.programmeGroupId ||
-              //   !this.state.monthId ||
-              //   this.state.teachersAttendanceSheetData?.length <= 0 ||
-              //   this.state.isApproved
-              // }
+              name="adjustedLateDays"
               type="number"
               value={rowData.adjustedLateDays || ""}
               onChange={(event) =>
-                this.handleRatePerHourChange(event.target.value, rowData)
+                this.handleInputChange(
+                  "adjustedLateDays",
+                  event.target.value,
+                  rowData
+                )
+              }
+            />
+          );
+        },
+      },
+      {
+        name: "adjustedAbsentDays",
+        title: "Adjusted Absent Days",
+        getCellValue: (rowData) => {
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              name="adjustedAbsentDays"
+              type="number"
+              value={rowData.adjustedAbsentDays || ""}
+              onChange={(event) =>
+                this.handleInputChange(
+                  "adjustedAbsentDays",
+                  event.target.value,
+                  rowData
+                )
               }
             />
           );
@@ -921,24 +935,14 @@ class F336MonthlyEmployeeAttendance extends Component {
         name: "remarks",
         title: "Remarks",
         getCellValue: (rowData) => {
-          console.log(rowData);
-
           return (
             <TextField
               variant="outlined"
               size="small"
-              name="adjustedHours"
-              // disabled={
-              // !this.state.academicSessionId ||
-              // !this.state.programmeGroupId ||
-              // !this.state.monthId ||
-              // this.state.teachersAttendanceSheetData?.length <= 0 ||
-              // this.state.isApproved
-              // }
-              // type="number"
+              name="remarks"
               value={rowData.remarks || ""}
               onChange={(event) =>
-                this.handleAdjustedHourChange(event.target.value, rowData)
+                this.handleInputChange("remarks", event.target.value, rowData)
               }
             />
           );
@@ -949,6 +953,9 @@ class F336MonthlyEmployeeAttendance extends Component {
       // { name: "totalAmount", title: "Total Amount" },
       // { name: "adjustmentRemarks", title: "Adjustment Remarks" },
     ];
+
+    console.log(this.state.selectedStudent);
+    console.log(this.state.selectedStudent?.withdrawalData);
 
     return (
       <Fragment>
@@ -995,48 +1002,7 @@ class F336MonthlyEmployeeAttendance extends Component {
             </Grid>
 
             <br />
-            {/* <Grid item xs={12} md={2}>
-              <TextField
-                id="programmeGroupId"
-                name="programmeGroupId"
-                variant="outlined"
-                label="Programme Group"
-                onChange={this.onHandleChange}
-                value={this.state.programmeGroupId}
-                error={!!this.state.programmeGroupIdError}
-                helperText={this.state.programmeGroupIdError}
-                required
-                fullWidth
-                select
-              >
-                {this.state.programmeGroupsData?.map((item) => (
-                  <MenuItem key={item} value={item.Id}>
-                    {item.Label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid> */}
-            {/* <Grid item xs={12} md={2}>
-              <TextField
-                id="yearId"
-                name="yearId"
-                variant="outlined"
-                label="Year"
-                onChange={this.onHandleChange}
-                value={this.state.yearId}
-                // error={!!this.state.academicSessionIdError}
-                // helperText={this.state.academicSessionIdError}
-                required
-                fullWidth
-                select
-              >
-                {this.state.yearData?.map((item) => (
-                  <MenuItem key={item} value={item.ID}>
-                    {item.Label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid> */}
+
             <Grid item xs={12} md={2}>
               <TextField
                 id="monthId"
@@ -1101,15 +1067,6 @@ class F336MonthlyEmployeeAttendance extends Component {
                     target: { name: "toDate", value: date },
                   })
                 }
-                // disablePast
-                // shouldDisableDate={(day) => {
-                //   const fromDate = this.state.fromDate;
-                //   if (fromDate) {
-                //     console.log(fromDate);
-                //     return day <= fromDate;
-                //   }
-                //   return false;
-                // }}
               />
             </Grid>
             <Grid item xs={12} md={3}>
@@ -1178,11 +1135,61 @@ class F336MonthlyEmployeeAttendance extends Component {
             // left_button_hide={false}
             // bottomLeftButtonAction={this.viewReport}
             right_button_text={this.state.isApproved ? "Saved" : "Save"}
-            disableRightButton={this.state.isApprovedByHead === 1}
+            disableRightButton={this.state.isExisted === 1}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}
             bottomRightButtonAction={() => this.onApproveClick()}
           />
+
+          {this.state.openDialog && this.state.selectedStudent.length !== 0 && (
+            <Dialog
+              open={this.state.openDialog}
+              onClose={this.handleCloseDialog}
+              fullWidth
+              maxWidth="lg"
+            >
+              <DialogTitle>Details For Working Dates</DialogTitle>
+              <DialogContent>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Dates</TableCell>
+                      <TableCell>Late Minutes</TableCell>
+                      <TableCell>Early Departure Mins</TableCell>
+                      <TableCell>Overtime</TableCell>
+                      <TableCell>Total Break Time</TableCell>
+                      <TableCell>Net Over Time</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {Array.isArray(this?.state?.selectedStudent) &&
+                      this.state.selectedStudent.map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{row.lateDate}</TableCell>
+                          <TableCell>{row.lateMinutes}</TableCell>
+                          <TableCell>{row.earlyDepartureMins}</TableCell>
+                          <TableCell>{row.overtime}</TableCell>
+                          <TableCell>{row.totalBreakTime}</TableCell>
+                          <TableCell>{row.netOvertime}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleCloseDialog} color="primary">
+                  Cancel
+                </Button>
+                {/* <Button
+                  onClick={this.handleUndoWithdrawal}
+                  color="primary"
+                  variant="contained"
+                >
+                  Confirm
+                </Button> */}
+              </DialogActions>
+            </Dialog>
+          )}
         </div>
       </Fragment>
     );

@@ -41,6 +41,8 @@ const F337ViewRecordForMonthlyApprovalTableComponent = (props) => {
     { columnName: "totalLateDays", align: "right" },
     { columnName: "lateDates", align: "right" },
     { columnName: "adjustedLateDays", align: "left" },
+    { columnName: "adjustedAbsentDays", align: "left", width: "150px" },
+
     { columnName: "remarks", align: "left" },
   ]);
 

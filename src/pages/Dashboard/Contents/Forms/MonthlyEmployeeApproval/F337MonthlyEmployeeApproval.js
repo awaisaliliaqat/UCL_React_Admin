@@ -541,25 +541,25 @@ class F337MonthlyEmployeeApproval extends Component {
       //   customStyleHeader: { width: "20%", textAlign: "center" },
       //   align: "center",
       // },
-      { name: "yearId", title: "Year" },
+      // { name: "yearId", title: "Year" },
       { name: "monthLabel", title: "Month" },
       // { name: "approvedByHodLabel", title: "Approved by HOD" },
-      {
-        name: "approvedOn",
-        title: "Approved On",
-        getCellValue: (rowData) => {
-          const displayDate = rowData.approvedOn
-            ? Number(`${new Date(rowData.approvedOn).getDate()}`)
-              ? `${new Date(rowData.approvedOn).getDate()}/${
-                  new Date(rowData.approvedOn).getMonth() + 1
-                }/${new Date(rowData.approvedOn).getFullYear()}`
-              : rowData.approvedOn
-            : "";
+      // {
+      //   name: "approvedOn",
+      //   title: "Approved On",
+      //   getCellValue: (rowData) => {
+      //     const displayDate = rowData.approvedOn
+      //       ? Number(`${new Date(rowData.approvedOn).getDate()}`)
+      //         ? `${new Date(rowData.approvedOn).getDate()}/${
+      //             new Date(rowData.approvedOn).getMonth() + 1
+      //           }/${new Date(rowData.approvedOn).getFullYear()}`
+      //         : rowData.approvedOn
+      //       : "";
 
-          return <>{displayDate}</>;
-        },
-      },
-      { name: "approvedBy", title: "Approved By" },
+      //     return <>{displayDate}</>;
+      //   },
+      // },
+      // { name: "approvedBy", title: "Approved By" },
 
       // { name: "fromDate", title: "From Date" },
       // { name: "toDate", title: "To Date" },

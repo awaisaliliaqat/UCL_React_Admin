@@ -495,72 +495,14 @@ class F337ViewRecordForMonthlyApproval extends Component {
       {
         name: "missingAttendanceDates",
         title: "Att. Missing Dates",
-        // getCellValue: (rowData) => {
-        //   const splitStringByLength = (str, length) => {
-        //     let result = [];
-        //     for (let i = 0; i < str.length; i += length) {
-        //       result.push(str.substring(i, i + length));
-        //     }
-        //     return result;
-        //   };
-
-        //   const attendanceDates = rowData?.missingAttendanceDates || [];
-        //   const chunkSize = 16;
-
-        //   return (
-        //     <div>
-        //       {/* {attendanceDates.map((item, index) => (
-        //         <div key={`item-${index}`}>
-        //           {splitStringByLength(item, chunkSize).map(
-        //             (chunk, chunkIndex) => (
-        //               <div key={`chunk-${chunkIndex}`}>
-        //                 {chunk}
-        //                 <br />
-        //               </div>
-        //             )
-        //           )}
-        //         </div>
-        //       ))} */}
-        //     </div>
-        //   );
-        // },
       },
       { name: "totalLateDays", title: "Late" },
       {
         name: "lateDates",
         title: "Late Dates",
-        // getCellValue: (rowData) => {
-        //   const splitStringByLength = (str, length) => {
-        //     let result = [];
-        //     for (let i = 0; i < str.length; i += length) {
-        //       result.push(str.substring(i, i + length));
-        //     }
-        //     return result;
-        //   };
-
-        //   const attendanceDates = rowData?.lateDates || [];
-        //   const chunkSize = 16;
-
-        //   return (
-        //     <div>
-        //       {/* {attendanceDates?.map((item, index) => (
-        //         <div key={`item-${index}`}>
-        //           {splitStringByLength(item, chunkSize).map(
-        //             (chunk, chunkIndex) => (
-        //               <div key={`chunk-${chunkIndex}`}>
-        //                 {chunk}
-        //                 <br />
-        //               </div>
-        //             )
-        //           )}
-        //         </div>
-        //       ))} */}
-        //     </div>
-        //   );
-        // },
       },
 
-      // { name: "durationPerSession", title: "Late Days" },
+      { name: "adjustedAbsentDays", title: "Adjusted Absent Days" },
 
       {
         name: "adjustedLateDays",
