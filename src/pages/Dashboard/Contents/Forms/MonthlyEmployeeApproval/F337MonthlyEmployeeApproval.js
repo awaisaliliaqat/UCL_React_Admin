@@ -544,6 +544,24 @@ class F337MonthlyEmployeeApproval extends Component {
       // { name: "yearId", title: "Year" },
       { name: "monthLabel", title: "Month" },
       // { name: "approvedByHodLabel", title: "Approved by HOD" },
+
+      { name: "createdBy", title: "Created By" },
+      {
+        name: "createdOn",
+        title: "Created On",
+        getCellValue: (rowData) => {
+          const displayDate = rowData.createdOn
+            ? Number(`${new Date(rowData.createdOn).getDate()}`)
+              ? `${new Date(rowData.createdOn).getDate()}/${
+                  new Date(rowData.createdOn).getMonth() + 1
+                }/${new Date(rowData.createdOn).getFullYear()}`
+              : rowData.createdOn
+            : "";
+
+          return <>{displayDate}</>;
+        },
+      },
+      { name: "approvedBy", title: "Approved By" },
       {
         name: "approvedOn",
         title: "Approved On",
@@ -559,8 +577,6 @@ class F337MonthlyEmployeeApproval extends Component {
           return <>{displayDate}</>;
         },
       },
-      { name: "approvedBy", title: "Approved By" },
-
       // { name: "fromDate", title: "From Date" },
       // { name: "toDate", title: "To Date" },
       // { name: "totalAmount", title: "Total Amount" },

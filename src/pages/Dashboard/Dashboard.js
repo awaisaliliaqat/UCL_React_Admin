@@ -224,6 +224,7 @@ import F333SalaryHistoryView from "./Contents/Forms/ConsolidatedSalaryHistory/Vi
 import F335DefineShiftManagement from "./Contents/Forms/ShiftManagement/F335DefineShiftManagement";
 import R335ShiftManagementReport from "./Contents/Forms/ShiftManagement/R335ShiftManagementReport";
 import F336MonthlyEmployeeAttendance from "./Contents/Forms/MonthlyEmployeeAttendance/F336MonthlyEmployeeAttendance";
+import F349MonthlyEmployeeAttendanceCo from "./Contents/Forms/MonthlyEmployeeAttendanceCo/F349MonthlyEmployeeAttendanceCo";
 import F337MonthlyEmployeeApproval from "./Contents/Forms/MonthlyEmployeeApproval/F337MonthlyEmployeeApproval";
 import F337ViewRecordForMonthlyApproval from "./Contents/Forms/MonthlyEmployeeApproval/View/F337ViewRecordForMonthlyApproval";
 import R338AttendanceDailyReport from "./Contents/Forms/R338AttendanceDailyReport";
@@ -239,6 +240,9 @@ import F346StudentAttendanceFeature from "./Contents/Forms/StudentAttendanceFeat
 import R346StudentDetailReport from "./Contents/Forms/StudentAttendanceFeature/R346StudentDetailReport/R346StudentDetailReport";
 import F347ShiftReassignment from "./Contents/Forms/ShiftReassignment/F347ShiftReassignment";
 import R347ShiftAssignmentView from "./Contents/Forms/ShiftReassignment/R347ShiftAssignmentView";
+// import F348Form from "./Contents/Forms/F348Form";
+import F348DefineTimetableActivation from "./Contents/Forms/Timetable Pause-Unpause/F348DefineTimetableActivation";
+import R348TimeTableActivationView from "./Contents/Forms/Timetable Pause-Unpause/R348TimeTableActivationView";
 
 const drawerWidth = 283;
 
@@ -582,6 +586,22 @@ const Dashboard = (props) => {
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="F349MonthlyEmployeeAttendanceCo"
+                exact
+                path="/dashboard/F349MonthlyEmployeeAttendanceCo"
+                render={(props) => {
+                  return (
+                    <F349MonthlyEmployeeAttendanceCo
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="F335DefineShiftManagement"
                 exact
                 path="/dashboard/F335DefineShiftManagement/:id"
@@ -851,6 +871,21 @@ const Dashboard = (props) => {
                   );
                 }}
               />
+              {/* <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F348Form"
+                exact
+                path="/dashboard/F348Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F348Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              /> */}
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="F20Form"
@@ -1907,6 +1942,21 @@ const Dashboard = (props) => {
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
+                name="F348DefineTimetableActivation"
+                exact
+                path="/dashboard/F348DefineTimetableActivation/:id"
+                render={(props) => {
+                  return (
+                    <F348DefineTimetableActivation
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
                 name="F347ShiftReassignment"
                 exact
                 path="/dashboard/F347ShiftReassignment/:id"
@@ -1957,6 +2007,21 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <R327EmployeesLoanView
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R348TimeTableActivationView"
+                exact
+                path="/dashboard/R348TimeTableActivationView"
+                render={(props) => {
+                  return (
+                    <R348TimeTableActivationView
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                     />

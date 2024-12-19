@@ -271,8 +271,27 @@ class F321DefineEmployeesMonthlySalary extends Component {
             let data = json.DATA || [];
             let { columns } = this.state;
             let index = columns.findIndex((item) => item.id == 8);
-            columns[index]["subColumns"] = data;
-            columns[index]["colspan"] = data.length == 0 ? 1 : data.length;
+            let updatedDeductions = [
+              ...data,
+              {
+                // deductionValue: item.adjustedAbsentDays,
+                id: 8,
+                isActive: 1,
+                label: "Adjusted Absent Days",
+              },
+              {
+                // deductionValue: item.adjustedAbsentDays,
+                id: 9,
+                isActive: 1,
+                label: "Adjusted Late Days",
+              },
+            ];
+            columns[index]["subColumns"] = updatedDeductions;
+            columns[index]["colspan"] =
+              updatedDeductions.length == 0 ? 1 : updatedDeductions.length;
+
+            console.log(columns, "hello world");
+
             this.setState({
               columns,
               deductions: data,
@@ -310,7 +329,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
     this.setState({
       isLoading: true,
     });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonUsersEmployeesPayrollView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C321CommonUsersEmployeesPayrollView?sessionId=${this.state.sessionId}&sessionPayrollMonthId=${this.state.monthId.id}`;
     await fetch(url, {
       method: "GET",
       headers: new Headers({
@@ -336,38 +355,74 @@ class F321DefineEmployeesMonthlySalary extends Component {
               deductionValue: 0,
             }));
 
-            const transformedData = data.map((item) => ({
-              employeeId: item.userId.toString(),
-              userLabel: item.userLabel,
-              payrollMonths: item.payrollMonths,
-              perMonthSalary: Number(item.perMonthSalary) || 0,
-              homeRent: 0,
-              fakeGrossSallary: Number(item.perMonthSalary) || 0,
-              id: item.userId,
-              grossSalary: Number(item.perMonthSalary) || 0,
-              netSalary: Number(item.perMonthSalary) || 0,
-              leaveInCashDays: 0,
-              leaveInCashAmount: 0,
-              loan: 0,
-              leaveInCashment: [
-                {
-                  id: 1,
-                  label: "Days",
-                  isActive: 1,
-                  value: 0,
-                },
-                {
-                  id: 2,
-                  label: "Amount",
-                  isActive: 1,
-                  value: 0,
-                },
-              ],
-              allowances: [...allowances],
-              deductions: [...deductions],
-            }));
+            const transformedData = data.map((item) => {
+              const lateDays =
+                item.adjustedLateDays !== ""
+                  ? Number(item.adjustedLateDays)
+                  : 0;
 
-            console.log(transformedData);
+              const absentDays =
+                item.adjustedAbsentDays !== ""
+                  ? Number(item.adjustedAbsentDays)
+                  : 0;
+              const lateDaysSalary = (item.perMonthSalary / 30) * absentDays;
+
+              const totalNetSalary = item.perMonthSalary - lateDaysSalary;
+              console.log(
+                totalNetSalary,
+                lateDaysSalary,
+                item.perMonthSalary,
+                "totalNetSalary"
+              );
+              return {
+                employeeId: item.userId.toString(),
+                userLabel: item.userLabel,
+                payrollMonths: item.payrollMonths,
+                perMonthSalary: Number(item.perMonthSalary) || 0,
+                homeRent: 0,
+                fakeGrossSallary: Number(item.perMonthSalary) || 0,
+                id: item.userId,
+                grossSalary: Number(item.perMonthSalary) || 0,
+                netSalary: Number(totalNetSalary) || 0,
+                leaveInCashDays: 0,
+                leaveInCashAmount: 0,
+                loan: 0,
+                leaveInCashment: [
+                  {
+                    id: 1,
+                    label: "Days",
+                    isActive: 1,
+                    value: 0,
+                  },
+                  {
+                    id: 2,
+                    label: "Amount",
+                    isActive: 1,
+                    value: 0,
+                  },
+                ],
+                allowances: [...allowances],
+                deductions: [
+                  ...deductions,
+                  {
+                    deductionValue: absentDays || 0,
+                    id: 8,
+                    isActive: 1,
+                    label: "Adjusted Absent Days",
+                  },
+                  {
+                    deductionValue: lateDays || 0,
+                    id: 9,
+                    isActive: 1,
+                    label: "Adjusted Late Days",
+                  },
+                ],
+              };
+            });
+
+            // console.log(transformedData)
+
+            console.log(transformedData, "zeeshan");
             this.setState({
               employeePayrollsData: transformedData,
             });
@@ -521,9 +576,9 @@ class F321DefineEmployeesMonthlySalary extends Component {
     if (name === "sessionId") {
       this.getYearsData(value);
     }
-    if (name === "monthId") {
-      this.getData();
-    }
+    // if (name === "monthId") {
+    //   this.getData();
+    // }
   };
 
   componentDidMount() {
@@ -673,27 +728,43 @@ class F321DefineEmployeesMonthlySalary extends Component {
 
     const result = {
       year: this.state.yearId,
-      // monthId: this.state.monthId.monthName,
       sessionPayrollMonthId: this.state.monthId.id,
       fromDate: this.state.monthId.fromDate,
       toDate: this.state.monthId.toDate,
       sessionId: this.state.sessionId,
-      employeePayrolls: this.state.employeePayrollsData.map((employee) => ({
-        employeeId: employee.employeeId,
-        homeRent: Number(employee.homeRent.toFixed(0)),
-        grossSalary: Number(employee.grossSalary.toFixed(0)),
-        netSalary: Number(employee.netSalary.toFixed(0)),
-        leaveInCashDays: employee.leaveInCashDays,
-        leaveInCashAmount: employee.leaveInCashAmount,
-        allowances: employee.allowances.map((allowance) => ({
-          allowanceId: allowance.id,
-          allowanceValue: Number(allowance.allowanceValue.toFixed(2)),
-        })),
-        deductions: employee.deductions.map((deduction) => ({
-          deductionId: deduction.id,
-          deductionValue: Number(deduction.deductionValue.toFixed(2)),
-        })),
-      })),
+      employeePayrolls: this.state.employeePayrollsData.map((employee) => {
+        // Separate deductions with id 8 and 9
+        const absentDays =
+          employee.deductions.find((deduction) => deduction.id === 8)
+            ?.deductionValue || 0;
+        const lateDays =
+          employee.deductions.find((deduction) => deduction.id === 9)
+            ?.deductionValue || 0;
+
+        return {
+          employeeId: employee.employeeId,
+          homeRent: Number(employee.homeRent.toFixed(0)),
+          grossSalary: Number(employee.grossSalary.toFixed(0)),
+          netSalary: Number(employee.netSalary.toFixed(0)),
+          leaveInCashDays: employee.leaveInCashDays,
+          leaveInCashAmount: employee.leaveInCashAmount,
+
+          adjustedAbsentDays: absentDays,
+          adjustedLateDays: lateDays,
+
+          deductions: employee.deductions
+            .filter((deduction) => deduction.id !== 8 && deduction.id !== 9)
+            .map((deduction) => ({
+              deductionId: deduction.id,
+              deductionValue: Number(deduction.deductionValue.toFixed(2)),
+            })),
+
+          allowances: employee.allowances.map((allowance) => ({
+            allowanceId: allowance.id,
+            allowanceValue: Number(allowance.allowanceValue.toFixed(2)),
+          })),
+        };
+      }),
     };
 
     await fetch(url, {
@@ -886,13 +957,13 @@ class F321DefineEmployeesMonthlySalary extends Component {
                 })}
               </TextField>
             </div>
-            {/* <div className={classes.actions}>
+            <div className={classes.actions}>
               <Button
                 variant="contained"
                 color="primary"
                 className={classes.button}
                 disabled={this.state.isLoading}
-                // onClick={(e) => this.onSearchClick(e)}
+                onClick={(e) => this.getData(e)}
               >
                 {" "}
                 {this.state.isLoading ? (
@@ -901,7 +972,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
                   "Search"
                 )}
               </Button>
-            </div> */}
+            </div>
           </div>
           <Divider
             style={{
@@ -914,6 +985,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
             component={Paper}
             style={{
               paddingBottom: "30px",
+              marginBottom: "3%",
             }}
           >
             <Table className={classes.table}>
@@ -1097,6 +1169,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
                             style={{
                               width: "100px",
                             }}
+                            disabled={deduction.id === 8 || deduction.id === 9}
                             onChange={(e) =>
                               this.handleAllowanceDeductionChange(
                                 "deductions",

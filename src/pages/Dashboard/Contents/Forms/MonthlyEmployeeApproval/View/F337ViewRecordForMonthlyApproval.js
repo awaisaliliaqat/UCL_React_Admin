@@ -537,7 +537,7 @@ class F337ViewRecordForMonthlyApproval extends Component {
 
           return (
             <div>
-              {attendanceDates.map((item, index) => (
+              {/* {attendanceDates.map((item, index) => (
                 <div key={`item-${index}`}>
                   {splitStringByLength(item, chunkSize).map(
                     (chunk, chunkIndex) => (
@@ -547,8 +547,10 @@ class F337ViewRecordForMonthlyApproval extends Component {
                       </div>
                     )
                   )}
-                </div>
-              ))}
+                </div> */}
+              {/* ))} */}
+
+              {rowData.missingAttendanceDates}
             </div>
           );
         },

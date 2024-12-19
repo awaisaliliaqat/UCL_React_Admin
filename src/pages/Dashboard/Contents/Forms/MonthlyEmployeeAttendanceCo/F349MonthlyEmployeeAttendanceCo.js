@@ -27,7 +27,7 @@ import {
   TableRow,
   TableCell,
 } from "@material-ui/core";
-import F336MonthlyEmployeeAttendanceTableComponent from "./chunks/F336MonthlyEmployeeAttendanceTableComponent";
+import F349MonthlyEmployeeAttendanceTableComponentCo from "./chunks/F349MonthlyEmployeeAttendanceTableComponentCo";
 import { IsEmpty } from "../../../../../utils/helper";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import { withRouter } from "react-router-dom";
@@ -67,7 +67,7 @@ const styles = () => ({
   },
 });
 
-class F336MonthlyEmployeeAttendance extends Component {
+class F349MonthlyEmployeeAttendanceCo extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -362,7 +362,7 @@ class F336MonthlyEmployeeAttendance extends Component {
     }
     console.log(this.state.monthId);
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceView?fromDate=${this.state.fromDateToSend}&toDate=${this.state.toDateToSend}&sessionId=${this.state.academicSessionId}&monthId=${this.state.monthId.id}&isReportingTo=1`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceView?fromDate=${this.state.fromDateToSend}&toDate=${this.state.toDateToSend}&sessionId=${this.state.academicSessionId}&monthId=${this.state.monthId.id}&isReportingTo=0`;
     await fetch(url, {
       method: "POST",
       // body: data,
@@ -1058,7 +1058,7 @@ class F336MonthlyEmployeeAttendance extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip> */}
-              {"Monthly Employee Late Days"}
+              {"Monthly Employee Late Days For Coordinators"}
               <br />
             </Typography>
           </div>
@@ -1208,7 +1208,7 @@ class F336MonthlyEmployeeAttendance extends Component {
               marginBottom: "6%",
             }}
           >
-            <F336MonthlyEmployeeAttendanceTableComponent
+            <F349MonthlyEmployeeAttendanceTableComponentCo
               columns={columns}
               data={this.state}
             />
@@ -1294,13 +1294,13 @@ class F336MonthlyEmployeeAttendance extends Component {
   }
 }
 
-F336MonthlyEmployeeAttendance.propTypes = {
+F349MonthlyEmployeeAttendanceCo.propTypes = {
   classes: PropTypes.object,
   setDrawerOpen: PropTypes.func,
 };
 
-F336MonthlyEmployeeAttendance.defaultProps = {
+F349MonthlyEmployeeAttendanceCo.defaultProps = {
   classes: {},
   setDrawerOpen: (fn) => fn,
 };
-export default withRouter(withStyles(styles)(F336MonthlyEmployeeAttendance));
+export default withRouter(withStyles(styles)(F349MonthlyEmployeeAttendanceCo));

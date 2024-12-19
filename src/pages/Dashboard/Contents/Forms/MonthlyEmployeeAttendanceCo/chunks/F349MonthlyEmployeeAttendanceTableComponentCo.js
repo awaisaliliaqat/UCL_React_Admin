@@ -49,7 +49,7 @@
 //   );
 // };
 
-// const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
+// const F349MonthlyEmployeeAttendanceTableComponent = (props) => {
 //   const [tableColumnExtensions] = useState([
 //     { columnName: "id", align: "left" },
 //     { columnName: "displayName", align: "left" },
@@ -107,21 +107,21 @@
 //   );
 // };
 
-// F336MonthlyEmployeeAttendanceTableComponent.propTypes = {
+// F349MonthlyEmployeeAttendanceTableComponent.propTypes = {
 //   data: PropTypes.object,
 //   columns: PropTypes.array,
 //   expandedGroups: PropTypes.array,
 //   showFilter: PropTypes.bool,
 // };
 
-// F336MonthlyEmployeeAttendanceTableComponent.defaultProps = {
+// F349MonthlyEmployeeAttendanceTableComponent.defaultProps = {
 //   data: {},
 //   columns: [],
 //   expandedGroups: [],
 //   showFilter: false,
 // };
 
-// export default F336MonthlyEmployeeAttendanceTableComponent;
+// export default F349MonthlyEmployeeAttendanceTableComponent;
 
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
@@ -174,7 +174,7 @@ const CustomCell = ({ column, value, style, ...restProps }) => {
     </Table.Cell>
   );
 };
-const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
+const F349MonthlyEmployeeAttendanceTableComponentCo = (props) => {
   // const filteredColumns = props.columns.filter(
   //   (column) => column.name !== "totalAmount" && column.name !== "ratePerHour"
   // );
@@ -269,18 +269,18 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
   );
 };
 
-F336MonthlyEmployeeAttendanceTableComponent.propTypes = {
+F349MonthlyEmployeeAttendanceTableComponentCo.propTypes = {
   data: PropTypes.object,
   columns: PropTypes.array,
   expandedGroups: PropTypes.array,
   showFilter: PropTypes.bool,
 };
 
-F336MonthlyEmployeeAttendanceTableComponent.defaultProps = {
+F349MonthlyEmployeeAttendanceTableComponentCo.defaultProps = {
   data: {},
   columns: [],
   expandedGroups: [],
   showFilter: false,
 };
 
-export default F336MonthlyEmployeeAttendanceTableComponent;
+export default F349MonthlyEmployeeAttendanceTableComponentCo;

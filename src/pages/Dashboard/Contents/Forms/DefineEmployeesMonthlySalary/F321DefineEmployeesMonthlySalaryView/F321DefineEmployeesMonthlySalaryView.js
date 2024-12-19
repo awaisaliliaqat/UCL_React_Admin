@@ -329,9 +329,26 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
           if (json.CODE === 1) {
             let data = json.DATA || [];
             let { columns } = this.state;
+
+            let updatedDeductions = [
+              ...data,
+              {
+                // deductionValue: item.adjustedAbsentDays,
+                id: 8,
+                isActive: 1,
+                label: "Adjusted Absent Days",
+              },
+              {
+                // deductionValue: item.adjustedAbsentDays,
+                id: 9,
+                isActive: 1,
+                label: "Adjusted Late Days",
+              },
+            ];
             let index = columns.findIndex((item) => item.id == 8);
-            columns[index]["subColumns"] = data;
-            columns[index]["colspan"] = data.length == 0 ? 1 : data.length;
+            columns[index]["subColumns"] = updatedDeductions;
+            columns[index]["colspan"] =
+              updatedDeductions.length == 0 ? 1 : updatedDeductions.length;
             this.setState({
               columns,
               deductions: data,
@@ -426,6 +443,24 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
               uniqueDeductionsMap.values()
             );
 
+            let updatedDeductions = [
+              ...uniqueDeductionsArray,
+              {
+                // deductionValue: item.adjustedAbsentDays,
+                deductionId: 8,
+                isActive: 1,
+                allowanceLabel: "Adjusted Absent Days",
+              },
+              {
+                // deductionValue: item.adjustedAbsentDays,
+                deductionId: 9,
+                isActive: 1,
+                allowanceLabel: "Adjusted Late Days",
+              },
+            ];
+
+            console.log(uniqueDeductionsArray, "unique");
+
             let { columns } = this.state;
             let index = columns.findIndex((item) => item.id == 7);
             columns[index]["subColumns"] = uniqueAllowancesArray;
@@ -435,12 +470,11 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
                 : uniqueAllowancesArray.length;
 
             let index2 = columns.findIndex((item) => item.id == 8);
-            columns[index2]["subColumns"] = uniqueDeductionsArray;
+            columns[index2]["subColumns"] = updatedDeductions;
             columns[index2]["colspan"] =
-              uniqueDeductionsArray.length == 0
-                ? 1
-                : uniqueDeductionsArray.length;
+              updatedDeductions.length == 0 ? 1 : updatedDeductions.length;
             const transformedData = data.map((item) => {
+              console.log(item, "item");
               return {
                 employeeId: item.employeeId,
                 userLabel: item.employeeLabel,
@@ -467,7 +501,21 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
                   },
                 ],
                 allowances: item.allowances,
-                deductions: item.deductions,
+                deductions: [
+                  ...item.deductions,
+                  {
+                    amount: item.adjustedAbsentDays || 0,
+                    id: 8,
+                    isActive: 1,
+                    label: "Adjusted Absent Days",
+                  },
+                  {
+                    amount: item.adjustedLateDays || 0,
+                    id: 9,
+                    isActive: 1,
+                    label: "Adjusted Late Days",
+                  },
+                ],
               };
             });
 
@@ -943,6 +991,7 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
             component={Paper}
             style={{
               paddingBottom: "30px",
+              marginBottom: "3%",
             }}
           >
             <Table className={classes.table}>
