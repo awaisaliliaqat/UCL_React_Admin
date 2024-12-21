@@ -465,15 +465,16 @@ class F323ViewRecordForHeads extends Component {
       [errName]: "",
     });
   };
+
   handleRatePerHourChange = (value, rowData) => {
-    const { courseId } = rowData;
+    const { teacherId, courseId } = rowData;
+
     const updatedData = this.state.teachersAttendanceSheetData.map((item) =>
-      item.courseId === courseId
+      item.teacherId === teacherId && item.courseId === courseId
         ? {
             ...item,
-            totalAdjustedHours: value,
-            totalNetHours: Number(value) + item.totalHours,
-            totalAmount: (Number(value) + item.totalHours) * item.ratePerHour,
+            adjustedHours: value,
+            netHours: (parseFloat(value) || 0) + item.totalHours,
           }
         : item
     );

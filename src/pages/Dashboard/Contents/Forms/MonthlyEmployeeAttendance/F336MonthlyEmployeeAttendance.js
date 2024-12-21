@@ -29,7 +29,7 @@ import {
 } from "@material-ui/core";
 import F336MonthlyEmployeeAttendanceTableComponent from "./chunks/F336MonthlyEmployeeAttendanceTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
-import BottomBar from "../../../../../components/BottomBar/BottomBar";
+import BottomBar from "../../../../../components/BottomBar/BottomBarWithViewColorBlue";
 import { withRouter } from "react-router-dom";
 import { Record } from "mdi-material-ui";
 const styles = () => ({
@@ -266,7 +266,7 @@ class F336MonthlyEmployeeAttendance extends Component {
         (json) => {
           if (json.CODE === 1) {
             this.onSearchClick();
-            this.handleSnackbar(true, "Approved", "success");
+            this.handleSnackbar(true, "Saved", "success");
           } else {
             this.handleSnackbar(
               true,
@@ -471,6 +471,7 @@ class F336MonthlyEmployeeAttendance extends Component {
             this.onSearchClick();
             this.handleSnackbar(true, "Approved", "success");
           } else {
+            this.onSearchClick();
             this.handleSnackbar(
               true,
               <span>
@@ -522,7 +523,7 @@ class F336MonthlyEmployeeAttendance extends Component {
       }
     }
 
-    this.getProgrammeGroupsBySessionId(sessionId);
+    // this.getProgrammeGroupsBySessionId(sessionId);
 
     this.setState({
       academicSessionId: sessionId,
@@ -547,7 +548,7 @@ class F336MonthlyEmployeeAttendance extends Component {
           programmeGroupId: "",
           programmeGroupIdError: "",
         });
-        this.getProgrammeGroupsBySessionId(value);
+        // this.getProgrammeGroupsBySessionId(value);
         break;
       case "programmeGroupId":
         this.setState({
@@ -607,7 +608,105 @@ class F336MonthlyEmployeeAttendance extends Component {
 
     const columns = [
       { name: "id", title: "ID" },
-      { name: "displayName", title: "Name" },
+      {
+        name: "displayName",
+        title: "Name",
+        getCellValue: (rowData) => {
+          return (
+            <div
+              style={{
+                whiteSpace: "pre-line",
+              }}
+            >{`${rowData.displayName}`}</div>
+          );
+        },
+        customStyleHeader: { width: "100%", whiteSpace: "pre-line" },
+      },
+      // {
+      //   name: "displayName",
+      //   title: "Name",
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <div
+      //         style={{
+      //           display: "flex",
+      //           flexWrap: "wrap",
+      //           wordBreak: "break-word",
+      //           overflow: "hidden",
+      //           textOverflow: "ellipsis",
+      //           maxWidth: "100%",
+      //         }}
+      //       >
+      //         {rowData.displayName}
+      //       </div>
+      //     );
+      //   },
+      // },
+
+      {
+        name: "adjustedLateDays",
+        title: "Adjusted Late Days",
+        getCellValue: (rowData) => {
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              name="adjustedLateDays"
+              type="number"
+              value={rowData.adjustedLateDays || ""}
+              onChange={(event) =>
+                this.handleInputChange(
+                  "adjustedLateDays",
+                  event.target.value,
+                  rowData
+                )
+              }
+            />
+          );
+        },
+      },
+      {
+        name: "adjustedAbsentDays",
+        title: "Adjusted Absent Days",
+        getCellValue: (rowData) => {
+          console.log(rowData);
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              name="adjustedAbsentDays"
+              type="number"
+              value={rowData.adjustedAbsentDays || ""}
+              onChange={(event) =>
+                this.handleInputChange(
+                  "adjustedAbsentDays",
+                  event.target.value,
+                  rowData
+                )
+              }
+            />
+          );
+        },
+      },
+      {
+        name: "remarks",
+        title: "Remarks",
+        getCellValue: (rowData) => {
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              name="remarks"
+              multiline
+              rows={5}
+              value={rowData.remarks || ""}
+              onChange={(event) =>
+                this.handleInputChange("remarks", event.target.value, rowData)
+              }
+            />
+          );
+        },
+      },
       { name: "totalWorkingDays", title: "Work Days" },
       { name: "totalAttendedDays", title: "Attended" },
       { name: "totalAttendanceMissingDays", title: "Att. Missing" },
@@ -969,71 +1068,6 @@ class F336MonthlyEmployeeAttendance extends Component {
       // },
 
       // { name: "durationPerSession", title: "Late Days" },
-
-      {
-        name: "adjustedLateDays",
-        title: "Adjusted Late Days",
-        getCellValue: (rowData) => {
-          return (
-            <TextField
-              variant="outlined"
-              size="small"
-              name="adjustedLateDays"
-              type="number"
-              value={rowData.adjustedLateDays || ""}
-              onChange={(event) =>
-                this.handleInputChange(
-                  "adjustedLateDays",
-                  event.target.value,
-                  rowData
-                )
-              }
-            />
-          );
-        },
-      },
-      {
-        name: "adjustedAbsentDays",
-        title: "Adjusted Absent Days",
-        getCellValue: (rowData) => {
-          console.log(rowData);
-          return (
-            <TextField
-              variant="outlined"
-              size="small"
-              name="adjustedAbsentDays"
-              type="number"
-              value={rowData.adjustedAbsentDays || ""}
-              onChange={(event) =>
-                this.handleInputChange(
-                  "adjustedAbsentDays",
-                  event.target.value,
-                  rowData
-                )
-              }
-            />
-          );
-        },
-      },
-      {
-        name: "remarks",
-        title: "Remarks",
-        getCellValue: (rowData) => {
-          return (
-            <TextField
-              variant="outlined"
-              size="small"
-              name="remarks"
-              multiline
-              rows={5}
-              value={rowData.remarks || ""}
-              onChange={(event) =>
-                this.handleInputChange("remarks", event.target.value, rowData)
-              }
-            />
-          );
-        },
-      },
 
       // { name: "ratePerHour", title: "Rate Per Hour" },
       // { name: "totalAmount", title: "Total Amount" },

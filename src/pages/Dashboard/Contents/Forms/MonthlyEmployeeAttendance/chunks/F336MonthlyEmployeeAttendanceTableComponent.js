@@ -184,7 +184,7 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
   // };
   const [tableColumnExtensions] = useState([
     { columnName: "id", align: "left", width: "80px" },
-    { columnName: "displayName", align: "left", width: "100px" },
+    { columnName: "displayName", align: "left", width: "110px" },
     { columnName: "totalWorkingDays", align: "right", width: "50px" },
     { columnName: "totalAttendedDays", align: "right", width: "70px" },
     {
@@ -203,7 +203,7 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
     { columnName: "sumOverTime", align: "left", width: "100px" },
     { columnName: "sumShortTime", align: "left", width: "100px" },
     { columnName: "adjustedAbsentDays", align: "left", width: "150px" },
-    { columnName: "remarks", align: "left", width: "300px" },
+    { columnName: "remarks", align: "left", width: "250px" },
   ]);
 
   // const [tableGroupColumn] = useState([{ columnName: "teacherLabel" }]);
@@ -234,6 +234,12 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
   const rows = data.teachersAttendanceSheetData || [];
   return (
     <Paper>
+      {/* <div
+        style={{
+          maxHeight: "300px",
+          overflow: "auto",
+        }}
+      > */}
       <Grid rows={rows} columns={columns}>
         <CurrencyTypeProvider for={currencyColumns} />
         <GroupingState
@@ -265,6 +271,7 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
         <TableGroupRow icon />
         <TableSummaryRow />
       </Grid>
+      {/* </div> */}
     </Paper>
   );
 };

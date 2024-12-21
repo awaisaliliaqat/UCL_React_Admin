@@ -368,12 +368,12 @@ class F321DefineEmployeesMonthlySalary extends Component {
               const lateDaysSalary = (item.perMonthSalary / 30) * absentDays;
 
               const totalNetSalary = item.perMonthSalary - lateDaysSalary;
-              console.log(
-                totalNetSalary,
-                lateDaysSalary,
-                item.perMonthSalary,
-                "totalNetSalary"
-              );
+              // console.log(
+              //   totalNetSalary,
+              //   lateDaysSalary,
+              //   item.perMonthSalary,
+              //   "totalNetSalary"
+              // );
               return {
                 employeeId: item.userId.toString(),
                 userLabel: item.userLabel,
@@ -383,7 +383,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
                 fakeGrossSallary: Number(item.perMonthSalary) || 0,
                 id: item.userId,
                 grossSalary: Number(item.perMonthSalary) || 0,
-                netSalary: Number(totalNetSalary) || 0,
+                netSalary: Number(totalNetSalary)?.toFixed(2) || 0,
                 leaveInCashDays: 0,
                 leaveInCashAmount: 0,
                 loan: 0,

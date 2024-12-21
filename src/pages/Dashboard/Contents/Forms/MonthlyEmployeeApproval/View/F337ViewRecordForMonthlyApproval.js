@@ -516,7 +516,20 @@ class F337ViewRecordForMonthlyApproval extends Component {
 
     const columns = [
       { name: "id", title: "ID" },
-      { name: "displayName", title: "Name" },
+      {
+        name: "displayName",
+        title: "Name",
+        getCellValue: (rowData) => {
+          return (
+            <div
+              style={{
+                whiteSpace: "pre-line",
+              }}
+            >{`${rowData.displayName}`}</div>
+          );
+        },
+        customStyleHeader: { width: "100%", whiteSpace: "pre-line" },
+      },
       { name: "totalWorkingDays", title: "Work Days" },
       { name: "totalAttendedDays", title: "Attended" },
       { name: "totalAttendanceMissingDays", title: "Att. Missing" },
@@ -651,6 +664,16 @@ class F337ViewRecordForMonthlyApproval extends Component {
       {
         name: "remarks",
         title: "Remarks",
+        getCellValue: (rowData) => {
+          return (
+            <div
+              style={{
+                whiteSpace: "pre-line",
+              }}
+            >{`${rowData?.remarks === null ? "" : rowData?.remarks}`}</div>
+          );
+        },
+        customStyleHeader: { width: "100%", whiteSpace: "pre-line" },
       },
 
       // { name: "ratePerHour", title: "Rate Per Hour" },

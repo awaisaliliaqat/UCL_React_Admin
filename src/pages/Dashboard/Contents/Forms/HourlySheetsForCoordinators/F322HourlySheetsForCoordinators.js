@@ -647,9 +647,10 @@ class F322HourlySheetsForCoordinators extends Component {
   };
 
   handleRatePerHourChange = (value, rowData) => {
-    const { courseId } = rowData;
+    const { teacherId, courseId } = rowData;
+
     const updatedData = this.state.teachersAttendanceSheetData.map((item) =>
-      item.courseId === courseId
+      item.teacherId === teacherId && item.courseId === courseId
         ? {
             ...item,
             adjustedHours: value,
@@ -662,9 +663,9 @@ class F322HourlySheetsForCoordinators extends Component {
     });
   };
   handleAdjustedHourChange = (value, rowData) => {
-    const { courseId } = rowData;
+    const { teacherId, courseId } = rowData;
     const updatedData = this.state.teachersAttendanceSheetData.map((item) =>
-      item.courseId === courseId
+      item.teacherId === teacherId && item.courseId === courseId
         ? {
             ...item,
             adjustedRemarks: value,
