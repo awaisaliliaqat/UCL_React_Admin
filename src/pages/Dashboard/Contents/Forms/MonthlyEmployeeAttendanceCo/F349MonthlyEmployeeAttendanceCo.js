@@ -607,7 +607,85 @@ class F349MonthlyEmployeeAttendanceCo extends Component {
 
     const columns = [
       { name: "id", title: "ID" },
-      { name: "displayName", title: "Name" },
+      {
+        name: "displayName",
+        title: "Name",
+        getCellValue: (rowData) => {
+          return (
+            <div
+              style={{
+                whiteSpace: "pre-line",
+              }}
+            >{`${rowData.displayName}`}</div>
+          );
+        },
+        customStyleHeader: { width: "100%", whiteSpace: "pre-line" },
+      },
+
+      {
+        name: "adjustedLateDays",
+        title: "Adjusted Late Days",
+        getCellValue: (rowData) => {
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              name="adjustedLateDays"
+              type="number"
+              value={rowData.adjustedLateDays || ""}
+              onChange={(event) =>
+                this.handleInputChange(
+                  "adjustedLateDays",
+                  event.target.value,
+                  rowData
+                )
+              }
+            />
+          );
+        },
+      },
+      {
+        name: "adjustedAbsentDays",
+        title: "Adjusted Absent Days",
+        getCellValue: (rowData) => {
+          console.log(rowData);
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              name="adjustedAbsentDays"
+              type="number"
+              value={rowData.adjustedAbsentDays || ""}
+              onChange={(event) =>
+                this.handleInputChange(
+                  "adjustedAbsentDays",
+                  event.target.value,
+                  rowData
+                )
+              }
+            />
+          );
+        },
+      },
+      {
+        name: "remarks",
+        title: "Remarks",
+        getCellValue: (rowData) => {
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              name="remarks"
+              multiline
+              rows={5}
+              value={rowData.remarks || ""}
+              onChange={(event) =>
+                this.handleInputChange("remarks", event.target.value, rowData)
+              }
+            />
+          );
+        },
+      },
       { name: "totalWorkingDays", title: "Work Days" },
       { name: "totalAttendedDays", title: "Attended" },
       { name: "totalAttendanceMissingDays", title: "Att. Missing" },
@@ -970,70 +1048,70 @@ class F349MonthlyEmployeeAttendanceCo extends Component {
 
       // { name: "durationPerSession", title: "Late Days" },
 
-      {
-        name: "adjustedLateDays",
-        title: "Adjusted Late Days",
-        getCellValue: (rowData) => {
-          return (
-            <TextField
-              variant="outlined"
-              size="small"
-              name="adjustedLateDays"
-              type="number"
-              value={rowData.adjustedLateDays || ""}
-              onChange={(event) =>
-                this.handleInputChange(
-                  "adjustedLateDays",
-                  event.target.value,
-                  rowData
-                )
-              }
-            />
-          );
-        },
-      },
-      {
-        name: "adjustedAbsentDays",
-        title: "Adjusted Absent Days",
-        getCellValue: (rowData) => {
-          console.log(rowData);
-          return (
-            <TextField
-              variant="outlined"
-              size="small"
-              name="adjustedAbsentDays"
-              type="number"
-              value={rowData.adjustedAbsentDays || ""}
-              onChange={(event) =>
-                this.handleInputChange(
-                  "adjustedAbsentDays",
-                  event.target.value,
-                  rowData
-                )
-              }
-            />
-          );
-        },
-      },
-      {
-        name: "remarks",
-        title: "Remarks",
-        getCellValue: (rowData) => {
-          return (
-            <TextField
-              variant="outlined"
-              size="small"
-              name="remarks"
-              multiline
-              rows={5}
-              value={rowData.remarks || ""}
-              onChange={(event) =>
-                this.handleInputChange("remarks", event.target.value, rowData)
-              }
-            />
-          );
-        },
-      },
+      // {
+      //   name: "adjustedLateDays",
+      //   title: "Adjusted Late Days",
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <TextField
+      //         variant="outlined"
+      //         size="small"
+      //         name="adjustedLateDays"
+      //         type="number"
+      //         value={rowData.adjustedLateDays || ""}
+      //         onChange={(event) =>
+      //           this.handleInputChange(
+      //             "adjustedLateDays",
+      //             event.target.value,
+      //             rowData
+      //           )
+      //         }
+      //       />
+      //     );
+      //   },
+      // },
+      // {
+      //   name: "adjustedAbsentDays",
+      //   title: "Adjusted Absent Days",
+      //   getCellValue: (rowData) => {
+      //     console.log(rowData);
+      //     return (
+      //       <TextField
+      //         variant="outlined"
+      //         size="small"
+      //         name="adjustedAbsentDays"
+      //         type="number"
+      //         value={rowData.adjustedAbsentDays || ""}
+      //         onChange={(event) =>
+      //           this.handleInputChange(
+      //             "adjustedAbsentDays",
+      //             event.target.value,
+      //             rowData
+      //           )
+      //         }
+      //       />
+      //     );
+      //   },
+      // },
+      // {
+      //   name: "remarks",
+      //   title: "Remarks",
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <TextField
+      //         variant="outlined"
+      //         size="small"
+      //         name="remarks"
+      //         multiline
+      //         rows={5}
+      //         value={rowData.remarks || ""}
+      //         onChange={(event) =>
+      //           this.handleInputChange("remarks", event.target.value, rowData)
+      //         }
+      //       />
+      //     );
+      //   },
+      // },
 
       // { name: "ratePerHour", title: "Rate Per Hour" },
       // { name: "totalAmount", title: "Total Amount" },

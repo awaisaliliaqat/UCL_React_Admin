@@ -203,7 +203,7 @@ const F349MonthlyEmployeeAttendanceTableComponentCo = (props) => {
     { columnName: "sumOverTime", align: "left", width: "100px" },
     { columnName: "sumShortTime", align: "left", width: "100px" },
     { columnName: "adjustedAbsentDays", align: "left", width: "150px" },
-    { columnName: "remarks", align: "left", width: "300px" },
+    { columnName: "remarks", align: "left", width: "250px" },
   ]);
 
   // const [tableGroupColumn] = useState([{ columnName: "teacherLabel" }]);

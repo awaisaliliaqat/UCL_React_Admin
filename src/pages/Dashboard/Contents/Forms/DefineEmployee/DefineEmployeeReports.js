@@ -179,7 +179,7 @@ class DefineEmployeeReports extends Component {
 
       //   { name: "reportingToId", title: "Reporting To ID" },
       { name: "reportingToLabel", title: "Reporting To" },
-      { name: "coordinationLabel", title: "Coordination To" },
+      { name: "coordinationLabel", title: "Coordination With" },
       { name: "joiningDateLabel", title: "Joining Date" },
       { name: "statusLabel", title: "Status" },
       // { name: "isBankAccount", title: "Bank Status" },

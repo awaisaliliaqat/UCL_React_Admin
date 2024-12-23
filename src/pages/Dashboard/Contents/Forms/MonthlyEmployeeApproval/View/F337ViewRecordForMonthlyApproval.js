@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import F337ViewRecordForMonthlyApprovalTableComponent from "./chunks/F337ViewRecordForMonthlyApprovalTableComponent";
 import { IsEmpty } from "../../../../../../utils/helper";
-import BottomBar from "../../../../../../components/BottomBar/BottomBar";
+import BottomBar from "../../../../../../components/BottomBar/BottomBarWithViewColorBlue";
 import { withRouter } from "react-router-dom";
 import { Record } from "mdi-material-ui";
 const styles = () => ({
@@ -310,6 +310,61 @@ class F337ViewRecordForMonthlyApproval extends Component {
     this.setState({ isLoading: false });
   };
 
+  onSendBackForRevision = async (e) => {
+    if (!IsEmpty(e)) {
+      e.preventDefault();
+    }
+    var data = new FormData();
+    data.append("sheetId", this.state.recordId);
+    this.setState({ isLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C337CommonEmployeeAttendanceReverseApproval`;
+    await fetch(url, {
+      method: "POST",
+      body: data,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            window.history.back();
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ isLoading: false });
+  };
+
   onApproveClick = async (e) => {
     if (!IsEmpty(e)) {
       e.preventDefault();
@@ -530,6 +585,28 @@ class F337ViewRecordForMonthlyApproval extends Component {
         },
         customStyleHeader: { width: "100%", whiteSpace: "pre-line" },
       },
+      {
+        name: "adjustedLateDays",
+        title: "Adjusted Late Days",
+      },
+      {
+        name: "adjustedAbsentDays",
+        title: "Adjusted Absent Days",
+      },
+      {
+        name: "remarks",
+        title: "Remarks",
+        getCellValue: (rowData) => {
+          return (
+            <div
+              style={{
+                whiteSpace: "pre-line",
+              }}
+            >{`${rowData?.remarks === null ? "" : rowData?.remarks}`}</div>
+          );
+        },
+        customStyleHeader: { width: "100%", whiteSpace: "pre-line" },
+      },
       { name: "totalWorkingDays", title: "Work Days" },
       { name: "totalAttendedDays", title: "Attended" },
       { name: "totalAttendanceMissingDays", title: "Att. Missing" },
@@ -653,28 +730,28 @@ class F337ViewRecordForMonthlyApproval extends Component {
         },
       },
 
-      {
-        name: "adjustedLateDays",
-        title: "Adjusted Late Days",
-      },
-      {
-        name: "adjustedAbsentDays",
-        title: "Adjusted Absent Days",
-      },
-      {
-        name: "remarks",
-        title: "Remarks",
-        getCellValue: (rowData) => {
-          return (
-            <div
-              style={{
-                whiteSpace: "pre-line",
-              }}
-            >{`${rowData?.remarks === null ? "" : rowData?.remarks}`}</div>
-          );
-        },
-        customStyleHeader: { width: "100%", whiteSpace: "pre-line" },
-      },
+      // {
+      //   name: "adjustedLateDays",
+      //   title: "Adjusted Late Days",
+      // },
+      // {
+      //   name: "adjustedAbsentDays",
+      //   title: "Adjusted Absent Days",
+      // },
+      // {
+      //   name: "remarks",
+      //   title: "Remarks",
+      //   getCellValue: (rowData) => {
+      //     return (
+      //       <div
+      //         style={{
+      //           whiteSpace: "pre-line",
+      //         }}
+      //       >{`${rowData?.remarks === null ? "" : rowData?.remarks}`}</div>
+      //     );
+      //   },
+      //   customStyleHeader: { width: "100%", whiteSpace: "pre-line" },
+      // },
 
       // { name: "ratePerHour", title: "Rate Per Hour" },
       // { name: "totalAmount", title: "Total Amount" },
@@ -825,10 +902,11 @@ class F337ViewRecordForMonthlyApproval extends Component {
           />
 
           <BottomBar
-            left_button_hide
-            // left_button_text="View"
-            // left_button_hide={false}
-            // bottomLeftButtonAction={this.viewReport}
+            // left_button_hide
+            left_button_text="Send Back to Revision"
+            left_button_hide={false}
+            bottomLeftButtonAction={this.onSendBackForRevision}
+            disableLeftButton={this.state.isFinal}
             right_button_text={this.state.isApproved ? "Approved" : "Approve"}
             disableRightButton={this.state.isApproved}
             loading={this.state.isLoading}
