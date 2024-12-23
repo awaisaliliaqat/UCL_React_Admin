@@ -105,6 +105,7 @@ class F337ViewRecordForMonthlyApproval extends Component {
       teachersAttendanceSheetData: [],
 
       isApproved: false,
+      isFinalApproved: false,
     };
   }
   componentDidMount() {
@@ -279,6 +280,7 @@ class F337ViewRecordForMonthlyApproval extends Component {
               // isApprovedByHead: json.DATA[0].isApproved,
               yearId: json.DATA[0].yearId,
               isApproved: json.DATA[0].isApproved === 0 ? false : true,
+              isFinalApproved: json.DATA[0].isFinalApproved === 0 ? false : true,
             });
           } else {
             this.handleSnackbar(
@@ -906,7 +908,7 @@ class F337ViewRecordForMonthlyApproval extends Component {
             left_button_text="Send Back to Revision"
             left_button_hide={false}
             bottomLeftButtonAction={this.onSendBackForRevision}
-            disableLeftButton={this.state.isFinal}
+            disableLeftButton={this.state.isFinalApproved}
             right_button_text={this.state.isApproved ? "Approved" : "Approve"}
             disableRightButton={this.state.isApproved}
             loading={this.state.isLoading}
