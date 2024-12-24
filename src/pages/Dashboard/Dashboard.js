@@ -243,6 +243,10 @@ import R347ShiftAssignmentView from "./Contents/Forms/ShiftReassignment/R347Shif
 // import F348Form from "./Contents/Forms/F348Form";
 import F348DefineTimetableActivation from "./Contents/Forms/Timetable Pause-Unpause/F348DefineTimetableActivation";
 import R348TimeTableActivationView from "./Contents/Forms/Timetable Pause-Unpause/R348TimeTableActivationView";
+import R350MonthlyEmployeeLateDaysReportforPayroll from "./Contents/Forms/MonthlyLateDaysForPayroll/R350MonthlyEmployeeLateDaysReportforPayroll";
+import R350EmployeesWithFinalApproval from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesWithFinalApproval/R350EmployeesWithFinalApproval";
+import R350EmployeesNotSubmitted from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesNotSubmitted/R350EmployeesNotSubmitted";
+import R350EmployeesWithPendingForApproval from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesWithPendingForApproval/R350EmployeesWithPendingForApproval";
 
 const drawerWidth = 283;
 
@@ -576,6 +580,69 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F336MonthlyEmployeeAttendance
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R350MonthlyEmployeeLateDaysReportforPayroll"
+                exact
+                path="/dashboard/R350MonthlyEmployeeLateDaysReportforPayroll"
+                render={(props) => {
+                  return (
+                    <R350MonthlyEmployeeLateDaysReportforPayroll
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R350EmployeesWithFinalApproval"
+                exact
+                path="/dashboard/R350EmployeesWithFinalApproval/:id"
+                render={(props) => {
+                  return (
+                    <R350EmployeesWithFinalApproval
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R350EmployeesWithPendingForApproval"
+                exact
+                path="/dashboard/R350EmployeesWithPendingForApproval/:id"
+                render={(props) => {
+                  return (
+                    <R350EmployeesWithPendingForApproval
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="R350EmployeesNotSubmitted"
+                exact
+                path="/dashboard/R350EmployeesNotSubmitted/:id"
+                render={(props) => {
+                  return (
+                    <R350EmployeesNotSubmitted
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
