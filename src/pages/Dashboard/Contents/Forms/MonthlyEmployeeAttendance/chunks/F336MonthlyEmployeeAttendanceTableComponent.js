@@ -10,12 +10,27 @@ import {
 } from "@devexpress/dx-react-grid";
 import {
   Grid,
-  Table,
+  VirtualTable,
   TableHeaderRow,
   TableGroupRow,
   TableSummaryRow,
   TableFixedColumns,
 } from "@devexpress/dx-react-grid-material-ui";
+
+// Sticky header logic
+const StickyHeaderCell = (props) => (
+  <VirtualTable.Cell
+    {...props}
+    style={{
+      ...props.style,
+      top: 0,
+      zIndex: 10,
+      position: "sticky",
+      background: "#fff",
+      borderBottom: "1px solid #ccc",
+    }}
+  />
+);
 
 const CurrencyFormatter = ({ value }) => value.toLocaleString("en-US");
 
@@ -72,7 +87,7 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
 
   const rows = data.teachersAttendanceSheetData || [];
   return (
-    <Paper>
+    <Paper style={{}}>
       <Grid rows={rows} columns={columns}>
         <CurrencyTypeProvider for={currencyColumns} />
         <GroupingState
@@ -86,10 +101,11 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
         />
         <IntegratedGrouping />
         <IntegratedSummary />
-        <Table columnExtensions={tableColumnExtensions} />
-        <TableHeaderRow />
-        <TableGroupRow />
-        <TableSummaryRow />
+        <VirtualTable columnExtensions={tableColumnExtensions} />
+        <TableHeaderRow cellComponent={StickyHeaderCell} />{" "}
+        {/* Sticky header */}
+        {/* <TableGroupRow /> */}
+        {/* <TableSummaryRow /> */}
         <TableFixedColumns leftColumns={["id", "displayName"]} />
       </Grid>
     </Paper>
