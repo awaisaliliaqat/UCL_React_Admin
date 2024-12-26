@@ -3,7 +3,13 @@ import { withStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { numberExp } from "../../../../utils/regularExpression";
-import { TextField, Grid, CircularProgress, Card, CardContent } from "@material-ui/core";
+import {
+  TextField,
+  Grid,
+  CircularProgress,
+  Card,
+  CardContent,
+} from "@material-ui/core";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import MenuItem from "@material-ui/core/MenuItem";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
@@ -32,25 +38,32 @@ const styles = (theem) => ({
     textAlign: "center",
   },
   inputFileFocused: {
-    textAlign:"center",
+    textAlign: "center",
     "&:hover": {
       color: theem.palette.primary.main,
-    }
+    },
   },
 });
 
 function MyDropzone(props) {
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+    accept:
+      "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    multiple: props.multiple,
+  });
 
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document', multiple:props.multiple});
-  
   const files = acceptedFiles.map((file, index) => {
-      const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
-      return (
-          <Typography key={index} variant="subtitle1" color="primary">
-              {file.path} - {size} Kb
-              <input type="hidden" name={props.name+"-file-name"} value={file.path}/>
-          </Typography>
-      );
+    const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
+    return (
+      <Typography key={index} variant="subtitle1" color="primary">
+        {file.path} - {size} Kb
+        <input
+          type="hidden"
+          name={props.name + "-file-name"}
+          value={file.path}
+        />
+      </Typography>
+    );
   });
 
   let msg = files || [];
@@ -59,14 +72,26 @@ function MyDropzone(props) {
   }
 
   return (
-      <div id="contained-button-file-div" {...getRootProps({ className:"dropzone "+`${props.className}`, onChange: event => props.onChange(event) })}>
-          <Card style={{ backgroundColor: "#c7c7c7" }} className={props.className}>
-              <CardContent style={{paddingBottom: 14, paddingTop: 14, cursor:"pointer"}}>
-                  <input name={props.name+"-file"} {...getInputProps()} disabled={props.disabled} />
-                  {msg}
-              </CardContent>
-          </Card>
-      </div>
+    <div
+      id="contained-button-file-div"
+      {...getRootProps({
+        className: "dropzone " + `${props.className}`,
+        onChange: (event) => props.onChange(event),
+      })}
+    >
+      <Card style={{ backgroundColor: "#c7c7c7" }} className={props.className}>
+        <CardContent
+          style={{ paddingBottom: 14, paddingTop: 14, cursor: "pointer" }}
+        >
+          <input
+            name={props.name + "-file"}
+            {...getInputProps()}
+            disabled={props.disabled}
+          />
+          {msg}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -82,11 +107,11 @@ class F67Form extends Component {
       snackbarSeverity: "",
       files3: [],
       files3Error: "",
-      label:"",
-      labelError:"",
-      sectionId:"",
-      sectionIdError:"",
-      sectionIdMenuItems:[]
+      label: "",
+      labelError: "",
+      sectionId: "",
+      sectionIdError: "",
+      sectionIdMenuItems: [],
     };
   }
 
@@ -107,7 +132,7 @@ class F67Form extends Component {
     });
   };
 
-  getSections = async() => {
+  getSections = async () => {
     this.setState({ isLoading: true });
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C67CommonAcademicsSectionsTeachersView`;
     await fetch(url, {
@@ -126,10 +151,17 @@ class F67Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             let sectionIdMenuItems = json.DATA;
-            this.setState({sectionIdMenuItems: json.DATA});
+            this.setState({ sectionIdMenuItems: json.DATA });
             console.log("getSections", sectionIdMenuItems);
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -141,7 +173,10 @@ class F67Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
           }
         }
       );
@@ -169,16 +204,23 @@ class F67Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            if(json.DATA.length){
+            if (json.DATA.length) {
               this.setState({
-                sectionId:json.DATA[0].sectionId,
+                sectionId: json.DATA[0].sectionId,
                 label: json.DATA[0].label,
               });
-            }else{
+            } else {
               window.location = "#/dashboard/F67Form/0";
             }
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadData", json);
         },
@@ -190,7 +232,10 @@ class F67Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to Save ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -223,7 +268,7 @@ class F67Form extends Component {
 
   isFileValid = () => {
     let isValid = true;
-    if (this.state.files3.length<1 && this.state.recordId==0) {
+    if (this.state.files3.length < 1 && this.state.recordId == 0) {
       this.setState({ files3Error: "Please select file." });
       document.getElementById("contained-button-file-div").focus();
       isValid = false;
@@ -233,28 +278,57 @@ class F67Form extends Component {
     return isValid;
   };
 
-  handleFileChange = event => {
+  // handleFileChange = event => {
+  //   const { files = [] } = event.target;
+  //   const fileElement = event.target;
+  //   //console.log("fileElement", fileElement)
+  //   if (files.length > 0) {
+  //     for(let i=0; i<files.length; i++) {
+  //       if ( (files[i].type === "application/pdf" || files[i].type === "application/msword" || files[i].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && files[i].size/1000<10000) {
+  //           this.setState({files3:files, files3Error: ""});
+  //       }else {
+  //         this.setState({files3Error: "Please select only pdf, doc or docx file with size less than 10 MBs."});
+  //       }
+  //       break;
+  //     }
+  //   }
+  // }
+
+  handleFileChange = (event) => {
     const { files = [] } = event.target;
     const fileElement = event.target;
     //console.log("fileElement", fileElement)
     if (files.length > 0) {
-      for(let i=0; i<files.length; i++) {
-        if ( (files[i].type === "application/pdf" || files[i].type === "application/msword" || files[i].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && files[i].size/1000<10000) {
-            this.setState({files3:files, files3Error: ""});
-        }else {
-          this.setState({files3Error: "Please select only pdf, doc or docx file with size less than 10 MBs."});
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileType = file.type;
+        const fileSizeInMiB = file.size / (1024 * 1024); // Convert bytes to MiB
+
+        const isAcceptedFileType =
+          fileType === "application/pdf" ||
+          fileType === "application/msword" ||
+          fileType ===
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+        if (isAcceptedFileType && fileSizeInMiB < 10) {
+          this.setState({ files3: files, files3Error: "" });
+        } else {
+          this.setState({
+            files3Error:
+              "Please select only PDF, DOC, or DOCX files with a size less than 10 MB.",
+          });
         }
         break;
       }
     }
-  }
+  };
 
   handleChangeStartDate = (date) => {
-    this.setState({startDate: date});
+    this.setState({ startDate: date });
   };
 
   handleChangeDueDate = (date) => {
-    this.setState({dueDate: date});
+    this.setState({ dueDate: date });
   };
 
   onHandleChange = (e) => {
@@ -267,15 +341,15 @@ class F67Form extends Component {
   };
 
   handleResetForm = () => {
-    this.setState({  
+    this.setState({
       files3: [],
       files3Error: "",
-      label:"",
-      labelError:"",
-      sectionId:"",
-      sectionIdError:""
+      label: "",
+      labelError: "",
+      sectionId: "",
+      sectionIdError: "",
     });
-  }
+  };
 
   clickOnFormSubmit = () => {
     this.onFormSubmit();
@@ -283,11 +357,9 @@ class F67Form extends Component {
 
   onFormSubmit = async (e) => {
     //e.preventDefault();
-    if (
-      !this.isSectionValid() ||
-      !this.isLabelValid() ||
-      !this.isFileValid()
-    ) { return; }
+    if (!this.isSectionValid() || !this.isLabelValid() || !this.isFileValid()) {
+      return;
+    }
     let myForm = document.getElementById("myForm");
     const data = new FormData(myForm);
     this.setState({ isLoading: true });
@@ -318,7 +390,14 @@ class F67Form extends Component {
               }
             }, 2000);
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -330,7 +409,10 @@ class F67Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to Save ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -362,7 +444,6 @@ class F67Form extends Component {
   }
 
   render() {
-
     const { classes } = this.props;
 
     return (
@@ -378,11 +459,7 @@ class F67Form extends Component {
             name="recordId"
             value={this.state.recordId}
           />
-          <Grid 
-            container 
-            component="main"
-            className={classes.root}
-          >
+          <Grid container component="main" className={classes.root}>
             <Typography
               style={{
                 color: "#1d5f98",
@@ -418,18 +495,20 @@ class F67Form extends Component {
                   error={!!this.state.sectionIdError}
                   helperText={this.state.sectionIdError}
                 >
-                  {this.state.sectionIdMenuItems ? 
-                    this.state.sectionIdMenuItems.map((dt, i) => (
-                      <MenuItem
-                        key={"sectionIdMenuItems"+dt.id}
-                        value={dt.id}
-                      >
-                        {dt.label}
-                      </MenuItem>
-                    ))
-                  :
-                    this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
-                  }
+                  {this.state.sectionIdMenuItems
+                    ? this.state.sectionIdMenuItems.map((dt, i) => (
+                        <MenuItem
+                          key={"sectionIdMenuItems" + dt.id}
+                          value={dt.id}
+                        >
+                          {dt.label}
+                        </MenuItem>
+                      ))
+                    : this.state.isLoading && (
+                        <Grid container justify="center">
+                          <CircularProgress />
+                        </Grid>
+                      )}
                 </TextField>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -445,24 +524,32 @@ class F67Form extends Component {
                   error={!!this.state.labelError}
                   helperText={this.state.labelError}
                 />
-              </Grid>  
+              </Grid>
               <Grid item xs={12}>
                 <MyDropzone
                   name="contained-button-course-content"
                   label="Upload section content files"
                   files={this.state.files3}
-                  onChange={event => this.handleFileChange(event)} 
-                  disabled={this.state.isLoading} 
+                  onChange={(event) => this.handleFileChange(event)}
+                  disabled={this.state.isLoading}
                   className={classes.inputFileFocused}
                   multiple={true}
                 />
-                <div style={{textAlign:'left', marginTop:5, fontSize:"0.8rem"}}>
-                    <span style={{color: '#f44336'}}>&emsp;{this.state.files3Error}</span>
+                <div
+                  style={{
+                    textAlign: "left",
+                    marginTop: 5,
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  <span style={{ color: "#f44336" }}>
+                    &emsp;{this.state.files3Error}
+                  </span>
                 </div>
               </Grid>
             </Grid>
           </Grid>
-          <br/>
+          <br />
         </form>
         <BottomBar
           left_button_text="View"

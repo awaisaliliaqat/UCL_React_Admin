@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/styles";
 import Typography from "@material-ui/core/Typography";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
@@ -15,7 +15,7 @@ const styles = () => ({
     paddingBottom: 40,
     paddingLeft: 20,
     paddingRight: 20,
-    paddingTop: 0
+    paddingTop: 0,
   },
   title: {
     color: "#1d5f98",
@@ -24,7 +24,7 @@ const styles = () => ({
     width: "98%",
     marginBottom: 25,
     fontSize: 20,
-  }
+  },
 });
 
 class F40Form extends Component {
@@ -35,6 +35,10 @@ class F40Form extends Component {
 
       isLoading: false,
       uploadLoading: false,
+      secondState: {
+        firstName: "",
+        lastName: "",
+      },
 
       isReload: false,
       isLoginMenu: false,
@@ -64,7 +68,7 @@ class F40Form extends Component {
       topic: "",
       topicError: "",
 
-      prevStartDate: new Date()
+      prevStartDate: new Date(),
     };
   }
 
@@ -105,7 +109,10 @@ class F40Form extends Component {
           if (json.CODE === 1) {
             this.setState({ courseIdMenuItems: json.DATA || [] });
           } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error");
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -147,7 +154,10 @@ class F40Form extends Component {
           if (json.CODE === 1) {
             this.setState({ sectionIdMenuItems: json.DATA || [] });
           } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error");
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -191,7 +201,8 @@ class F40Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             if (json.DATA.length > 0) {
-              const sDate = json.DATA[0].startDateWithoutConversion || new Date();
+              const sDate =
+                json.DATA[0].startDateWithoutConversion || new Date();
               const dDate = json.DATA[0].dueDateWithoutConversion || new Date();
               const startDate = new Date(sDate);
               const dueDate = new Date(dDate);
@@ -211,7 +222,10 @@ class F40Form extends Component {
               window.location = "#/dashboard/F40Form/0";
             }
           } else {
-            this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error");
+            this.handleOpenSnackbar(
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -235,7 +249,16 @@ class F40Form extends Component {
 
   isFormValid = () => {
     let isValid = true;
-    let { labelError, sectionIdError, courseIdError, topicError, startDateError, dueDateError, instructionsError, totalMarksError } = this.state;
+    let {
+      labelError,
+      sectionIdError,
+      courseIdError,
+      topicError,
+      startDateError,
+      dueDateError,
+      instructionsError,
+      totalMarksError,
+    } = this.state;
 
     if (!this.state.totalMarks) {
       totalMarksError = "Please enter Total Marks";
@@ -263,7 +286,10 @@ class F40Form extends Component {
       isValid = false;
     } else {
       if (this.state.startDate) {
-        if (new Date(this.state.dueDate).getTime() < new Date(this.state.startDate).getTime()) {
+        if (
+          new Date(this.state.dueDate).getTime() <
+          new Date(this.state.startDate).getTime()
+        ) {
           dueDateError = "Due Date can't less than Start Date";
           isValid = false;
         } else {
@@ -285,7 +311,7 @@ class F40Form extends Component {
       labelError = "Please enter title";
       isValid = false;
     } else {
-      labelError = ""
+      labelError = "";
     }
 
     if (!this.state.sectionId) {
@@ -303,11 +329,18 @@ class F40Form extends Component {
     }
 
     this.setState({
-      labelError, sectionIdError, startDateError, dueDateError, instructionsError, totalMarksError, courseIdError, topicError
-    })
+      labelError,
+      sectionIdError,
+      startDateError,
+      dueDateError,
+      instructionsError,
+      totalMarksError,
+      courseIdError,
+      topicError,
+    });
 
     return isValid;
-  }
+  };
 
   resetForm = () => {
     this.setState({
@@ -328,17 +361,15 @@ class F40Form extends Component {
       courseId: "",
       courseIdError: "",
       topic: "",
-      topicError: ""
-
-    })
-  }
+      topicError: "",
+    });
+  };
 
   clickOnFormSubmit = () => {
     if (this.isFormValid()) {
       document.getElementById("gradedDiscussionSubmit").click();
     }
   };
-
 
   onFormSubmit = async (e) => {
     e.preventDefault();
@@ -409,8 +440,8 @@ class F40Form extends Component {
         this.props.setDrawerOpen(false);
         this.loadData(nextProps.match.params.recordId);
         this.setState({
-          recordId: nextProps.match.params.recordId
-        })
+          recordId: nextProps.match.params.recordId,
+        });
       } else {
         window.location.reload();
       }
@@ -421,7 +452,7 @@ class F40Form extends Component {
     const errorName = `${name}Error`;
     this.setState({
       [name]: date,
-      [errorName]: ""
+      [errorName]: "",
     });
   };
 
@@ -449,10 +480,11 @@ class F40Form extends Component {
   };
 
   render() {
-
     const { classes } = this.props;
-    const startMinDate = new Date().getTime() > new Date(this.state.prevStartDate).getTime() ?
-      new Date(this.state.prevStartDate) : new Date();
+    const startMinDate =
+      new Date().getTime() > new Date(this.state.prevStartDate).getTime()
+        ? new Date(this.state.prevStartDate)
+        : new Date();
     return (
       <Fragment>
         <LoginMenu
@@ -466,15 +498,8 @@ class F40Form extends Component {
             name="recordId"
             value={this.state.recordId}
           />
-          <Grid
-            container
-            component="main"
-            className={classes.root}
-          >
-            <Typography
-              className={classes.title}
-              variant="h5"
-            >
+          <Grid container component="main" className={classes.root}>
+            <Typography className={classes.title} variant="h5">
               Graded Discussion Board
             </Typography>
             <Grid
@@ -499,14 +524,10 @@ class F40Form extends Component {
                   select
                 >
                   {this.state.courseIdMenuItems.map((dt) => (
-                    <MenuItem
-                      key={dt.id}
-                      value={dt.id}
-                    >
+                    <MenuItem key={dt.id} value={dt.id}>
                       {dt.label}
                     </MenuItem>
-                  ))
-                  }
+                  ))}
                 </TextField>
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -523,14 +544,10 @@ class F40Form extends Component {
                   select
                 >
                   {this.state.sectionIdMenuItems.map((dt) => (
-                    <MenuItem
-                      key={dt.id}
-                      value={dt.id}
-                    >
+                    <MenuItem key={dt.id} value={dt.id}>
                       {dt.label}
                     </MenuItem>
-                  ))
-                  }
+                  ))}
                 </TextField>
               </Grid>
               <Grid item xs={12}>
@@ -544,7 +561,6 @@ class F40Form extends Component {
                   onChange={this.onHandleChange}
                   value={this.state.label}
                   error={this.state.labelError}
-
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -562,9 +578,8 @@ class F40Form extends Component {
                   fullWidth
                   required
                   value={this.state.startDate}
-                  onChange={date => this.handleDateChange("startDate", date)}
+                  onChange={(date) => this.handleDateChange("startDate", date)}
                   error={this.state.startDateError}
-
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -582,12 +597,15 @@ class F40Form extends Component {
                   required
                   minDate={new Date(this.state.startDate)}
                   disabled={!this.state.startDate}
-                  title={!this.state.startDate ? 'Please select the start date first' : ''}
+                  title={
+                    !this.state.startDate
+                      ? "Please select the start date first"
+                      : ""
+                  }
                   value={this.state.dueDate}
-                  onChange={date => this.handleDateChange("dueDate", date)}
+                  onChange={(date) => this.handleDateChange("dueDate", date)}
                   error={this.state.dueDateError}
                   helperText={this.state.dueDate ? this.state.dueDateError : ""}
-
                 />
               </Grid>
               <Grid item xs={12}>
@@ -602,7 +620,6 @@ class F40Form extends Component {
                   onChange={this.onHandleChange}
                   value={this.state.totalMarks}
                   error={this.state.totalMarksError}
-
                 />
               </Grid>
               <Grid item xs={12}>
@@ -618,7 +635,6 @@ class F40Form extends Component {
                   onChange={this.onHandleChange}
                   value={this.state.topic}
                   error={this.state.topicError}
-
                 />
               </Grid>
               <Grid item xs={12}>
@@ -634,14 +650,16 @@ class F40Form extends Component {
                   onChange={this.onHandleChange}
                   value={this.state.instructions}
                   error={this.state.instructionsError}
-
                 />
               </Grid>
-
             </Grid>
             <br />
           </Grid>
-          <input type="submit" id="gradedDiscussionSubmit" style={{ display: 'none' }} />
+          <input
+            type="submit"
+            id="gradedDiscussionSubmit"
+            style={{ display: "none" }}
+          />
         </form>
         <BottomBar
           left_button_text="View"
@@ -667,18 +685,18 @@ F40Form.propTypes = {
   classes: PropTypes.object,
   isDrawerOpen: PropTypes.bool,
   setDrawerOpen: PropTypes.func,
-  match: PropTypes.object
-}
+  match: PropTypes.object,
+};
 
 F40Form.defaultProps = {
   classes: {},
   isDrawerOpen: true,
-  setDrawerOpen: fn => fn,
+  setDrawerOpen: (fn) => fn,
   match: {
     params: {
-      recordId: 0
-    }
-  }
-}
+      recordId: 0,
+    },
+  },
+};
 
 export default withStyles(styles)(F40Form);

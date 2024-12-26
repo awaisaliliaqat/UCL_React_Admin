@@ -2,8 +2,19 @@ import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { numberFreeExp, numberExp } from "../../../../utils/regularExpression";
-import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography, Chip,
-  Select, IconButton, Tooltip, Checkbox} from "@material-ui/core";
+import {
+  TextField,
+  Grid,
+  MenuItem,
+  CircularProgress,
+  Divider,
+  Typography,
+  Chip,
+  Select,
+  IconButton,
+  Tooltip,
+  Checkbox,
+} from "@material-ui/core";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -34,7 +45,7 @@ const styles = () => ({
   rootProgress: {
     width: "100%",
     textAlign: "center",
-  }
+  },
 });
 
 class F69Form extends Component {
@@ -47,21 +58,23 @@ class F69Form extends Component {
       isOpenSnackbar: false,
       snackbarMessage: "",
       snackbarSeverity: "",
-      label:"",
-      labelError:"",
+      label: "",
+      labelError: "",
       programmeGroupMenuItems: [],
       programmeGroupId: [],
       programmeGroupIds: "",
       programmeGroupIdError: "",
 
       preDate: this.getTomorrowDate(),
+      // preDate: this.getTomorrowDate(),
+
       preDateError: "",
 
       toDate: this.getTomorrowDate(),
       toDateError: "",
 
-      noOfDays:"",
-      noOfDaysError:""
+      noOfDays: "",
+      noOfDaysError: "",
     };
   }
 
@@ -69,15 +82,19 @@ class F69Form extends Component {
     let tomorrowDate = new Date();
     tomorrowDate.setDate(tomorrowDate.getDate() + 1);
     return tomorrowDate;
-  }
+  };
 
   getDateInString = (todayDate) => {
     let today = todayDate;
     let dd = today.getDate();
     let mm = today.getMonth() + 1;
     let yyyy = today.getFullYear();
-    if (dd < 10) { dd = "0" + dd; }
-    if (mm < 10) { mm = "0" + mm; }
+    if (dd < 10) {
+      dd = "0" + dd;
+    }
+    if (mm < 10) {
+      mm = "0" + mm;
+    }
     today = dd + "-" + mm + "-" + yyyy;
     return today;
   };
@@ -119,7 +136,14 @@ class F69Form extends Component {
           if (json.CODE === 1) {
             this.setState({ programmeGroupMenuItems: json.DATA });
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadProgrammeGroups", json);
         },
@@ -131,7 +155,10 @@ class F69Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -160,18 +187,25 @@ class F69Form extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA[0] || [];
-            if(data.label){
+            if (data.label) {
               this.setState({
                 label: data.label,
                 preDate: data.effectiveDateFrom,
-                noOfDays:data.noOfDays
+                noOfDays: data.noOfDays,
               });
               this.handleSetprogrammeGroupId([data.programmeGroup]);
-            }else{
+            } else {
               window.location = "#/dashboard/F69Form/0";
             }
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log("loadData", json);
         },
@@ -183,13 +217,16 @@ class F69Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to Save ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
     this.setState({ isLoading: false });
   };
-  
+
   isLabelValid = () => {
     let isValid = true;
     if (!this.state.label) {
@@ -205,11 +242,13 @@ class F69Form extends Component {
   isProgrammeGroupIdValid = () => {
     let programmeGroupId = this.state.programmeGroupId;
     let isValid = true;
-    if (programmeGroupId.length == 0 ) {
-      this.setState({ programmeGroupIdError: "Please select programme group." });
+    if (programmeGroupId.length == 0) {
+      this.setState({
+        programmeGroupIdError: "Please select programme group.",
+      });
       document.getElementById("programmeGroupId").focus();
       isValid = false;
-    }else {
+    } else {
       this.setState({ programmeGroupIdError: "" });
     }
     return isValid;
@@ -229,7 +268,7 @@ class F69Form extends Component {
 
   isDaysValid = () => {
     let isValid = true;
-    if (!this.state.noOfDays || this.state.noOfDays<1) {
+    if (!this.state.noOfDays || this.state.noOfDays < 1) {
       this.setState({ noOfDaysError: "Please enter number of days." });
       document.getElementById("days").focus();
       isValid = false;
@@ -238,15 +277,14 @@ class F69Form extends Component {
     }
     return isValid;
   };
-  
+
   handleChangePreDate = (date) => {
-    this.setState({preDate: date});
+    this.setState({ preDate: date });
   };
 
   handleChangeToDate = (date) => {
-    this.setState({toDate: date});
+    this.setState({ toDate: date });
   };
-
 
   onHandleChange = (e) => {
     const { name, value } = e.target;
@@ -270,28 +308,28 @@ class F69Form extends Component {
     });
 
     let programmeGroupIds = "";
-    if(value){
-      let programmeGroup = value || []; 
+    if (value) {
+      let programmeGroup = value || [];
       let arrLength = value.length || 0;
-      for(let i=0; i<arrLength; i++){
-        if(i==0){
+      for (let i = 0; i < arrLength; i++) {
+        if (i == 0) {
           programmeGroupIds = programmeGroup[i].ID;
-        }else{
-          programmeGroupIds+= ","+programmeGroup[i].ID;
-        }    
+        } else {
+          programmeGroupIds += "," + programmeGroup[i].ID;
+        }
       }
-      this.setState({programmeGroupIds:programmeGroupIds});
+      this.setState({ programmeGroupIds: programmeGroupIds });
     }
-
   };
 
   clickOnFormSubmit = () => {
-
-    if(
-      !this.isLabelValid()
-      || !this.isProgrammeGroupIdValid()
+    if (
+      !this.isLabelValid() ||
+      !this.isProgrammeGroupIdValid()
       //|| !this.isDaysValid()
-    ){ return; }
+    ) {
+      return;
+    }
 
     this.onFormSubmit();
   };
@@ -327,7 +365,14 @@ class F69Form extends Component {
               }
             }, 2000);
           } else {
-            this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            this.handleOpenSnackbar(
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
           }
           console.log(json);
         },
@@ -339,7 +384,10 @@ class F69Form extends Component {
             });
           } else {
             console.log(error);
-            this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            this.handleOpenSnackbar(
+              "Failed to Save ! Please try Again later.",
+              "error"
+            );
           }
         }
       );
@@ -353,8 +401,8 @@ class F69Form extends Component {
   componentDidMount() {
     this.props.setDrawerOpen(false);
     this.loadProgrammeGroups();
-    if(this.state.recordId != 0) {
-      this.loadData(this.state.recordId); 
+    if (this.state.recordId != 0) {
+      this.loadData(this.state.recordId);
     }
   }
 
@@ -368,6 +416,18 @@ class F69Form extends Component {
       }
     }
   }
+
+  shouldDisableDate = (date) => {
+    const { preDate } = this.state;
+    if (preDate) {
+      const startOfFromDate = new Date(preDate);
+      startOfFromDate.setHours(0, 0, 0, 0);
+      const compareDate = new Date(date);
+      compareDate.setHours(0, 0, 0, 0);
+      return compareDate < startOfFromDate;
+    }
+    return false;
+  };
 
   render() {
     const { classes } = this.props;
@@ -447,7 +507,7 @@ class F69Form extends Component {
                       />
                     ))
                   }
-                  renderOption={(option, {selected}) => (
+                  renderOption={(option, { selected }) => (
                     <Fragment>
                       <Checkbox
                         icon={icon}
@@ -470,7 +530,11 @@ class F69Form extends Component {
                     />
                   )}
                 />
-                <TextField type="hidden" name="programmeGroupId" value={this.state.programmeGroupIds}/>
+                <TextField
+                  type="hidden"
+                  name="programmeGroupId"
+                  value={this.state.programmeGroupIds}
+                />
               </Grid>
               <Grid item xs={6}>
                 <DatePicker
@@ -479,8 +543,8 @@ class F69Form extends Component {
                   id="effectiveDate"
                   label="Effective From Date"
                   invalidDateMessage=""
-                  disablePast
-                  minDate={Date.parse(this.getTomorrowDate())}
+                  // disablePast
+                  // minDate={Date.parse(this.getTomorrowDate())}
                   placeholder=""
                   variant="inline"
                   inputVariant="outlined"
@@ -490,7 +554,9 @@ class F69Form extends Component {
                   value={this.state.preDate}
                   onChange={this.handleChangePreDate}
                   error={!!this.state.preDateError}
-                  helperText={this.state.preDateError ? this.state.preDateError : " "}
+                  helperText={
+                    this.state.preDateError ? this.state.preDateError : " "
+                  }
                 />
               </Grid>
               <Grid item xs={6}>
@@ -500,8 +566,10 @@ class F69Form extends Component {
                   id="effectiveToDate"
                   label="Effective To Date"
                   invalidDateMessage=""
-                  disablePast
-                  minDate={Date.parse(this.getTomorrowDate())}
+                  // disablePast
+                  shouldDisableDate={this.shouldDisableDate}
+                  minDate={this.state.preDate}
+                  // minDate={Date.parse(this.getTomorrowDate())}
                   placeholder=""
                   variant="inline"
                   inputVariant="outlined"
@@ -512,7 +580,9 @@ class F69Form extends Component {
                   value={this.state.toDate}
                   onChange={this.handleChangeToDate}
                   error={!!this.state.toDateError}
-                  helperText={this.state.toDateError ? this.state.toDateError : " "}
+                  helperText={
+                    this.state.toDateError ? this.state.toDateError : " "
+                  }
                 />
               </Grid>
               {/* 

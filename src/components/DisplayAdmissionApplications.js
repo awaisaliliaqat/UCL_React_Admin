@@ -84,8 +84,8 @@ const styles = (theme) => ({
         justifyContent: 'space-between'
     },
     tagTitle: {
-        padding: 6,
-        marginBottom: 10,
+        padding: "2px 6px",
+        marginBottom: 8,
         textAlign: 'center',
         fontSize: 'larger',
         backgroundColor: '#2f57a5',
@@ -347,7 +347,7 @@ class DisplayAdmissionApplications extends Component {
                     <div className={classes.tagTitleContainer}>
                         <div className={classes.flexColumn}>
                             <span className={classes.tagTitle}>Application for Admission</span>
-                            <span className={classes.tagTitle}>{data.degreeId === 17 ? 'A Level Programme' : 'Undergraduate Programme'}</span>
+                            <span className={classes.tagTitle}>{data.degreeId === 32 ? 'A Level Programme' : 'Undergraduate Programme'}</span>
                             <span className={classes.tagTitle}>Application ID: {data.id}</span>
                         </div>
 
@@ -376,7 +376,7 @@ class DisplayAdmissionApplications extends Component {
                                 marginLeft: "4%"
                             }} className={classes.tagValue}>{data.academicSessionLabel}</span>
                         </div>
-                        {data.degreeId === 11 &&
+                        {data.degreeId === 8 &&
                             <Fragment>
                                 <div className={classes.valuesContainer}>
                                     <span style={{
@@ -394,7 +394,7 @@ class DisplayAdmissionApplications extends Component {
                                 </div>
                             </Fragment>
                         }
-                        {data.degreeId === 17 &&
+                        {data.degreeId === 32 &&
                             <Fragment>
                                 <div className={classes.flexColumn}>
                                     <div className={classes.valuesContainer}>
@@ -954,7 +954,7 @@ class DisplayAdmissionApplications extends Component {
                                 {data.guardianRelationWithStudentLabel}
                             </div>
                         </div>
-                        {data.degreeId === 17 && (<Fragment>
+                        {data.degreeId === 32 && (<Fragment>
                             <div className={classes.valuesContainer}>
                                 <span style={{
                                     fontSize: 'larger'
@@ -1007,7 +1007,7 @@ class DisplayAdmissionApplications extends Component {
                                 Academics
                         </span>
                         </div>
-                        {data.degreeId === 17 && (<Fragment>
+                        {data.degreeId === 32 && (<Fragment>
                             <span style={{ marginBottom: 10 }}>Name and address of school last attended.</span>
 
 
@@ -1098,7 +1098,7 @@ class DisplayAdmissionApplications extends Component {
                             </table>
                         </Fragment>)}
 
-                        {data.degreeId !== 17 && (<Fragment>
+                        {data.degreeId !== 32 && (<Fragment>
 
                             <div className={classes.valuesContainer} style={{
                                 marginBottom: 5
@@ -1438,7 +1438,7 @@ class DisplayAdmissionApplications extends Component {
                                 );
                             })}
                         </table>
-                        {data.degreeId !== 17 && (<Fragment>
+                        {data.degreeId !== 32 && (<Fragment>
                             <div className={classes.valuesContainer}>
                                 <span style={{
                                     fontSize: 'larger'
@@ -1506,7 +1506,7 @@ class DisplayAdmissionApplications extends Component {
                                 })}
                             </table>
                         </Fragment>)}
-                        {data.degreeId === 17 && (<Fragment>
+                        {data.degreeId === 32 && (<Fragment>
                             <div className={classes.valuesContainer}>
                                 <span style={{
                                     fontSize: 'larger'

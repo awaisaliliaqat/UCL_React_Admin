@@ -47,10 +47,29 @@ class StudentCourseSelection extends Component {
   }
 
   componentDidMount() {
-    this.getSessionData();
+    this.onLoadAllData();
   }
 
-  getSessionData = async () => {
+  onLoadAllData = async () => {
+    const query = new URLSearchParams(this.props.location.search);
+    const studentId = query.get("studentId") || "";
+    const academicSessionId = query.get("academicSessionId") || "";
+    const programmeGroupId = query.get("programmeGroupId") || "";
+    const isEdit = query.get("isEdit") || 0;
+    await this.getSessionData(academicSessionId, programmeGroupId);
+
+    if (studentId != "") {
+      this.setState(
+        {
+          studentId,
+          regStatusId: 0,
+        },
+        () => this.getData(false, "", 1, isEdit)
+      );
+    }
+  }
+
+  getSessionData = async (sessionId, programmeGroupId) => {
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsView`;
     await fetch(url, {
       method: "GET",
@@ -65,19 +84,33 @@ class StudentCourseSelection extends Component {
         return res.json();
       })
       .then(
-        (json) => {
+        async (json) => {
           if (json.CODE === 1) {
+            
+            let array = json.DATA || [];
             this.setState({
-              sessionData: json.DATA || [],
+              sessionData: array,
             });
-            let selectedRow = json.DATA.find((data) => data.isActive == 1);
-            if (selectedRow) {
+
+            
+            let res2 = array.find((obj) => obj.ID == sessionId);
+            if (sessionId && res2) {
               this.setState({
-                sessionId: selectedRow.ID,
+                sessionId: res2.ID,
                 programmeId: "",
                 admissionData: [],
               });
-              this.getProgrammeData(selectedRow.ID);
+              await this.getProgrammeData(res2.ID, programmeGroupId);
+            } else {
+              let res = array.find((obj) => obj.isActive === 1);
+              if (res) {
+                this.setState({
+                  sessionId: res.ID,
+                  programmeId: "",
+                  admissionData: [],
+                });
+                this.getProgrammeData(res.ID);
+              }
             }
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
@@ -424,7 +457,10 @@ class StudentCourseSelection extends Component {
     });
   };
 
-  getProgrammeData = async (id) => {
+  getProgrammeData = async (id, programmeGroupId) => {
+
+    let myProgrammeId = programmeGroupId || "";
+
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C22CommonAcademicsSessionsOfferedProgrammesView?sessionId=${id}`;
     await fetch(url, {
       method: "GET",
@@ -443,6 +479,7 @@ class StudentCourseSelection extends Component {
           if (json.CODE === 1) {
             this.setState({
               programmeData: json.DATA || [],
+              programmeId: myProgrammeId
             });
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
@@ -470,7 +507,7 @@ class StudentCourseSelection extends Component {
     });
   };
 
-  getData = async (isChangeCall = false, value = "") => {
+  getData = async (isChangeCall = false, value = "", isCentricCall=0, isEdit=0) => {
     this.setState({
       isLoading: true,
     });
@@ -491,11 +528,40 @@ class StudentCourseSelection extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
+            const data = json.DATA || [];
+            let dataLength = data.length;
             this.setState({
-              admissionData: json.DATA || [],
+              admissionData: data,
+              totalStudents: dataLength
             });
-            let totalStudents = this.state.admissionData.length;
-            this.setState({totalStudents: totalStudents});
+            if(isCentricCall == 1 && dataLength > 0){
+              const rowData = data[0] || {};
+              if(isEdit == 1){
+                this.setState({
+                  studentIddToSend:rowData.id,
+                  selectedData:rowData
+                });
+                this.getCouresData(0);
+                this.getRegisteredCoursesData(rowData);
+                this.getPreviousCouresData(rowData);
+                this.getModulesData(rowData);
+                this.getModulesDropDownData(rowData);
+                this.getStudentAchivementsData(rowData);
+              } else {
+              this.setState({
+                studentIddToSend:rowData.id,
+                selectedData:rowData
+              });
+              this.onReadOnly();
+              this.getCouresData(0);
+              this.getRegisteredCoursesData(rowData);
+              this.getPreviousCouresData(rowData)
+              this.getModulesData(rowData);
+              this.getModulesDropDownData(rowData);
+              this.getStudentAchivementsData(rowData);
+            }
+          }
+
           } else {
             alert(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE);
           }

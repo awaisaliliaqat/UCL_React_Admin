@@ -56,6 +56,13 @@ class AdmissionApplicationReports extends Component {
         
        
     }
+    handleOpenSnackbar = (msg, severity) => {
+        this.setState({
+            isOpenSnackbar: true,
+            snackbarMessage: msg,
+            snackbarSeverity: severity
+        });
+    };
 
     getGenderData = async () => {
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonGendersView`;
@@ -136,9 +143,13 @@ class AdmissionApplicationReports extends Component {
         this.setState({ isLoading: false });
       };
 
-    getDegreesData = async () => {
+    getDegreesData = async (sessionId) => {
+
+
+        let mySessionId = sessionId || this.state.academicSessionId;
+
         let data = [];
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonAcademicsDegreeProgramsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C02CommonAcademicsDegreeProgramsView?sessionId=${mySessionId}`;
         await fetch(url, {
             method: "GET",
             headers: new Headers({
@@ -462,6 +473,18 @@ class AdmissionApplicationReports extends Component {
 
     onHandleChange = e => {
         const { name, value } = e.target;
+
+        switch(name){
+            case "academicSessionId":
+                this.setState({
+                    degreeId: 0,
+                })
+                this.getDegreesData(value);
+                break;
+                default:
+                    break;
+        }
+
         this.setState({
             [name]: value
         })

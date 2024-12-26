@@ -11,7 +11,7 @@ class F221FormTableComponent extends Component {
       columns: [
         { name: "studentId", title: "Nucleus\xa0ID" },
         { name: "displayName", title: "Student\xa0Name" },
-        { name: "applicationStatusLabel", title: "Programme" },
+        { name: "degreeLabel", title: "Programme" },
         { name: "pathwayLabel", title: "Pathway" },
         { name: "changeStatusAction", title: "Promote\xa0Student"},
         { name: "action", title: <span>Withdrawn</span>},
@@ -38,7 +38,7 @@ class F221FormTableComponent extends Component {
       tableColumnExtensions: [
         { columnName: "studentId"},
         { columnName: "displayName",  wordWrapEnabled: true },
-        { columnName: "applicationStatusLabel", wordWrapEnabled: true },
+        { columnName: "degreeLabel", wordWrapEnabled: true },
         { columnName: "pathwayLabel",  wordWrapEnabled: true },
         { columnName: "changeStatusAction",  align:"center"},
         { columnName: "action", align:"center"},

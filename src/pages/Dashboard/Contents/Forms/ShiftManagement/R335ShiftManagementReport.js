@@ -1,0 +1,518 @@
+import React, { Component, Fragment } from "react";
+import { Button, Divider, IconButton, Tooltip } from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
+import FilterIcon from "mdi-material-ui/FilterOutline";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import EditDeleteTableComponent from "../../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
+import R335ShiftManagementViewTableComponent from "./Chunks/R335ShiftManagementViewTableComponent";
+import { withRouter } from "react-router-dom";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import { Rowing } from "mdi-material-ui";
+
+class R335ShiftManagementReport extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: false,
+      showTableFilter: false,
+      employeePayrollsData: [],
+      isLoginMenu: false,
+      isReload: false,
+      isOpenSnackbar: false,
+      snackbarMessage: "",
+      snackbarSeverity: "",
+    };
+  }
+
+  handleSnackbar = (open, msg, severity) => {
+    this.setState({
+      isOpenSnackbar: open,
+      snackbarMessage: msg,
+      snackbarSeverity: severity,
+    });
+  };
+
+  getData = async () => {
+    this.setState({
+      isLoading: true,
+    });
+
+    const recordId = null;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C335CommonEmployeeShiftScheduleView?id`;
+    await fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            let data = json.DATA || [];
+            this.setState({
+              employeePayrollsData: data,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+              "error"
+            );
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+    this.setState({
+      isLoading: false,
+    });
+  };
+
+  statusUpdate = async (id, status) => {
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/CommonEmployeeShiftScheduleStatusChange?id=${id}&status=${status}`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          console.log(json, "json is coming");
+          if (status === true) {
+            this.handleSnackbar(true, "Activated", "success");
+            this.getData();
+          } else {
+            this.handleSnackbar(true, "Inactive", "success");
+            this.getData();
+          }
+          console.log(json);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+  };
+
+  downloadMultipleFiles = (e, helpingMaterialFileName) => {
+    console.log(helpingMaterialFileName);
+    if (helpingMaterialFileName.length !== 0) {
+      helpingMaterialFileName.map((dt, i) => this.DownloadFile(e, dt));
+    } else {
+      this.handleOpenSnackbar("No files found to be download", "error");
+    }
+  };
+
+  handleOpenSnackbar = (msg, severity) => {
+    this.setState({
+      isOpenSnackbar: true,
+      snackbarMessage: msg,
+      snackbarSeverity: severity,
+    });
+  };
+
+  DownloadFile = (e, fileName) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append("fileName", fileName);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${
+      process.env.REACT_APP_SUB_API_NAME
+    }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
+    fetch(url, {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          return res.blob();
+        } else if (res.status === 401) {
+          this.setState({
+            isLoginMenu: true,
+            isReload: false,
+          });
+          return {};
+        } else {
+          //alert('Operation Failed, Please try again later.');
+          this.handleOpenSnackbar(
+            "Operation Failed, Please try again later.",
+            "error"
+          );
+          return {};
+        }
+      })
+      .then((result) => {
+        var csvURL = window.URL.createObjectURL(result);
+        var tempLink = document.createElement("a");
+        tempLink.href = csvURL;
+        tempLink.setAttribute("download", fileName);
+        tempLink.click();
+        console.log(csvURL);
+        if (result.CODE === 1) {
+          //Code
+        } else if (result.CODE === 2) {
+          alert(
+            "SQL Error (" +
+              result.CODE +
+              "): " +
+              result.USER_MESSAGE +
+              "\n" +
+              result.SYSTEM_MESSAGE
+          );
+        } else if (result.CODE === 3) {
+          alert(
+            "Other Error (" +
+              result.CODE +
+              "): " +
+              result.USER_MESSAGE +
+              "\n" +
+              result.SYSTEM_MESSAGE
+          );
+        } else if (result.error === 1) {
+          alert(result.error_message);
+        } else if (result.success === 0 && result.redirect_url !== "") {
+          window.location = result.redirect_url;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  onHandleChange = (e) => {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value,
+    });
+  };
+
+  handleToggleTableFilter = () => {
+    this.setState({ showTableFilter: !this.state.showTableFilter });
+  };
+
+  componentDidMount() {
+    this.getData();
+  }
+
+  changeStatus = (id, status) => {
+    if (status == 0) {
+      this.statusUpdate(id, 1);
+    } else {
+      this.statusUpdate(id, 0);
+    }
+  };
+
+  deleteShift = async (id) => {
+    const formData = new FormData();
+    formData.append("id", id);
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C335CommonEmployeeShiftScheduleDelete`;
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          console.log(json, "json is coming");
+          if (json.CODE === 1) {
+            this.handleSnackbar(true, "Delete", "success");
+            this.getData();
+          } else {
+            this.handleSnackbar(true, "Failed to Delete", "error");
+          }
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: false,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch, Please try again later.",
+              "error"
+            );
+            console.log(error);
+          }
+        }
+      );
+  };
+
+  render() {
+    const columns = [
+      { name: "id", title: "ID" },
+      { name: "label", title: "Shift Name" },
+      // { name: "startTime", title: "From" },
+
+      // { name: "endTime", title: "To" },
+      {
+        name: "days",
+        title: "Days",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.days.length !== 0 ? (
+                rowData.days.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.days.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.dayLabel}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      {
+        name: "startTime",
+        title: "Start Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.days.length !== 0 ? (
+                rowData.days.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.days.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.startTime}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+      {
+        name: "endTime",
+        title: "End Time",
+        flex: 1,
+        getCellValue: (rowData) => {
+          return (
+            <>
+              {rowData.days.length !== 0 ? (
+                rowData.days.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      borderBottom:
+                        index === rowData.days.length - 1
+                          ? "none"
+                          : "1px solid #DADBDD",
+                      minHeight: "30px",
+                    }}
+                  >
+                    {item.endTime}
+                  </div>
+                ))
+              ) : (
+                <div style={{ minHeight: "30px" }}></div>
+              )}
+            </>
+          );
+        },
+      },
+
+      {
+        name: "isActive",
+        title: "Status",
+
+        getCellValue: (rowData) => {
+          return <div>{rowData.isActive ? "Active" : "Inactive"}</div>;
+        },
+      },
+      {
+        name: "Action",
+        title: "Action",
+
+        getCellValue: (rowData) => {
+          return (
+            <div>
+              {rowData.isActive === 0 ? (
+                <Button
+                  variant="contained"
+                  style={{
+                    textTransform: "capitalize",
+                  }}
+                  onClick={() =>
+                    this.changeStatus(rowData.id, rowData.isActive)
+                  }
+                >
+                  Inactive
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  style={{
+                    textTransform: "capitalize",
+                    background: "#1D5F98",
+                    color: "white",
+                  }}
+                  onClick={() =>
+                    this.changeStatus(rowData.id, rowData.isActive)
+                  }
+                >
+                  Activate
+                </Button>
+              )}
+
+              <Button
+                style={{
+                  textTransform: "capitalize",
+                  background: "#E40808",
+                  marginLeft: "10px",
+                  color: "white",
+                }}
+                onClick={() => this.deleteShift(rowData.id)}
+              >
+                Delete
+              </Button>
+            </div>
+          );
+        },
+      },
+    ];
+
+    return (
+      <Fragment>
+        <LoginMenu
+          reload={this.state.isReload}
+          open={this.state.isLoginMenu}
+          handleClose={() => this.setState({ isLoginMenu: false })}
+        />
+        <div
+          style={{
+            padding: 20,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography
+              style={{
+                color: "#1d5f98",
+                fontWeight: 600,
+                textTransform: "capitalize",
+              }}
+              variant="h5"
+            >
+              <Tooltip title="Back">
+                <IconButton
+                  onClick={() =>
+                    window.location.replace(
+                      "#/dashboard/F335DefineShiftManagement/0"
+                    )
+                  }
+                >
+                  <ArrowBackIcon fontSize="small" color="primary" />
+                </IconButton>
+              </Tooltip>
+              Shift Schedule Report
+            </Typography>
+            <div style={{ float: "right" }}>
+              <Tooltip title="Table Filter">
+                <IconButton
+                  style={{ marginLeft: "-10px" }}
+                  onClick={() => this.handleToggleTableFilter()}
+                >
+                  <FilterIcon fontSize="default" color="primary" />
+                </IconButton>
+              </Tooltip>
+            </div>
+          </div>
+          <Divider
+            style={{
+              backgroundColor: "rgb(58, 127, 187)",
+              opacity: "0.3",
+              marginBottom: 20,
+            }}
+          />
+          <R335ShiftManagementViewTableComponent
+            rows={this.state.employeePayrollsData}
+            columns={columns}
+            showFilter={this.state.showTableFilter}
+          />
+          <CustomizedSnackbar
+            isOpen={this.state.isOpenSnackbar}
+            message={this.state.snackbarMessage}
+            severity={this.state.snackbarSeverity}
+            handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
+          />
+        </div>
+      </Fragment>
+    );
+  }
+}
+export default withRouter(R335ShiftManagementReport);

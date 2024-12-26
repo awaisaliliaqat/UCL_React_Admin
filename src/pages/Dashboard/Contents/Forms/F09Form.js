@@ -2,9 +2,27 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
 import { numberFreeExp } from "../../../../utils/regularExpression";
-import {TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
-  Chip, Select, IconButton, Tooltip, Checkbox, Fab, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Paper} from "@material-ui/core";
+import {
+  TextField,
+  Grid,
+  MenuItem,
+  CircularProgress,
+  Divider,
+  Typography,
+  Chip,
+  Select,
+  IconButton,
+  Tooltip,
+  Checkbox,
+  Fab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -12,23 +30,24 @@ import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import F09FormPopupComponent from "./F09FormPopupComponent";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
     fontWeight: 500,
-    border: '1px solid '+theme.palette.common.white
+    border: "1px solid " + theme.palette.common.white,
   },
   body: {
     fontSize: 14,
-    border: '1px solid '+theme.palette.primary.main,
+    border: "1px solid " + theme.palette.primary.main,
   },
 }))(TableCell);
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
-    '&:nth-of-type(odd)': {
+    "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
     },
   },
@@ -60,7 +79,7 @@ const styles = () => ({
   },
   table: {
     minWidth: 750,
-  }
+  },
 });
 
 function CourseRow(props) {
@@ -89,12 +108,12 @@ function CourseRow(props) {
   }
 
   const getChoiceGroupLabel = (id) => {
-    let res = choiceGroupIdMenuItems.find( (x) => x.ID == id);
-    if(res){
+    let res = choiceGroupIdMenuItems.find((x) => x.ID == id);
+    if (res) {
       return res.Label;
     }
     return "";
-  }
+  };
 
   useEffect(() => {});
 
@@ -102,42 +121,52 @@ function CourseRow(props) {
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   return (
-      <StyledTableRow key={rowData}>
-        <StyledTableCell component="th" scope="row" align="center">
-          {rowIndex + 1}
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          {cLabel}
-          <TextField type="hidden" name="programmeCourseId" value={rowData.courseId}/>
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          {cCredit}
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          {cProgrammeCoursesArray.map((option, index) => (<span key={option+index}>{index != 0 ? <br /> : ""} {option.Label}</span>))}
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          {getChoiceGroupLabel(rowData.choiceGroupId)}
-          <TextField type="hidden" name="choiceGroupId" value={rowData.choiceGroupId ? rowData.choiceGroupId : 0}/>
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          <Tooltip title="Delete">
-            <Fab 
-              color="secondary"
-              aria-label="Delete"
-              size="small"
-              style={{
-                height:36,
-                width:36,
-                margin:4
-              }}
-              onClick={() => onDelete(rowIndex)}
-            >
-              <DeleteIcon fontSize="small" />
-            </Fab>
-          </Tooltip>
-        </StyledTableCell>
-      </StyledTableRow>
+    <StyledTableRow key={rowData}>
+      <StyledTableCell component="th" scope="row" align="center">
+        {rowIndex + 1}
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        {cLabel}
+        <TextField
+          type="hidden"
+          name="programmeCourseId"
+          value={rowData.courseId}
+        />
+      </StyledTableCell>
+      <StyledTableCell align="center">{cCredit}</StyledTableCell>
+      <StyledTableCell align="center">
+        {cProgrammeCoursesArray.map((option, index) => (
+          <span key={option + index}>
+            {index != 0 ? <br /> : ""} {option.Label}
+          </span>
+        ))}
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        {getChoiceGroupLabel(rowData.choiceGroupId)}
+        <TextField
+          type="hidden"
+          name="choiceGroupId"
+          value={rowData.choiceGroupId ? rowData.choiceGroupId : 0}
+        />
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        <Tooltip title="Delete">
+          <Fab
+            color="secondary"
+            aria-label="Delete"
+            size="small"
+            style={{
+              height: 36,
+              width: 36,
+              margin: 4,
+            }}
+            onClick={() => onDelete(rowIndex)}
+          >
+            <DeleteIcon fontSize="small" />
+          </Fab>
+        </Tooltip>
+      </StyledTableCell>
+    </StyledTableRow>
   );
 }
 
@@ -174,6 +203,9 @@ class F09Form extends Component {
       programmeCoursesError: "",
       courseRowDataArray: [],
       prerequisiteCourseArray: [],
+
+      fromSessionData: [],
+      toSessionData: [],
     };
   }
 
@@ -227,7 +259,7 @@ class F09Form extends Component {
             }
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -275,7 +307,7 @@ class F09Form extends Component {
             this.setState({ programmeGroupIdMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -320,7 +352,7 @@ class F09Form extends Component {
       .then(
         (json) => {
           if (json.CODE === 1) {
-            this.setState({ programmeCoursesArray: json.DATA || []});
+            this.setState({ programmeCoursesArray: json.DATA || [] });
             let prerequisiteCourseArray = [];
             for (let i = 0; i < json.DATA.length; i++) {
               let obj = {
@@ -335,7 +367,7 @@ class F09Form extends Component {
             console.log("programmeCoursesListArray", prerequisiteCourseArray);
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -380,7 +412,7 @@ class F09Form extends Component {
             this.setState({ preChoiceGroupIdMenuItems: json.DATA });
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -439,7 +471,7 @@ class F09Form extends Component {
             }
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -682,7 +714,7 @@ class F09Form extends Component {
             }, 2000);
           } else {
             this.handleOpenSnackbar(
-              json.SYSTEM_MESSAGE+"\n"+json.USER_MESSAGE,
+              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
               "error"
             );
           }
@@ -714,11 +746,119 @@ class F09Form extends Component {
     this.props.setDrawerOpen(false);
     this.loadAcademicSession();
     //this.loadProgrammeGroups();
+    this.getFromSessionsData();
+    this.getToSessionsData();
     this.loadChoiceGroup();
     if (this.state.recordId != 0) {
       this.loadData(this.state.recordId);
     }
   }
+
+  getFromSessionsData = async () => {
+    this.setState({ academicSessionsDataLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C26CommonAcademicsSessionsFromView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            this.setState((prevState) => ({
+              ...prevState,
+              fromSessionData: [json.DATA[0]],
+            }));
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ academicSessionsDataLoading: false });
+  };
+
+  getToSessionsData = async () => {
+    this.setState({ academicSessionsDataLoading: true });
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C26CommonAcademicsSessionsToView`;
+    await fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw res;
+        }
+        return res.json();
+      })
+      .then(
+        (json) => {
+          if (json.CODE === 1) {
+            console.log(json.DATA);
+            this.setState((prevState) => ({
+              ...prevState,
+              toSessionData: json.DATA,
+            }));
+            console.log(json);
+          } else {
+            this.handleSnackbar(
+              true,
+              <span>
+                {json.SYSTEM_MESSAGE}
+                <br />
+                {json.USER_MESSAGE}
+              </span>,
+              "error"
+            );
+          }
+        },
+        (error) => {
+          if (error.status == 401) {
+            this.setState({
+              isLoginMenu: true,
+              isReload: true,
+            });
+          } else {
+            this.handleSnackbar(
+              true,
+              "Failed to fetch ! Please try Again later.",
+              "error"
+            );
+          }
+        }
+      );
+    this.setState({ academicSessionsDataLoading: false });
+  };
 
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.recordId != nextProps.match.params.recordId) {
@@ -752,10 +892,30 @@ class F09Form extends Component {
                 width: "98%",
                 marginBottom: 25,
                 fontSize: 20,
+                display: "flex",
+                justifyContent: "space-between",
+                alignContent: "center",
               }}
               variant="h5"
             >
-              Define Course Selection Group
+              <Typography
+                style={{
+                  color: "#1d5f98",
+                  fontWeight: 600,
+                  fontSize: 20,
+                }}
+              >
+                Define Course Selection Group
+              </Typography>
+              {this.state?.fromSessionData?.length > 0 &&
+                this.state?.toSessionData?.length > 0 && (
+                  <F09FormPopupComponent
+                    noDataMessage={this.state.sectionDataError}
+                    handleOpenSnackbar={this.handleOpenSnackbar}
+                    fromSessionData={this.state.fromSessionData}
+                    toSessionData={this.state.toSessionData}
+                  />
+                )}
             </Typography>
             <Divider
               style={{
@@ -871,7 +1031,9 @@ class F09Form extends Component {
                   disableClearable
                   disabled={!this.state.programmeGroupId}
                   options={this.state.programmeCoursesListArray}
-                  getOptionLabel={(option) => typeof option.Label === 'string' ? option.Label : ""}
+                  getOptionLabel={(option) =>
+                    typeof option.Label === "string" ? option.Label : ""
+                  }
                   value={this.state.preCourseId}
                   onChange={(event, newValue) => {
                     this.onPreCourseIdChange(newValue);
@@ -992,39 +1154,72 @@ class F09Form extends Component {
                   </Grid>
               </Grid> */}
               <TableContainer component={Paper}>
-                <Table className={classes.table} size="small" aria-label="customized table">
+                <Table
+                  className={classes.table}
+                  size="small"
+                  aria-label="customized table"
+                >
                   <TableHead>
                     <TableRow>
-                      <StyledTableCell align="center" style={{borderLeft: '1px solid rgb(29, 95, 152)'}}>SR#</StyledTableCell>
+                      <StyledTableCell
+                        align="center"
+                        style={{ borderLeft: "1px solid rgb(29, 95, 152)" }}
+                      >
+                        SR#
+                      </StyledTableCell>
                       <StyledTableCell align="center">Course</StyledTableCell>
                       <StyledTableCell align="center">Credit</StyledTableCell>
-                      <StyledTableCell align="center">Prerequisite Courses</StyledTableCell>
-                      <StyledTableCell align="center"> Choice Group</StyledTableCell>
-                      <StyledTableCell align="center" style={{borderRight:'1px solid rgb(29, 95, 152)', minWidth:100}}>Action</StyledTableCell>
+                      <StyledTableCell align="center">
+                        Prerequisite Courses
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {" "}
+                        Choice Group
+                      </StyledTableCell>
+                      <StyledTableCell
+                        align="center"
+                        style={{
+                          borderRight: "1px solid rgb(29, 95, 152)",
+                          minWidth: 100,
+                        }}
+                      >
+                        Action
+                      </StyledTableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                  {this.state.courseRowDataArray.length > 0 ? (
-                    this.state.courseRowDataArray.map((dt, i) => (
-                      <CourseRow
-                        key={"CRDA"+dt+i}
-                        rowIndex={i}
-                        rowData={dt}
-                        onDelete={(i) => this.handeDeleteCourseRow(i)}
-                        programmeCoursesArray={this.state.programmeCoursesArray}
-                        choiceGroupIdMenuItems={this.state.preChoiceGroupIdMenuItems}
-                      />
-                    ))
-                  ) : 
-                  this.state.isLoading ? 
-                    <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={6}><center><CircularProgress/></center></StyledTableCell>
-                    </StyledTableRow>
-                    :
-                    <StyledTableRow key={1}>
-                      <StyledTableCell component="th" scope="row" colSpan={6}><center><b>No Data</b></center></StyledTableCell>
-                    </StyledTableRow>
-                  }
+                    {this.state.courseRowDataArray.length > 0 ? (
+                      this.state.courseRowDataArray.map((dt, i) => (
+                        <CourseRow
+                          key={"CRDA" + dt + i}
+                          rowIndex={i}
+                          rowData={dt}
+                          onDelete={(i) => this.handeDeleteCourseRow(i)}
+                          programmeCoursesArray={
+                            this.state.programmeCoursesArray
+                          }
+                          choiceGroupIdMenuItems={
+                            this.state.preChoiceGroupIdMenuItems
+                          }
+                        />
+                      ))
+                    ) : this.state.isLoading ? (
+                      <StyledTableRow key={1}>
+                        <StyledTableCell component="th" scope="row" colSpan={6}>
+                          <center>
+                            <CircularProgress />
+                          </center>
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    ) : (
+                      <StyledTableRow key={1}>
+                        <StyledTableCell component="th" scope="row" colSpan={6}>
+                          <center>
+                            <b>No Data</b>
+                          </center>
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
