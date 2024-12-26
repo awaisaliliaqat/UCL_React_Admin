@@ -739,7 +739,7 @@ class R350EmployeesWithPendingForApproval extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip> */}
-              {"Employees With Pending Approval Report for Payroll"}
+              {"Employees With Pending Approval Report"}
               <br />
             </Typography>
           </div>

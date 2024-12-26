@@ -690,7 +690,7 @@ class R350MonthlyEmployeeLateDaysReportforPayroll extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip> */}
-              {"Monthly Employee Late Days Report for Payroll"}
+              {"Monthly Employee Deductions Report"}
               <br />
             </Typography>
           </div>

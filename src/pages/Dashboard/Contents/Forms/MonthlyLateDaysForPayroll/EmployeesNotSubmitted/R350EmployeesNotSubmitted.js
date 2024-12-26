@@ -723,7 +723,7 @@ class EmployeesNotSubmitted extends Component {
                   <ArrowBackIcon fontSize="small" color="primary" />
                 </IconButton>
               </Tooltip> */}
-              {"Employees Not Submitted Report for Payroll"}
+              {"Employees Not Submitted Report"}
               <br />
             </Typography>
           </div>
