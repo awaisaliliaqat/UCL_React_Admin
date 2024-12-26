@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Paper } from "@material-ui/core";
@@ -11,31 +10,40 @@ import {
 } from "@devexpress/dx-react-grid";
 import {
   Grid,
-  Table,
+  VirtualTable,
   TableHeaderRow,
   TableGroupRow,
   TableSummaryRow,
+  TableFixedColumns,
 } from "@devexpress/dx-react-grid-material-ui";
 
-// const CurrencyFormatter = ({ value }) => value.toLocaleString("en-US");
+// Sticky header logic
+const StickyHeaderCell = (props) => (
+  <VirtualTable.Cell
+    {...props}
+    style={{
+      ...props.style,
+      top: 0,
+      zIndex: 10,
+      position: "sticky",
+      background: "#fff",
+      borderBottom: "1px solid #ccc",
+    }}
+  />
+);
 
-// const CurrencyTypeProvider = (props) => (
-//   <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
-// );
+const CurrencyFormatter = ({ value }) => value.toLocaleString("en-US");
 
-const F337ViewRecordForMonthlyApprovalTableComponent = (props) => {
-  // const filteredColumns = props.columns.filter(
-  //   (column) => column.name !== "totalAmount" && column.name !== "ratePerHour"
-  // );
-  // const updatedData = {
-  //   ...props,
-  //   columns: filteredColumns,
-  // };
+const CurrencyTypeProvider = (props) => (
+  <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
+);
+
+const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
   const [tableColumnExtensions] = useState([
     { columnName: "id", align: "left", width: "80px" },
-    { columnName: "displayName", align: "left", width: "100px" },
-    { columnName: "totalWorkingDays", align: "right", width: "50px" },
-    { columnName: "totalAttendedDays", align: "right", width: "70px" },
+    { columnName: "displayName", align: "left", width: "110px" },
+    { columnName: "totalWorkingDays", align: "right", width: "100px" },
+    { columnName: "totalAttendedDays", align: "right", width: "100px" },
     {
       columnName: "totalAttendanceMissingDays",
       align: "right",
@@ -52,22 +60,18 @@ const F337ViewRecordForMonthlyApprovalTableComponent = (props) => {
     { columnName: "sumOverTime", align: "left", width: "100px" },
     { columnName: "sumShortTime", align: "left", width: "100px" },
     { columnName: "adjustedAbsentDays", align: "left", width: "150px" },
-    { columnName: "remarks", align: "left", width: "100px" },
+    { columnName: "remarks", align: "left", width: "250px" },
   ]);
-
-  const [tableGroupColumn] = useState([{ columnName: "teacherLabel" }]);
 
   const [groupSummaryItems] = useState([
-    { columnName: "totalNetHours", type: "sum" },
+    { columnName: "netHours", type: "sum" },
     { columnName: "ratePerHour", type: "avg" },
-    // { columnName: "totalNetHours", type: "sum" },
   ]);
 
-  // const [totalSummaryItems] = useState([
-  //   { columnName: "totalNetHours", type: "sum" },
-  //   { columnName: "ratePerHour", type: "avg" },
-  //   // { columnName: "totalNetHours", type: "sum" },
-  // ]);
+  const [totalSummaryItems] = useState([
+    { columnName: "netHours", type: "sum" },
+    { columnName: "ratePerHour", type: "avg" },
+  ]);
 
   const { data, columns } = props;
   const [currencyColumns] = useState(["perHourRate", "totalAmount"]);
@@ -80,53 +84,46 @@ const F337ViewRecordForMonthlyApprovalTableComponent = (props) => {
   const onExpandedGroupChange = (groups) => {
     setExpandedGroups(groups);
   };
+
   const rows = data.teachersAttendanceSheetData || [];
   return (
-    <Paper>
+    <Paper style={{}}>
       <Grid rows={rows} columns={columns}>
-        {/* <CurrencyTypeProvider for={currencyColumns} /> */}
+        <CurrencyTypeProvider for={currencyColumns} />
         <GroupingState
-          // defaultGrouping={tableGroupColumn}
           defaultExpandedGroups={expandedGroups}
           expandedGroups={expandedGroups}
           onExpandedGroupsChange={onExpandedGroupChange}
-          // grouping={tableGroupColumn}
         />
         <SummaryState
-          // totalItems={totalSummaryItems}
+          totalItems={totalSummaryItems}
           groupItems={groupSummaryItems}
         />
         <IntegratedGrouping />
         <IntegratedSummary />
-        <Table columnExtensions={tableColumnExtensions} />
-        <TableHeaderRow
-          titleComponent={(props) =>
-            props.children === "Action" ? (
-              <b>&emsp;{props.children}</b>
-            ) : (
-              <b>{props.children}</b>
-            )
-          }
-        />
-        <TableGroupRow icon />
-        <TableSummaryRow />
+        <VirtualTable columnExtensions={tableColumnExtensions} />
+        <TableHeaderRow cellComponent={StickyHeaderCell} />{" "}
+        {/* Sticky header */}
+        {/* <TableGroupRow /> */}
+        {/* <TableSummaryRow /> */}
+        <TableFixedColumns leftColumns={["id", "displayName"]} />
       </Grid>
     </Paper>
   );
 };
 
-F337ViewRecordForMonthlyApprovalTableComponent.propTypes = {
+F336MonthlyEmployeeAttendanceTableComponent.propTypes = {
   data: PropTypes.object,
   columns: PropTypes.array,
   expandedGroups: PropTypes.array,
   showFilter: PropTypes.bool,
 };
 
-F337ViewRecordForMonthlyApprovalTableComponent.defaultProps = {
+F336MonthlyEmployeeAttendanceTableComponent.defaultProps = {
   data: {},
   columns: [],
   expandedGroups: [],
   showFilter: false,
 };
 
-export default F337ViewRecordForMonthlyApprovalTableComponent;
+export default F336MonthlyEmployeeAttendanceTableComponent;
