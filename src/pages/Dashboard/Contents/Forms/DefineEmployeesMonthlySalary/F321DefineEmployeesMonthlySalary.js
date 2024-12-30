@@ -33,6 +33,22 @@ const styles = () => ({
     justifyContent: "center",
     padding: 15,
   },
+
+  scrollableTableContainer: {
+    maxHeight: "400px", // Adjust the height as needed
+    overflowY: "auto",
+    border: "1px solid #ddd", // Optional border for clarity
+  },
+
+  stickyHeader: {
+    position: "sticky",
+    top: 0,
+    // backgroundColor: theme.palette.background.default, // Header background color
+    zIndex: 2, // Ensure header appears above body
+  },
+  subColumnCell: {
+    textAlign: "center", // Adjust based on alignment needs
+  },
 });
 
 // eslint-disable-next-line no-unused-vars
@@ -745,7 +761,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
           employeeId: employee.employeeId,
           homeRent: Number(employee.homeRent.toFixed(0)),
           grossSalary: Number(employee.grossSalary.toFixed(0)),
-          netSalary: Number(employee.netSalary.toFixed(0)),
+          netSalary: employee.netSalary,
           leaveInCashDays: employee.leaveInCashDays,
           leaveInCashAmount: employee.leaveInCashAmount,
 
