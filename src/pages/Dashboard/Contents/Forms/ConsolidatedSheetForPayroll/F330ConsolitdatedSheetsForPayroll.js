@@ -3,15 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import {
-  Divider,
-  CircularProgress,
-  Grid,
-  Button,
-  Typography,
-  TextField,
-  MenuItem,
-} from "@material-ui/core";
+import { Divider, CircularProgress, Grid, Button, Typography, TextField, MenuItem, } from "@material-ui/core";
 import F330ConsolidatedSheetForPayrollTableComponent from "./chunks/F330ConsolidatedSheetsForPayrollTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
 
@@ -28,7 +20,10 @@ const styles = () => ({
     fontWeight: 600,
     textTransform: "capitalize",
   },
-  divider: { backgroundColor: "rgb(58, 127, 187)", opacity: "0.3" },
+  divider: { 
+    backgroundColor: "rgb(58, 127, 187)", 
+    opacity: "0.3" 
+  },
   actions: {
     display: "flex",
     flexDirection: "row",
@@ -68,18 +63,18 @@ class F330ConsolidatedSheetForPayroll extends Component {
       programmeGroupIdError: "",
 
       monthsData: [
-        { id: 1, label: "January" },
-        { id: 2, label: "February" },
-        { id: 3, label: "March" },
-        { id: 4, label: "April" },
-        { id: 5, label: "May" },
-        { id: 6, label: "June" },
-        { id: 7, label: "July" },
-        { id: 8, label: "August" },
-        { id: 9, label: "September" },
-        { id: 10, label: "October" },
-        { id: 11, label: "November" },
-        { id: 12, label: "December" },
+        // { id: 1, label: "January" },
+        // { id: 2, label: "February" },
+        // { id: 3, label: "March" },
+        // { id: 4, label: "April" },
+        // { id: 5, label: "May" },
+        // { id: 6, label: "June" },
+        // { id: 7, label: "July" },
+        // { id: 8, label: "August" },
+        // { id: 9, label: "September" },
+        // { id: 10, label: "October" },
+        // { id: 11, label: "November" },
+        // { id: 12, label: "December" },
       ],
       monthsDataLoading: false,
       monthId: "",
@@ -92,10 +87,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
       isApproved: false,
     };
   }
-  componentDidMount() {
-    this.props.setDrawerOpen(false);
-    this.getAcademicSessions();
-  }
+
   getData = (data) => {
     console.log(data);
     // const formattedArray = Object.entries(data[0]).map(
@@ -132,6 +124,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
     const augustIndex = sortedArray.findIndex((item) =>
       item.monthName.includes("August")
     );
+
     const rearrangedArray = [
       ...sortedArray.slice(augustIndex),
       ...sortedArray.slice(0, augustIndex),
@@ -165,19 +158,13 @@ class F330ConsolidatedSheetForPayroll extends Component {
         (json) => {
           if (json.CODE === 1) {
             let data = json.DATA || [];
-
             // const updatedData = this.getData(data);
-
             // console.log(updatedData);
             this.setState({
               yearData: data,
             });
           } else {
-            this.handleSnackbar(
-              true,
-              json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-              "error"
-            );
+            this.handleSnackbar( true, json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error" );
           }
         },
         (error) => {
@@ -187,11 +174,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
               isReload: true,
             });
           } else {
-            this.handleSnackbar(
-              true,
-              "Failed to fetch, Please try again later.",
-              "error"
-            );
+            this.handleSnackbar( true, "Failed to fetch, Please try again later.", "error" );
             console.log(error);
           }
         }
@@ -226,20 +209,11 @@ class F330ConsolidatedSheetForPayroll extends Component {
               if (array[i].isActive == "1") {
                 const sessionId = array[i].ID;
                 // this.setState({ academicSessionId: sessionId });
-
                 // this.getProgrammeGroupsBySessionId(sessionId);
               }
             }
           } else {
-            this.handleSnackbar(
-              true,
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
+            this.handleSnackbar( true, <span> {json.SYSTEM_MESSAGE} <br /> {json.USER_MESSAGE} </span>, "error" );
           }
         },
         (error) => {
@@ -249,11 +223,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
               isReload: true,
             });
           } else {
-            this.handleSnackbar(
-              true,
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleSnackbar( true, "Failed to fetch ! Please try Again later.", "error" );
           }
         }
       );
@@ -269,11 +239,8 @@ class F330ConsolidatedSheetForPayroll extends Component {
     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonEmployeePayroleView`;
     var data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
+    data.append("payrollMonthId", this.state.monthId.id);
     data.append("monthEnum", this.state.monthId.monthName);
-    data.append("year", 0);
-
-    // data.append("programmeGroupId", this.state.programmeGroupId);
-    // data.append("month", this.state.monthId);
     await fetch(url, {
       method: "POST",
       body: data,
@@ -308,15 +275,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
               isApproved,
             });
           } else {
-            this.handleSnackbar(
-              true,
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
+            this.handleSnackbar( true, <span> {json.SYSTEM_MESSAGE} <br /> {json.USER_MESSAGE} </span>, "error" );
           }
         },
         (error) => {
@@ -326,11 +285,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
               isReload: false,
             });
           } else {
-            this.handleSnackbar(
-              true,
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
+            this.handleSnackbar( true, "Failed to fetch ! Please try Again later.", "error" );
           }
         }
       );
@@ -402,6 +357,12 @@ class F330ConsolidatedSheetForPayroll extends Component {
     });
   };
 
+    
+  componentDidMount() {
+    this.props.setDrawerOpen(false);
+    this.getAcademicSessions();
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -410,10 +371,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
       { name: "userLabel", title: "Employee Name" },
       { name: "departmentsLabel", title: "Department" },
       { name: "designationsLabel", title: "Designation" },
-
-      {
-        name: "paymentThrough",
-        title: "Payment Through",
+      { name: "paymentThrough", title: "Payment Through",
         getCellValue: (rowData) => {
           console.log(rowData);
           return (
@@ -426,27 +384,19 @@ class F330ConsolidatedSheetForPayroll extends Component {
             >
               {rowData.paymentThrough === "Cheque" ? "Cheque" : "Bank Account"}
               <br />
-              {rowData.backAccount1 !== ""
-                ? `SCB : ${rowData.backAccount1}`
-                : ""}
+              {rowData.backAccount1 !== "" ? `SCB : ${rowData.backAccount1}` : ""}
               <br />
-              {rowData.backAccount2 !== ""
-                ? `Faysal Bank : ${rowData.backAccount2}`
-                : ""}
+              {rowData.backAccount2 !== "" ? `Faysal Bank : ${rowData.backAccount2}` : ""}
             </div>
           );
         },
       },
-
       // { name: "backAccount1", title: "Bank 1 Account #" },
       // { name: "backAccount2", title: "Bank 2 Account #" },
-      {
-        name: "hourlyAmount",
-        title: "Claim Amount",
-        getCellValue: (rowData) => {
-          console.log(rowData);
-          return <div>{rowData.hourlyAmount.toFixed(0)}</div>;
-        },
+      { name: "hourlyAmount", title: "Claim Amount",
+        // getCellValue: (rowData) => {
+        //   return <div>{rowData.hourlyAmount.toFixed(0)}</div>;
+        // },
       },
       { name: "monthlyAmount", title: "Salary Amount" },
       { name: "totalPayableAmountLabel", title: "Total Payable Amount" },

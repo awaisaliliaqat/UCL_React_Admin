@@ -1,20 +1,8 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Paper } from "@material-ui/core";
-import {
-  SummaryState,
-  GroupingState,
-  IntegratedGrouping,
-  IntegratedSummary,
-  DataTypeProvider,
-} from "@devexpress/dx-react-grid";
-import {
-  Grid,
-  Table,
-  TableHeaderRow,
-  TableGroupRow,
-  TableSummaryRow,
-} from "@devexpress/dx-react-grid-material-ui";
+import { SummaryState, GroupingState, IntegratedGrouping, IntegratedSummary, DataTypeProvider } from "@devexpress/dx-react-grid";
+import { Grid, Table, TableHeaderRow, TableGroupRow, TableSummaryRow } from "@devexpress/dx-react-grid-material-ui";
 
 const CurrencyFormatter = ({ value }) => value.toLocaleString("en-US");
 
@@ -46,7 +34,7 @@ const F330ConsolidatedSheetForPayrollTableComponent = (props) => {
   ]);
 
   const { data, columns } = props;
-  const [currencyColumns] = useState(["totalPayableAmountLabel"]);
+  const [currencyColumns] = useState(["hourlyAmount","monthlyAmount","totalPayableAmountLabel"]);
   const [expandedGroups, setExpandedGroups] = useState([]);
 
   useEffect(() => {
@@ -58,24 +46,17 @@ const F330ConsolidatedSheetForPayrollTableComponent = (props) => {
   };
 
   // Transforming the data to include month labels
-  const transformedData = data.teachersAttendanceSheetData
-    .map((item) => ({
-      ...item,
-      userLabel: item.userLabel,
-    }))
-    .flat();
+  const transformedData = data.teachersAttendanceSheetData.map((item) => ({ ...item, userLabel: item.userLabel })).flat();
 
   return (
     <Paper>
       <Grid rows={transformedData} columns={columns}>
         <CurrencyTypeProvider for={currencyColumns} />
         <GroupingState
-          defaultGrouping={
-            [
+          defaultGrouping={[
               // { columnName: "monthLabel" },
               // { columnName: "userLabel" },
-            ]
-          }
+          ]}
           defaultExpandedGroups={expandedGroups}
           expandedGroups={expandedGroups}
           onExpandedGroupsChange={onExpandedGroupChange}
