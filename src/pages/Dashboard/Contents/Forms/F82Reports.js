@@ -77,7 +77,7 @@ class F82Reports extends Component {
               let featureLabels = [];
               for (var k=0; k<featureListTypeWise.length; k++) {
                 let featureLabelArray = featureListTypeWise[k].features || [];
-                let featureLabelArrayLength = featureListTypeWise.length;
+                let featureLabelArrayLength = featureLabelArray.length;
                 for(var j=0; j<featureLabelArrayLength; j++){
                   if(featureLabelArray[j]!=null){
                     if(featureLabelArray[j].isChecked){

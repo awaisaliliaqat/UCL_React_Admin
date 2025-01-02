@@ -34,13 +34,15 @@ class DefineEmployeeDesignationsTableComponent extends Component {
         "lessThan",
         "lessThanOrEqual",
       ],
-      pageSizes: [5, 10, 15, 20],
+      pageSizes: [10, 25, 50, 100],
       defaultSorting: [{ columnName: "id", direction: "asc" }],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
       ],
-      tableColumnExtensions: [],
-
+      tableColumnExtensions: [
+        { columnName: "id", width: 100},
+        { columnName: "action", width: 120}
+      ],
       resizingMode: "widget",
       defaultFilters: [],
       filteringStateColumnExtensions: [
@@ -82,7 +84,7 @@ class DefineEmployeeDesignationsTableComponent extends Component {
             defaultSorting={defaultSorting}
             columnExtensions={sortingStateColumnExtensions}
           />
-          <PagingState defaultCurrentPage={0} defaultPageSize={5} />
+          <PagingState defaultCurrentPage={0} defaultPageSize={100} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />

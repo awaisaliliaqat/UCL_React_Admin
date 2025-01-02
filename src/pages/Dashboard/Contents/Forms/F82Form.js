@@ -156,7 +156,7 @@ function Features(props) {
 
 	const [selectedMenuItems, setSelectedMenuItems] = useState([]);
 
-	const [expanded, setExpanded] = useState(false);
+	const [expanded, setExpanded] = useState(true);
 
 	const handleExpandClick = () => {
 		setExpanded(!expanded);
@@ -247,8 +247,7 @@ class F82Form extends Component {
 			featureId: [],
 			featureIds: "",
 			featureIdError: "",
-			isEditMode: false,
-			expanded: false
+			isEditMode: false
 		};
 	}
 
@@ -267,10 +266,6 @@ class F82Form extends Component {
 		this.setState({
 			isOpenSnackbar: false,
 		});
-	};
-
-	handleExpandClick = () => {
-		this.setState({ expanded: !this.state.expanded });
 	};
 
 	loadData = async (dashboardId) => {
