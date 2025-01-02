@@ -111,6 +111,8 @@ import R74Reports from "./Contents/Forms/R74Reports";
 import F75Form from "./Contents/Forms/F75Form";
 import R76Reports from "./Contents/Forms/R76Reports";
 import F77Form from "./Contents/Forms/F77Form";
+import F82Form from "./Contents/Forms/F82Form";
+import F82Reports from "./Contents/Forms/F82Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentProgramme from "./Contents/Reports/ChangeStudentProgramme/ChangeStudentProgramme";
 import CovidVaccineCertificateApproval from "./Contents/Reports/CovidVaccineCertificateApproval/CovidVaccineCertificateApproval";
@@ -1753,6 +1755,36 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F77Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F82Form"
+                exact
+                path="/dashboard/F82Form/:recordId"
+                render={(props) => {
+                  return (
+                    <F82Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F82Form"
+                exact
+                path="/dashboard/F82Reports"
+                render={(props) => {
+                  return (
+                    <F82Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
