@@ -2,13 +2,7 @@
 
 import React, { Fragment, useState, Suspense, useEffect } from "react";
 import clsx from "clsx";
-import {
-  HashRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-} from "react-router-dom";
+import { HashRouter as Router, Switch, Route, Link, Redirect, } from "react-router-dom";
 import Drawer from "@material-ui/core/Drawer";
 import Toolbar from "@material-ui/core/Toolbar";
 import MenuList from "@material-ui/core/MenuList";
@@ -113,6 +107,8 @@ import R76Reports from "./Contents/Forms/R76Reports";
 import F77Form from "./Contents/Forms/F77Form";
 import F82Form from "./Contents/Forms/F82Form";
 import F82Reports from "./Contents/Forms/F82Reports";
+import F83Form from "./Contents/Forms/F83Form";
+import F83Reports from "./Contents/Forms/F83Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentProgramme from "./Contents/Reports/ChangeStudentProgramme/ChangeStudentProgramme";
 import CovidVaccineCertificateApproval from "./Contents/Reports/CovidVaccineCertificateApproval/CovidVaccineCertificateApproval";
@@ -223,6 +219,7 @@ import F332EmployeeTaxCertificateReport from "./Contents/Forms/EmployeeTaxCertif
 import F333ConsolitdatedSheetsForSalaryHistory from "./Contents/Forms/ConsolidatedSalaryHistory/F333ConsolitdatedSheetsForSalaryHistory";
 import F333SalaryHistoryView from "./Contents/Forms/ConsolidatedSalaryHistory/Views/F333SalaryHistoryView";
 // import F334MonthlyEmployeeAttendance from "./Contents/Forms/MonthlyEmployeeAttendance/F334MonthlyEmployeeAttendance";
+import F334ConsolidatedSheetsAccountsOffice from "./Contents/Forms/F334ConsolidatedSheetsAccountsOffice/F334ConsolidatedSheetsAccountsOffice";
 import F335DefineShiftManagement from "./Contents/Forms/ShiftManagement/F335DefineShiftManagement";
 import R335ShiftManagementReport from "./Contents/Forms/ShiftManagement/R335ShiftManagementReport";
 import F336MonthlyEmployeeAttendance from "./Contents/Forms/MonthlyEmployeeAttendance/F336MonthlyEmployeeAttendance";
@@ -249,6 +246,7 @@ import R350MonthlyEmployeeLateDaysReportforPayroll from "./Contents/Forms/Monthl
 import R350EmployeesWithFinalApproval from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesWithFinalApproval/R350EmployeesWithFinalApproval";
 import R350EmployeesNotSubmitted from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesNotSubmitted/R350EmployeesNotSubmitted";
 import R350EmployeesWithPendingForApproval from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesWithPendingForApproval/R350EmployeesWithPendingForApproval";
+
 
 const drawerWidth = 283;
 
@@ -1785,6 +1783,36 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F82Reports
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F83Form"
+                exact
+                path="/dashboard/F83Form"
+                render={(props) => {
+                  return (
+                    <F83Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F83Form"
+                exact
+                path="/dashboard/F83Reports"
+                render={(props) => {
+                  return (
+                    <F83Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}
@@ -3401,6 +3429,22 @@ const Dashboard = (props) => {
                 render={(props) => {
                   return (
                     <F333ConsolitdatedSheetsForSalaryHistory
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F334ConsolidatedSheetsAccountsOffice"
+                exact
+                path="/dashboard/F334ConsolidatedSheetsAccountsOffice"
+                render={(props) => {
+                  return (
+                    <F334ConsolidatedSheetsAccountsOffice
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

@@ -934,9 +934,9 @@ class R350EmployeesWithFinalApproval extends Component {
           />
 
           {/* <BottomBar
-            // left_button_hide
-            left_button_text="Save"
-            left_button_hide={false}
+            // leftButtonHide
+            leftButtonText="Save"
+            leftButtonHide={false}
             bottomLeftButtonAction={() => this.onSaveClick()}
             right_button_text={
               this.state.isApproved ? "Saved" : "Send To Approval"

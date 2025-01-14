@@ -324,8 +324,8 @@ class R213Reports extends Component {
             </Grid>
           </Grid>
           <BottomBar
-            left_button_text="View"
-            left_button_hide={true}
+            leftButtonText="View"
+            leftButtonHide={true}
             bottomLeftButtonAction={this.viewReport}
             right_button_text={<span><img alt="" src={ZipIcon} style={{height: 18, width: 14, verticalAlign:"text-top"}} />&nbsp;&nbsp;Download</span>}
             bottomRightButtonAction={this.downloadZipFile}

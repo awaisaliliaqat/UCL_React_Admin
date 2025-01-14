@@ -649,7 +649,7 @@ class ChangeStudentStatus extends Component {
           />
         </form>
         <BottomBar
-          left_button_hide
+          leftButtonHide
           right_button_text="Activate"
           disableRightButton={
             !this.state.sessionId ||

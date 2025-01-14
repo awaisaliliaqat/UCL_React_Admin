@@ -956,7 +956,7 @@ getCitiesData = async (id, type, value='') => {
       <Fragment>
         <Dialog
           open={this.state.isLoading}
-          disableBackdropClick
+          backdropClick
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >

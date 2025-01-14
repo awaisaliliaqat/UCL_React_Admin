@@ -639,8 +639,8 @@ class AnnouncementForm extends Component {
           <input type="submit" id="announcementSubmit" style={{ display: 'none' }} />
         </form>
         <BottomBar
-          left_button_text="View"
-          left_button_hide={false}
+          leftButtonText="View"
+          leftButtonHide={false}
           bottomLeftButtonAction={() => this.viewReport()}
           right_button_text="Save"
           bottomRightButtonAction={() => this.clickOnFormSubmit()}

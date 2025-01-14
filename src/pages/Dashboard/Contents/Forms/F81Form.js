@@ -316,8 +316,8 @@ class F81Form extends Component {
                     </Grid>
                 </form>
                 <BottomBar
-                    left_button_text="View"
-                    left_button_hide={false}
+                    leftButtonText="View"
+                    leftButtonHide={false}
                     bottomLeftButtonAction={this.viewReport}
                     right_button_text="Save"
                     bottomRightButtonAction={this.clickOnFormSubmit}

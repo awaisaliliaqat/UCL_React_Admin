@@ -2,22 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import {
-	TextField,
-	Grid,
-	Divider,
-	Typography,
-	Button,
-	CircularProgress,
-	IconButton,
-	Tooltip,
-	Select,
-	MenuItem,
-	InputLabel,
-	Input,
-	OutlinedInput,
-	FormControl
-} from "@material-ui/core";
+import { TextField, Grid, Divider, Typography, Button, CircularProgress, IconButton, Tooltip, Select, MenuItem, InputLabel, Input, OutlinedInput, FormControl } from "@material-ui/core";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import DefineEmployeeRolesTableComponent from "./chunks/DefineEmployeeDesignationsTableComponent";
 import { Delete } from "@material-ui/icons";
@@ -182,7 +167,7 @@ class F312DefineEmployeeDesignationsFrom extends Component {
 							});
 						}
 					} else {
-						this.handleOpenSnackbar( json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error" );
+						this.handleOpenSnackbar(json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error" );
 					}
 					console.log(json);
 				},
@@ -230,12 +215,11 @@ class F312DefineEmployeeDesignationsFrom extends Component {
 
 	clickOnFormSubmit = () => {
 		if (this.isFormValid()) {
-			document.getElementById("F308FormSubmitBtn").click();
+			this.onFormSubmit();
 		}
 	};
 
 	onFormSubmit = async (e) => {
-		e.preventDefault();
 		if (this.isFormValid) {
 			let myForm = document.getElementById("myForm");
 			const data = new FormData(myForm);
@@ -248,34 +232,34 @@ class F312DefineEmployeeDesignationsFrom extends Component {
 					Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
 				}),
 			})
-				.then((res) => {
-					if (!res.ok) {
-						throw res;
+			.then((res) => {
+				if (!res.ok) {
+					throw res;
+				}
+				return res.json();
+			})
+			.then(
+				(json) => {
+					if (json.CODE === 1) {
+						this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+						setTimeout(() => {
+							this.handleReset();
+						}, 2000);
+					} else {
+						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error" );
 					}
-					return res.json();
-				})
-				.then(
-					(json) => {
-						if (json.CODE === 1) {
-							this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-							setTimeout(() => {
-								this.handleReset();
-							}, 2000);
-						} else {
-							this.handleOpenSnackbar( json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error" );
-						}
-					},
-					(error) => {
-						if (error.status == 401) {
-							this.setState({
-								isLoginMenu: true,
-								isReload: false,
-							});
-						} else {
-							this.handleOpenSnackbar( "Failed to Save ! Please try Again later.", "error" );
-						}
+				},
+				(error) => {
+					if (error.status == 401) {
+						this.setState({
+							isLoginMenu: true,
+							isReload: false,
+						});
+					} else {
+						this.handleOpenSnackbar( "Failed to Save ! Please try Again later.", "error" );
 					}
-				);
+				}
+			);
 			this.setState({ isLoading: false });
 		}
 	};
@@ -330,8 +314,8 @@ class F312DefineEmployeeDesignationsFrom extends Component {
 		this.getEmployeeDesignationsTypesData();
 	}
 
-
 	render() {
+		
 		const { classes } = this.props;
 
 		const columns = [
@@ -362,13 +346,12 @@ class F312DefineEmployeeDesignationsFrom extends Component {
 					open={this.state.isLoginMenu}
 					handleClose={() => this.setState({ isLoginMenu: false })}
 				/>
-				<form id="myForm" onSubmit={this.onFormSubmit}>
+				<form id="myForm" name="myForm">
 					<TextField
 						type="hidden"
 						name="id"
 						value={this.state.recordId}
 					/>
-					<Button id="F308FormSubmitBtn" type="submit" style={{ display: "none"}}>Submit Form</Button>
 					<Grid container component="main" className={classes.root}>
 						<Typography className={classes.pageTitle} variant="h5">
 							Define Employee Designations
@@ -378,7 +361,7 @@ class F312DefineEmployeeDesignationsFrom extends Component {
 									style={{ marginLeft: "0px" }}
 									onClick={this.handleToggleTableFilter}
 								>
-									<FilterIcon fontSize="default" color="primary" />
+									<FilterIcon fontSize="medium" color="primary" />
 								</IconButton>
 							</Tooltip>
 						</div>
@@ -397,9 +380,7 @@ class F312DefineEmployeeDesignationsFrom extends Component {
 									value={this.state.label}
 									error={!!this.state.labelError}
 									helperText={this.state.labelError}
-									inputProps={{
-										autocomplete: "off"
-									}}
+									autoComplete="off"
 								/>
 							</Grid>
 							<Grid item xs={12} md={5}>

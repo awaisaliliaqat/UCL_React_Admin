@@ -351,8 +351,8 @@ class R307ApprovedProgressReportsFilter extends Component {
             </Grid>
           </Grid>
           <BottomBar
-            left_button_text="View"
-            left_button_hide={true}
+            leftButtonText="View"
+            leftButtonHide={true}
             bottomLeftButtonAction={this.viewReport}
             right_button_text="Generate"
             bottomRightButtonAction={this.handleGenerate}

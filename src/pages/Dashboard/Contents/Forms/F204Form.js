@@ -399,6 +399,18 @@ class F204Form extends Component {
     this.setState({ isLoading: false });
   };
 
+  isSessionTermValid = () => {
+    let isValid = true;
+    if (!this.state.sessionTermId) {
+      this.setState({ sessionTermIdError: "Please select session term." });
+      document.getElementById("sessionTermId").focus();
+      isValid = false;
+    } else {
+      this.setState({ sessionTermIdError: "" });
+    }
+    return isValid;
+  };
+  
   isLabelValid = () => {
     let isValid = true;
     if (!this.state.label) {
@@ -592,6 +604,7 @@ class F204Form extends Component {
 
   onFormSubmit = async () => {
     if (
+      !this.isSessionTermValid () ||
       !this.isCourseValid() ||
       !this.isSectionValid() ||
       !this.isLabelValid() ||
@@ -720,7 +733,6 @@ class F204Form extends Component {
             >
               <Grid item xs={12} md={12}>
               <TextField
-                id="sessionTermId"
                 name="sessionTermId"
                 variant="outlined"
                 label="Term"
@@ -732,6 +744,9 @@ class F204Form extends Component {
                 required
                 fullWidth
                 select
+                inputProps={{
+                  id : "sessionTermId"
+                }}
               >
                 {this.state.sessionTermMenuItems.map((dt, i) => (
                   <MenuItem
@@ -981,8 +996,8 @@ class F204Form extends Component {
             <br/>
         </form>
         <BottomBar
-          left_button_text="View"
-          left_button_hide={false}
+          leftButtonText="View"
+          leftButtonHide={false}
           bottomLeftButtonAction={this.viewReport}
           right_button_text="Save"
           bottomRightButtonAction={this.clickOnFormSubmit}

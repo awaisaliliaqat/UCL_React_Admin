@@ -635,7 +635,7 @@ class R206Reports extends Component {
         />
         <Dialog
           open={this.state.isExamLoading}
-          disableBackdropClick
+          backdropClick
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >

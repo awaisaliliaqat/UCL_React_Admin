@@ -35,7 +35,7 @@ const ChangePasswordMenu = props => {
 
     return (
         <div>
-            <Dialog disableBackdropClick open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+            <Dialog backdropClick open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
                 <DialogContent>
                     <TextField

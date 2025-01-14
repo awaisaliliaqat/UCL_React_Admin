@@ -135,7 +135,7 @@ const LoginMenu = (props) => {
       <Dialog
         disableScrollLock
         disableEscapeKeyDown
-        disableBackdropClick
+        backdropClick
         open={open}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"

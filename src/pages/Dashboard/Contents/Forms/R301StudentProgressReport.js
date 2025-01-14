@@ -885,8 +885,8 @@ class DisplayAdmissionApplications extends Component {
         <div className={classes.bottomBar}>
         <BottomBar
           
-            left_button_text="Save"
-            left_button_hide={false}
+            leftButtonText="Save"
+            leftButtonHide={false}
             bottomLeftButtonAction={() =>this.handleGenerateAndApprove(0)}
             right_button_text="Approve"
             bottomRightButtonAction={ () =>this.handleGenerateAndApprove(1)}

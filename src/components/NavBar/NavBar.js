@@ -331,6 +331,7 @@ const NavBar = (props) => {
               >
                 <Badge
                   color="secondary"
+                  overlap="rectangular"
                   badgeContent={notiCounter}
                   invisible={isNotiDrawerOpen || notiCounter <= 0}
                 >

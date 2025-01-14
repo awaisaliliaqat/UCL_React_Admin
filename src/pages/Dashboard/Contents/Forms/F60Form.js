@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { withStyles, createMuiTheme, MuiThemeProvider, createStyles} from '@material-ui/core/styles';
+import { withStyles, createTheme, MuiThemeProvider, createStyles} from '@material-ui/core/styles';
 import {Typography, TextField, Divider, CircularProgress, Grid, Tooltip, 
 IconButton, Hidden, Button, Fab, MenuItem} from "@material-ui/core";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
@@ -42,7 +42,7 @@ const styles = createStyles((theme)=>createStyles({
   },
 }));
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       main: '#174A84',
@@ -555,8 +555,8 @@ class R60Form extends Component {
           <br/>
           {/* 
           <BottomBar
-            left_button_text="View"
-            left_button_hide={true}
+            leftButtonText="View"
+            leftButtonHide={true}
             bottomLeftButtonAction={this.viewReport}
             right_button_text="Genrate"
             bottomRightButtonAction={this.handleGenerate}

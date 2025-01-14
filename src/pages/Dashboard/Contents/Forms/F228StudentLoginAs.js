@@ -664,8 +664,8 @@ class F228StudentLoginAs extends Component {
           </Grid>
         </form>
         {/* <BottomBar
-          left_button_text="View"
-          left_button_hide={true}
+          leftButtonText="View"
+          leftButtonHide={true}
         
           bottomLeftButtonAction={this.viewReport}
           right_button_text="Save"

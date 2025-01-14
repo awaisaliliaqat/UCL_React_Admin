@@ -3770,7 +3770,7 @@ class F1000Form extends Component {
 
                 <Dialog
                     open={this.state.loadingData}
-                    disableBackdropClick
+                    backdropClick
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >

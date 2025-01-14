@@ -855,8 +855,8 @@ class F327DefineEmployeesLoan extends Component {
           <input type="submit" style={{ display: "none" }} id="btn-submit" />
         </form>
         <BottomBar
-          left_button_text="View"
-          left_button_hide={this.state.recordId > 0 ? true : false}
+          leftButtonText="View"
+          leftButtonHide={this.state.recordId > 0 ? true : false}
           bottomLeftButtonAction={() => this.viewReport()}
           right_button_text={
             Number(this.state.recordId) === 0

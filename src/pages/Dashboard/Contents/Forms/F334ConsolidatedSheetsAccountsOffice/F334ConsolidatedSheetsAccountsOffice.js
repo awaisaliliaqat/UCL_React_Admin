@@ -4,10 +4,11 @@ import { withStyles } from "@material-ui/core/styles";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { Divider, CircularProgress, Grid, Button, Typography, TextField, MenuItem, } from "@material-ui/core";
-import F330ConsolidatedSheetForPayrollTableComponent from "./chunks/F330ConsolidatedSheetsForPayrollTableComponent";
+import F334ConsolidatedSheetsAccountsOfficeTableComponent from "./chunks/F334ConsolidatedSheetsAccountsOfficeTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
+import BottomBar from "../../../../../components/BottomBar/BottomBar";
 
-const styles = () => ({
+const styles = (theme) => ({
   mainContainer: {
     padding: 20,
   },
@@ -32,12 +33,11 @@ const styles = () => ({
   },
   button: {
     textTransform: "capitalize",
-    fontSize: 14,
-    height: 45,
+    padding: 13
   },
 });
 
-class F330ConsolidatedSheetForPayroll extends Component {
+class F334ConsolidatedSheetsAccountsOffice extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,25 +57,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
       academicSessionId: "",
       academicSessionIdError: "",
 
-      programmeGroupsData: [],
-      programmeGroupsDataLoading: false,
-      programmeGroupId: "",
-      programmeGroupIdError: "",
-
-      monthsData: [
-        // { id: 1, label: "January" },
-        // { id: 2, label: "February" },
-        // { id: 3, label: "March" },
-        // { id: 4, label: "April" },
-        // { id: 5, label: "May" },
-        // { id: 6, label: "June" },
-        // { id: 7, label: "July" },
-        // { id: 8, label: "August" },
-        // { id: 9, label: "September" },
-        // { id: 10, label: "October" },
-        // { id: 11, label: "November" },
-        // { id: 12, label: "December" },
-      ],
+      monthsData: [],
       monthsDataLoading: false,
       monthId: "",
       monthIdError: "",
@@ -89,27 +71,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
   }
 
   getData = (data) => {
-    console.log(data);
-    // const formattedArray = Object.entries(data[0]).map(
-    //   ([monthName, dates]) => ({
-    //     fromDate: dates[0],
-    //     toDate: dates[1],
-    //     monthName,
-    //   })
-    // );
-    // const sortedArray = formattedArray.sort(
-    //   (a, b) => new Date(a.fromDate) - new Date(b.fromDate)
-    // );
-
-    // const augustIndex = sortedArray.findIndex(
-    //   (item) => item.monthName === "August"
-    // );
-    // const rearrangedArray = [
-    //   ...sortedArray.slice(augustIndex),
-    //   ...sortedArray.slice(0, augustIndex),
-    // ];
-
-    const formattedArray = Object.entries(data[0]).map(
+   const formattedArray = Object.entries(data[0]).map(
       ([monthName, dates]) => ({
         fromDate: dates[0],
         toDate: dates[1],
@@ -140,7 +102,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
 
     const formData = new FormData();
     formData.append("sessionId", value);
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonMonthsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C334CommonMonthsView`;
     await fetch(url, {
       method: "POST",
       body: formData,
@@ -186,7 +148,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
 
   getAcademicSessions = async () => {
     this.setState({ academicSessionsDataLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonAcademicSessionsView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C334CommonAcademicSessionsView`;
     await fetch(url, {
       method: "POST",
       headers: new Headers({
@@ -236,7 +198,7 @@ class F330ConsolidatedSheetForPayroll extends Component {
     }
 
     this.setState({ isLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C330CommonEmployeePayroleView`;
+    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C334CommonEmployeePayroleView`;
     var data = new FormData();
     data.append("academicsSessionId", this.state.academicSessionId);
     data.append("payrollMonthId", this.state.monthId.id);
@@ -302,7 +264,6 @@ class F330ConsolidatedSheetForPayroll extends Component {
 
   onClearAllData = () => {
     let sessionId = "";
-
     let array = this.state.academicSessionsData || [];
     let arrayLength = array.length;
     for (let i = 0; i < arrayLength; i++) {
@@ -317,10 +278,6 @@ class F330ConsolidatedSheetForPayroll extends Component {
       academicSessionId: sessionId,
       academicSessionIdError: "",
       academicSessionsDataLoading: false,
-
-      programmeGroupId: "",
-      programmeGroupIdError: "",
-
       teachersAttendanceSheetData: [],
     });
   };
@@ -331,26 +288,10 @@ class F330ConsolidatedSheetForPayroll extends Component {
 
     switch (name) {
       case "academicSessionId":
-        this.setState({
-          teachersAttendanceSheetData: [],
-          programmeGroupId: "",
-          programmeGroupIdError: "",
-        });
-        // this.getProgrammeGroupsBySessionId(value);
-        break;
-      case "programmeGroupId":
-        this.setState({
-          teachersAttendanceSheetData: [],
-        });
+			this.getYearsData(value);
         break;
       default:
-        break;
     }
-
-    if (name === "academicSessionId") {
-      this.getYearsData(value);
-    }
-
     this.setState({
       [name]: value,
       [errName]: "",
@@ -367,39 +308,20 @@ class F330ConsolidatedSheetForPayroll extends Component {
     const { classes } = this.props;
 
     const columns = [
-      { name: "userId", title: "Employee ID" },
+      { name: "userId", title: "Emp#" },
       { name: "userLabel", title: "Employee Name" },
-      { name: "departmentsLabel", title: "Department" },
-      { name: "designationsLabel", title: "Designation" },
-      { name: "paymentThrough", title: "Payment Through",
-        getCellValue: (rowData) => {
-          console.log(rowData);
-          return (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                flexDirection: "row",
-              }}
-            >
-              {rowData.paymentThrough === "Cheque" ? "Cheque" : "Bank Account"}
-              <br />
-              {rowData.backAccount1 !== "" ? `SCB : ${rowData.backAccount1}` : ""}
-              <br />
-              {rowData.backAccount2 !== "" ? `Faysal Bank : ${rowData.backAccount2}` : ""}
-            </div>
-          );
-        },
-      },
-      // { name: "backAccount1", title: "Bank 1 Account #" },
-      // { name: "backAccount2", title: "Bank 2 Account #" },
-      { name: "hourlyAmount", title: "Claim Amount",
+      { name: "ratePerHour", title: "Rate"},
+		{ name: "netHoursAfterAdjustmentHours", title: "Claim Hours"},
+		{ name: "hourlyAmount", title: "Claim Amount",
         // getCellValue: (rowData) => {
         //   return <div>{rowData.hourlyAmount.toFixed(0)}</div>;
         // },
       },
-      { name: "monthlyAmount", title: "Salary Amount" },
+      { name: "perMonthSalary", title: "Gross Salary" },
+		{ name: "monthlyAmount", title: "Salary Amount" },
       { name: "totalPayableAmountLabel", title: "Total Payable Amount" },
+		{ name: "adjustedAbsentDays", title: "Adjusted Absent Days" },
+		{ name: "adjustedLateDays", title: "Adjusted Late Days" }
     ];
 
     return (
@@ -412,16 +334,15 @@ class F330ConsolidatedSheetForPayroll extends Component {
         <div className={classes.mainContainer}>
           <div className={classes.titleContainer}>
             <Typography className={classes.title} variant="h5">
-              {"Consolidated Sheet For Payment Advice"}
+              {"Consolidated Sheets For Accounts Office"}
               <br />
             </Typography>
           </div>
           <Divider className={classes.divider} />
           <br />
-          <Grid container justifyContent="left" alignItems="left" spacing={2}>
-            <Grid item xs={12} md={3}>
+          <Grid container justifyContent="center" alignItems="center" spacing={2}>
+            <Grid item xs={12} md={5}>
               <TextField
-                id="academicSessionId"
                 name="academicSessionId"
                 variant="outlined"
                 label="Academic Session"
@@ -432,63 +353,20 @@ class F330ConsolidatedSheetForPayroll extends Component {
                 required
                 fullWidth
                 select
+					 inputProps={{
+						id: "academicSessionId"
+					 }}
               >
                 {this.state.academicSessionsData?.map((item) => (
-                  <MenuItem key={item} value={item.ID}>
+                  <MenuItem key={`academicSessionsData-${item.ID}`} value={item.ID}>
                     {item.Label}
                   </MenuItem>
                 ))}
               </TextField>
             </Grid>
             <br />
-            {/* <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={5}>
               <TextField
-                id="programmeGroupId"
-                name="programmeGroupId"
-                variant="outlined"
-                label="Programme Group"
-                onChange={this.onHandleChange}
-                value={this.state.programmeGroupId}
-                error={!!this.state.programmeGroupIdError}
-                helperText={this.state.programmeGroupIdError}
-                required
-                fullWidth
-                select
-              >
-                {this.state.programmeGroupsData?.map((item) => (
-                  <MenuItem key={item} value={item.Id}>
-                    {item.Label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            */}
-            {/* 
-            <Grid item xs={12} md={3}>
-              <TextField
-                id="yearId"
-                name="yearId"
-                variant="outlined"
-                label="Year"
-                disabled={!this.state.academicSessionId}
-                onChange={this.onHandleChange}
-                value={this.state.yearId}
-                // error={!!this.state.monthIdError}
-                // helperText={this.state.monthIdError}
-                required
-                fullWidth
-                select
-              >
-                {this.state.yearData?.map((item) => (
-                  <MenuItem key={item} value={item.ID}>
-                    {item.Label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid> */}
-            <Grid item xs={12} md={3}>
-              <TextField
-                id="monthId"
                 name="monthId"
                 variant="outlined"
                 label="Month"
@@ -499,65 +377,70 @@ class F330ConsolidatedSheetForPayroll extends Component {
                 required
                 fullWidth
                 select
+					 disabled={!this.state.academicSessionId}
+					 inputProps={{
+						id: "monthId"
+					 }}
               >
                 {this.state.yearData?.map((item) => (
-                  <MenuItem key={item} value={item}>
+                  <MenuItem key={`yearData-${item.monthName}`} value={item}>
                     {item.monthName}
                   </MenuItem>
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} md={3}>
-              <div className={classes.actions}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  disabled={
-                    this.state.isLoading ||
-                    this.state.academicSessionsDataLoading ||
-                    this.state.programmeGroupsDataLoading ||
-                    !this.state.academicSessionId
-                  }
-                  onClick={(e) => this.onSearchClick(e)}
-                >
-                  {" "}
-                  {this.state.isLoading ? (
-                    <CircularProgress style={{ color: "white" }} size={24} />
-                  ) : (
-                    "Search"
-                  )}
-                </Button>
-                <Button
+            <Grid item xs={6} md={1}>
+					<Button
+						variant="contained"
+						color="primary"
+						size="large"
+						fullWidth
+						disabled={this.state.isLoading || !this.state.academicSessionId || !this.state.monthId}
+						onClick={(e) => this.onSearchClick(e)}
+						className={classes.button}
+					>
+						{this.state.isLoading ? (
+							<CircularProgress style={{ color: "white" }} size={24} />
+						) : (
+							"Search"
+						)}
+					</Button>
+				</Grid>
+				<Grid item xs={6} md={1}>
+               <Button
                   variant="contained"
                   color="default"
-                  className={classes.button}
-                  disabled={
-                    this.state.isLoading ||
-                    this.state.academicSessionsDataLoading ||
-                    this.state.programmeGroupsDataLoading
-                  }
+						size="large"
+						fullWidth
+                  disabled={ this.state.isLoading || this.state.academicSessionsDataLoading }
                   onClick={() => this.onClearAllData()}
-                  style={{
-                    marginLeft: 8,
-                  }}
+						className={classes.button}
                 >
                   Clear
-                </Button>
-              </div>
+               </Button>
             </Grid>
             <Grid item xs={12}>
               <Divider className={classes.divider} />
             </Grid>
           </Grid>
-
           <Grid item xs={12}>
-            <F330ConsolidatedSheetForPayrollTableComponent
+            <F334ConsolidatedSheetsAccountsOfficeTableComponent
               columns={columns}
               data={this.state}
             />
           </Grid>
-
+			 <br/>
+			 <br/>
+			 <BottomBar
+				leftButtonText="View"
+				leftButtonHide={true}
+				bottomLeftButtonAction={()=>{}}
+				right_button_text="Save"
+				bottomRightButtonAction={(e)=> this.handleSnackbar("Saved", "success" )}
+				disableRightButton={!this.state.teachersAttendanceSheetData.length>0}
+				loading={this.state.isLoading}
+				isDrawerOpen={this.props.isDrawerOpen}
+			/>
           <CustomizedSnackbar
             isOpen={this.state.isOpenSnackbar}
             message={this.state.snackbarMessage}
@@ -570,13 +453,14 @@ class F330ConsolidatedSheetForPayroll extends Component {
   }
 }
 
-F330ConsolidatedSheetForPayroll.propTypes = {
+F334ConsolidatedSheetsAccountsOffice.propTypes = {
   classes: PropTypes.object,
   setDrawerOpen: PropTypes.func,
 };
 
-F330ConsolidatedSheetForPayroll.defaultProps = {
+F334ConsolidatedSheetsAccountsOffice.defaultProps = {
   classes: {},
   setDrawerOpen: (fn) => fn,
 };
-export default withStyles(styles)(F330ConsolidatedSheetForPayroll);
+
+export default withStyles(styles)(F334ConsolidatedSheetsAccountsOffice);

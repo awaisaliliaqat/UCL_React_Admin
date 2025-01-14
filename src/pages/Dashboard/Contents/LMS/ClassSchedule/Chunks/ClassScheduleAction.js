@@ -39,7 +39,7 @@ const ClassScheduleAction = props => {
 
     return (
         <div>
-            <Dialog disableBackdropClick disableEscapeKeyDown fullWidth={false}
+            <Dialog backdropClick disableEscapeKeyDown fullWidth={false}
                 maxWidth={'md'} open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="simple-dialog-title">
                     <span style={{

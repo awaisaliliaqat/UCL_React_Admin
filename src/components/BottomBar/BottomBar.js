@@ -42,9 +42,9 @@ function BottomBar(props) {
             color="default"
             onClick={() => bottomLeftButtonAction(props)}
             disabled={props.disableLeftButton}
-            style={{ display: props.left_button_hide ? "none" : "block" }}
+            style={{ display: props.leftButtonHide ? "none" : "block" }}
           >
-            {props.left_button_text}
+            {props.leftButtonText}
           </Button>
           <div className={classes.grow} />
           {props.otherActions}
@@ -79,8 +79,8 @@ function BottomBar(props) {
 BottomBar.propTypes = {
   isDrawerOpen: PropTypes.bool,
   disableLeftButton: PropTypes.bool,
-  left_button_hide: PropTypes.bool,
-  left_button_text: PropTypes.any,
+  leftButtonHide: PropTypes.bool,
+  leftButtonText: PropTypes.any,
   bottomLeftButtonAction: PropTypes.func,
   disableRightButton: PropTypes.bool,
   hideRightButton: PropTypes.bool,
@@ -93,8 +93,8 @@ BottomBar.propTypes = {
 BottomBar.defaultProps = {
   isDrawerOpen: true,
   disableLeftButton: false,
-  left_button_hide: false,
-  left_button_text: 'View',
+  leftButtonHide: false,
+  leftButtonText: 'View',
   bottomLeftButtonAction: fn => fn,
   disableRightButton: false,
   hideRightButton: false,

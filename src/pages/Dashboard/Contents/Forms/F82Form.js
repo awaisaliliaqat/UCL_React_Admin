@@ -19,7 +19,7 @@ import Button from "@material-ui/core/Button";
 
 const styles = (theme) => ({
 	root: {
-		padding: theme.spacing.unit*2,
+		padding: theme.spacing(2),
 		minWidth: 350,
 		overFlowX: "auto",
 	},
@@ -56,10 +56,10 @@ const styles = (theme) => ({
 		// marginRight: theme.spacing.unit,
 		marginLeft: 0,
 		marginRight: 0,
-	 },
-	 button: {
-		//margin: theme.spacing.unit
-	 },
+	},
+	button: {
+		padding: 13,
+	}
 });
 
 function FeatureDetail(props) {
@@ -243,6 +243,7 @@ class F82Form extends Component {
 			snackbarMessage: "",
 			snackbarSeverity: "",
 			label: "",
+			labelError: "",
 			featureMenuItems: [],
 			featureId: [],
 			featureIds: "",
@@ -319,15 +320,15 @@ class F82Form extends Component {
 		this.setState({ isLoadingFeatures: false });
 	};
 
-	isUsersValid = () => {
-		let userId = this.state.userId;
+	isLabelValid = () => {
+		let label = this.state.label.trim();
 		let isValid = true;
-		if (userId.length == 0) {
-			this.setState({ userIdError: "Please select at least one user." });
-			document.getElementById("userId").focus();
+		if (label.length < 1) {
+			this.setState({ labelError: "Please enter valid label" });
+			document.getElementById("label").focus();
 			isValid = false;
 		} else {
-			this.setState({ userIdError: "" });
+			this.setState({ labelError: "" });
 		}
 		return isValid;
 	};
@@ -388,14 +389,13 @@ class F82Form extends Component {
 	};
 
 	clickOnFormSubmit = () => {
-		//  if(
-		//   !this.isUsersValid()
-		//   || !this.isFeatureValid()
-		// ){ return; }
+		 if(!this.isLabelValid()
+		  //|| !this.isFeatureValid()
+		){ return; }
 		this.onFormSubmit();
 	};
 
-	onFormSubmit = async (e) => {
+	onFormSubmit = async () => {
 		
 		let myForm = document.getElementById("myForm");
 		const data = new FormData(myForm);
@@ -513,7 +513,7 @@ class F82Form extends Component {
 							<Grid item xs={12} md={11}>
 								<TextField
 									required
-									id="outlined-required"
+									id="label"
 									name="label"
 									label="Label"
 									value={this.state.label}
@@ -522,6 +522,8 @@ class F82Form extends Component {
 									margin="normal"
 									variant="outlined"
 									fullWidth
+									error={!!this.state.labelError}
+									helperText={this.state.labelError}
 								/>
 							</Grid>
 							<Grid item xs={12} md={1} style={{textAlign: "right", alignContent: "center"}}>
@@ -529,8 +531,8 @@ class F82Form extends Component {
 									variant="outlined" 
 									className={classes.button}
 									size="large"
-									style={{height:54, marginTop:7}}
 									onClick={this.handleReset}
+									fullWidth
 								>
 									Reset
 								</Button>
@@ -581,11 +583,11 @@ class F82Form extends Component {
 					</Grid>
 				</form>
 				<BottomBar
-					left_button_text="View"
-					left_button_hide={false}
+					leftButtonText="View"
+					leftButtonHide={false}
 					bottomLeftButtonAction={this.viewReport}
 					right_button_text="Save"
-					bottomRightButtonAction={this.clickOnFormSubmit}
+					bottomRightButtonAction={(e)=>this.clickOnFormSubmit()}
 					loading={this.state.isLoading || this.state.rowEditMode}
 					isDrawerOpen={this.props.isDrawerOpen}
 				/>

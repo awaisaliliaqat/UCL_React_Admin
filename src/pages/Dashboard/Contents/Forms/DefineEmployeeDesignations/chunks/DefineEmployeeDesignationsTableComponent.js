@@ -1,21 +1,10 @@
-import React, { Component } from "react";
-import Paper from "@material-ui/core/Paper";
-import {
-  FilteringState,
-  IntegratedFiltering,
-  IntegratedPaging,
-  IntegratedSorting,
-  PagingState,
-  SortingState,
-} from "@devexpress/dx-react-grid";
-import {
-  Grid,
-  PagingPanel,
-  Table,
-  TableFilterRow,
-  TableHeaderRow,
-} from "@devexpress/dx-react-grid-material-ui";
+import React, { Component, Fragment } from "react";
+import {Paper, IconButton} from "@material-ui/core";
+import { FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
+import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow, } from "@devexpress/dx-react-grid-material-ui";
 import PropTypes from "prop-types";
+import { Delete } from "@material-ui/icons";
+import EditIcon from "@material-ui/icons/Edit";
 
 class DefineEmployeeDesignationsTableComponent extends Component {
   constructor(props) {
@@ -51,6 +40,15 @@ class DefineEmployeeDesignationsTableComponent extends Component {
     };
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    // Update only if `rows` or `columns` change
+    if (nextProps.rows !== this.props.rows || nextProps.showFilter !== this.props.showFilter) {
+      return true;
+    }
+    // Prevent updates for other props/state changes
+    return false;
+  }
+
   render() {
     // eslint-disable-next-line no-unused-vars
     const cellComponent = ({ cellProps, ...restProps }) => {
@@ -68,7 +66,7 @@ class DefineEmployeeDesignationsTableComponent extends Component {
       sortingStateColumnExtensions,
       filteringStateColumnExtensions,
       defaultFilters,
-      pageSizes,
+      pageSizes
     } = this.state;
 
     const { rows, columns, showFilter } = this.props;

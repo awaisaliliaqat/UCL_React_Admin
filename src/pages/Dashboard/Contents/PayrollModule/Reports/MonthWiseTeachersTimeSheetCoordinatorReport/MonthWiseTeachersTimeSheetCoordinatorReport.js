@@ -453,7 +453,7 @@ class MonthWiseTeachersTimeSheetCoordinatorReport extends Component {
                 <div>
                   <form id="myFormUpdate" >
                      {/* <input name="recordId" type="hidden" value={this.state.recordId }/> */}
-                    <Dialog  disableBackdropClick disableEscapeKeyDown  fullWidth={false}
+                    <Dialog  backdropClick disableEscapeKeyDown  fullWidth={false}
                         maxWidth={'sm'} open={this.state.isOpenActionMenu}   aria-labelledby="form-dialog-title">
                         <DialogTitle id="simple-dialog-title">
                             <span style={{

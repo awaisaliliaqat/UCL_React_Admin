@@ -904,9 +904,9 @@ class F337ViewRecordForMonthlyApproval extends Component {
           />
 
           <BottomBar
-            // left_button_hide
-            left_button_text="Send Back to Revision"
-            left_button_hide={false}
+            // leftButtonHide
+            leftButtonText="Send Back to Revision"
+            leftButtonHide={false}
             bottomLeftButtonAction={this.onSendBackForRevision}
             disableLeftButton={this.state.isFinalApproved}
             right_button_text={this.state.isApproved ? "Approved" : "Approve"}

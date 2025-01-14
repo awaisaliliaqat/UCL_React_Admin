@@ -884,9 +884,9 @@ class F339AddManualAttendances extends Component {
           />
 
           <BottomBar
-            // left_button_hide
-            left_button_text="View"
-            left_button_hide={true}
+            // leftButtonHide
+            leftButtonText="View"
+            leftButtonHide={true}
             bottomLeftButtonAction={this.viewReport}
             right_button_text={this.state.isApproved ? "Saved" : "Save"}
             disableRightButton={this.state.employeePayrollsData.length === 0}

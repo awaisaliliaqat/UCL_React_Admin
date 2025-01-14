@@ -469,8 +469,8 @@ class F36Form extends Component {
           <br/>
           <br/>
           <BottomBar
-            left_button_text="View"
-            left_button_hide={false}
+            leftButtonText="View"
+            leftButtonHide={false}
             bottomLeftButtonAction={this.viewReport}
             hideRightButton={true}
             right_button_text="Save"

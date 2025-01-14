@@ -1110,7 +1110,7 @@ class F321DefineEmployeesMonthlySalaryView extends Component {
 
         <div>
           {/* <BottomBar
-            left_button_hide
+            leftButtonHide
             right_button_text={this.state.isApproved ? "Saved" : "Save"}
             loading={this.state.isLoading}
             isDrawerOpen={this.props.isDrawerOpen}

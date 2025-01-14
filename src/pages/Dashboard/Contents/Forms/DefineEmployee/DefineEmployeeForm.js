@@ -2019,8 +2019,8 @@ class DefineEmployeeForm extends Component {
           <input type="submit" style={{ display: "none" }} id="btn-submit" />
         </form>
         <BottomBar
-          left_button_text="View"
-          left_button_hide={false}
+          leftButtonText="View"
+          leftButtonHide={false}
           bottomLeftButtonAction={() => this.viewReport()}
           right_button_text="Save"
           bottomRightButtonAction={() => this.clickOnFormSubmit()}

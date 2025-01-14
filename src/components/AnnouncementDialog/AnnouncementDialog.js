@@ -60,12 +60,12 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 const AnnouncementDialog = props => {
-  const { handleClose, open, title, content, isFullScreen, disableBackdropClick, actions, disableEscapeKeyDown, disableScrollLock, hideClose, dividers } = props;
+  const { handleClose, open, title, content, isFullScreen, backdropClick, actions, disableEscapeKeyDown, disableScrollLock, hideClose, dividers } = props;
   return (
     <div>
       <Dialog 
         maxWidth="md"
-        disableBackdropClick={disableBackdropClick} 
+        backdropClick={backdropClick} 
         disableScrollLock={disableScrollLock}
         disableEscapeKeyDown={disableEscapeKeyDown} 
         fullScreen={isFullScreen} 
@@ -94,7 +94,7 @@ AnnouncementDialog.propTypes = {
   handleClose: PropTypes.func,
   open: PropTypes.bool,
   isFullScreen: PropTypes.bool,
-  disableBackdropClick: PropTypes.bool,
+  backdropClick: PropTypes.bool,
   disableEscapeKeyDown: PropTypes.bool,
   disableScrollLock: PropTypes.bool,
   hideClose: PropTypes.bool,
@@ -110,7 +110,7 @@ AnnouncementDialog.defaultProps = {
   handleClose: fn => fn,
   isFullScreen: false,
   actions: "",
-  disableBackdropClick: false,
+  backdropClick: false,
   disableEscapeKeyDown: false,
   disableScrollLock: false,
   hideClose: false,

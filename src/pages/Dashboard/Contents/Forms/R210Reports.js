@@ -735,8 +735,8 @@ class R210Reports extends Component {
             </div>
           </Grid>
           <BottomBar
-            left_button_text="Genrate & Approve"
-            left_button_hide={false}
+            leftButtonText="Genrate & Approve"
+            leftButtonHide={false}
             bottomLeftButtonAction={this.handleGenerateAndApprove}
             right_button_text="Genrate & Approve"
             bottomRightButtonAction={this.handleGenerateAndApprove}

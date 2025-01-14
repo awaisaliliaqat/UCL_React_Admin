@@ -743,8 +743,8 @@ class R46Reports extends Component {
           <br/>
           <br/>
           <BottomBar
-            left_button_text="View"
-            left_button_hide={true}
+            leftButtonText="View"
+            leftButtonHide={true}
             bottomLeftButtonAction={this.viewReport}
             right_button_text="Save"
             bottomRightButtonAction={this.onFormSubmit}

@@ -565,9 +565,9 @@
 //           />
 
 //           <BottomBar
-//             // left_button_hide
-//             left_button_text="View"
-//             left_button_hide={false}
+//             // leftButtonHide
+//             leftButtonText="View"
+//             leftButtonHide={false}
 //             bottomLeftButtonAction={this.viewReport}
 //             right_button_text={this.state.isApproved ? "Approved" : "Approve"}
 //             disableRightButton={

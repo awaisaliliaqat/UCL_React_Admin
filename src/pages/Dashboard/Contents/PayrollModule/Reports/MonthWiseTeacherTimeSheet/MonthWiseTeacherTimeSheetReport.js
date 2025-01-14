@@ -387,7 +387,7 @@ class MonthWiseTeacherTimeSheetReport extends Component {
                 </div>
                 <BottomBar
                     
-                    left_button_text="Add Class"
+                    leftButtonText="Add Class"
                     bottomLeftButtonAction={()=>{window.location = "#/dashboard/F229Form/0"}}
                     right_button_text="Send For Approval"
                     bottomRightButtonAction={this.clickOnApprove}
