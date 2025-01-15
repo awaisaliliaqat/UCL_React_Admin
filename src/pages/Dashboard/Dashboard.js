@@ -333,7 +333,9 @@ const useStyles = makeStyles((theme) => ({
 // 2 === Admin
 
 const SetRoute = ({ name, setValue, ...rest }) => {
-  setValue(name);
+  useEffect(() => {
+    setValue(name);
+  },[name, setValue]);
   return <Route {...rest} />;
 };
 
@@ -426,7 +428,7 @@ const Dashboard = (props) => {
                         >
                           <Link
                             style={{ textDecoration: "none" }}
-                            to={option.webUrl}
+                            to={option.webUrl || ""}
                           >
                             <Typography
                               className={`${classes.menuItemText} ${
