@@ -188,7 +188,7 @@ class F207Reports extends Component {
         >
           <Grid
             container
-            justify="space-between"
+            justifyContent="space-between"
             spacing={2}
           >
             <Typography
@@ -231,7 +231,7 @@ class F207Reports extends Component {
               showFilter={this.state.showTableFilter}
             />
           ) : (
-            <Grid container justify="center" alignItems="center">
+            <Grid container justifyContent="center" alignItems="center">
               <CircularProgress />
             </Grid>
           )}

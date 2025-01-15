@@ -1849,7 +1849,7 @@ class F221Form extends Component {
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
         <div style={{ padding: 20 }}>
-          <Grid container justify="space-between">
+          <Grid container justifyContent="space-between">
             <Grid item xs={12}>
               <Typography
                 style={{

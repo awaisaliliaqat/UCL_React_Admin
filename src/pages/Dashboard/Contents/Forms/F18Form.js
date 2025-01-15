@@ -110,7 +110,7 @@ function ProgrammeGroup(props) {
           <Grid
             container
             direction="row"
-            justify="flex-start"
+            justifyContent="flex-start"
             alignItems="center"
           >
             {data.programmes.map((dt, i) =>

@@ -713,7 +713,7 @@ class F229Form extends Component {
           />
           <br />
           <form id="myForm">
-            <Grid container justify="left" alignItems="center" spacing={2}>
+            <Grid container justifyContent="left" alignItems="center" spacing={2}>
               <Grid item xs={12} md={2}>
                 <TextField
                   id="academicSessionId"
@@ -753,7 +753,7 @@ class F229Form extends Component {
                   select
                 >
                   {this.state.isLoading ? (
-                    <Grid container justify="center">
+                    <Grid container justifyContent="center">
                       <CircularProgress />
                     </Grid>
                   ) : (
@@ -816,7 +816,7 @@ class F229Form extends Component {
                       </MenuItem>
                     ))
                   ) : (
-                    <Grid container justify="center">
+                    <Grid container justifyContent="center">
                       <CircularProgress />
                     </Grid>
                   )}
@@ -850,7 +850,7 @@ class F229Form extends Component {
             <Grid
               style={{ marginTop: "40px" }}
               container
-              justify="left"
+              justifyContent="left"
               alignItems="center"
               spacing={2}
             >

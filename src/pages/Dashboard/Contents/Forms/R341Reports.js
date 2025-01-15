@@ -887,7 +887,7 @@ class R341Reports extends Component {
             }}
           />
           <br />
-          <Grid container justify="left" alignItems="left" spacing={2}>
+          <Grid container justifyContent="left" alignItems="left" spacing={2}>
             <Grid item xs={12} md={3}>
               <TextField
                 id="academicSessionId"
@@ -1022,7 +1022,7 @@ class R341Reports extends Component {
                   :
                     <Grid 
                       container 
-                      justify="center">
+                      justifyContent="center">
                         <CircularProgress />
                       </Grid>
                   }
@@ -1083,7 +1083,7 @@ class R341Reports extends Component {
               </TextField>
             </Grid>
           </Grid>
-          <Grid container justify="left" alignItems="left" spacing={2}>
+          <Grid container justifyContent="left" alignItems="left" spacing={2}>
             {/* <Grid item xs={12} md={2}>
               <TextField
                 id="termId"
@@ -1254,7 +1254,7 @@ class R341Reports extends Component {
               showFilter={this.state.showTableFilter}
             />
           ) : (
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
               <Grid item xs={12} style={{ textAlign: "center" }}>
                 <br />
                 <CircularProgress disableShrink />

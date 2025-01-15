@@ -140,7 +140,7 @@ const EmailVerification = () => {
         >
           {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Submit"}
         </Button>
-        <Grid container justify="center">
+        <Grid container justifyContent="center">
           <Grid item>
             <Link to="/login" variant="body2">
               {"Return to Login."}

@@ -238,7 +238,7 @@ class CreateRoomReports extends Component {
             showFilter={this.state.showTableFilter}
           />
           {this.state.isLoading && (
-            <Grid container justify="center" style={{ marginTop: '-150px' }}>
+            <Grid container justifyContent="center" style={{ marginTop: '-150px' }}>
               <CircularProgress />
             </Grid>
           )}

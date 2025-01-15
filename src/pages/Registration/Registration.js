@@ -573,7 +573,7 @@ class Login extends Component {
                           "Register"
                         )}
                     </Button>
-                    <Grid container justify="center">
+                    <Grid container justifyContent="center">
                       <Grid item>
                         <Link to="/ucl/login" variant="body2">
                           {"Already have an account."}

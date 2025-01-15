@@ -446,7 +446,7 @@ class F30FormPopupComponent extends Component {
               <Grid
                 container
                 direction="row"
-                justify="space-evenly"
+                justifyContent="space-evenly"
                 alignItems="center"
                 spacing={2}
               >
@@ -584,7 +584,7 @@ class F30FormPopupComponent extends Component {
                 {/* <Grid
                   container
                   direction="row"
-                  justify="space-evenly"
+                  justifyContent="space-evenly"
                   alignItems="center"
                 >
                   <Grid item xs={3} md={3}>

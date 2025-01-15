@@ -334,7 +334,7 @@ class R46Reports extends Component {
             }}
           />
           <br />
-          <Grid container justify="center" alignItems="center" spacing={2}>
+          <Grid container justifyContent="center" alignItems="center" spacing={2}>
             <Grid item xs={12} md={4}>
               <Autocomplete
                 fullWidth
@@ -384,7 +384,7 @@ class R46Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center">
+                    justifyContent="center">
                       <CircularProgress />
                     </Grid>
                 }
@@ -414,7 +414,7 @@ class R46Reports extends Component {
                     </MenuItem>
                   ))
                 ) : (
-                  <Grid container justify="center">
+                  <Grid container justifyContent="center">
                     <CircularProgress />
                   </Grid>
                 )}

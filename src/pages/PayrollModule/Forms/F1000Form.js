@@ -4357,12 +4357,12 @@ class F1000Form extends Component {
                                 />}
                             />
                         </Grid>
-                        <Grid item xs={2} justify="center">
+                        <Grid item xs={2} justifyContent="center">
                             <Button disabled={this.state.isLoading} onClick={this.handleOnClick} color="primary" variant="contained" style={{ width: '100%', backgroundColor: '#174A84' }}>
                                 {this.state.isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Submit"}
                             </Button>
                         </Grid>
-                        <Grid item xs={2} justify="center">
+                        <Grid item xs={2} justifyContent="center">
                             <Button disabled={this.state.isLoading} onClick={this.handleOnClick} color="primary" variant="contained" style={{ width: '100%', backgroundColor: '#174A84' }}>
                                 {this.state.isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Reset"}
                             </Button>

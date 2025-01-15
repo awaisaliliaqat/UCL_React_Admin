@@ -1385,7 +1385,7 @@ class F212Form extends Component {
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
         <div style={{padding:20}}>
-          <Grid container justify="space-between">
+          <Grid container justifyContent="space-between">
             <F212FormChangeStatusPopup
               isOpen={this.state.f212FormChangeStatusPopupIsOpen}
               data={this.state.f212FormChangeStatusPopupData}

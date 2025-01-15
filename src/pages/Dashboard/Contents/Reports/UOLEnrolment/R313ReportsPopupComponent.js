@@ -823,7 +823,7 @@ class F212FormPopupComponent extends Component {
               Student Achievements
             </Typography>
             <Grid container
-                justify="flex-start"
+                justifyContent="flex-start"
                 alignItems="center"
                 spacing={2}
                 style={{borderBottom: "1px solid rgb(58, 127, 187, 0.3)"}}

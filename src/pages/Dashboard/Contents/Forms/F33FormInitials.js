@@ -136,7 +136,7 @@ const F33FormInitials = (props) => {
             ))
             :
             isLoading &&
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
               <CircularProgress />
             </Grid>
           }

@@ -472,7 +472,7 @@ class DisplayAdmissionApplications extends Component {
              <Grid  
                   container 
                   direction="row"
-                  justify="center"
+                  justifyContent="center"
                   alignItems="center">
                  {this.state.programmeLabel=="GCE A Level" ?
                   <Fragment>
@@ -621,7 +621,7 @@ class DisplayAdmissionApplications extends Component {
             <br/>
             
               {/* <Grid container direction="row"
-                justify="left"
+                justifyContent="left"
                 alignItems="left">
                 <Grid item xs={9}>
                     <span style={{fontSize:18, fontWeight:"600"}}>Good Work Keep It Up.</span>

@@ -580,7 +580,7 @@ class R78Reports extends Component {
           <br/>
           <Grid 
             container 
-            justify="center"
+            justifyContent="center"
             alignItems="center"
             spacing={2}
           >
@@ -610,7 +610,7 @@ class R78Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center"
+                    justifyContent="center"
                   >
                     <CircularProgress />
                   </Grid>
@@ -643,7 +643,7 @@ class R78Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center">
+                    justifyContent="center">
                       <CircularProgress />
                     </Grid>
                 }
@@ -675,7 +675,7 @@ class R78Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center"
+                    justifyContent="center"
                   >
                     <CircularProgress />
                   </Grid>
@@ -707,7 +707,7 @@ class R78Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center">
+                    justifyContent="center">
                       <CircularProgress />
                     </Grid>
                 }
@@ -740,7 +740,7 @@ class R78Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center">
+                    justifyContent="center">
                       <CircularProgress />
                     </Grid>
                 }
@@ -823,7 +823,7 @@ class R78Reports extends Component {
           ) : (
             <Grid 
               container 
-              justify="center"
+              justifyContent="center"
             >
               <Grid item xs={12} style={{textAlign:"center"}}>
                 <br/>

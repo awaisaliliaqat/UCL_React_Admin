@@ -505,7 +505,7 @@ class F67Form extends Component {
                         </MenuItem>
                       ))
                     : this.state.isLoading && (
-                        <Grid container justify="center">
+                        <Grid container justifyContent="center">
                           <CircularProgress />
                         </Grid>
                       )}

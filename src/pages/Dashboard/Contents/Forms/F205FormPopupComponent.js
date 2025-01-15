@@ -316,7 +316,7 @@ class F205FormPopupComponent extends Component {
               <Grid
                 container
                 direction="row"
-                justify="space-evenly"
+                justifyContent="space-evenly"
                 alignItems="center"
                 spacing={2}
               >

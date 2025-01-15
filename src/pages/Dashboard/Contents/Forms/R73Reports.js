@@ -293,7 +293,7 @@ class R73Reports extends Component {
           <Grid
             container
             component="main"
-            justify="space-around"
+            justifyContent="space-around"
             className={classes.root}
             spacing={2}
           >

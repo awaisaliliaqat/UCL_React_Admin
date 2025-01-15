@@ -236,7 +236,7 @@ class R314StudentsList extends Component {
             }}
           />
           <br />
-          <Grid container justify="left" alignItems="left" spacing={2}>
+          <Grid container justifyContent="left" alignItems="left" spacing={2}>
             <Grid item xs={3}>
               <span className={classes.label}>Nucleus ID</span>
               <TextField
@@ -316,7 +316,7 @@ class R314StudentsList extends Component {
               onHandleRightClick={(e, row) => this.onHandleRightClick(e, row)}
             />
           ) : (
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
               <Grid item xs={12} style={{ textAlign: "center" }}>
                 <br />
                 <CircularProgress disableShrink />

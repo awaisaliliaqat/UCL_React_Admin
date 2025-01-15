@@ -311,7 +311,7 @@ class R49Reports extends Component {
           <br/>
           <Grid 
             container 
-            justify="center"
+            justifyContent="center"
             alignItems="center"
             spacing={2}
           > 
@@ -341,7 +341,7 @@ class R49Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center"
+                    justifyContent="center"
                   >
                     <CircularProgress />
                   </Grid>
@@ -394,7 +394,7 @@ class R49Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center">
+                    justifyContent="center">
                       <CircularProgress />
                     </Grid>
                 }
@@ -417,7 +417,7 @@ class R49Reports extends Component {
           ) : (
             <Grid 
               container 
-              justify="center" 
+              justifyContent="center" 
               alignItems="center"
             >
               <Grid item xs={1}>

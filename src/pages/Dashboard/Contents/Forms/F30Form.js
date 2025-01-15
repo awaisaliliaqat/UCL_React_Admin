@@ -698,7 +698,7 @@ class F30Form extends Component {
               ) : this.state.isLoading ? (
                 <Grid
                   container
-                  justify="center"
+                  justifyContent="center"
                   alignItems="center"
                   style={{ paddingTop: "2em" }}
                 >

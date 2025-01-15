@@ -628,7 +628,7 @@ class R46Reports extends Component {
          
           <Grid 
             container 
-            justify="center"
+            justifyContent="center"
             alignItems="center"
             spacing={2}
           > 
@@ -661,7 +661,7 @@ class R46Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center"
+                    justifyContent="center"
                   >
                     <CircularProgress />
                   </Grid>
@@ -755,7 +755,7 @@ class R46Reports extends Component {
                     </MenuItem>
                   ))
                 ) : (
-                  <Grid container justify="center">
+                  <Grid container justifyContent="center">
                     <CircularProgress disableShrink />
                   </Grid>
                 )}

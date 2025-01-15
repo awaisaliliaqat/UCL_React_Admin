@@ -782,7 +782,7 @@ class F204Form extends Component {
                       </MenuItem>
                     ))
                   :
-                    this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
+                    this.state.isLoading && <Grid container justifyContent="center"><CircularProgress /></Grid>
                   }
                 </TextField>
               </Grid>
@@ -811,7 +811,7 @@ class F204Form extends Component {
                       </MenuItem>
                     ))
                   :
-                    this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
+                    this.state.isLoading && <Grid container justifyContent="center"><CircularProgress /></Grid>
                   }
                 </TextField>
               </Grid>
@@ -875,7 +875,7 @@ class F204Form extends Component {
                       </MenuItem>
                     ))
                   :
-                    this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
+                    this.state.isLoading && <Grid container justifyContent="center"><CircularProgress /></Grid>
                   }
                 </TextField>
               </Grid>
@@ -927,7 +927,7 @@ class F204Form extends Component {
                         </MenuItem>
                       ))
                     :
-                      this.state.isLoading && <Grid container justify="center"><CircularProgress /></Grid>
+                      this.state.isLoading && <Grid container justifyContent="center"><CircularProgress /></Grid>
                     }
                   </TextField>
                 </Grid>

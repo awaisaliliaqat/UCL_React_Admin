@@ -510,7 +510,7 @@ class R232StudentProgressReport extends Component {
                 <Grid  
                 container 
                 direction="row"
-                justify="left"
+                justifyContent="left"
                 alignItems="left">
 
                 {this.state.programmeLabel=="GCE A Level" ?

@@ -524,7 +524,7 @@ class F56Form extends Component {
             }}
           />
           <br />
-          <Grid container justify="center" alignItems="center" spacing={2}>
+          <Grid container justifyContent="center" alignItems="center" spacing={2}>
             <Grid item xs={12} md={3}>
               <TextField
                 id="programGroupId"
@@ -549,7 +549,7 @@ class F56Form extends Component {
                     </MenuItem>
                   ))
                 ) : (
-                  <Grid container justify="center">
+                  <Grid container justifyContent="center">
                     <CircularProgress />
                   </Grid>
                 )}
@@ -601,7 +601,7 @@ class F56Form extends Component {
                     </MenuItem>
                   ))
                 ) : (
-                  <Grid container justify="center">
+                  <Grid container justifyContent="center">
                     <CircularProgress />
                   </Grid>
                 )}
@@ -705,7 +705,7 @@ class F56Form extends Component {
                                 </MenuItem>
                               ))
                             ) : (
-                              <Grid container justify="center">
+                              <Grid container justifyContent="center">
                                 <CircularProgress />
                               </Grid>
                             )}

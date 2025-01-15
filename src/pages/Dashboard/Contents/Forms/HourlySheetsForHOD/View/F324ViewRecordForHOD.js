@@ -472,7 +472,7 @@ class F322ViewRecordForCoordinators extends Component {
           </div>
           <Divider className={classes.divider} />
           <br />
-          <Grid container justify="left" alignItems="left" spacing={2}>
+          <Grid container justifyContent="left" alignItems="left" spacing={2}>
             <Grid item xs={12} md={3}>
               <TextField
                 id="academicSessionId"

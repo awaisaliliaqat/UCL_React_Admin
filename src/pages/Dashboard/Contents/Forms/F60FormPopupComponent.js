@@ -240,7 +240,7 @@ class F60FormPopupComponent extends Component {
                         </MenuItem>
                       ))
                     ) : (
-                      <Grid container justify="center">
+                      <Grid container justifyContent="center">
                         <CircularProgress disableShrink />
                       </Grid>
                     )}

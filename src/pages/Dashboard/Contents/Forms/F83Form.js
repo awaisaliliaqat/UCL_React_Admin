@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, useEffect } from "react";
 import { CircularProgress, Collapse, Divider, Grid, IconButton, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -86,9 +86,161 @@ const StyledTableCell = withStyles((theme) => ({
 	},
  }))(TableRow);
 
-class F83Form extends Component {
-	constructor(props) {
-		super(props);
+ const CustomRow = React.memo((props) => {
+	
+	const {
+	  featuresTypesMenuItems=[],
+	  featuresLevel1MenuItems=[],
+	  featuresLevel2MenuItems=[],
+	  featuresLevel3MenuItems=[],
+	  featuresLevel4MenuItems=[],
+	  featureList=[],
+	  clickOnFormSubmit,
+	} = props;
+
+	return (
+		featureList && featureList.map((feature, index) => 
+		<StyledTableRow key={feature.id}>
+			<StyledTableCell component="td" scope="row" align="center">
+			{`${index + 1}`}
+			</StyledTableCell>
+			<StyledTableCell component="td" scope="row">
+			<TextField
+				variant="outlined"
+				fullWidth
+				size="small"
+				name="typeLabel"
+				defaultValue={feature.typeId || ""}
+				select
+			>
+				<MenuItem value="">
+				<em>None</em>
+				</MenuItem>
+				{featuresTypesMenuItems.map((t) => (
+				<MenuItem key={`featuresTypesMenuItems-${t.label}`} value={t.id}>
+					{t.label}
+				</MenuItem>
+				))}
+			</TextField>
+			</StyledTableCell>
+			<StyledTableCell component="td" scope="row">
+			<TextField
+				variant="outlined"
+				fullWidth
+				size="small"
+				name="level1Label"
+				defaultValue={feature.level1 || ""}
+				select
+			>
+				<MenuItem value="">
+				<em>None</em>
+				</MenuItem>
+				{featuresLevel1MenuItems.map((level1) => (
+				<MenuItem key={`featuresLevel1MenuItems-${level1}`} value={level1}>
+					{level1}
+				</MenuItem>
+				))}
+			</TextField>
+			</StyledTableCell>
+			<StyledTableCell component="td" scope="row">
+			<TextField
+				variant="outlined"
+				fullWidth
+				size="small"
+				name="level2Label"
+				defaultValue={feature.level2 || ""}
+				select
+			>
+				<MenuItem value="">
+				<em>None</em>
+				</MenuItem>
+				{featuresLevel2MenuItems.map((level2) => (
+				<MenuItem key={`featuresLevel2MenuItems-${level2}`} value={level2}>
+					{level2}
+				</MenuItem>
+				))}
+			</TextField>
+			</StyledTableCell>
+			<StyledTableCell component="td" scope="row">
+			<TextField
+				variant="outlined"
+				fullWidth
+				size="small"
+				name="level3Label"
+				defaultValue={feature.level3 || ""}
+				select
+			>
+				<MenuItem value="">
+				<em>None</em>
+				</MenuItem>
+				{featuresLevel3MenuItems.map((level3) => (
+				<MenuItem key={`featuresLevel3MenuItems-${level3}`} value={level3}>
+					{level3}
+				</MenuItem>
+				))}
+			</TextField>
+			</StyledTableCell>
+			<StyledTableCell component="td" scope="row">
+			<TextField
+				variant="outlined"
+				fullWidth
+				size="small"
+				name="level4Label"
+				defaultValue={feature.level4 || ""}
+				select
+			>
+				<MenuItem value="">
+				<em>None</em>
+				</MenuItem>
+				{featuresLevel4MenuItems.map((level4) => (
+				<MenuItem key={`featuresLevel4MenuItems-${level4}`} value={level4}>
+					{level4}
+				</MenuItem>
+				))}
+			</TextField>
+			</StyledTableCell>
+			<StyledTableCell component="td" scope="row">
+			<Typography
+				variant="body2"
+				component="span"
+				style={{ display: "inline-block" }}
+			>
+				{feature.label}
+			</Typography>
+			</StyledTableCell>
+			<StyledTableCell component="td" scope="row">
+				<Tooltip title="Save">
+					<IconButton
+					variant="outlined"
+					size="small"
+					color="primary"
+					onClick={(e) => clickOnFormSubmit(e, 1)}
+					>
+					<SaveOutlinedIcon />
+					</IconButton>
+				</Tooltip>
+			</StyledTableCell>
+	  	</StyledTableRow>
+	)
+)}, (prevProps, nextProps) => {
+	// Custom comparison function for featureList
+	if (prevProps.featureList.length !== nextProps.featureList.length) {
+	  return false;
+	}
+  
+	// Check if the elements inside featureList are the same
+	for (let i = 0; i < prevProps.featureList.length; i++) {
+	  if (prevProps.featureList[i].id !== nextProps.featureList[i].id) {
+		return false;
+	  }
+	}
+  
+	return true; // Prevent re-render if featureList is the same
+  });
+
+class F83Form extends React.PureComponent {
+	constructor() {
+		super();
 		this.state = {
 			recordId: 0, // this.props.match.params.recordId,
 			isLoading: false,
@@ -127,7 +279,7 @@ class F83Form extends Component {
 	};
 
 	handleToggleLevlForm = () => {
-		this.setState({ toggleLevelForm : !this.state.toggleLevelForm });
+		this.setState((previousState)=>({ toggleLevelForm : !previousState.toggleLevelForm }));
 	};
 
 	loadFeatureTypes = async () => {
@@ -301,7 +453,8 @@ class F83Form extends Component {
 		});
 	};
 
-	clickOnFormSubmit = () => {
+	clickOnFormSubmit = (e, v) => {
+		alert(v);
 		this.handleOpenSnackbar("Saved", "success");
 		return;
 		 if(!this.isLabelValid()
@@ -359,11 +512,6 @@ class F83Form extends Component {
 		this.setState({ isLoading: false });
 	};
 
-	handleReset = () => {
-		window.location = "#/dashboard/F83Form/0";
-		window.location.reload();
-	}
-
 	viewReport = () => {
 		window.location = "#/dashboard/F83Reports";
 	};
@@ -375,40 +523,17 @@ class F83Form extends Component {
 		this.loadData();
 	}
 
-	// componentWillReceiveProps(nextProps) {
-	// 	if (this.props.match.params.recordId != nextProps.match.params.recordId) {
-	// 		if (nextProps.match.params.recordId != 0) {
-	// 			this.props.setDrawerOpen(false);
-	// 			this.loadData(nextProps.match.params.recordId);
-	// 		} else {
-	// 			window.location.reload();
-	// 		}
-	// 	}
-	// }
-
-	// componentDidUpdate(prevProps, prevState, snapshot) {
-	// 	if (this.props.match.params.recordId != prevProps.match.params.recordId) {
-	// 		if (this.props.match.params.recordId != 0) {
-	// 			this.props.setDrawerOpen(false);
-	// 			this.loadFeatureTypes();
-	// 			this.loadData(this.props.match.params.recordId);
-	// 		} else {
-	// 			window.location.reload();
-	// 		}
-	// 	}
-	// }
-
 	render() {
 		
 		const { classes } = this.props;
 		
 		return (
 			<Fragment>
-				<LoginMenu
+				{/* <LoginMenu
 					reload={this.state.isReload}
 					open={this.state.isLoginMenu}
 					handleClose={() => this.setState({ isLoginMenu: false })}
-				/>
+				/> */}
 				<form id="myForm" onSubmit={this.isFormValid}>
 					<TextField type="hidden" name="id" value={this.state.recordId} />
 					<Grid 
@@ -593,61 +718,70 @@ class F83Form extends Component {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-								{this.state.featuresList.length>0 && !this.state.isLoadingFeatures ?	
-									this.state.featuresList.map((feature, index) => 
-										<StyledTableRow key={`feature-${(index+1)}`}>
-											<StyledTableCell component="td" scope="row" align="center">
-												{`${(index+1)}`}
-											</StyledTableCell>
-											<StyledTableCell component="td" scope="row">
-												<TextField variant="outlined" fullWidth size="small" name="typeLabel" defaultValue={feature.typeId || ""} select>
-													<MenuItem value=""><em>None</em></MenuItem>
-													{this.state.featuresTypesMenuItems.map((t, i) =>
-														<MenuItem key={`featuresTypesMenuItems-${t.label}`} value={t.id}>{t.label}</MenuItem>
-													)}
-												</TextField>
-											</StyledTableCell>
-											<StyledTableCell component="td" scope="row">
-												<TextField variant="outlined" fullWidth size="small" name="level1Label" defaultValue={feature.level1 || ""} select>
-												<MenuItem value=""><em>None</em></MenuItem>
-												{this.state.featuresLevel1MenuItems.map((level1, level1Index) =>
-													<MenuItem key={`featuresLevel1MenuItems-${level1}`} value={level1}>{level1}</MenuItem>
-												)}
-												</TextField>
-											</StyledTableCell>
-											<StyledTableCell component="td" scope="row">
-												<TextField variant="outlined" fullWidth size="small" name="level2Label" defaultValue={feature.level2 || ""} select>
-													<MenuItem value=""><em>None</em></MenuItem>
-													{this.state.featuresLevel2MenuItems.map((level2, level2Index) =>
-														<MenuItem key={`featuresLevel2MenuItems-${level2}`} value={level2}>{level2}</MenuItem>
-													)}
-												</TextField>
-											</StyledTableCell>
-											<StyledTableCell component="td" scope="row">
-												<TextField variant="outlined" fullWidth size="small" name="level3Label" defaultValue={feature.level3 || ""} select>
-													<MenuItem value=""><em>None</em></MenuItem>
-													{this.state.featuresLevel3MenuItems.map((level3, level3Index) =>
-														<MenuItem key={`featuresLevel3MenuItems-${level3}`} value={level3}>{level3}</MenuItem>
-													)}
-												</TextField>
-											</StyledTableCell>
-											<StyledTableCell component="td" scope="row">
-												<TextField variant="outlined" fullWidth size="small" name="level4Label" defaultValue={feature.level4 || ""} select>
-													<MenuItem value=""><em>None</em></MenuItem>
-													{this.state.featuresLevel4MenuItems.map((level4, level4Index) =>
-														<MenuItem key={`featuresLevel4MenuItems-${level4}`} value={level4}>{level4}</MenuItem>
-													)}
-												</TextField>
-											</StyledTableCell>
-											<StyledTableCell component="td" scope="row">
-												<Typography variant="body2" component="span" style={{display:"inline-block"}}>{feature.label}</Typography>
-											</StyledTableCell>
-											<StyledTableCell component="td" scope="row">
-												<Tooltip title="Save"><IconButton variant="outlined" size="small" color="primary" onClick={this.clickOnFormSubmit}><SaveOutlinedIcon /></IconButton></Tooltip>
-											</StyledTableCell>
-										</StyledTableRow>
+								{this.state.featuresList && this.state.featuresList.length>0 && !this.state.isLoadingFeatures ?	
+									// this.state.featuresList.map((feature, index) => 
+										// <StyledTableRow key={`feature-${(index+1)}`}>
+										// 	<StyledTableCell component="td" scope="row" align="center">
+										// 		{`${(index+1)}`}
+										// 	</StyledTableCell>
+										// 	<StyledTableCell component="td" scope="row">
+										// 		<TextField variant="outlined" fullWidth size="small" name="typeLabel" defaultValue={feature.typeId || ""} select>
+										// 			<MenuItem value=""><em>None</em></MenuItem>
+										// 			{this.state.featuresTypesMenuItems.map((t, i) =>
+										// 				<MenuItem key={`featuresTypesMenuItems-${t.label}`} value={t.id}>{t.label}</MenuItem>
+										// 			)}
+										// 		</TextField>
+										// 	</StyledTableCell>
+										// 	<StyledTableCell component="td" scope="row">
+										// 		<TextField variant="outlined" fullWidth size="small" name="level1Label" defaultValue={feature.level1 || ""} select>
+										// 		<MenuItem value=""><em>None</em></MenuItem>
+										// 		{this.state.featuresLevel1MenuItems.map((level1, level1Index) =>
+										// 			<MenuItem key={`featuresLevel1MenuItems-${level1}`} value={level1}>{level1}</MenuItem>
+										// 		)}
+										// 		</TextField>
+										// 	</StyledTableCell>
+										// 	<StyledTableCell component="td" scope="row">
+										// 		<TextField variant="outlined" fullWidth size="small" name="level2Label" defaultValue={feature.level2 || ""} select>
+										// 			<MenuItem value=""><em>None</em></MenuItem>
+										// 			{this.state.featuresLevel2MenuItems.map((level2, level2Index) =>
+										// 				<MenuItem key={`featuresLevel2MenuItems-${level2}`} value={level2}>{level2}</MenuItem>
+										// 			)}
+										// 		</TextField>
+										// 	</StyledTableCell>
+										// 	<StyledTableCell component="td" scope="row">
+										// 		<TextField variant="outlined" fullWidth size="small" name="level3Label" defaultValue={feature.level3 || ""} select>
+										// 			<MenuItem value=""><em>None</em></MenuItem>
+										// 			{this.state.featuresLevel3MenuItems.map((level3, level3Index) =>
+										// 				<MenuItem key={`featuresLevel3MenuItems-${level3}`} value={level3}>{level3}</MenuItem>
+										// 			)}
+										// 		</TextField>
+										// 	</StyledTableCell>
+										// 	<StyledTableCell component="td" scope="row">
+										// 		<TextField variant="outlined" fullWidth size="small" name="level4Label" defaultValue={feature.level4 || ""} select>
+										// 			<MenuItem value=""><em>None</em></MenuItem>
+										// 			{this.state.featuresLevel4MenuItems.map((level4, level4Index) =>
+										// 				<MenuItem key={`featuresLevel4MenuItems-${level4}`} value={level4}>{level4}</MenuItem>
+										// 			)}
+										// 		</TextField>
+										// 	</StyledTableCell>
+										// 	<StyledTableCell component="td" scope="row">
+										// 		<Typography variant="body2" component="span" style={{display:"inline-block"}}>{feature.label}</Typography>
+										// 	</StyledTableCell>
+										// 	<StyledTableCell component="td" scope="row">
+										// 		<Tooltip title="Save"><IconButton variant="outlined" size="small" color="primary" onClick={this.clickOnFormSubmit}><SaveOutlinedIcon /></IconButton></Tooltip>
+										// 	</StyledTableCell>
+										// </StyledTableRow>
+										<CustomRow
+											featuresTypesMenuItems={this.state.featuresTypesMenuItems || []}
+											featuresLevel1MenuItems={this.state.featuresLevel1MenuItems || []}
+											featuresLevel2MenuItems={this.state.featuresLevel2MenuItems || []}
+											featuresLevel3MenuItems={this.state.featuresLevel3MenuItems || []} 
+											featuresLevel4MenuItems={this.state.featuresLevel4MenuItems || []}
+											featureList={this.state.featuresList} 
+											clickOnFormSubmit={this.clickOnFormSubmit}
+										/>
 																				
-									)
+									// )
 								: this.state.isLoadingFeatures ? (
 									<StyledTableRow key={`CircularProgress`}>
 										<StyledTableCell component="td" scope="row" colSpan={8}>

@@ -381,7 +381,7 @@ class F205Form extends Component {
         <div style={{padding: 20}}>
           <Grid
             container
-            justify="space-between"
+            justifyContent="space-between"
           >
             <Typography
               style={{
@@ -440,7 +440,7 @@ class F205Form extends Component {
           ) : (
             <Grid 
               container 
-              justify="center" 
+              justifyContent="center" 
               alignItems="center"
             >
               <CircularProgress />

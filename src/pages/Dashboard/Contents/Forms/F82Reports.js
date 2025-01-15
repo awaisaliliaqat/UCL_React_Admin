@@ -253,7 +253,7 @@ class F82Reports extends Component {
               showFilter={this.state.showTableFilter}
             />
           ) : this.state.isLoading ?
-            <Grid container justify="center" alignItems="center">
+            <Grid container justifyContent="center" alignItems="center">
               <CircularProgress />
             </Grid>
             :

@@ -497,7 +497,7 @@ Total Number Of Exams Header Columns
                           <Grid
                             container
                             direction="row"
-                            justify="left"
+                            justifyContent="left"
                             alignItems="left"
                           >
                             {this.state.programmeLabel == "GCE A Level" ? (
@@ -822,7 +822,7 @@ Total Number Of Exams Header Columns
                     <Grid
                       container
                       direction="row"
-                      justify="left"
+                      justifyContent="left"
                       alignItems="left"
                     >
                       <Grid item xs={12}>

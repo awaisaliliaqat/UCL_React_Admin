@@ -566,7 +566,7 @@ class R210Reports extends Component {
             marginBottom: 50,
           }}
         >
-          <Grid container justify="space-between" spacing={2}>
+          <Grid container justifyContent="space-between" spacing={2}>
             <Grid item xs={12}>
               <Typography
                 style={{
@@ -714,7 +714,7 @@ class R210Reports extends Component {
                       <Grid
                         container
                         direction="row"
-                        justify="flex-end"
+                        justifyContent="flex-end"
                         alignItems="baseline"
                       >
                         <Button

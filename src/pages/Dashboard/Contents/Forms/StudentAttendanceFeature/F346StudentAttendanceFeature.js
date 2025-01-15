@@ -854,7 +854,7 @@ class F346StudentAttendanceFeature extends Component {
             }}
           />
           <br />
-          <Grid container justify="left" alignItems="left" spacing={2}>
+          <Grid container justifyContent="left" alignItems="left" spacing={2}>
             <Grid item xs={12} md={2}>
               <TextField
                 id="academicSessionId"
@@ -995,7 +995,7 @@ class F346StudentAttendanceFeature extends Component {
               />
             </Grid>
           </Grid>
-          <Grid container justify="left" alignItems="left" spacing={2}>
+          <Grid container justifyContent="left" alignItems="left" spacing={2}>
             <Grid item xs={12} md={2}>
               <DatePicker
                 autoOk
@@ -1067,7 +1067,7 @@ class F346StudentAttendanceFeature extends Component {
               showFilter={this.state.showTableFilter}
             />
           ) : (
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
               <Grid item xs={12} style={{ textAlign: "center" }}>
                 <br />
                 <CircularProgress disableShrink />

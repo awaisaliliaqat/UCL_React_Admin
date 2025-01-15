@@ -695,7 +695,7 @@ class R216Report extends Component {
        :
                             <Grid 
                             container 
-                            justify="center">
+                            justifyContent="center">
                             <CircularProgress />
                             </Grid>
                             }

@@ -94,7 +94,7 @@ function CourseRow(props) {
       <Grid
         container
         direction="row"
-        justify="space-evenly"
+        justifyContent="space-evenly"
         alignItems="center"
         spacing={2}
       >
@@ -579,7 +579,7 @@ class F39Form extends Component {
               ) : this.state.isLoading ? (
                 <Grid
                   container
-                  justify="center"
+                  justifyContent="center"
                   alignContent="center"
                   style={{ padding: "1em" }}
                 >

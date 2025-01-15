@@ -736,7 +736,7 @@ class R206Reports extends Component {
           <br/>
           <Grid 
             container 
-            justify="center"
+            justifyContent="center"
             alignItems="center"
             spacing={2}
           >
@@ -766,7 +766,7 @@ class R206Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center">
+                    justifyContent="center">
                       <CircularProgress />
                     </Grid>
                 }
@@ -799,7 +799,7 @@ class R206Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center">
+                    justifyContent="center">
                       <CircularProgress />
                     </Grid>
                 }
@@ -830,7 +830,7 @@ class R206Reports extends Component {
                     </MenuItem>
                   ))
                 :
-                  <Grid container justify="center"><CircularProgress /></Grid>
+                  <Grid container justifyContent="center"><CircularProgress /></Grid>
                 }
               </TextField>
             </Grid>
@@ -865,7 +865,7 @@ class R206Reports extends Component {
           ) : (
             <Grid 
               container 
-              justify="center" 
+              justifyContent="center" 
               alignItems="center"
             >
               <Grid item xs={12}>

@@ -367,7 +367,7 @@ class F34ReportsForCentricDashboard extends Component {
               columns={columns}
             />
           ) : (
-            <Grid container justify="center" alignItems="center">
+            <Grid container justifyContent="center" alignItems="center">
               <CircularProgress />
             </Grid>
           )}

@@ -81,7 +81,7 @@ const CodeVerification = () => {
             >
               Submit
             </Button>
-            <Grid container  justify="center">
+            <Grid container  justifyContent="center">
               <Grid item>
                 <Link to="/login" variant="body2">
                   {"Return to Login."}

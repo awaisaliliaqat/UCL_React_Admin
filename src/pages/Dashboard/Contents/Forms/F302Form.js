@@ -432,7 +432,7 @@ class F302Form extends Component {
           <form id="myForm">
           <Grid 
             container 
-            justify="space-between"
+            justifyContent="space-between"
             spacing={2}
           >
             <input name="recordId" type="hidden"  value={this.state.recordId}/>

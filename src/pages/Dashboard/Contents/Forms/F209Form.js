@@ -435,7 +435,7 @@ class F209Form extends Component {
 					<Grid 
 						container 
 						component="main"
-						justify="center"
+						justifyContent="center"
 						spacing={2}
 						className={classes.root}
 					>

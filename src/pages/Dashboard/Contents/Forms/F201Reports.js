@@ -331,7 +331,7 @@ class F201Reports extends Component {
               showFilter={this.state.showTableFilter}
             />
           ) : (
-            <Grid container justify="center" alignItems="center">
+            <Grid container justifyContent="center" alignItems="center">
               <CircularProgress />
             </Grid>
           )}

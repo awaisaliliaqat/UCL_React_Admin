@@ -282,7 +282,7 @@ class F212FormChangeStatusPopup extends Component {
             </Typography>
              
             <Grid container
-                justify="flex-start"
+                justifyContent="flex-start"
                 alignItems="center"
                 spacing={2}
                 style={{borderBottom: "1px solid rgb(58, 127, 187, 0.3)"}}
@@ -404,7 +404,7 @@ class F212FormChangeStatusPopup extends Component {
             <form id="changeStatusForm" name="changeStatusForm">
               <Grid
                 container
-                justify="flex-start"
+                justifyContent="flex-start"
                 alignItems="center"
                 spacing={2}
               >

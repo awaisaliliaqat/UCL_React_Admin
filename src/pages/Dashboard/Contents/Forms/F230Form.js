@@ -607,7 +607,7 @@ class F230Form extends Component {
                : 
                 <Grid
                   container
-                  justify="center"
+                  justifyContent="center"
                   alignItems="center"
                   style={{ paddingTop: "2em" }}
                 >

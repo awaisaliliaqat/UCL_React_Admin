@@ -1320,7 +1320,7 @@ class F212Form extends Component {
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
         <div style={{padding:20}}>
-          <Grid container justify="space-between">
+          <Grid container justifyContent="space-between">
             <F220FormChangeStatusPopup
               isOpen={this.state.F220FormChangeStatusPopupIsOpen}
               data={this.state.F220FormChangeStatusPopupData}
@@ -1495,7 +1495,7 @@ class F212Form extends Component {
                       :
                         <Grid 
                           container 
-                          justify="center">
+                          justifyContent="center">
                             <CircularProgress />
                           </Grid>
                       }

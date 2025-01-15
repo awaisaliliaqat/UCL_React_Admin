@@ -491,7 +491,7 @@ class DisplayAdmissionApplications extends Component {
               <Grid
                 container
                 direction="row"
-                justify="center"
+                justifyContent="center"
                 alignItems="center"
               >
                 {this.state.programmeLabel == "GCE A Level" ? (
@@ -823,7 +823,7 @@ class DisplayAdmissionApplications extends Component {
 
             <br />
 
-            <Grid container direction="row" justify="left" alignItems="left">
+            <Grid container direction="row" justifyContent="left" alignItems="left">
               <Grid item xs={12}>
                 <TextField
                   id="comments"
@@ -857,7 +857,7 @@ class DisplayAdmissionApplications extends Component {
             <br />
             <br />
             {/* <Grid container direction="row"
-                justify="flex-end"
+                justifyContent="flex-end"
                 alignItems="flex-end"
                 xs={12}
                 >

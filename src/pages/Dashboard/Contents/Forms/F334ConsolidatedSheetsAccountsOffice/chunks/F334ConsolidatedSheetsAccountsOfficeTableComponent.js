@@ -4,7 +4,7 @@ import { Paper } from "@material-ui/core";
 import { SummaryState, GroupingState, IntegratedGrouping, IntegratedSummary, DataTypeProvider } from "@devexpress/dx-react-grid";
 import { Grid, Table, TableHeaderRow, TableGroupRow, TableSummaryRow } from "@devexpress/dx-react-grid-material-ui";
 
-const CurrencyFormatter = ({ value }) => value.toLocaleString("en-US");
+const CurrencyFormatter = ({ value }) => value.toLocaleString("en-US", {maximumFractionDigits: 2});
 
 const CurrencyTypeProvider = (props) => (
   <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
@@ -27,17 +27,17 @@ const CustomHeaderCell = (props) => (
 );
 
 const F334ConsolidatedSheetsAccountsOfficeTableComponent = (props) => {
+
   const [tableColumnExtensions] = useState([
     { columnName: "userId", align: "center", width: 75},
     { columnName: "userLabel", align: "left" },
-    { columnName: "ratePerHour", align: "right" },
-    { columnName: "netHoursAfterAdjustmentHours", align: "center" },
-    { columnName: "hourlyAmount", align: "right" },
-    { columnName: "monthlyAmount", align: "right" },
-    { columnName: "perMonthSalary", align: "right" },
-    { columnName: "totalPayableAmountLabel", align: "right", wordWrapEnabled: true },
+    { columnName: "ratePerHour", align: "right",  wordWrapEnabled: true, width: 100 },
+    { columnName: "netHoursAfterAdjustmentHours", align: "center",  wordWrapEnabled: true, width: 100 },
+    { columnName: "hourlyAmount", align: "right",  wordWrapEnabled: true, width: 100 },
+    { columnName: "perMonthSalary", align: "right",  wordWrapEnabled: true, width: 100 },
     { columnName: "adjustedAbsentDays", align: "center", wordWrapEnabled: true, width: 100 },
-    { columnName: "adjustedLateDays", align: "center", wordWrapEnabled: true, width: 100}
+    { columnName: "adjustedLateDays", align: "center", wordWrapEnabled: true, width: 100},
+    { columnName: "deductionAmount", align: "right", wordWrapEnabled: true, width: 100}
   ]);
 
   const [groupSummaryItems] = useState([
@@ -49,12 +49,13 @@ const F334ConsolidatedSheetsAccountsOfficeTableComponent = (props) => {
   const [totalSummaryItems] = useState([
     { columnName: "hourlyAmount", type: "sum" },
     { columnName: "monthlyAmount", type: "sum" },
-    { columnName: "perMonthSalary", type: "sum" },
-    { columnName: "totalPayableAmountLabel", type: "sum" },
+    { columnName: "perMonthSalary", type: "sum" }
   ]);
 
+  const [currencyColumns] = useState(["ratePerHour","hourlyAmount","perMonthSalary","deductionAmount"]);
+  
   const { data, columns } = props;
-  const [currencyColumns] = useState(["ratePerHour","hourlyAmount","monthlyAmount","perMonthSalary","totalPayableAmountLabel"]);
+
   const [expandedGroups, setExpandedGroups] = useState([]);
 
   useEffect(() => {
@@ -66,7 +67,7 @@ const F334ConsolidatedSheetsAccountsOfficeTableComponent = (props) => {
   };
 
   // Transforming the data to include month labels
-  const transformedData = data.teachersAttendanceSheetData.map((item) => ({ ...item, userLabel: item.userLabel })).flat();
+  const transformedData = data.consolidatedSheetData.map((item) => ({ ...item, userLabel: item.userLabel })).flat();
 
   return (
     <Paper>
@@ -85,8 +86,9 @@ const F334ConsolidatedSheetsAccountsOfficeTableComponent = (props) => {
           totalItems={totalSummaryItems}
           groupItems={groupSummaryItems}
         />
-        <IntegratedGrouping />
+        {/* <IntegratedGrouping /> */}
         <IntegratedSummary />
+
         <Table columnExtensions={tableColumnExtensions} />
         <TableHeaderRow cellComponent={CustomHeaderCell}/>
         <TableGroupRow />

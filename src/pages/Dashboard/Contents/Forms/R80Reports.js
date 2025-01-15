@@ -776,7 +776,7 @@ class R80Reports extends Component {
           <br/>
           <Grid 
             container 
-            justify="left"
+            justifyContent="left"
             alignItems="left"
             spacing={2}
           >
@@ -806,7 +806,7 @@ class R80Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center"
+                    justifyContent="center"
                   >
                     <CircularProgress />
                   </Grid>
@@ -840,7 +840,7 @@ class R80Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center"
+                    justifyContent="center"
                   >
                     <CircularProgress />
                   </Grid>
@@ -873,7 +873,7 @@ class R80Reports extends Component {
                 :
                   <Grid 
                     container 
-                    justify="center"
+                    justifyContent="center"
                   >
                     <CircularProgress />
                   </Grid>
@@ -907,7 +907,7 @@ class R80Reports extends Component {
                   :
                     <Grid 
                       container 
-                      justify="center">
+                      justifyContent="center">
                         <CircularProgress />
                       </Grid>
                   }
@@ -953,7 +953,7 @@ class R80Reports extends Component {
                   :
                     <Grid 
                       container 
-                      justify="center">
+                      justifyContent="center">
                         <CircularProgress />
                       </Grid>
                   }
@@ -968,7 +968,7 @@ class R80Reports extends Component {
           </Grid>
           <Grid
             container 
-            justify="left"
+            justifyContent="left"
             alignItems="left"
             spacing={2}
           >
@@ -1051,7 +1051,7 @@ class R80Reports extends Component {
           ) : (
             <Grid 
               container 
-              justify="center"
+              justifyContent="center"
             >
               <Grid item xs={12} style={{textAlign:"center"}}>
                 <br/>

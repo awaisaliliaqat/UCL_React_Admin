@@ -245,7 +245,7 @@ class R213Reports extends Component {
         >
           <Grid
             container
-            justify="space-between"
+            justifyContent="space-between"
             spacing={2}
           >
             <Grid item xs={12}>

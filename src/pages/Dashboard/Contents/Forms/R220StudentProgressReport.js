@@ -499,7 +499,7 @@ this.setState({tableBottomFirstColumn:(totalSubjectiveLength+totalExamsLength+to
                  <Grid  
                 container 
                 direction="row"
-                justify="left"
+                justifyContent="left"
                 alignItems="left">
 
                 {this.state.programmeLabel=="GCE A Level" ?

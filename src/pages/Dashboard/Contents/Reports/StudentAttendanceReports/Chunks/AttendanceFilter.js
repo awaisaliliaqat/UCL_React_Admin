@@ -92,7 +92,7 @@ const AttendanceFilter = props => {
                 :
                   <div 
                     container 
-                    justify="center"
+                    justifyContent="center"
                   >
                     <CircularProgress />
                   </div>

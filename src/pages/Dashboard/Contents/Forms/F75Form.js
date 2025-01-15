@@ -300,7 +300,7 @@ class F75Form extends Component {
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
         <div style={{padding:20}}>
-          <Grid container justify="space-between">
+          <Grid container justifyContent="space-between">
             <F75FormPopupComponent
               isOpen={this.state.f75FormPopupIsOpen}
               data={this.state.f75FormPopupData}

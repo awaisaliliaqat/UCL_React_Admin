@@ -363,7 +363,7 @@ class R60Form extends Component {
         >
           <Grid 
             container
-            justify="space-between"
+            justifyContent="space-between"
           >
             <F60FormPopupComponent
               handlePopupClose={this.handlePopupClose}
@@ -432,7 +432,7 @@ class R60Form extends Component {
           <br/>
           <Grid 
             container 
-            justify="center"
+            justifyContent="center"
             alignItems="center"
           >
             <Grid item xs={12}>
@@ -462,7 +462,7 @@ class R60Form extends Component {
                             </MenuItem>
                           ))
                         ) : (
-                          <Grid container justify="center">
+                          <Grid container justifyContent="center">
                             <CircularProgress disableShrink />
                           </Grid>
                         )}
