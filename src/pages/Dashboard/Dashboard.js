@@ -219,7 +219,8 @@ import F332EmployeeTaxCertificateReport from "./Contents/Forms/EmployeeTaxCertif
 import F333ConsolitdatedSheetsForSalaryHistory from "./Contents/Forms/ConsolidatedSalaryHistory/F333ConsolitdatedSheetsForSalaryHistory";
 import F333SalaryHistoryView from "./Contents/Forms/ConsolidatedSalaryHistory/Views/F333SalaryHistoryView";
 // import F334MonthlyEmployeeAttendance from "./Contents/Forms/MonthlyEmployeeAttendance/F334MonthlyEmployeeAttendance";
-import F334ConsolidatedSheetsAccountsOffice from "./Contents/Forms/F334ConsolidatedSheetsAccountsOffice/F334ConsolidatedSheetsAccountsOffice";
+import F334Form from "./Contents/Forms/F334ConsolidatedSheetsAccountsOffice/F334Form";
+import F334Reports from "./Contents/Forms/F334ConsolidatedSheetsAccountsOffice/F334Reports";
 import F335DefineShiftManagement from "./Contents/Forms/ShiftManagement/F335DefineShiftManagement";
 import R335ShiftManagementReport from "./Contents/Forms/ShiftManagement/R335ShiftManagementReport";
 import F336MonthlyEmployeeAttendance from "./Contents/Forms/MonthlyEmployeeAttendance/F336MonthlyEmployeeAttendance";
@@ -3441,12 +3442,28 @@ const Dashboard = (props) => {
 
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
-                name="F334ConsolidatedSheetsAccountsOffice"
+                name="F334Form"
                 exact
-                path="/dashboard/F334ConsolidatedSheetsAccountsOffice"
+                path="/dashboard/F334Form"
                 render={(props) => {
                   return (
-                    <F334ConsolidatedSheetsAccountsOffice
+                    <F334Form
+                      {...props}
+                      isDrawerOpen={isDrawerOpen}
+                      setDrawerOpen={setDrawerOpen}
+                    />
+                  );
+                }}
+              />
+
+              <SetRoute
+                setValue={(value) => handleValueChange(value)}
+                name="F334Reports"
+                exact
+                path="/dashboard/F334Reports"
+                render={(props) => {
+                  return (
+                    <F334Reports
                       {...props}
                       isDrawerOpen={isDrawerOpen}
                       setDrawerOpen={setDrawerOpen}

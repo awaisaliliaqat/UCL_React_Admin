@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { Divider, CircularProgress, Grid, Button, Typography, TextField, MenuItem, } from "@material-ui/core";
-import F334ConsolidatedSheetsAccountsOfficeTableComponent from "./chunks/F334ConsolidatedSheetsAccountsOfficeTableComponent";
+import F334FormTableComponent from "./chunks/F334FormTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 
@@ -37,7 +37,7 @@ const styles = (theme) => ({
 	},
 });
 
-class F334ConsolidatedSheetsAccountsOffice extends Component {
+class F334Form extends Component {
   	constructor(props) {
 		super(props);
 	 	this.state = {
@@ -62,6 +62,10 @@ class F334ConsolidatedSheetsAccountsOffice extends Component {
 			isApproved: false,
 		};
 	}
+
+	viewReport = () => {
+		window.location = "#/dashboard/F334Reports";
+	};
 
 	getAcademicSessions = async () => {
 		this.setState({ academicSessionsDataLoading: true });
@@ -169,6 +173,12 @@ class F334ConsolidatedSheetsAccountsOffice extends Component {
 				if (json.CODE === 1) {
 					let data = json.DATA || [];
 					this.setState({ consolidatedSheetData: data });
+					if(data.length>0){
+						if(data[0].isExist===1){
+							this.setState({isApproved: true});
+							this.handleSnackbar(true, <span>Sheet already approved</span>, "info");		
+						}
+					}
 				} else {
 					this.handleSnackbar(true, <span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error");
 			 	}
@@ -270,7 +280,7 @@ class F334ConsolidatedSheetsAccountsOffice extends Component {
 			formData.append("adjustedLateDays", dataList[i].adjustedLateDays);
 			formData.append("deductionAmount", dataList[i].deductionAmount);
 		}
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C334CommonMonthsView1`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C334ConsolidatedSheetsForAccountsOfficeSave`;
 		await fetch(url, {
 	  		method: "POST",
 	  		body: formData,
@@ -287,7 +297,8 @@ class F334ConsolidatedSheetsAccountsOffice extends Component {
 	  .then(
 		 (json) => {
 			if (json.CODE === 1) {
-			  let data = json.DATA || [];
+				this.handleSnackbar(true, json.USER_MESSAGE, "success");
+				this.onClearAllData();
 			} else {
 			  this.handleSnackbar(true, <span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error" );
 			}
@@ -296,7 +307,7 @@ class F334ConsolidatedSheetsAccountsOffice extends Component {
 			if (error.status === 401) {
 			  this.setState({
 				 isLoginMenu: true,
-				 isReload: true,
+				 isReload: false,
 			  });
 			} else {
 			  this.handleSnackbar(true, "Failed to save, Please try again later.", "error" );
@@ -346,7 +357,7 @@ class F334ConsolidatedSheetsAccountsOffice extends Component {
 		  <div className={classes.mainContainer}>
 			 <div className={classes.titleContainer}>
 				<Typography className={classes.title} variant="h5">
-				  {"Consolidated Sheets For Accounts Office"}
+				  Consolidated Sheets For Accounts Office
 				  <br />
 				</Typography>
 			 </div>
@@ -436,7 +447,7 @@ class F334ConsolidatedSheetsAccountsOffice extends Component {
 				</Grid>
 			 </Grid>
 			 <Grid item xs={12}>
-				<F334ConsolidatedSheetsAccountsOfficeTableComponent
+				<F334FormTableComponent
 				  columns={columns}
 				  data={this.state}
 				/>
@@ -445,11 +456,11 @@ class F334ConsolidatedSheetsAccountsOffice extends Component {
 			 <br/>
 			 <BottomBar
 				leftButtonText="View"
-				leftButtonHide={true}
-				bottomLeftButtonAction={()=>{}}
-				right_button_text="Save"
+				leftButtonHide={false}
+				bottomLeftButtonAction={this.viewReport}
+				right_button_text="Approve"
 				bottomRightButtonAction={this.handleSave}
-				disableRightButton={!this.state.consolidatedSheetData.length>0}
+				disableRightButton={!this.state.consolidatedSheetData.length>0 || this.state.isApproved}
 				loading={this.state.isLoading}
 				isDrawerOpen={this.props.isDrawerOpen}
 			/>
@@ -465,14 +476,14 @@ class F334ConsolidatedSheetsAccountsOffice extends Component {
   }
 }
 
-F334ConsolidatedSheetsAccountsOffice.propTypes = {
+F334Form.propTypes = {
   classes: PropTypes.object,
   setDrawerOpen: PropTypes.func,
 };
 
-F334ConsolidatedSheetsAccountsOffice.defaultProps = {
+F334Form.defaultProps = {
   classes: {},
   setDrawerOpen: (fn) => fn,
 };
 
-export default withStyles(styles)(F334ConsolidatedSheetsAccountsOffice);
+export default withStyles(styles)(F334Form);

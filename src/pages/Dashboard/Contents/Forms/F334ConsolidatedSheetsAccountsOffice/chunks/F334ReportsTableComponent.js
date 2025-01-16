@@ -26,15 +26,15 @@ const CustomHeaderCell = (props) => (
   />
 );
 
-const F334ConsolidatedSheetsAccountsOfficeTableComponent = (props) => {
+const F334ReportsTableComponent = (props) => {
 
   const [tableColumnExtensions] = useState([
-    { columnName: "userId", align: "center", width: 75},
-    { columnName: "userLabel", align: "left" },
-    { columnName: "ratePerHour", align: "right",  wordWrapEnabled: true, width: 100 },
-    { columnName: "netHoursAfterAdjustmentHours", align: "center",  wordWrapEnabled: true, width: 100 },
-    { columnName: "hourlyAmount", align: "right",  wordWrapEnabled: true, width: 100 },
-    { columnName: "perMonthSalary", align: "right",  wordWrapEnabled: true, width: 100 },
+    { columnName: "employeeId", align: "center", width: 75},
+    { columnName: "employeeLabel", align: "left" },
+    { columnName: "rate", align: "right",  wordWrapEnabled: true, width: 100 },
+    { columnName: "claimHours", align: "center",  wordWrapEnabled: true, width: 100 },
+    { columnName: "claimAmount", align: "right",  wordWrapEnabled: true, width: 100 },
+    { columnName: "grossSalaryAmount", align: "right",  wordWrapEnabled: true, width: 100 },
     { columnName: "adjustedAbsentDays", align: "center", wordWrapEnabled: true, width: 100 },
     { columnName: "adjustedLateDays", align: "center", wordWrapEnabled: true, width: 100},
     { columnName: "deductionAmount", align: "right", wordWrapEnabled: true, width: 100}
@@ -47,69 +47,47 @@ const F334ConsolidatedSheetsAccountsOfficeTableComponent = (props) => {
   ]);
 
   const [totalSummaryItems] = useState([
-    { columnName: "hourlyAmount", type: "sum" },
-    { columnName: "monthlyAmount", type: "sum" },
-    { columnName: "perMonthSalary", type: "sum" }
+    { columnName: "claimAmount", type: "sum" },
+    { columnName: "grossSalaryAmount", type: "sum" },
+    { columnName: "deductionAmount", type: "sum" }
   ]);
 
-  const [currencyColumns] = useState(["ratePerHour","hourlyAmount","perMonthSalary","deductionAmount"]);
+  const [currencyColumns] = useState(["rate","claimAmount","grossSalaryAmount","deductionAmount"]);
   
   const { data, columns } = props;
 
-  const [expandedGroups, setExpandedGroups] = useState([]);
-
   useEffect(() => {
-    setExpandedGroups(data.expandedGroups);
+    
   }, [data]);
 
-  const onExpandedGroupChange = (groups) => {
-    setExpandedGroups(groups);
-  };
-
-  // Transforming the data to include month labels
-  const transformedData = data.consolidatedSheetData.map((item) => ({ ...item, userLabel: item.userLabel })).flat();
 
   return (
     <Paper>
-      <Grid rows={transformedData} columns={columns}>
+      <Grid rows={data} columns={columns}>
         <CurrencyTypeProvider for={currencyColumns} />
-        <GroupingState
-          defaultGrouping={[
-              // { columnName: "monthLabel" },
-              // { columnName: "userLabel" },
-          ]}
-          defaultExpandedGroups={expandedGroups}
-          expandedGroups={expandedGroups}
-          onExpandedGroupsChange={onExpandedGroupChange}
-        />
         <SummaryState
           totalItems={totalSummaryItems}
           groupItems={groupSummaryItems}
         />
-        {/* <IntegratedGrouping /> */}
         <IntegratedSummary />
-
         <Table columnExtensions={tableColumnExtensions} />
         <TableHeaderRow cellComponent={CustomHeaderCell}/>
-        <TableGroupRow />
         <TableSummaryRow />
       </Grid>
     </Paper>
   );
 };
 
-F334ConsolidatedSheetsAccountsOfficeTableComponent.propTypes = {
-  data: PropTypes.object,
+F334ReportsTableComponent.propTypes = {
+  data: PropTypes.array,
   columns: PropTypes.array,
-  expandedGroups: PropTypes.array,
   showFilter: PropTypes.bool,
 };
 
-F334ConsolidatedSheetsAccountsOfficeTableComponent.defaultProps = {
-  data: {},
+F334ReportsTableComponent.defaultProps = {
+  data: [],
   columns: [],
-  expandedGroups: [],
   showFilter: false,
 };
 
-export default F334ConsolidatedSheetsAccountsOfficeTableComponent;
+export default F334ReportsTableComponent;
