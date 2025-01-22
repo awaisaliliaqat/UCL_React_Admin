@@ -10,18 +10,19 @@ import NavBar from '../../components/NavBar/NavBar';
 import EmailVerification from './Chunks/EmailVerification';
 import CodeVerification from './Chunks/CodeVerification';
 import ChangePassword from './Chunks/ChangePassword';
+import { Hidden } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        height: '100vh',
+        height: '97vh',
     },
     image: {
         backgroundImage: `url(${Background})`,
         backgroundRepeat: 'no-repeat',
-        backgroundColor:
-            theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+        backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        height: "100vh"
     },
     container: {
         display: 'flex',
@@ -33,7 +34,9 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(2, 2),
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
+        margin:`auto ${theme.spacing(2)}px`
     },
 }));
 
@@ -46,21 +49,20 @@ const ForgotPassword = () => {
         <Grid container component="main" className={classes.root}>
             <NavBar logo={Logo} />
             <CssBaseline />
-            <Grid item xs={false} sm={4} md={7} className={classes.image} />
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square style={{ marginTop: 55 }}>
-                <div className={classes.container}>
-
-                    <div className={classes.paper}>
-                    {viewValue === 0 && <EmailVerification />}
-                    {viewValue === 1 && <CodeVerification />}
-                    {viewValue === 2 && <ChangePassword />}
+            <Grid container justifyContent='center' alignItems='stretch'>
+                <Hidden smDown><Grid item md={7} className={classes.image} /></Hidden>
+                <Grid item xs={12} sm={11} md={5} component={Paper} elevation={6} square>
+                    <div className={classes.container}>
+                        <div className={classes.paper}>
+                            {viewValue === 0 && <EmailVerification />}
+                            {viewValue === 1 && <CodeVerification />}
+                            {viewValue === 2 && <ChangePassword />}
+                        </div>
+                        <div style={{ paddingBottom: 25 }}>
+                            <Copyright />
+                        </div>
                     </div>
-
-
-                    <div style={{ paddingBottom: 25 }}>
-                        <Copyright />
-                    </div>
-                </div>
+                </Grid>
             </Grid>
         </Grid>
     );

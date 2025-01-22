@@ -78,6 +78,7 @@ import { Hidden } from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
 	root: {
 		height: '100vh',
+		overflow: "hidden"
 	},
 	image: {
 		backgroundImage: `url(${BackgroundUcl})`,
@@ -86,7 +87,6 @@ const useStyles = makeStyles((theme) => ({
 		theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
 		backgroundSize: 'cover',
 		height: '100%',
-		
 		//backgroundPosition: 'center',
 	},
 	image_logo: {
@@ -102,15 +102,12 @@ const useStyles = makeStyles((theme) => ({
 		width:'230px'
 	 
 	},
-
 	paper: {
 		margin: theme.spacing(2, 2),
 		display: 'flex',
 		justifyContent: 'flex-start',
 		flexDirection: 'column',
-		alignItems: 'center',
-	
-		
+		alignItems: 'center'	
 	},
 	avatar: {
 		margin: theme.spacing(1),
