@@ -56,7 +56,7 @@ const ControlledDialog = props => {
   const { handleClose, open, title, content, isFullScreen, enableBackDrop } = props;
   return (
     <div>
-      <Dialog backdropClick={!enableBackDrop} fullScreen={isFullScreen} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+      <Dialog backdropclick={!enableBackDrop} fullScreen={isFullScreen} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
           {title}
         </DialogTitle>
