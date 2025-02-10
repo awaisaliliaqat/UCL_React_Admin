@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Paper } from "@material-ui/core";
+import { Box, CircularProgress, Paper, TableCell, TableRow } from "@material-ui/core";
 import {
   SummaryState,
   GroupingState,
@@ -56,21 +56,38 @@ const F322HourlySheetsForCoordinatorsTableComponent = (props) => {
     // { columnName: "totalAmount", type: "sum" },
   ]);
 
-  const { data, columns } = props;
+  const { data, columns, isApproved } = props;
   const [currencyColumns] = useState(["perHourRate", "totalAmount"]);
   const [expandedGroups, setExpandedGroups] = useState([]);
+  const [isApprovedSheet, setIsApprovedSheet] = useState(false);
 
   useEffect(() => {
+    console.log("data", data);
     setExpandedGroups(data.expandedGroupsData);
+    setIsApprovedSheet(data.isApproved);
   }, [data]);
 
   const onExpandedGroupChange = (groups) => {
     setExpandedGroups(groups);
   };
+  
   const rows = data.teachersAttendanceSheetData || [];
+
+  const NoDataRow = () => (
+    <TableRow>
+      <TableCell colSpan={columns.length} style={{ textAlign: "center", padding: "20px" }}>
+        {!isApprovedSheet ? (
+          <Box fontSize="1rem">No Data</Box>
+        ) : (
+          <Box color="primary.light" fontSize="1rem">The sheet has already been approved. Please check the view for the approved sheet.</Box>
+        )}
+      </TableCell>
+    </TableRow>
+  );
+
   return (
     <Paper>
-      <Grid rows={rows} columns={columns}>
+      <Grid rows={isApprovedSheet ? [] : rows} columns={columns}>
         <CurrencyTypeProvider for={currencyColumns} />
         <GroupingState
           defaultGrouping={tableGroupColumn}
@@ -85,7 +102,10 @@ const F322HourlySheetsForCoordinatorsTableComponent = (props) => {
         />
         <IntegratedGrouping />
         <IntegratedSummary />
-        <Table columnExtensions={tableColumnExtensions} />
+        <Table 
+          columnExtensions={tableColumnExtensions}
+          noDataRowComponent={NoDataRow}
+        />
         <TableHeaderRow
           titleComponent={(props) =>
             props.children === "Action" ? (

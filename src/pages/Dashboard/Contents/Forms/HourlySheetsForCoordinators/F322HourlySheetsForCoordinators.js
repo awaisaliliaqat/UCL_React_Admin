@@ -12,6 +12,7 @@ import {
   Typography,
   TextField,
   MenuItem,
+  ButtonGroup,
 } from "@material-ui/core";
 import F322HourlySheetsForCoordinatorsTableComponent from "./chunks/F322HourlySheetsForCoordinatorsTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
@@ -44,6 +45,8 @@ const styles = () => ({
     textTransform: "capitalize",
     fontSize: 14,
     height: 45,
+    paddingTop: 26,
+    paddingBottom: 26
   },
 });
 
@@ -767,7 +770,7 @@ class F322HourlySheetsForCoordinators extends Component {
           </div>
           <Divider className={classes.divider} />
           <br />
-          <Grid container justifyContent="left" alignItems="left" spacing={2}>
+          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item xs={12} md={2}>
               <TextField
                 id="academicSessionId"
@@ -781,6 +784,9 @@ class F322HourlySheetsForCoordinators extends Component {
                 required
                 fullWidth
                 select
+                inputProps={{
+                  id : "academicSessionId"
+                }}
               >
                 {this.state.academicSessionsData?.map((item) => (
                   <MenuItem key={item} value={item.ID}>
@@ -803,6 +809,9 @@ class F322HourlySheetsForCoordinators extends Component {
                 required
                 fullWidth
                 select
+                inputProps={{
+                  id : "programmeGroupId"
+                }}
               >
                 {this.state.programmeGroupsData?.map((item) => (
                   <MenuItem key={item} value={item.Id}>
@@ -824,6 +833,9 @@ class F322HourlySheetsForCoordinators extends Component {
                 required
                 fullWidth
                 select
+                inputProps={{
+                  id : "yearId"
+                }}
               >
                 {this.state.yearData?.map((item) => (
                   <MenuItem key={item} value={item}>
@@ -846,6 +858,7 @@ class F322HourlySheetsForCoordinators extends Component {
                 format="dd-MM-yyyy"
                 fullWidth
                 required
+                readOnly
                 value={this.state.fromDate}
                 onChange={(date) =>
                   this.onHandleChangeDate({
@@ -875,6 +888,7 @@ class F322HourlySheetsForCoordinators extends Component {
                     target: { name: "toDate", value: date },
                   })
                 }
+                readOnly
                 // disablePast
                 // shouldDisableDate={(day) => {
                 //   const fromDate = this.state.fromDate;
@@ -951,10 +965,9 @@ class F322HourlySheetsForCoordinators extends Component {
                 ))}
               </TextField>
             </Grid> */}
-            <Grid item xs={12} md={3}>
-              <div className={classes.actions}>
+            <Grid item xs={12} md={2}>
+            <ButtonGroup variant="contained" color="primary" size="large" fullWidth>
                 <Button
-                  variant="contained"
                   color="primary"
                   className={classes.button}
                   disabled={
@@ -977,7 +990,6 @@ class F322HourlySheetsForCoordinators extends Component {
                   )}
                 </Button>
                 <Button
-                  variant="contained"
                   color="default"
                   className={classes.button}
                   disabled={
@@ -986,13 +998,10 @@ class F322HourlySheetsForCoordinators extends Component {
                     this.state.programmeGroupsDataLoading
                   }
                   onClick={() => this.onClearAllData()}
-                  style={{
-                    marginLeft: 8,
-                  }}
                 >
                   Clear
                 </Button>
-              </div>
+              </ButtonGroup>
             </Grid>
             <Grid item xs={12}>
               <Divider className={classes.divider} />
