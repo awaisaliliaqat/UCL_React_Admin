@@ -129,7 +129,7 @@ class F337MonthlyEmployeeApprovalReportTableComponent extends Component {
           />
           {/* <SelectionState />  */}
           {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
-          <PagingState defaultCurrentPage={1} defaultPageSize={10} />
+          <PagingState defaultCurrentPage={0} defaultPageSize={10} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
