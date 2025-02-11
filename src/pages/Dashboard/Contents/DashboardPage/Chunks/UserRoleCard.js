@@ -7,6 +7,8 @@ import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import NotificationsActiveIcon from "@material-ui/icons/NotificationsActive";
 import { Request } from "../../../../../utils/request";
+import { Skeleton } from "@material-ui/lab";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -81,25 +83,24 @@ const useStyles = makeStyles((theme) => ({
 const UserRoleCard = (props) => {
 	
 	const classes = useStyles();
+
+	const history = useHistory();
 	
 	const { handleLoginMenuReload, handleLoginMenu, handleOpenSnackbar, buttonRefNotiDrawerOpen } = props;
 	
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState({attendance:false, notifications:false, pendingApprovals:false});
 
 	const [data, setData] = useState(null);
 
-	const [roleMenuItems, setRoleMenuItems] = React.useState([]);
-
-	const [role, setRole] = React.useState("");
-
 	const [notiCounter, setNotiCounter] = useState("");
-	
-	const handleRoleChange = (event) => {
-		setRole(event.target.value);
-	};
 
-	const getUserRoleCardData = async () => {
-		setIsLoading(true);
+	const [pendingApprovalCounter, setPendingApprovalCounter] = useState("");
+
+	const getEmployeeAttendance = async () => {
+		setIsLoading((prevState) => ({
+			...prevState,
+			[`attendance`]: true,
+		}));
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonEmployeeDashboard/EmployeeAttendanceByDate`;
 		await fetch(url, {
 			method: "POST",
@@ -124,7 +125,7 @@ const UserRoleCard = (props) => {
 				} else {
 					handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 				}
-				console.log("getUserRoleCardData", json);
+				console.log("getEmployeeAttendance", json);
 			},
 			(error) => {
 				if (error.status == 401) {
@@ -136,12 +137,50 @@ const UserRoleCard = (props) => {
 				}
 			}
 		);
-		setIsLoading(false);
+		setIsLoading((prevState) => ({
+			...prevState,
+			[`attendance`]: false,
+		}));
 	};
 
-	const getEmployeeDesignations = async () => {
-		setIsLoading(true);
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonEmployeeDashboard/EmployeeDesignationsView`;
+	const getCounterData = async () => {
+		setIsLoading((prevState) => ({
+			...prevState,
+			[`notifications`]: true,
+		}));
+		const endpoint = "/notifications/C00CommonEmployeesNotificationsForWebCountView";
+		const res = await Request( "GET", `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}${endpoint}`, null, "authorizeJson" );
+		if (res.isSuccess) {
+			let data = res.data || [];
+			if (data.length > 0) {
+				const { unReadCountLabel } = data[0] || {};
+				setNotiCounter(unReadCountLabel);
+			}
+		} else {
+			if (res.statusCode == 401) {
+				handleLoginMenu(true);
+				handleLoginMenuReload(true);
+			}
+		}
+		console.log("C00CommonEmployeesNotificationsForWebCountView", res);
+		setIsLoading((prevState) => ({
+			...prevState,
+			[`notifications`]: false,
+		}));
+	};
+
+	const handleButtonRefNotiDrawerOpen = () => {
+		if(buttonRefNotiDrawerOpen){
+			buttonRefNotiDrawerOpen.current.click();
+		}
+	}
+
+	const getPendingApprovalsCount = async () => {
+		setIsLoading((prevState) => ({
+			...prevState,
+			[`pendingApprovals`]: true,
+		}));
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonEmployeeDashboard/ReportingUsersEmployeeAttendanceSheetsCount`;
 		await fetch(url, {
 			method: "POST",
 			headers: new Headers({
@@ -160,54 +199,33 @@ const UserRoleCard = (props) => {
 					let data = json.DATA || [];
 					let dataLength = data.length;
 					if(dataLength>0){
-						setRoleMenuItems(data || []);
-						setRole(data[0].designationId);
+						setPendingApprovalCounter(data[0].count);
 					}
 				} else {
 					handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 				}
-				console.log("getEmployeeDesignations", json);
+				console.log("getPendingApprovalsCount", json);
 			},
 			(error) => {
 				if (error.status == 401) {
-					handleLoginMenu(true);
 					handleLoginMenuReload(true);
+					handleLoginMenu(true);
 				} else {
 					console.log(error);
 					handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
 				}
 			}
 		);
-		setIsLoading(false);
+		setIsLoading((prevState) => ({
+			...prevState,
+			[`pendingApprovals`]: false,
+		}));
 	};
-
-	const getCounterData = async () => {
-		const endpoint = "/notifications/C00CommonEmployeesNotificationsForWebCountView";
-		const res = await Request( "GET", `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}${endpoint}`, null, "authorizeJson" );
-		if (res.isSuccess) {
-			let data = res.data || [];
-			if (data.length > 0) {
-				const { unReadCountLabel } = data[0] || {};
-				setNotiCounter(unReadCountLabel);
-			}
-		} else {
-			if (res.statusCode == 401) {
-				handleLoginMenu(true);
-				handleLoginMenuReload(true);
-			}
-		}
-		console.log("C00CommonEmployeesNotificationsForWebCountView", res);
-	};
-
-	const handleButtonRefNotiDrawerOpen = () => {
-		if(buttonRefNotiDrawerOpen){
-			buttonRefNotiDrawerOpen.current.click();
-		}
-	}
 
 	useEffect(() => {
-		//getUserRoleCardData();
+		getEmployeeAttendance();
 		getCounterData();
+		getPendingApprovalsCount();
 		//getEmployeeDesignations();
 	}, []);
 	
@@ -217,30 +235,6 @@ const UserRoleCard = (props) => {
 			<Box className={classes.switchRole}>
 				Today
 			</Box>
-			{/* <Box className={classes.switchRole}>
-				Switch Designation
-				<TextField
-					name="roleId"
-					value={role}
-					onChange={handleRoleChange}
-					className={classes.select}
-					variant="outlined"
-					select
-					size="small"
-					inputProps={{
-						id: "roleId"
-					}}
-				>
-					{roleMenuItems.map((d, i)=>
-						<MenuItem 
-							key={`roleMenuItems-${d.designationId}`} 
-							value={d.designationId}
-						>
-							{d.designationLabel}
-						</MenuItem>
-					)}
-				</TextField>
-			</Box> */}
 			{/* Grid for Cards */}
 			<Grid container spacing={2}>
 				<Grid item xs={12} sm={6}>
@@ -251,7 +245,7 @@ const UserRoleCard = (props) => {
 						</Box>
 						<Box className={classes.cardText}>
 							<Typography className={classes.cardTitle}>Time-In</Typography>
-							<Typography className={classes.cardValue}>{data?.checkIn || "--:-- --" }</Typography>
+							<Typography className={classes.cardValue}>{!!isLoading?.attendance ? <Skeleton width="7rem"/> : data?.checkIn || "--:-- --" }</Typography>
 						</Box>
 					</Card>
 				</Grid>
@@ -263,19 +257,19 @@ const UserRoleCard = (props) => {
 						</Box>
 						<Box className={classes.cardText}>
 							<Typography className={classes.cardTitle}>Time-Out</Typography>
-							<Typography className={classes.cardValue}>{data?.checkOut || "--:-- --" }</Typography>
+							<Typography className={classes.cardValue}>{!!isLoading?.attendance ? <Skeleton width="7rem"/> : data?.checkOut || "--:-- --" }</Typography>
 						</Box>
 					</Card>
 				</Grid>
 				<Grid item xs={12} sm={6}>
-					<Card className={classes.card} style={{backgroundColor:"#FFEBEE", border:"1px solid #ffcae3"}}>
+					<Card className={classes.card} style={{backgroundColor:"#FFEBEE", border:"1px solid #ffcae3", cursor: "pointer"}} onClick={(e)=> history.push("/dashboard/F337MonthlyEmployeeApproval") }>
 						<Box className={`${classes.iconWrapper} ${classes.redIcon}`}>
 							{/* <i className="material-icons">assignment</i> */}
 							<IconButton size="small" variant="contained" style={{backgroundColor:"#da001a", color:"#ffffffb3"}}><PlaylistAddCheckIcon /></IconButton>
 						</Box>
 						<Box className={classes.cardText}>
 							<Typography className={classes.cardTitle}>Pending Approvals</Typography>
-							<Typography className={classes.cardValue}>- -</Typography>
+							<Typography className={classes.cardValue}>{ !!isLoading?.pendingApprovals ? <Skeleton width="7rem"/> : pendingApprovalCounter ? pendingApprovalCounter : "- -"}</Typography>
 						</Box>
 					</Card>
 				</Grid>
@@ -287,7 +281,7 @@ const UserRoleCard = (props) => {
 						</Box>
 						<Box className={classes.cardText}>
 							<Typography className={classes.cardTitle} noWrap>Announcements</Typography>
-							<Typography className={classes.cardValue}>{notiCounter ? notiCounter : "- -"}</Typography>
+							<Typography className={classes.cardValue}>{!!isLoading?.notifications ? <Skeleton width="7rem"/> : notiCounter ? notiCounter : "- -"}</Typography>
 						</Box>
 					</Card>
 				</Grid>

@@ -5,6 +5,7 @@ import AddBoxIcon from "@material-ui/icons/AddBox";
 import DescriptionIcon from "@material-ui/icons/Description";
 import BusinessIcon from "@material-ui/icons/Business";
 import SettingsApplicationsOutlinedIcon from '@material-ui/icons/SettingsApplicationsOutlined';
+import ControlCameraOutlinedIcon from '@material-ui/icons/ControlCameraOutlined';
 import { useHistory } from "react-router-dom";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import clsx from "clsx";
@@ -35,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	icon: {
-		marginRight: theme.spacing(2),
+		marginRight: theme.spacing(1),
 		fontSize: "2rem",
 	},
 	greenBackground: {
@@ -90,6 +91,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
+
+const themes = ["greenBackground", "blueBackground", "pinkBackground", "purpleBackground"];
+
+const colors = ["rgb(163, 232, 188)", "rgb(191, 198, 255)", "rgb(255, 202, 227)", "rgb(212, 169, 255)"];
+
 const NucleusControlToolsCard = ({data, dataIndex}) => {
 	
 	const classes = useStyles();
@@ -102,15 +108,9 @@ const NucleusControlToolsCard = ({data, dataIndex}) => {
 		setToggleLevelForm(!toggleLevelForm);
 	};
 
-	const themes = ["greenBackground", "blueBackground", "pinkBackground", "purpleBackground"];
-
-	const colors = ["rgb(163, 232, 188)", "rgb(191, 198, 255)", "rgb(255, 202, 227)", "rgb(212, 169, 255)"];
-
 	//const icons = [<BusinessIcon className={classes.icon} />, <DescriptionIcon className={classes.icon} />, <AddBoxIcon className={classes.icon} />, <DescriptionIcon className={classes.icon} />];
 
-	const icons = [<SettingsApplicationsOutlinedIcon className={classes.icon} />, <SettingsApplicationsOutlinedIcon className={classes.icon} />, <SettingsApplicationsOutlinedIcon className={classes.icon} />, <SettingsApplicationsOutlinedIcon className={classes.icon} />];
-
-
+	const icons = [<ControlCameraOutlinedIcon className={classes.icon} />, <ControlCameraOutlinedIcon className={classes.icon} />, <ControlCameraOutlinedIcon className={classes.icon} />, <ControlCameraOutlinedIcon className={classes.icon} />];
 
 	let countPrint = 0;
 
