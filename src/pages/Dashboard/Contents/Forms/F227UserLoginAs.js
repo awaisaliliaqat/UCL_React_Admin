@@ -100,11 +100,42 @@ function TableRowWithData(props) {
       .then(
         json => {
           if (json.success === 1 && json.isActive === 1) {
+            const isUserTeacher = json?.userRoleIds?.find((item) => item === 1);
+						if(json?.employeeDesignations){
+							let employeeDesignations = json?.employeeDesignations || [];
+							for(let i=0; i<employeeDesignations.length; i++){
+								let dashboardId = parseInt(employeeDesignations[i].dashboardId);
+								if(isNaN(dashboardId)) {dashboardId=0;}
+								if(dashboardId>0){
+									employeeDesignations[i].dashboardURL = `/dashboard/${dashboardId}`;
+								} else {
+									employeeDesignations[i].dashboardURL = `/welcome`;
+								}
+							}
+						}
+  					if(isUserTeacher){
+							let userDesignations = json?.employeeDesignations || [];
+							userDesignations.unshift({
+								"dashboardURL": "/dashboard",
+								"dashboardLabel": "Teacher",
+								"dashboardId": -1,
+								"designationId": -1,
+								"designationLabel": "Teacher"
+							});
+						}
+            let userDesignations = json?.employeeDesignations || [];
+						if(userDesignations.length){
+							userDesignations[0].isActive=true;
+						}
             window.localStorage.setItem("adminData", JSON.stringify(json));
             window.localStorage.setItem("uclAdminToken", json.jwttoken);
             window.localStorage.setItem("isViewDialog", 0);
             window.localStorage.setItem("userTypeId", json.userTypeId);
-            window.location.replace("#/dashboard");
+						if(userDesignations.length){
+							window.location.replace(`#${userDesignations[0].dashboardURL}`);
+						} else {
+							window.location.replace(`#/dashboard`);
+						}
           } else {
             // setDeactiveDialog({
             //   open: true,

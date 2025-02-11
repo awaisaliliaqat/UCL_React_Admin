@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, forwardRef } from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -11,7 +11,7 @@ import ProfilePlaceholder from "../../assets/Images/ProfilePlaceholder.png";
 import ChangePasswordMenu from "../ChangePasswordMenu/ChangePasswordMenu";
 import Menu from "@material-ui/core/Menu";
 import HomeIcon from "@material-ui/icons/Home";
-import { Link, Button, Badge } from "@material-ui/core";
+import { Link, Button, Badge, TextField, Box, Select } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import LoginMenu from "../LoginMenu/LoginMenu";
@@ -19,6 +19,8 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import { Request } from "../../utils/request";
 import NotificationsBar from "../Notifications/NotificationsBar";
 import NotificationsActiveIcon from "@material-ui/icons/NotificationsActive";
+import { useHistory } from "react-router-dom";
+import _ from "lodash"; // Lodash is needed for deep comparison
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -50,9 +52,29 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
+  switchRole: {
+		display: "inline-block",
+		// alignItems: "center",
+		// marginBottom: theme.spacing(2),
+		fontWeight: "bold",
+		fontSize: "1.1rem",
+	},
+  select: {
+		marginLeft: theme.spacing(1),
+		minWidth: 120,
+	},
 }));
 
-const NavBar = (props) => {
+const NavBar = forwardRef((props, ref) => {
+
+  const classes = useStyles();
+
+  const history = useHistory();
+
+  const adminData = localStorage.getItem("adminData") ? JSON.parse(localStorage.getItem("adminData")) : {};
+  const employeeDesignations = adminData?.employeeDesignations || [];
+  const employeeDesignationsSize = employeeDesignations.length;
+
   const { logo, isAuthorize, userName, isOpenMenu, setOpenMenu } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [openChangePassword, setOpenChangepassword] = useState(false);
@@ -66,8 +88,13 @@ const NavBar = (props) => {
   const [isNotiDrawerOpen, setNotiDrawerOpen] = useState(false);
   const [notiCounter, setNotiCounter] = useState("");
   const [notiData, setNotiData] = useState([]);
+  const [designationMenuItems, setDesignationMenuItems] = useState(employeeDesignations);
+  const [designationId, setDesignationId] = useState( employeeDesignationsSize ? employeeDesignations[0].designationId : "");
+
+  const [homePageURL, setHomePageURL] = React.useState( employeeDesignationsSize ? employeeDesignations[0].dashboardURL : "/dashboard");
+
   const open = Boolean(anchorEl);
-  const classes = useStyles();
+ 
 
   const notiCallTimeMiliSec = 3000; // 3 sec
 
@@ -94,7 +121,7 @@ const NavBar = (props) => {
   };
 
   const homepage = () => {
-    window.location.replace("#/dashboard");
+    window.location.replace(`#${homePageURL}`);
   };
 
   // useEffect(() => {
@@ -110,14 +137,8 @@ const NavBar = (props) => {
   // }, []);
 
   const getCounterData = async () => {
-    const endpoint =
-      "/notifications/C00CommonEmployeesNotificationsForWebCountView";
-    const res = await Request(
-      "GET",
-      `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}${endpoint}`,
-      null,
-      "authorizeJson"
-    );
+    const endpoint = "/notifications/C00CommonEmployeesNotificationsForWebCountView";
+    const res = await Request( "GET", `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}${endpoint}`, null, "authorizeJson" );
     if (res.isSuccess) {
       let data = res.data || [];
       if (data.length > 0) {
@@ -134,12 +155,7 @@ const NavBar = (props) => {
 
   const getAndUpdateAllNotificationsStatus = async () => {
     const endpoint = "/notifications/C00CommonEmployeesNotificationsForWebView";
-    const res = await Request(
-      "GET",
-      `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}${endpoint}`,
-      null,
-      "authorizeJson"
-    );
+    const res = await Request( "GET", `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}${endpoint}`, null, "authorizeJson" );
     if (res.isSuccess) {
       let data = res.data || [];
       setNotiData(data);
@@ -252,6 +268,34 @@ const NavBar = (props) => {
     setNotiDrawerOpen(value);
   };
 
+  const handleDesignationChange = (event) => {
+    let val = Number(event.target.value); // Ensure correct type
+    let adminData = localStorage.getItem("adminData") ? JSON.parse(localStorage.getItem("adminData")) : {};
+    // Check if employeeDesignations exists and is an array
+    if (Array.isArray(adminData?.employeeDesignations)) {
+        adminData.employeeDesignations.forEach((obj) => {
+            obj.isActive = obj.designationId === val; // Set only one active
+        });
+        localStorage.setItem("adminData", JSON.stringify(adminData)); // Save changes
+    }
+    setDesignationId(val); // Update state
+};
+
+  // useEffect(() => {
+  //   setDesignationMenuItems(employeeDesignations);
+  //   setDesignationId( employeeDesignationsSize ? employeeDesignations.find((obj)=> obj.isActive==true)?.designationId : "");
+  //   setHomePageURL(employeeDesignationsSize ? employeeDesignations.find((obj)=> obj.isActive==true)?.dashboardURL : "/dashboard");
+  // },[employeeDesignationsSize]);
+
+  useEffect(() => {
+    // Check if the values in the array actually changed
+    if (!_.isEqual(employeeDesignations, designationMenuItems)) {
+      setDesignationMenuItems(employeeDesignations);
+      setDesignationId( employeeDesignationsSize ? employeeDesignations.find((obj) => obj.isActive === true) ?.designationId : "" );
+      setHomePageURL( employeeDesignationsSize ? employeeDesignations.find((obj) => obj.isActive === true) ?.dashboardURL : "/dashboard" );
+    }
+  }, [employeeDesignations, employeeDesignationsSize]);
+
   return (
     <Fragment>
       {isAuthorize && (
@@ -313,7 +357,35 @@ const NavBar = (props) => {
             </Typography>
           </div>
           {isAuthorize && (
-            <div>
+            <div style={{ display:"flex", alignItems:" center" }}>
+              <Box className={classes.switchRole}>
+                {/* Switch Designation */}
+                <Select
+                  name="designationId"
+                  value={designationId}
+                  onChange={handleDesignationChange}
+                  className={classes.select}
+                  variant="outlined"
+                  margin="dense"
+                  displayEmpty
+                  inputProps={{
+                    id: "designationId",
+                    'aria-label': 'Without label'
+                  }}
+                >
+                  <MenuItem value="" disabled>Designations...</MenuItem>
+                  {designationMenuItems.map((d, i)=>
+                    <MenuItem 
+                      key={`designationMenuItems-${d.designationId}`} 
+                      value={d.designationId}
+                      onClick={(e)=> {setHomePageURL(d.dashboardURL);history.push(`${d.dashboardURL}`);}}
+                    >
+                      {d.designationLabel}
+                    </MenuItem>
+                  )}
+                </Select>
+              </Box>
+
               <IconButton
                 style={{ color: "#174A84", opacity: "0.8" }}
                 onClick={homepage}
@@ -323,6 +395,7 @@ const NavBar = (props) => {
               </IconButton>
 
               <IconButton
+                ref={ref}
                 onClick={(e) => {
                   handleNotiDrawerToggle(e);
                 }}
@@ -427,7 +500,7 @@ const NavBar = (props) => {
       />
     </Fragment>
   );
-};
+});
 NavBar.propTypes = {
   logo: PropTypes.any,
   title: PropTypes.string,

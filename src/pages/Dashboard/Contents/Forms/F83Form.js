@@ -9,6 +9,7 @@ import clsx from "clsx";
 import BottomBar from "../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
+import isEqual from 'lodash/isEqual';
 
 const styles = (theme) => ({
 	root: {
@@ -95,7 +96,7 @@ const StyledTableCell = withStyles((theme) => ({
 	  featuresLevel3MenuItems=[],
 	  featuresLevel4MenuItems=[],
 	  featureList=[],
-	  clickOnFormSubmit,
+	  handleSaveRow,
 	} = props;
 
 	return (
@@ -112,6 +113,9 @@ const StyledTableCell = withStyles((theme) => ({
 				name="typeLabel"
 				defaultValue={feature.typeId || ""}
 				select
+				inputProps={{
+					id: `featureTypeId-${feature.id}`
+				}}
 			>
 				<MenuItem value="">
 				<em>None</em>
@@ -131,6 +135,9 @@ const StyledTableCell = withStyles((theme) => ({
 				name="level1Label"
 				defaultValue={feature.level1 || ""}
 				select
+				inputProps={{
+					id: `featureLevel1-${feature.id}`
+				}}
 			>
 				<MenuItem value="">
 				<em>None</em>
@@ -150,6 +157,9 @@ const StyledTableCell = withStyles((theme) => ({
 				name="level2Label"
 				defaultValue={feature.level2 || ""}
 				select
+				inputProps={{
+					id: `featureLevel2-${feature.id}`
+				}}
 			>
 				<MenuItem value="">
 				<em>None</em>
@@ -169,6 +179,9 @@ const StyledTableCell = withStyles((theme) => ({
 				name="level3Label"
 				defaultValue={feature.level3 || ""}
 				select
+				inputProps={{
+					id: `featureLevel3-${feature.id}`
+				}}
 			>
 				<MenuItem value="">
 				<em>None</em>
@@ -188,6 +201,9 @@ const StyledTableCell = withStyles((theme) => ({
 				name="level4Label"
 				defaultValue={feature.level4 || ""}
 				select
+				inputProps={{
+					id: `featureLevel4-${feature.id}`
+				}}
 			>
 				<MenuItem value="">
 				<em>None</em>
@@ -214,7 +230,7 @@ const StyledTableCell = withStyles((theme) => ({
 					variant="outlined"
 					size="small"
 					color="primary"
-					onClick={(e) => clickOnFormSubmit(e, 1)}
+					onClick={(e) => handleSaveRow(e, feature.id)}
 					>
 					<SaveOutlinedIcon />
 					</IconButton>
@@ -223,19 +239,7 @@ const StyledTableCell = withStyles((theme) => ({
 	  	</StyledTableRow>
 	)
 )}, (prevProps, nextProps) => {
-	// Custom comparison function for featureList
-	if (prevProps.featureList.length !== nextProps.featureList.length) {
-	  return false;
-	}
-  
-	// Check if the elements inside featureList are the same
-	for (let i = 0; i < prevProps.featureList.length; i++) {
-	  if (prevProps.featureList[i].id !== nextProps.featureList[i].id) {
-		return false;
-	  }
-	}
-  
-	return true; // Prevent re-render if featureList is the same
+	return isEqual(prevProps, nextProps);
   });
 
 class F83Form extends React.PureComponent {
@@ -250,8 +254,14 @@ class F83Form extends React.PureComponent {
 			snackbarMessage: "",
 			snackbarSeverity: "",
 			toggleLevelForm: false,
+			level1: "",
+			level1Error: "",
 			level2: "",
 			level2Error: "",
+			level3: "",
+			level3Error: "",
+			level4: "",
+			level4Error: "",
 			featuresTypesMenuItems: [],
 			featuresLevel1MenuItems: [],
 			featuresLevel2MenuItems: [],
@@ -412,19 +422,6 @@ class F83Form extends React.PureComponent {
 		this.setState({ isLoadingFeatures: false });
 	};
 
-	isLabelValid = () => {
-		let label = this.state.label.trim();
-		let isValid = true;
-		if (label.length < 1) {
-			this.setState({ labelError: "Please enter valid label" });
-			document.getElementById("label").focus();
-			isValid = false;
-		} else {
-			this.setState({ labelError: "" });
-		}
-		return isValid;
-	};
-
 	isFeatureValid = () => {
 		let featureId = this.state.featureId;
 		let isValid = true;
@@ -453,22 +450,46 @@ class F83Form extends React.PureComponent {
 		});
 	};
 
-	clickOnFormSubmit = (e, v) => {
-		alert(v);
-		this.handleOpenSnackbar("Saved", "success");
-		return;
-		 if(!this.isLabelValid()
-		  //|| !this.isFeatureValid()
-		){ return; }
-		this.onFormSubmit();
+	handleAddLevel = (levelKey) => {
+		const levelValue = this.state[`level${levelKey}`];
+		const menuItemsKey = `featuresLevel${levelKey}MenuItems`;
+		// Ensure the array is initialized properly
+		let menuItems = this.state[menuItemsKey] ? [...this.state[menuItemsKey]] : [];
+		// Check if the level value already exists
+		const levelExists = menuItems.some(item => item === levelValue);
+		if (!levelExists) {
+			menuItems.push(levelValue);
+			this.handleOpenSnackbar(`Level${levelKey+1} value added into list.`, "success");
+		} else {
+			this.setState({ [`level${levelKey}Error`]: "Value already exists in the list" });
+			return;
+		}
+		// Update the state dynamically
+		this.setState({
+			[menuItemsKey]: menuItems,
+			[`level${levelKey}`]: ""
+		});
 	};
 
-	onFormSubmit = async () => {
+	handleSaveRow = async (e, featureId) => {
 		
-		let myForm = document.getElementById("myForm");
-		const data = new FormData(myForm);
+		//let myForm = document.getElementById("myForm");
+		let featureTypeEle = document.getElementById(`featureTypeId-${featureId}`);
+		let featureTypeId = parseInt(featureTypeEle.value);
+		if(isNaN(featureTypeId) || featureTypeId==0){ 
+			featureTypeEle.focus();
+			this.handleOpenSnackbar("Please select feature Level_1", "error" );
+			return;
+		};
+		const data = new FormData();
+		data.append("featureId", featureId);
+		data.append("featureTypeId", featureTypeId);
+		data.append("featureLevel1", document.getElementById(`featureLevel1-${featureId}`).value.trim());
+		data.append("featureLevel2", document.getElementById(`featureLevel2-${featureId}`).value.trim());
+		data.append("featureLevel3", document.getElementById(`featureLevel3-${featureId}`).value.trim());
+		data.append("featureLevel4", document.getElementById(`featureLevel4-${featureId}`).value.trim());
 		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C82CommonDashboardSave`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CharOfFeatures/FeatureLevelsSave`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -485,15 +506,15 @@ class F83Form extends React.PureComponent {
 		.then((json) => {
 				if (json.CODE === 1) {
 					this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-					setTimeout(() => {
-						if (this.state.recordId != 0) {
-							window.location = "#/dashboard/F83Reports";
-						} else {
-							window.location.reload();
-						}
-					}, 2000);
+					// setTimeout(() => {
+					// 	if (this.state.recordId != 0) {
+					// 		window.location = "#/dashboard/F83Reports";
+					// 	} else {
+					// 		window.location.reload();
+					// 	}
+					// }, 2000);
 				} else {
-					this.handleOpenSnackbar( json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error" );
+					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error" );
 				}
 				console.log(json);
 			},
@@ -577,8 +598,7 @@ class F83Form extends React.PureComponent {
 									<Grid container justifyContent="center" alignItems="center">
 										<Grid item xs={10} md={4}>
 											<TextField
-												required
-												name="level2"
+												name="level1"
 												label="Level 2"
 												value={this.state.level1}
 												onChange={this.onHandleChange}
@@ -586,11 +606,12 @@ class F83Form extends React.PureComponent {
 												margin="normal"
 												variant="outlined"
 												fullWidth
-												error={!!this.state.labelError}
-												helperText={this.state.labelError}
+												error={!!this.state.level1Error}
+												helperText={this.state.level1Error}
 												size="small"
+												required
 												inputProps={{
-													id : "Level 2"
+													id : "level1"
 												}}
 											/>
 										</Grid>
@@ -599,7 +620,7 @@ class F83Form extends React.PureComponent {
 												variant="outlined" 
 												className={classes.button}
 												size="small"
-												onClick={this.clickOnFormSubmit}
+												onClick={e=>this.handleAddLevel(1)}
 											>
 												Add
 											</Button>
@@ -610,18 +631,19 @@ class F83Form extends React.PureComponent {
 										<Grid item xs={10} md={4}>
 											<TextField
 												required
-												name="level3"
+												name="level2"
 												label="Level 3"
-												defaultValue=""
+												value={this.state.level2}
+												onChange={this.onHandleChange}
 												className={classes.textField}
 												margin="normal"
 												variant="outlined"
 												fullWidth
-												error={!!this.state.labelError}
-												helperText={this.state.labelError}
+												error={!!this.state.level2Error}
+												helperText={this.state.level2Error}
 												size="small"
 												inputProps={{
-													id : "Level 3"
+													id : "level2"
 												}}
 											/>
 										</Grid>
@@ -630,7 +652,7 @@ class F83Form extends React.PureComponent {
 												variant="outlined" 
 												className={classes.button}
 												size="small"
-												onClick={this.clickOnFormSubmit}
+												onClick={e=>this.handleAddLevel(2)}
 											>
 												Add
 											</Button>
@@ -641,18 +663,19 @@ class F83Form extends React.PureComponent {
 										<Grid item xs={10} md={4}>
 											<TextField
 												required
-												name="level4"
+												name="level3"
 												label="Level 4"
-												defaultValue=""
+												value={this.state.level3}
+												onChange={this.onHandleChange}
 												className={classes.textField}
 												margin="normal"
 												variant="outlined"
 												fullWidth
-												error={!!this.state.labelError}
-												helperText={this.state.labelError}
+												error={!!this.state.level3Error}
+												helperText={this.state.level3Error}
 												size="small"
 												inputProps={{
-													id : "Level 4"
+													id : "level3"
 												}}
 											/>
 										</Grid>
@@ -661,7 +684,7 @@ class F83Form extends React.PureComponent {
 												variant="outlined" 
 												className={classes.button}
 												size="small"
-												onClick={this.clickOnFormSubmit}
+												onClick={e=>this.handleAddLevel(3)}
 											>
 												Add
 											</Button>
@@ -672,18 +695,19 @@ class F83Form extends React.PureComponent {
 										<Grid item xs={10} md={4}>
 											<TextField
 												required
-												name="level5"
+												name="level4"
 												label="Level 5"
-												defaultValue=""
+												value={this.state.level4}
+												onChange={this.onHandleChange}
 												className={classes.textField}
 												margin="normal"
 												variant="outlined"
 												fullWidth
-												error={!!this.state.labelError}
-												helperText={this.state.labelError}
+												error={!!this.state.level4Error}
+												helperText={this.state.level4Error}
 												size="small"
 												inputProps={{
-													id : "Level 5"
+													id : "level4"
 												}}
 											/>
 										</Grid>
@@ -692,7 +716,7 @@ class F83Form extends React.PureComponent {
 												variant="outlined" 
 												className={classes.button}
 												size="small"
-												onClick={this.clickOnFormSubmit}
+												onClick={e=>this.handleAddLevel(4)}
 											>
 												Add
 											</Button>
@@ -719,69 +743,15 @@ class F83Form extends React.PureComponent {
 								</TableHead>
 								<TableBody>
 								{this.state.featuresList && this.state.featuresList.length>0 && !this.state.isLoadingFeatures ?	
-									// this.state.featuresList.map((feature, index) => 
-										// <StyledTableRow key={`feature-${(index+1)}`}>
-										// 	<StyledTableCell component="td" scope="row" align="center">
-										// 		{`${(index+1)}`}
-										// 	</StyledTableCell>
-										// 	<StyledTableCell component="td" scope="row">
-										// 		<TextField variant="outlined" fullWidth size="small" name="typeLabel" defaultValue={feature.typeId || ""} select>
-										// 			<MenuItem value=""><em>None</em></MenuItem>
-										// 			{this.state.featuresTypesMenuItems.map((t, i) =>
-										// 				<MenuItem key={`featuresTypesMenuItems-${t.label}`} value={t.id}>{t.label}</MenuItem>
-										// 			)}
-										// 		</TextField>
-										// 	</StyledTableCell>
-										// 	<StyledTableCell component="td" scope="row">
-										// 		<TextField variant="outlined" fullWidth size="small" name="level1Label" defaultValue={feature.level1 || ""} select>
-										// 		<MenuItem value=""><em>None</em></MenuItem>
-										// 		{this.state.featuresLevel1MenuItems.map((level1, level1Index) =>
-										// 			<MenuItem key={`featuresLevel1MenuItems-${level1}`} value={level1}>{level1}</MenuItem>
-										// 		)}
-										// 		</TextField>
-										// 	</StyledTableCell>
-										// 	<StyledTableCell component="td" scope="row">
-										// 		<TextField variant="outlined" fullWidth size="small" name="level2Label" defaultValue={feature.level2 || ""} select>
-										// 			<MenuItem value=""><em>None</em></MenuItem>
-										// 			{this.state.featuresLevel2MenuItems.map((level2, level2Index) =>
-										// 				<MenuItem key={`featuresLevel2MenuItems-${level2}`} value={level2}>{level2}</MenuItem>
-										// 			)}
-										// 		</TextField>
-										// 	</StyledTableCell>
-										// 	<StyledTableCell component="td" scope="row">
-										// 		<TextField variant="outlined" fullWidth size="small" name="level3Label" defaultValue={feature.level3 || ""} select>
-										// 			<MenuItem value=""><em>None</em></MenuItem>
-										// 			{this.state.featuresLevel3MenuItems.map((level3, level3Index) =>
-										// 				<MenuItem key={`featuresLevel3MenuItems-${level3}`} value={level3}>{level3}</MenuItem>
-										// 			)}
-										// 		</TextField>
-										// 	</StyledTableCell>
-										// 	<StyledTableCell component="td" scope="row">
-										// 		<TextField variant="outlined" fullWidth size="small" name="level4Label" defaultValue={feature.level4 || ""} select>
-										// 			<MenuItem value=""><em>None</em></MenuItem>
-										// 			{this.state.featuresLevel4MenuItems.map((level4, level4Index) =>
-										// 				<MenuItem key={`featuresLevel4MenuItems-${level4}`} value={level4}>{level4}</MenuItem>
-										// 			)}
-										// 		</TextField>
-										// 	</StyledTableCell>
-										// 	<StyledTableCell component="td" scope="row">
-										// 		<Typography variant="body2" component="span" style={{display:"inline-block"}}>{feature.label}</Typography>
-										// 	</StyledTableCell>
-										// 	<StyledTableCell component="td" scope="row">
-										// 		<Tooltip title="Save"><IconButton variant="outlined" size="small" color="primary" onClick={this.clickOnFormSubmit}><SaveOutlinedIcon /></IconButton></Tooltip>
-										// 	</StyledTableCell>
-										// </StyledTableRow>
-										<CustomRow
-											featuresTypesMenuItems={this.state.featuresTypesMenuItems || []}
-											featuresLevel1MenuItems={this.state.featuresLevel1MenuItems || []}
-											featuresLevel2MenuItems={this.state.featuresLevel2MenuItems || []}
-											featuresLevel3MenuItems={this.state.featuresLevel3MenuItems || []} 
-											featuresLevel4MenuItems={this.state.featuresLevel4MenuItems || []}
-											featureList={this.state.featuresList} 
-											clickOnFormSubmit={this.clickOnFormSubmit}
-										/>
-																				
-									// )
+									<CustomRow
+										featuresTypesMenuItems={this.state.featuresTypesMenuItems || []}
+										featuresLevel1MenuItems={this.state.featuresLevel1MenuItems || []}
+										featuresLevel2MenuItems={this.state.featuresLevel2MenuItems || []}
+										featuresLevel3MenuItems={this.state.featuresLevel3MenuItems || []} 
+										featuresLevel4MenuItems={this.state.featuresLevel4MenuItems || []}
+										featureList={this.state.featuresList} 
+										handleSaveRow={this.handleSaveRow}
+									/>
 								: this.state.isLoadingFeatures ? (
 									<StyledTableRow key={`CircularProgress`}>
 										<StyledTableCell component="td" scope="row" colSpan={8}>

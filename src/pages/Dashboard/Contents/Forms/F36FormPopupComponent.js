@@ -201,7 +201,7 @@ class F36FormPopupComponent extends Component {
           if (json.CODE === 1) {
             this.props.handleOpenSnackbar(json.USER_MESSAGE, "success");
             this.handlePopupClose();
-            this.props.getData();
+            // this.props.getData();
           } else {
             this.props.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
           }

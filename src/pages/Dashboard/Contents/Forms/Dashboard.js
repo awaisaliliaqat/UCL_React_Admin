@@ -2,13 +2,7 @@
 
 import React, { Fragment, useState, Suspense, useEffect } from "react";
 import clsx from "clsx";
-import {
-  HashRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-} from "react-router-dom";
+import { HashRouter as Router, Switch, Route, Link, Redirect, } from "react-router-dom";
 import Drawer from "@material-ui/core/Drawer";
 import Toolbar from "@material-ui/core/Toolbar";
 import MenuList from "@material-ui/core/MenuList";
@@ -18,6 +12,7 @@ import Logo from "../../assets/Images/logo.png";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import WelcomePage from "./Contents/WelcomePage";
+import WelcomePageDemo from "./Contents/WelcomePageDemo";
 import Leaf from "../../assets/Images/svg/leaf.svg";
 import AdmissionApplicationReports from "./Contents/Reports/AdmissionApplicationReports/AdmissionApplicationReports";
 import AdmissionDecision from "./Contents/Decision/AdmissionDecision/AddmissionDecision";
@@ -1922,7 +1917,6 @@ const Dashboard = (props) => {
                   );
                 }}
               />
-              
               <SetRoute
                 setValue={(value) => handleValueChange(value)}
                 name="all-active-classes"
