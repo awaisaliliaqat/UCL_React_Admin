@@ -473,6 +473,10 @@ class F83Form extends React.PureComponent {
 
 	handleSaveRow = async (e, featureId) => {
 		
+		if(!this.isLevel3Validate()){
+			return null;
+		}
+
 		//let myForm = document.getElementById("myForm");
 		let featureTypeEle = document.getElementById(`featureTypeId-${featureId}`);
 		let featureTypeId = parseInt(featureTypeEle.value);
@@ -537,6 +541,41 @@ class F83Form extends React.PureComponent {
 		window.location = "#/dashboard/F83Reports";
 	};
 
+	isLevel3Validate = () => {
+		// Select elements with name="level1Label" and name="level2Label"
+		const level0ArrayEle = document.getElementsByName("typeLabel");
+		const level1ArrayEle = document.getElementsByName("level1Label");
+		const level2ArrayEle = document.getElementsByName("level2Label");
+		// Convert NodeList to array of values
+		const level0Array = Array.from(level0ArrayEle).map(ele => ele.value);
+		const level1Array = Array.from(level1ArrayEle).map(ele => ele.value);
+		const level2Array = Array.from(level2ArrayEle).map(ele => ele.value);
+		if (level0Array.length !== level1Array.length || level1Array.length !== level2Array.length) {
+			this.handleOpenSnackbar(<span>ERROR: Arrays must have the same length.</span>,"error");
+			console.error("Error: Arrays must have the same length.");
+			return false;
+		}
+		const combinedObject = {};
+		for (let index = 0; index < level0Array.length; index++) {
+			const key = `${this.state.featuresTypesMenuItems.find((d,i)=>d.id==level0Array[index]).label.replaceAll(" ","_")}-${level1Array[index].replaceAll(" ","_")}`; // Create combined key
+			const value = level2Array[index];
+			if (!combinedObject[key]) {
+				combinedObject[key] = [];
+			}
+			if (!combinedObject[key].includes(value)) {
+				combinedObject[key].push(value);
+			}
+			// Stop execution if any key has multiple unique values
+			if (combinedObject[key].length > 1) {
+				this.handleOpenSnackbar(<span>ERROR: L1 + L2 must have same L3.<br/>Key {key} has multiple values: {combinedObject[key]}</span>,"error");
+				console.error(`Error: Key "${key}" has multiple values: ${combinedObject[key]}`);
+				return false; // Stop execution
+			}
+		}
+		//console.log("Final Combined Object:", combinedObject);
+		return true;
+	};
+	  
 	componentDidMount() {
 		this.props.setDrawerOpen(false);
 		this.loadFeatureTypes();
