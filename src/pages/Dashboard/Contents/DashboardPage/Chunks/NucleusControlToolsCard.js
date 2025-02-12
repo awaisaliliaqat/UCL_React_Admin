@@ -144,17 +144,18 @@ const NucleusControlToolsCard = ({data, dataIndex}) => {
 							l2?.level3.map((l3, l3Index) => 
 								l3?.level4.map((l4, l4Index) => 
 									l4?.level5.map((l5, l5Index) => {
-										// const themeClass = themes[l1Index % themes.length];
-										// const color = colors[l1Index % colors.length];
-										// const icon = icons[l1Index % icons.length];
-										const themeClass = themes[countPrint];
-										const color = colors[countPrint];
-										const icon = icons[countPrint];
-										if(countPrint>=4){
-											countPrint = 0;
-										} else {
-											countPrint++;
-										}
+										const themeClass = themes[l5Index % themes.length];
+										const color = colors[l5Index % colors.length];
+										const icon = icons[l5Index % icons.length];
+										//const themeClass = themes[countPrint];
+										// const color = colors[countPrint];
+										// const icon = icons[countPrint];
+										// if(countPrint>=4){
+										// 	countPrint = 0;
+										// } else {
+										// 	countPrint++;
+										// }
+										console.log("countPrint", countPrint);
 										return (
 											<Grid key={`level5-${l5.id}`} item xs={12} sm={6}> 
 												<Box className={`${classes.item} ${classes[themeClass]}`} onClick={(e)=> history.push(`${l5.webUrl}`)}>
