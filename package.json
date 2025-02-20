@@ -2,7 +2,7 @@
   "name": "ucl-admin",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://exergysystem.com/ucl-admin",
+  "homepage": "http://lms.ucl.edu.pk/ucl-admin",
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
     "@devexpress/dx-core": "^2.6.3",
