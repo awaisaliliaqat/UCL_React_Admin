@@ -247,6 +247,10 @@ import R350MonthlyEmployeeLateDaysReportforPayroll from "./Contents/Forms/Monthl
 import R350EmployeesWithFinalApproval from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesWithFinalApproval/R350EmployeesWithFinalApproval";
 import R350EmployeesNotSubmitted from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesNotSubmitted/R350EmployeesNotSubmitted";
 import R350EmployeesWithPendingForApproval from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesWithPendingForApproval/R350EmployeesWithPendingForApproval";
+import F351Form from "./Contents/Forms/F351Form/F351Form";
+import F351Reports from "./Contents/Forms/F351Form/F351Reports";
+import F352Form from "./Contents/Forms/F352Form/F352Form";
+import F352Reports from "./Contents/Forms/F352Form/F352Reports";
 
 const drawerWidth = 283;
 
@@ -3666,6 +3670,66 @@ const Dashboard = (props) => {
 				  );
 				}}
 			  />
+			  	<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F351Form"
+					exact
+					path="/dashboard/F351Form/:recordId"
+					render={(props) => {
+						return (
+							<F351Form
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F351Form"
+					exact
+					path="/dashboard/F351Reports"
+					render={(props) => {
+					return (
+						<F351Reports
+							{...props}
+							isDrawerOpen={isDrawerOpen}
+							setDrawerOpen={setDrawerOpen}
+						/>
+					);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F352Form"
+					exact
+					path="/dashboard/F352Form/:recordId"
+					render={(props) => {
+						return (
+							<F352Form
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F352Form"
+					exact
+					path="/dashboard/F352Reports"
+					render={(props) => {
+					return (
+						<F352Reports
+							{...props}
+							isDrawerOpen={isDrawerOpen}
+							setDrawerOpen={setDrawerOpen}
+						/>
+					);
+					}}
+				/>
 			  {isUserDesignation &&
 				<SetRoute
 					setValue={(value) => handleValueChange(value)}
