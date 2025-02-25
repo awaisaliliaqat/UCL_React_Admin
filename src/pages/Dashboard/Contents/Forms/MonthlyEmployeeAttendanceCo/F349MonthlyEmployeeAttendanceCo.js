@@ -196,7 +196,7 @@ class F349MonthlyEmployeeAttendanceCo extends Component {
 	}
 	this.setState({ isLoading: true });
 	//const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceSave`;
-	const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C349CommonEmployeePayrollAttendanceCoordinatorSave1`;
+	const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C349CommonEmployeePayrollAttendanceCoordinatorSave`;
 	// var data = new FormData();
 	const { teachersAttendanceSheetData } = this.state;
 	let array = [];
