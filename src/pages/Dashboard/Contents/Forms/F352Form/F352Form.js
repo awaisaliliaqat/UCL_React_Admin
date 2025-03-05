@@ -6,8 +6,9 @@ import { numberExp } from '../../../../../utils/regularExpression';
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { DatePicker } from '@material-ui/pickers';
-import { isBefore, addDays, startOfDay } from 'date-fns';
+import { isBefore, addDays, startOfDay, toDate, parse, differenceInDays, isAfter } from 'date-fns';
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { from } from 'seamless-immutable';
 
 const styles = (theem) => ({
     root: {
@@ -46,12 +47,14 @@ class F352Form extends Component {
             },
             isReload: false,
             leaveTypeMenuItems:[],
-            leaveTypeId:"",
+            leaveTypeId: "1",
             leaveTypeIdError:"",
             fromDate: new Date(),
             fromDateError: "",
             toDate: addDays(new Date(), 1),
             toDateError: "",
+            noOfDays: Math.abs(differenceInDays(addDays(new Date(), 1), new Date()))+1,
+            noOfDaysError: "",
             userRoleTypeMenuItems: [],
             employeeRoleTypeMenuItems: [],
             employeeRoleTypeId: "",
@@ -261,11 +264,12 @@ class F352Form extends Component {
         this.setState(prevState => ({ isLoading: { ...prevState.isLoading, employees: false } }));
     };
 
-    loadData = async(index) => {
+    loadData = async(id) => {
+        let parseId = parseInt(id);
+        if(isNaN(parseId)){ parseId=0;}
         const data = new FormData();
-        data.append("id",index);
-        
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C352CommonEmployeesLeavePlans/View`;
+        data.append("id", parseId);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C352CommonEmployeesLeavePlans/View`;
         await fetch(url, {
             method: "POST",
             body: data, 
@@ -282,9 +286,15 @@ class F352Form extends Component {
         .then( json => {
                 if (json.CODE === 1) {
                     if(json.DATA.length){
+                        let data = json.DATA[0];
                         this.setState({
-                            label: json.DATA[0].label,
-                            defaultQuota: json.DATA[0].defaultQuota
+                            leaveTypeMenuItems: [{id:data.leaveTypeId, label: data.leaveTypeLabel}],
+                            leaveTypeId: data.leaveTypeId,
+                            fromDate: data.startOnDate,
+                            toDate: data.endOnDate,
+                            noOfDays: data.noOfDays,
+                            employeeData: [{id: data.userId, label: data.userLabel}],
+                            employeeObject: [{id: data.userId, label: data.userLabel}]
                         });
                     }else{
                         window.location = "#/dashboard/F352Form/0";
@@ -325,7 +335,7 @@ class F352Form extends Component {
 
     isDateValid = () => {
         let isValid = true;
-        if (!isBefore(startOfDay(this.state.fromDate), startOfDay(this.state.toDate))) {
+        if (isAfter(startOfDay(this.state.fromDate), startOfDay(this.state.toDate))) {
             this.setState({toDateError:"The ToDate should be later than the FromDate."});
             document.getElementById("toDate").focus();
             isValid = false;
@@ -361,7 +371,7 @@ class F352Form extends Component {
         let myForm = document.getElementById('myForm');
         const data = new FormData(myForm);
         this.setState({isLoading: true});
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C352CommonEmployeesLeavePlan/Save`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C352CommonEmployeesLeavePlans/Save`;
         await fetch(url, {
             method: "POST", 
             body: data, 
@@ -389,7 +399,7 @@ class F352Form extends Component {
                         }, 2000);
                     } else {
                         //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
-                        this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
+                        this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
                     }
                     console.log(json);
                 },
@@ -424,6 +434,12 @@ class F352Form extends Component {
                 } else {
                     this.setState({ employeeObject : [] });
                 }
+                break;
+            case "fromDate":
+                this.setState({noOfDays: Math.abs(differenceInDays(this.state.toDate, value))+1 });
+                break;
+            case "toDate":
+                this.setState({noOfDays: Math.abs(differenceInDays(value ,this.state.fromDate))+1 });
             break;
             
             default:
@@ -437,26 +453,20 @@ class F352Form extends Component {
 
     componentDidMount() {
         this.props.setDrawerOpen(false);
-        this.loadLeaveTypes();
-        this.getEmployeesData();
-        this.getEmployeeRoleTypeData();
+        if (this.props.match.params.recordId!=0) {
+            this.loadData(this.props.match.params.recordId);
+        } else {
+            this.loadLeaveTypes();
+            this.getEmployeeRoleTypeData();
+            this.getEmployeesData();
+        }
+        
     }
-
-    // componentWillReceiveProps(nextProps){
-    //     if(this.props.match.params.recordId!=nextProps.match.params.recordId){
-    //         if(nextProps.match.params.recordId!=0){
-    //             this.props.setDrawerOpen(false);
-    //             this.loadData(nextProps.match.params.recordId);
-    //         }else{
-    //             window.location.reload();
-    //         }
-    //     }
-    // }
 
     componentDidUpdate(prevProps) {
         // Check if recordId has changed
         if (prevProps.match.params.recordId !== this.props.match.params.recordId) {
-            if (this.props.match.params.recordId !== "0") {
+            if (this.props.match.params.recordId != "0") {
                 this.props.setDrawerOpen(false);
                 this.loadData(this.props.match.params.recordId);
             } else {
@@ -502,7 +512,7 @@ class F352Form extends Component {
                             container 
                             spacing={2}
                         >
-                            <Grid item xs={12} sm={12} md={4}>
+                            <Grid item xs={12} sm={12} md={3}>
                                 <TextField
                                     name="leaveTypeId"
                                     label="Leave Type"
@@ -510,12 +520,14 @@ class F352Form extends Component {
                                     fullWidth
                                     variant="outlined"
                                     select
+                                    readOnly
                                     onChange={this.onHandleChange}
                                     value={this.state.leaveTypeId}
                                     error={!!this.state.leaveTypeIdError}
                                     helperText={this.state.leaveTypeIdError}
                                     SelectProps={{
                                         id : "leaveTypeId",
+                                        readOnly: true,
                                         style: {paddingRight:0},
                                         endAdornment: (
                                             <>
@@ -546,6 +558,8 @@ class F352Form extends Component {
                                     format="dd-MM-yyyy"
                                     fullWidth
                                     required
+                                    minDate={parse('2024-09-01', 'yyyy-MM-dd', new Date())}
+                                    maxDate={parse('2025-08-31', 'yyyy-MM-dd', new Date())}
                                     value={this.state.fromDate}
                                     onChange={(date) =>
                                         this.onHandleChange({
@@ -569,6 +583,8 @@ class F352Form extends Component {
                                     format="dd-MM-yyyy"
                                     fullWidth
                                     required
+                                    minDate={parse('2024-09-01', 'yyyy-MM-dd', new Date())}
+                                    maxDate={parse('2025-08-31', 'yyyy-MM-dd', new Date())}
                                     value={this.state.toDate}
                                     onChange={(date) =>
                                         this.onHandleChange({
@@ -577,7 +593,24 @@ class F352Form extends Component {
                                     }
                                 />
                             </Grid>
-                            <Grid item xs={12} md={4}>
+                            <Grid item xs={12} sm={6} md={2}>
+                                <TextField
+                                    id="noOfDays"
+                                    name="noOfDays"
+                                    label="No of Days"
+                                    placeholder=""
+                                    variant="outlined"
+                                    fullWidth
+                                    required
+                                    readOnly
+                                    value={this.state.noOfDays}
+                                    //onChange={this.onHandleChange}
+                                    error={!!this.state.noOfDaysError}
+                                    helperText={this.state.noOfDaysError}
+                                    Autocomplete={false}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     name="employeeRoleTypeId"
                                     label="Employee Role"

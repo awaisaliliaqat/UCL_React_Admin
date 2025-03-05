@@ -251,6 +251,10 @@ import F351Form from "./Contents/Forms/F351Form/F351Form";
 import F351Reports from "./Contents/Forms/F351Form/F351Reports";
 import F352Form from "./Contents/Forms/F352Form/F352Form";
 import F352Reports from "./Contents/Forms/F352Form/F352Reports";
+import F353Form from "./Contents/Forms/F353Form/F353Form";
+import F353Reports from "./Contents/Forms/F353Form/F353Reports";
+import F354Form from "./Contents/Forms/F354Form/F354Form";
+import F354Reports from "./Contents/Forms/F354Form/F354Reports";
 
 const drawerWidth = 283;
 
@@ -3728,6 +3732,66 @@ const Dashboard = (props) => {
 							setDrawerOpen={setDrawerOpen}
 						/>
 					);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F353Form"
+					exact
+					path="/dashboard/F353Form"
+					render={(props) => {
+						return (
+							<F353Form
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F353Form"
+					exact
+					path="/dashboard/F353Reports"
+					render={(props) => {
+						return (
+							<F353Reports
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F354Form"
+					exact
+					path="/dashboard/F354Form"
+					render={(props) => {
+						return (
+							<F354Form
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F354Form"
+					exact
+					path="/dashboard/F354Reports"
+					render={(props) => {
+						return (
+							<F354Reports
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
 					}}
 				/>
 			  {isUserDesignation &&

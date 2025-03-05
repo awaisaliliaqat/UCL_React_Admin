@@ -96,7 +96,7 @@ class F352Reports extends Component {
 							<EditDeleteTableRecord
 								recordId={json.DATA[i].id}
 								DeleteData={this.DeleteData}
-								onEditURL={`#/dashboard/F351Form/${json.DATA[i].id}`}
+								onEditURL={`#/dashboard/F352Form/${json.DATA[i].id}`}
 								handleOpenSnackbar={this.handleOpenSnackbar}
 							/>
 						);
@@ -126,7 +126,7 @@ class F352Reports extends Component {
 	DeleteData = async (event) => {
 		event.preventDefault();
 		const data = new FormData(event.target);
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C351CommonLeaveTypes/Delete`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C352CommonEmployeesLeavePlans/Delete`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -134,36 +134,36 @@ class F352Reports extends Component {
 				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
 			}),
 		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				if (json.CODE === 1) {
+					this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+					this.getData();
+				} else {
+					//alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
+					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error" );
 				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-						this.getData();
-					} else {
-						//alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
-						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error" );
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status === 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						//alert('Failed to fetch, Please try again later.');
-						this.handleOpenSnackbar( "Failed to fetch, Please try again later.", "error" );
-						console.log(error);
-					}
+				console.log(json);
+			},
+			(error) => {
+				if (error.status === 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: false,
+					});
+				} else {
+					//alert('Failed to fetch, Please try again later.');
+					this.handleOpenSnackbar( "Failed to fetch, Please try again later.", "error" );
+					console.log(error);
 				}
-			);
+			}
+		);
 	};
 
 	onHandleChange = (e) => {
@@ -188,42 +188,6 @@ class F352Reports extends Component {
 	render() {
 
 		const { classes } = this.props;
-
-		// const columnsSubmitted = [
-		//     //{ name: "SR#", dataIndex: "serialNo", sortable: false, customStyleHeader: { width: '7%' } },
-		//     { name: "Id", dataIndex: "id", sortable: false, customStyleHeader: { width: '8%', textAlign: 'center' } },
-		//     {name: "Name", renderer: rowData => { return (<Fragment>{`${rowData.firstName} ${rowData.lastName}`}</Fragment>)}, sortable: false, customStyleHeader: { width: '10%' }},
-		//     { name: "Gender", dataIndex: "genderLabel", sortIndex: "genderLabel", sortable: true, customStyleHeader: { width: '12%' } },
-		//     { name: "Degree Programme", dataIndex: "degreeLabel", sortIndex: "degreeLabel", sortable: true, customStyleHeader: { width: '17%', textAlign: 'center' }, align: 'center' },
-		//     { name: "Mobile No", dataIndex: "mobileNo", sortable: false, customStyleHeader: { width: '13%' } },
-		//     { name: "Email", dataIndex: "email", sortable: false, customStyleHeader: { width: '15%' } },
-		//     { name: "Submission Date", dataIndex: "submittedOn", sortIndex: "submittedOn", sortable: true, customStyleHeader: { width: '15%' } },
-		//     { name: "Payment Method", dataIndex: "paymentMethod", sortIndex: "paymentMethod", sortable: true, customStyleHeader: { width: '15%' } },
-		//     { name: "Status", dataIndex: "status", sortIndex: "status", sortable: true, customStyleHeader: { width: '15%' } },
-		//     { name: "Profile", renderer: rowData => {return (<Button style={{fontSize: 12,textTransform: 'capitalize'}} variant="outlined" onClick={() => window.open(`#/view-application/${rowData.id}`, "_blank")} >View</Button>)}, sortable: false, customStyleHeader: { width: '15%' }},
-		// ]
-
-		const columns = [
-			{ name: "srNo", title: "SR#" },
-			{ name: "userLabel", title: "Employee" },
-			{ name: "leaveTypeLabel", title: "Leave Type" },
-			{ name: "startOnDate", title: "From Date", 
-				getCellValue: (row) => {
-				   return <div>{`${format(row.startOnDate,"dd-MM-yyyy")}`}</div>;
-				}
-			},
-			{ name: "endOnDate", title: "To Date",
-				getCellValue: (row) => {
-					return <div>{`${format(row.endOnDate,"dd-MM-yyyy")}`}</div>;
-				}
-			 },
-			{ name: "createdOn", title: "Created On",
-				getCellValue: (row) => {
-					return <div>{`${format(row.createdOn,"dd-MM-yyyy hh:mm a")}`}</div>;
-				}
-			 },
-			//{ name: "action", title: "Action" },
-		];
 
 		return (
 			<Fragment>
@@ -274,7 +238,6 @@ class F352Reports extends Component {
 					{this.state.admissionData ? (
 						<F352ReportsTableComponent
 							isLoading={this.state.isLoading}
-							columns={columns}
 							rows={this.state.admissionData}
 							showFilter={this.state.showTableFilter}
 						/>
