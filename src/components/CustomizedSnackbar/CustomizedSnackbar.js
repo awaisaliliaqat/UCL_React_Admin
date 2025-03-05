@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,28 +13,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CustomizedSnackbar(props) {
+function CustomizedSnackbar({handleCloseSnackbar, isOpen, severity, message}) {
 
   const classes = useStyles();
   
   return (
     <div className={classes.root}>
       <Snackbar 
-        open={props.isOpen} 
+        open={isOpen} 
         autoHideDuration={2000} 
-        onClose={() => props.handleCloseSnackbar()}
+        onClose={handleCloseSnackbar}
       >
         <MuiAlert 
           elevation={6} 
           variant="filled"
-          onClose={() => props.handleCloseSnackbar()} 
-          severity={props.severity}
+          onClose={handleCloseSnackbar} 
+          severity={severity}
         >
-          {props.message}
+          {message}
         </MuiAlert>
       </Snackbar>
     </div>
   );
 }
+
+CustomizedSnackbar.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  handleCloseSnackbar: PropTypes.func.isRequired,
+  severity: PropTypes.oneOf(['error', 'warning', 'info', 'success', '']).isRequired,
+  message: PropTypes.string.isRequired,
+};
+
+CustomizedSnackbar.defaultProps = {
+  isOpen: false,
+  severity: 'info',
+  message: '',
+};
 
 export default CustomizedSnackbar;
