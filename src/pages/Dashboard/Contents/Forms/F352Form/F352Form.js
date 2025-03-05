@@ -2,13 +2,11 @@ import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/styles';
 import { TextField, Grid, Divider, Typography, MenuItem, Chip, Checkbox, CircularProgress } from '@material-ui/core';
 import LoginMenu from '../../../../../components/LoginMenu/LoginMenu';
-import { numberExp } from '../../../../../utils/regularExpression';
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { DatePicker } from '@material-ui/pickers';
-import { isBefore, addDays, startOfDay, toDate, parse, differenceInDays, isAfter } from 'date-fns';
+import { addDays, startOfDay, differenceInDays, isAfter } from 'date-fns';
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { from } from 'seamless-immutable';
 
 const styles = (theem) => ({
     root: {
@@ -45,13 +43,16 @@ class F352Form extends Component {
                 leaveTypes : false,
                 userRoleType : false
             },
+            isOpenSnackbar:false,
+            snackbarMessage:"",
+            snackbarSeverity:"",
             isReload: false,
             leaveTypeMenuItems:[],
-            leaveTypeId: "1",
+            leaveTypeId: "",
             leaveTypeIdError:"",
             fromDate: startOfDay(new Date()),
             fromDateError: "",
-            toDate: addDays(new Date(), 1),
+            toDate: addDays(startOfDay(new Date()), 1),
             toDateError: "",
             noOfDays: Math.abs(differenceInDays(addDays(startOfDay(new Date()), 1), startOfDay(new Date())))+1,
             noOfDaysError: "",
@@ -63,9 +64,9 @@ class F352Form extends Component {
             employeeDataLoading: false,
             employeeObject: [],
             employeeObjectError: "",
-            isOpenSnackbar:false,
-            snackbarMessage:"",
-            snackbarSeverity:""
+            leaveYearsData : [],
+            leaveYearStartDate: "",
+            leaveYearEndDate: "",
         }
     }
 
@@ -86,6 +87,50 @@ class F352Form extends Component {
         });
     };
 
+    loadLeaveYears = async() => {
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonLeaveYearsView`;
+        await fetch(url, {
+            method: "POST",
+            headers: new Headers({
+                Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
+            })
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw res;
+            }
+            return res.json();
+        })
+        .then(json => {
+            if (json.CODE === 1) {
+                if(json.DATA.length){
+                    let data = json.DATA.find((d,i)=>d.isCurrent==1);
+                    this.setState({ 
+                        leaveYearsData: json.DATA,
+                        leaveYearStartDate: data.startDate,
+                        leaveYearEndDate: data.endDate
+                    });
+                }
+            } else {
+                //alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
+                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+            }
+            console.log("loadLeaveYears:", json);
+        },
+        error => {
+            if (error.status == 401) {
+                this.setState({
+                    isLoginMenu: true,
+                    isReload: true
+                })
+            } else {
+                console.log(error);
+                // alert("Failed to Save ! Please try Again later.");
+                this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+            }
+        });
+    }
+
     loadLeaveTypes = async() => {
         this.setState(prevState => ({ isLoading: { ...prevState.isLoading, leaveTypes:true } }));
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C352CommonEmployeesLeavePlans/CommonLeaveTypesView`;
@@ -105,7 +150,8 @@ class F352Form extends Component {
             if (json.CODE === 1) {
                 if(json.DATA.length){
                     this.setState({
-                        leaveTypeMenuItems: json.DATA
+                        leaveTypeMenuItems: json.DATA,
+                        leaveTypeId:1
                     });
                 } else {
                     window.location = "#/dashboard/F352Form/0";
@@ -436,10 +482,10 @@ class F352Form extends Component {
                 }
                 break;
             case "fromDate":
-                this.setState({noOfDays: Math.abs(differenceInDays(this.state.toDate, value))+1 });
+                this.setState({noOfDays: Math.abs(differenceInDays(startOfDay(this.state.toDate), startOfDay(value)))+1 });
                 break;
             case "toDate":
-                this.setState({noOfDays: Math.abs(differenceInDays(value ,this.state.fromDate))+1 });
+                this.setState({noOfDays: Math.abs(differenceInDays(startOfDay(value) ,startOfDay(this.state.fromDate)))+1 });
             break;
             
             default:
@@ -456,9 +502,11 @@ class F352Form extends Component {
         if (this.props.match.params.recordId!=0) {
             this.loadData(this.props.match.params.recordId);
         } else {
+            this.loadLeaveYears();
             this.loadLeaveTypes();
             this.getEmployeeRoleTypeData();
             this.getEmployeesData();
+            //this.setState({leaveTypeId:1});
         }
         
     }
@@ -468,6 +516,7 @@ class F352Form extends Component {
         if (prevProps.match.params.recordId !== this.props.match.params.recordId) {
             if (this.props.match.params.recordId != "0") {
                 this.props.setDrawerOpen(false);
+                this.loadLeaveYears();
                 this.loadData(this.props.match.params.recordId);
             } else {
                 window.location.reload();
@@ -558,8 +607,8 @@ class F352Form extends Component {
                                     format="dd-MM-yyyy"
                                     fullWidth
                                     required
-                                    minDate={parse('2024-09-01', 'yyyy-MM-dd', new Date())}
-                                    maxDate={parse('2025-08-31', 'yyyy-MM-dd', new Date())}
+                                    minDate={startOfDay(new Date(this.state.leaveYearStartDate))}
+                                    maxDate={startOfDay(new Date(this.state.leaveYearEndDate))}
                                     value={this.state.fromDate}
                                     onChange={(date) =>
                                         this.onHandleChange({
@@ -583,8 +632,8 @@ class F352Form extends Component {
                                     format="dd-MM-yyyy"
                                     fullWidth
                                     required
-                                    minDate={parse('2024-09-01', 'yyyy-MM-dd', new Date())}
-                                    maxDate={parse('2025-08-31', 'yyyy-MM-dd', new Date())}
+                                    minDate={startOfDay(new Date(this.state.leaveYearStartDate))}
+                                    maxDate={startOfDay(new Date(this.state.leaveYearEndDate))}
                                     value={this.state.toDate}
                                     onChange={(date) =>
                                         this.onHandleChange({
@@ -607,7 +656,7 @@ class F352Form extends Component {
                                     //onChange={this.onHandleChange}
                                     error={!!this.state.noOfDaysError}
                                     helperText={this.state.noOfDaysError}
-                                    Autocomplete={false}
+                                    autoComplete="false"
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6} md={3}>
