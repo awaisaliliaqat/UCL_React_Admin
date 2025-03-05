@@ -9,8 +9,7 @@ import F353FormTableComponent from "./chunks/F353FormTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { isBefore, addDays, startOfDay, toDate, parse, format, differenceInDays, isAfter, isEqual } from 'date-fns';
-import { from } from "seamless-immutable";
+import { isBefore, startOfDay, parse, format, differenceInDays, isAfter, isEqual } from 'date-fns';
 
 const styles = () => ({
 	mainContainer: {
@@ -44,15 +43,15 @@ class F353Form extends Component {
 		super(props);
 		this.state = {
 			isLoading: {
-				isLoading : false,
-				leaveTypes: false
+				isLoading: false,
+				leaveTypes: false,
 			},
 			isLoginMenu: false,
 			isReload: false,
 			isOpenSnackbar: false,
 			snackbarMessage: "",
 			snackbarSeverity: "info",
-			leaveTypeMenuItems : [],
+			leaveTypeMenuItems: [],
 			leaveTypeId: "",
 			leaveTypeIdError: "",
 			fromDate: null,
@@ -63,7 +62,10 @@ class F353Form extends Component {
 			employeeLeavesData: [],
 			employeeLeavePlanData: [],
 			appliedLeaveDataPlan: [],
-			recordIndex : 0
+			recordIndex: 0,
+			leaveYearsData: [],
+			leaveYearStartDate: "",
+			leaveYearEndDate: "",
 		};
 	}
 
@@ -75,155 +77,235 @@ class F353Form extends Component {
 		});
 	};
 
-	loadLeaveTypes = async() => {
-		this.setState(prevState => ({ isLoading: { ...prevState.isLoading, leaveTypes:true } }));
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/CommonLeaveTypesView`;
+	loadLeaveYears = async () => {
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonLeaveYearsView`;
 		await fetch(url, {
-				method: "POST",
-				headers: new Headers({
-						Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
-				})
-		})
-		.then(res => {
-				if (!res.ok) {
-						throw res;
-				}
-				return res.json();
-		})
-		.then(json => {
-				if (json.CODE === 1) {
-						if(json.DATA.length){
-								this.setState({
-										leaveTypeMenuItems: json.DATA
-								});
-						} else {
-								window.location = "#/dashboard/F353Form";
-						}
-				} else {
-						//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
-						this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
-				}
-				console.log("loadLeaveTypes:", json);
-		},
-		error => {
-				if (error.status == 401) {
-						this.setState({
-								isLoginMenu: true,
-								isReload: true
-						})
-				} else {
-						console.log(error);
-						// alert("Failed to Save ! Please try Again later.");
-						this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.","error");
-				}
-		});
-		this.setState(prevState => ({ isLoading: { ...prevState.isLoading, leaveTypes: false } }));
-}
-
-loadLeavePlans = async() => {
-	this.setState(prevState => ({ isLoading: { ...prevState.isLoading, leaveTypes:true } }));
-	const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/UserLeavePlanView`;
-	await fetch(url, {
 			method: "POST",
 			headers: new Headers({
-					Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
-			})
-	})
-	.then(res => {
-			if (!res.ok) {
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+			.then((res) => {
+				if (!res.ok) {
 					throw res;
+				}
+				return res.json();
+			})
+			.then(
+				(json) => {
+					if (json.CODE === 1) {
+						if (json.DATA.length) {
+							let data = json.DATA.find((d, i) => d.isCurrent == 1);
+							this.setState({
+								leaveYearsData: json.DATA,
+								leaveYearStartDate: data.startDate,
+								leaveYearEndDate: data.endDate,
+							});
+						}
+					} else {
+						//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
+						this.handleOpenSnackbar( <span> {json.SYSTEM_MESSAGE} <br /> {json.USER_MESSAGE} </span>, "error" );
+					}
+					console.log("loadLeaveYears:", json);
+				},
+				(error) => {
+					if (error.status == 401) {
+						this.setState({
+							isLoginMenu: true,
+							isReload: true,
+						});
+					} else {
+						console.log(error);
+						// alert("Failed to Save ! Please try Again later.");
+						this.handleOpenSnackbar( "Failed to Save ! Please try Again later.", "error" );
+					}
+				}
+			);
+	};
+
+	loadLeaveTypes = async () => {
+		this.setState((prevState) => ({
+			isLoading: { ...prevState.isLoading, leaveTypes: true },
+		}));
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/CommonLeaveTypesView`;
+		await fetch(url, {
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
 			}
 			return res.json();
-	})
-	.then(json => {
-			if (json.CODE === 1) {
-					if(json.DATA.length){
-							this.setState({
-								employeeLeavePlanData: json.DATA
-							});
+		})
+		.then(
+			(json) => {
+				if (json.CODE === 1) {
+					if (json.DATA.length) {
+						this.setState({
+							leaveTypeMenuItems: json.DATA,
+						});
+					} else {
+						window.location = "#/dashboard/F353Form";
 					}
-			} else {
+				} else {
 					//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
-					this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
-			}
-			console.log("loadLeavePlans:", json);
-	},
-	error => {
-			if (error.status == 401) {
+					this.handleOpenSnackbar(
+						json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+						"error"
+					);
+				}
+				console.log("loadLeaveTypes:", json);
+			},
+			(error) => {
+				if (error.status == 401) {
 					this.setState({
-							isLoginMenu: true,
-							isReload: true
-					})
-			} else {
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
 					console.log(error);
 					// alert("Failed to Save ! Please try Again later.");
-					this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.","error");
+					this.handleOpenSnackbar( "Failed to Fetch ! Please try Again later.", "error" );
+				}
 			}
-	});
-	this.setState(prevState => ({ isLoading: { ...prevState.isLoading, leaveTypes: false } }));
-}
+		);
+		this.setState((prevState) => ({
+			isLoading: { ...prevState.isLoading, leaveTypes: false },
+		}));
+	};
 
-clickOnFormSubmit=()=>{
-	this.onFormSubmit();
-}
+	loadLeavePlans = async () => {
+		this.setState((prevState) => ({
+			isLoading: { ...prevState.isLoading, leaveTypes: true },
+		}));
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/UserLeavePlanView`;
+		await fetch(url, {
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				if (json.CODE === 1) {
+					if (json.DATA.length) {
+						this.setState({
+							employeeLeavePlanData: json.DATA,
+						});
+					}
+				} else {
+					//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
+					this.handleOpenSnackbar(
+						json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
+						"error"
+					);
+				}
+				console.log("loadLeavePlans:", json);
+			},
+			(error) => {
+				if (error.status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.log(error);
+					// alert("Failed to Save ! Please try Again later.");
+					this.handleOpenSnackbar(
+						"Failed to Fetch ! Please try Again later.",
+						"error"
+					);
+				}
+			}
+		);
+		this.setState((prevState) => ({
+			isLoading: { ...prevState.isLoading, leaveTypes: false },
+		}));
+	};
 
-onFormSubmit = async(e) => {
-	//e.preventDefault();
-	if(
-			// !this.islabelValid() || 
+	clickOnFormSubmit = () => {
+		this.onFormSubmit();
+	};
+
+	onFormSubmit = async (e) => {
+		//e.preventDefault();
+		if (
+			// !this.islabelValid() ||
 			// !this.isDateValid() ||
 			// !this.isEmployeeValid()
 			false
-	){ return; }
-	let myForm = document.getElementById('myForm');
-	const data = new FormData(myForm);
-	this.setState({isLoading: true});
-	const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/Save`;
-	await fetch(url, {
-			method: "POST", 
-			body: data, 
+		) {
+			return;
+		}
+		let myForm = document.getElementById("myForm");
+		const data = new FormData(myForm);
+		this.setState({ isLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/Save`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
 			headers: new Headers({
-					Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
-			})
-	})
-	.then(res => {
-			if (!res.ok) {
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+			.then((res) => {
+				if (!res.ok) {
 					throw res;
-			}
-			return res.json();
-	})
-	.then(
-		json => {
-				if (json.CODE === 1) {
-						//alert(json.USER_MESSAGE);
-						this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-						setTimeout(()=>{
-								// if(this.state.recordId!=0){
-								//     window.location="#/dashboard/F353Reports";
-								// } else {
-										window.location.reload();
-								//}
-						}, 2000);
-				} else {
-						//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
-						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 				}
-				console.log(json);
-		},
-		error => {
-				if (error.status == 401) {
+				return res.json();
+			})
+			.then(
+				(json) => {
+					if (json.CODE === 1) {
+						//alert(json.USER_MESSAGE);
+						this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+						setTimeout(() => {
+							// if(this.state.recordId!=0){
+							//     window.location="#/dashboard/F353Reports";
+							// } else {
+							window.location.reload();
+							//}
+						}, 2000);
+					} else {
+						//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
+						this.handleOpenSnackbar(
+							<span>
+								{json.SYSTEM_MESSAGE}
+								<br />
+								{json.USER_MESSAGE}
+							</span>,
+							"error"
+						);
+					}
+					console.log(json);
+				},
+				(error) => {
+					if (error.status == 401) {
 						this.setState({
-								isLoginMenu: true,
-								isReload: false
-						})
-				} else {
+							isLoginMenu: true,
+							isReload: false,
+						});
+					} else {
 						console.log(error);
 						//alert("Failed to Save ! Please try Again later.");
-						this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+						this.handleOpenSnackbar(
+							"Failed to Save ! Please try Again later.",
+							"error"
+						);
+					}
 				}
-		});
-		this.setState({isLoading: false})
-}
+			);
+		this.setState({ isLoading: false });
+	};
 
 	handleSnackbar = (open, msg, severity) => {
 		this.setState({
@@ -240,112 +322,179 @@ onFormSubmit = async(e) => {
 	islabelValid = () => {
 		let isValid = true;
 		if (!this.state.leaveTypeId) {
-			this.setState({leaveTypeIdError:"Please select Leave Type."});
+			this.setState({ leaveTypeIdError: "Please select Leave Type." });
 			document.getElementById("leaveTypeId").focus();
 			isValid = false;
 		} else {
-			this.setState({leaveTypeIdError:""});
+			this.setState({ leaveTypeIdError: "" });
 		}
 		return isValid;
-	}
+	};
 
 	isDateValid = () => {
-		let isValid = true;
-
 		const { fromDate, toDate, employeeLeavesData } = this.state;
+		let errors = {};
 
+		// Check if To Date is before From Date
 		if (isAfter(startOfDay(fromDate), startOfDay(toDate))) {
-			this.setState({toDateError:"The ToDate should be later & equal than the FromDate."});
+			errors.toDateError =
+				"The To Date should be later or equal to the From Date.";
 			document.getElementById("toDate").focus();
-			isValid = false;
-		} 
-		
-		if(isValid){
-			// Check for overlapping dates
-			const isOverlapping = employeeLeavesData.some((leave) => {
-				const leaveFromDate = parse(leave.fromDate, "dd-MM-yyyy", new Date());
-				const leaveToDate = parse(leave.toDate, "dd-MM-yyyy", new Date());
-				return (isEqual(fromDate, leaveFromDate) || isEqual(fromDate, leaveToDate)) || 
-					(isEqual(toDate, leaveFromDate) || isEqual(toDate, leaveToDate)) || 
-					(isBefore(fromDate, leaveToDate) && isAfter(toDate, leaveFromDate)) || 
-					(isBefore(fromDate, leaveToDate) && isAfter(fromDate, leaveFromDate)) ||
-					(isBefore(toDate, leaveToDate) && isAfter(toDate, leaveFromDate));
-			});
-
-			if (isOverlapping) {
-				this.handleOpenSnackbar("The selected dates overlap with existing leave dates.", "error");
-				isValid = false;
-			}
-		}
-		
-		if(isValid) {
-			this.setState({
-				fromDateError: "",
-				toDateError: ""
-			});
 		}
 
-		return isValid;
-	}
+		// Check for overlapping leave dates
+		const isOverlapping = employeeLeavesData.some((leave) => {
+			const leaveStart = parse(leave.fromDate, "dd-MM-yyyy", new Date());
+			const leaveEnd = parse(leave.toDate, "dd-MM-yyyy", new Date());
+
+			return (
+				isEqual(fromDate, leaveStart) ||
+				isEqual(fromDate, leaveEnd) ||
+				isEqual(toDate, leaveStart) ||
+				isEqual(toDate, leaveEnd) ||
+				(isBefore(fromDate, leaveEnd) && isAfter(toDate, leaveStart)) ||
+				(isBefore(fromDate, leaveEnd) && isAfter(fromDate, leaveStart)) ||
+				(isBefore(toDate, leaveEnd) && isAfter(toDate, leaveStart))
+			);
+		});
+
+		if (isOverlapping) {
+			this.handleOpenSnackbar(
+				"The selected dates overlap with existing leave dates.",
+				"error"
+			);
+			return false;
+		}
+
+		// If there are errors, update the state and return false
+		if (Object.keys(errors).length > 0) {
+			this.setState(errors);
+			return false;
+		}
+
+		// If valid, clear errors
+		this.setState({ fromDateError: "", toDateError: "" });
+		return true;
+	};
 
 	onHandleChange = (event) => {
 		const { name, value } = event.target;
 		const errName = `${name}Error`;
+		let updates = { [name]: value, [errName]: "" };
+
 		switch (name) {
-			case "leaveTypeId":
-				if(value!=1){
-					this.setState({
+			case "leaveTypeId": {
+				if (value !== 1) {
+					updates = {
+						...updates,
 						fromDate: startOfDay(new Date()),
 						fromDateError: "",
 						toDate: startOfDay(new Date()),
 						toDateError: "",
-						noOfDays: Math.abs(differenceInDays(startOfDay(new Date()), startOfDay(new Date()))) + 1,
-					});
-					this.setState({appliedLeaveDataPlan : [{startOnDate: parse('2024-09-01', 'yyyy-MM-dd', new Date()), endOnDate: parse('2025-08-31', 'yyyy-MM-dd', new Date())}] });
+						noOfDays: 1,
+						appliedLeaveDataPlan: [
+							{
+								startOnDate: parse("2024-09-01", "yyyy-MM-dd", new Date()),
+								endOnDate: parse("2025-08-31", "yyyy-MM-dd", new Date()),
+							},
+						],
+					};
 				} else {
-					let employeeLeavePlanData = this.state.employeeLeavePlanData;
-					this.setState({
-						fromDate: startOfDay(new Date(employeeLeavePlanData[0]?.startOnDate)),
-						fromDateError: "",
-						toDate: startOfDay(new Date(employeeLeavePlanData[0]?.endOnDate)),
-						toDateError: "",
-						noOfDays: Math.abs(differenceInDays(employeeLeavePlanData[0]?.startOnDate, employeeLeavePlanData[0]?.endOnDate)) + 1
-					});
-					this.setState({appliedLeaveDataPlan : employeeLeavePlanData});
+					const { employeeLeavePlanData } = this.state;
+					if (employeeLeavePlanData.length > 0) {
+						const startOnDate = startOfDay(
+							new Date(employeeLeavePlanData[0].startOnDate)
+						);
+						const endOnDate = startOfDay(
+							new Date(employeeLeavePlanData[0].endOnDate)
+						);
+
+						updates = {
+							...updates,
+							fromDate: startOnDate,
+							fromDateError: "",
+							toDate: endOnDate,
+							toDateError: "",
+							noOfDays: Math.abs(differenceInDays(startOnDate, endOnDate)) + 1,
+							appliedLeaveDataPlan: employeeLeavePlanData,
+						};
+					}
 				}
-			break;
-		 case "fromDate":
-				this.setState({
+				updates.employeeLeavesData = [];
+				break;
+			}
+
+			case "fromDate": {
+				const isValidDate = this.state.appliedLeaveDataPlan.some(
+					(range) =>
+						value >= startOfDay(new Date(range.startOnDate)) &&
+						value <= startOfDay(new Date(range.endOnDate))
+				);
+
+				if (!isValidDate) {
+					this.setState({ fromDateError: "Selected date is out of range" });
+					return;
+				}
+
+				updates = {
+					...updates,
 					toDateError: "",
-					noOfDays: Math.abs(differenceInDays(startOfDay(this.state.toDate), startOfDay(value)))+1 
-				});
-			break;
-			case "toDate":
-				this.setState({
+					noOfDays:
+						Math.abs(
+							differenceInDays(startOfDay(this.state.toDate), startOfDay(value))
+						) + 1,
+				};
+				break;
+			}
+
+			case "toDate": {
+				const isValidDate = this.state.appliedLeaveDataPlan.some(
+					(range) =>
+						value >= startOfDay(new Date(range.startOnDate)) &&
+						value <= startOfDay(new Date(range.endOnDate))
+				);
+
+				if (!isValidDate) {
+					this.setState({ toDateError: "Selected date is out of range" });
+					return;
+				}
+
+				updates = {
+					...updates,
 					fromDateError: "",
-					noOfDays: Math.abs(differenceInDays(startOfDay(value) , startOfDay(this.state.fromDate)))+1 
-				});
-			break;
+					noOfDays:
+						Math.abs(
+							differenceInDays(
+								startOfDay(value),
+								startOfDay(this.state.fromDate)
+							)
+						) + 1,
+				};
+				break;
+			}
+
 			default:
+				break;
 		}
-		this.setState({
-			[name]: value,
-			[errName]: ""
-		});
+
+		this.setState(updates);
 	};
 
 	handleAdd = async (e) => {
 		if (!IsEmpty(e)) {
 			e.preventDefault();
 		}
-		if(
-			!this.islabelValid() || 
-			!this.isDateValid() 
-		){ return; }
+		if (!this.islabelValid() || !this.isDateValid()) {
+			return;
+		}
 
-		this.setState(prevState => ({ isLoading: { ...prevState.isLoading, isLoading:true } }));     
-		
-		let leaveTypeLabel = this.state.leaveTypeMenuItems.find(d => d.id === this.state.leaveTypeId)?.label;
+		this.setState((prevState) => ({
+			isLoading: { ...prevState.isLoading, isLoading: true },
+		}));
+
+		let leaveTypeLabel = this.state.leaveTypeMenuItems.find(
+			(d) => d.id === this.state.leaveTypeId
+		)?.label;
 
 		const obj = {
 			recordIndex: this.state.recordIndex,
@@ -353,16 +502,19 @@ onFormSubmit = async(e) => {
 			leaveTypeLabel: leaveTypeLabel || "",
 			fromDate: format(this.state.fromDate, "dd-MM-yyyy"),
 			toDate: format(this.state.toDate, "dd-MM-yyyy"),
-			noOfDays: this.state.noOfDays
+			noOfDays: this.state.noOfDays,
 		};
-		this.setState(prevState => ({
-			recordIndex: (prevState.recordIndex + 1),
+		this.setState((prevState) => ({
+			recordIndex: prevState.recordIndex + 1,
 			leaveTypeId: "",
 			fromDate: startOfDay(new Date()),
 			toDate: startOfDay(new Date()),
-			noOfDays: Math.abs(differenceInDays(startOfDay(new Date()), startOfDay(new Date()))) + 1,
+			noOfDays:
+				Math.abs(
+					differenceInDays(startOfDay(new Date()), startOfDay(new Date()))
+				) + 1,
 			isLoading: { ...prevState.isLoading, isLoading: false },
-			employeeLeavesData: [...prevState.employeeLeavesData, obj], 
+			employeeLeavesData: [...prevState.employeeLeavesData, obj],
 		}));
 	};
 
@@ -378,59 +530,84 @@ onFormSubmit = async(e) => {
 
 	componentDidMount() {
 		this.props.setDrawerOpen(false);
+		this.loadLeaveYears();
 		this.loadLeaveTypes();
 		this.loadLeavePlans();
 	}
 
 	render() {
-
 		const { classes } = this.props;
 
 		const columns = [
-			{ name: "leaveTypeLabel", title: "Leave Type", 
-				getCellValue: (rowData) => {   
+			{
+				name: "leaveTypeLabel",
+				title: "Leave Type",
+				getCellValue: (rowData) => {
 					return (
 						<>
 							<Box>{rowData.leaveTypeLabel}</Box>
-							<TextField type="hidden" value={rowData.leaveTypeId} name="leaveTypeId"/>
+							<TextField
+								type="hidden"
+								value={rowData.leaveTypeId}
+								name="leaveTypeId"
+							/>
 						</>
-					)}
+					);
+				},
 			},
-			{ name: "fromDate", title: "From Date", 
-				getCellValue: (rowData) => {  
+			{
+				name: "fromDate",
+				title: "From Date",
+				getCellValue: (rowData) => {
 					return (
 						<>
 							<Box>{rowData.fromDate}</Box>
-							<TextField type="hidden" value={rowData.fromDate} name="fromDate"/>
+							<TextField
+								type="hidden"
+								value={rowData.fromDate}
+								name="fromDate"
+							/>
 						</>
-					)}
+					);
+				},
 			},
-			{ name: "toDate", title: "To Date", 
-				getCellValue: (rowData) => {  
+			{
+				name: "toDate",
+				title: "To Date",
+				getCellValue: (rowData) => {
 					return (
 						<>
 							<Box>{rowData.toDate}</Box>
-							<TextField type="hidden" value={rowData.toDate} name="toDate"/>
+							<TextField type="hidden" value={rowData.toDate} name="toDate" />
 						</>
-					)}
+					);
+				},
 			},
-			{ name: "noOfDays", title: "Days", 
-				getCellValue: (rowData) => {  
+			{
+				name: "noOfDays",
+				title: "Days",
+				getCellValue: (rowData) => {
 					return (
 						<>
 							<Box>{rowData.noOfDays}</Box>
-							<TextField type="hidden" value={rowData.noOfDays} name="noOfDays"/>
+							<TextField
+								type="hidden"
+								value={rowData.noOfDays}
+								name="noOfDays"
+							/>
 						</>
-					)}
+					);
+				},
 			},
 			{
-				name: "action", title: "Action",
+				name: "action",
+				title: "Action",
 				getCellValue: (rowData) => {
 					return (
-						<IconButton 
+						<IconButton
 							color="secondary"
-							aria-label="delete" 
-							className={classes.margin} 
+							aria-label="delete"
+							className={classes.margin}
 							onClick={() => this.handleDelete(rowData)}
 						>
 							<DeleteIcon />
@@ -456,38 +633,50 @@ onFormSubmit = async(e) => {
 					</div>
 					<Divider className={classes.divider} />
 					<br />
-					<Grid container justifyContent="flex-start" alignItems="center" spacing={2}>
+					<Grid
+						container
+						justifyContent="flex-start"
+						alignItems="center"
+						spacing={2}
+					>
 						<Grid item xs={12} sm={12} md={5}>
 							<TextField
-									name="leaveTypeId"
-									label="Leave Type"
-									required
-									fullWidth
-									variant="outlined"
-									select
-									onChange={this.onHandleChange}
-									value={this.state.leaveTypeId}
-									error={!!this.state.leaveTypeIdError}
-									helperText={this.state.leaveTypeIdError}
-									SelectProps={{
-											id : "leaveTypeId",
-											style: {paddingRight:0},
-											endAdornment: (
-													<>
-														{this.state.isLoading?.leaveTypes ? (
-															<CircularProgress color="inherit" size={20} style={{marginRight:36, height:"inherit"}}/>
-														) : null}
-													</>
-											)
-									}}
-									
+								name="leaveTypeId"
+								label="Leave Type"
+								required
+								fullWidth
+								variant="outlined"
+								select
+								onChange={this.onHandleChange}
+								value={this.state.leaveTypeId}
+								error={!!this.state.leaveTypeIdError}
+								helperText={this.state.leaveTypeIdError}
+								SelectProps={{
+									id: "leaveTypeId",
+									style: { paddingRight: 0 },
+									endAdornment: (
+										<>
+											{this.state.isLoading?.leaveTypes ? (
+												<CircularProgress
+													color="inherit"
+													size={20}
+													style={{ marginRight: 36, height: "inherit" }}
+												/>
+											) : null}
+										</>
+									),
+								}}
 							>
-									<MenuItem value="" disabled><em>None</em></MenuItem>
-									{this.state.leaveTypeMenuItems?.map((d, i) => 
-											<MenuItem key={"leaveTypeMenuItems"+d.id} value={d.id}>{d.label}</MenuItem>
-									)}
-								</TextField>
-							</Grid>
+								<MenuItem value="" disabled>
+									<em>None</em>
+								</MenuItem>
+								{this.state.leaveTypeMenuItems?.map((d, i) => (
+									<MenuItem key={"leaveTypeMenuItems" + d.id} value={d.id}>
+										{d.label}
+									</MenuItem>
+								))}
+							</TextField>
+						</Grid>
 						<Grid item xs={12} sm={6} md={2}>
 							<DatePicker
 								autoOk
@@ -498,24 +687,21 @@ onFormSubmit = async(e) => {
 								placeholder=""
 								inputVariant="outlined"
 								format="dd-MM-yyyy"
-								minDate={parse('2024-09-01', 'yyyy-MM-dd', new Date())}
-								maxDate={parse('2025-08-31', 'yyyy-MM-dd', new Date())}
+								minDate={startOfDay(new Date(this.state.leaveYearStartDate))}
+								maxDate={startOfDay(new Date(this.state.leaveYearEndDate))}
 								fullWidth
 								required
 								value={this.state.fromDate}
-								onChange={(date) =>
+								onChange={(date) => {
 									this.onHandleChange({
 										target: { name: "fromDate", value: date },
-									})
-								}
+									});
+								}}
 								shouldDisableDate={(date) => {
-									// const allowedRanges = [
-									//   { start: new Date('2024-09-01'), end: new Date('2024-09-15') },
-									//   { start: new Date('2025-01-10'), end: new Date('2025-01-20') },
-									//   { start: new Date('2025-06-01'), end: new Date('2025-06-30') }
-									// ];
-									// return !allowedRanges.some((range) => date >= range.start && date <= range.end);
-									return !this.state.appliedLeaveDataPlan.some((range) => date >= range.startOnDate && date <= range.endOnDate);
+									return !this.state.appliedLeaveDataPlan.some(
+										(range) =>
+											date >= range.startOnDate && date <= range.endOnDate
+									);
 								}}
 								error={!!this.state.fromDateError}
 								helperText={this.state.fromDateError}
@@ -531,8 +717,8 @@ onFormSubmit = async(e) => {
 								placeholder=""
 								inputVariant="outlined"
 								format="dd-MM-yyyy"
-								minDate={parse('2024-09-01', 'yyyy-MM-dd', new Date())}
-								maxDate={parse('2025-08-31', 'yyyy-MM-dd', new Date())}
+								minDate={startOfDay(new Date(this.state.leaveYearStartDate))}
+								maxDate={startOfDay(new Date(this.state.leaveYearEndDate))}
 								fullWidth
 								required
 								value={this.state.toDate}
@@ -542,7 +728,10 @@ onFormSubmit = async(e) => {
 									})
 								}
 								shouldDisableDate={(date) => {
-									return !this.state.appliedLeaveDataPlan.some((range) => date >= range.startOnDate && date <= range.endOnDate);
+									return !this.state.appliedLeaveDataPlan.some(
+										(range) =>
+											date >= range.startOnDate && date <= range.endOnDate
+									);
 								}}
 								error={!!this.state.toDateError}
 								helperText={this.state.toDateError}
@@ -571,9 +760,13 @@ onFormSubmit = async(e) => {
 									variant="contained"
 									color="primary"
 									className={classes.button}
-									disabled = {!this?.state?.leaveTypeId || !this?.state?.fromDate || !this?.state?.toDate}
+									disabled={
+										!this?.state?.leaveTypeId ||
+										!this?.state?.fromDate ||
+										!this?.state?.toDate
+									}
 									onClick={(e) => this.handleAdd(e)}
-									style={{padding:"1.7rem"}}
+									style={{ padding: "1.7rem" }}
 									fullWidth
 								>
 									{" "}
@@ -591,17 +784,19 @@ onFormSubmit = async(e) => {
 					</Grid>
 					<Grid item xs={12}>
 						<form id="myForm">
-						<F353FormTableComponent
-							columns={columns}
-							rows={this.state.employeeLeavesData || []}
-						/>
+							<F353FormTableComponent
+								columns={columns}
+								rows={this.state.employeeLeavesData || []}
+							/>
 						</form>
 					</Grid>
 					<CustomizedSnackbar
 						isOpen={this.state.isOpenSnackbar}
 						message={this.state.snackbarMessage}
 						severity={this.state.snackbarSeverity}
-						handleCloseSnackbar={() => this.handleSnackbar(false, "", this.state.snackbarSeverity)}
+						handleCloseSnackbar={() =>
+							this.handleSnackbar(false, "", this.state.snackbarSeverity)
+						}
 					/>
 					<BottomBar
 						// leftButtonHide
@@ -612,7 +807,9 @@ onFormSubmit = async(e) => {
 						disableRightButton={this.state.employeeLeavesData.length === 0}
 						loading={this.state.isLoading?.isLoading}
 						isDrawerOpen={this.props.isDrawerOpen}
-						bottomRightButtonAction={() => { this.clickOnFormSubmit(); }}
+						bottomRightButtonAction={() => {
+							this.clickOnFormSubmit();
+						}}
 					/>
 				</div>
 			</Fragment>
@@ -629,4 +826,5 @@ F353Form.defaultProps = {
 	classes: {},
 	setDrawerOpen: (fn) => fn,
 };
+
 export default withStyles(styles)(F353Form);
