@@ -41,7 +41,7 @@ CustomizedSnackbar.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   handleCloseSnackbar: PropTypes.func.isRequired,
   severity: PropTypes.oneOf(['error', 'warning', 'info', 'success', '']).isRequired,
-  message: PropTypes.string.isRequired,
+  message: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
 };
 
 CustomizedSnackbar.defaultProps = {
