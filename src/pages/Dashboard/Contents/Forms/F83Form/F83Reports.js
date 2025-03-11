@@ -2,9 +2,9 @@ import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
 import { Divider, IconButton, Tooltip, CircularProgress, Grid, Paper, } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
 const styles = (theme) => ({
 	root: {

@@ -6,9 +6,9 @@ import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import { withStyles } from "@material-ui/styles";
 import clsx from "clsx";
-import BottomBar from "../../../../components/BottomBar/BottomBar";
-import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
+import BottomBar from "../../../../../components/BottomBar/BottomBar";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import isEqual from 'lodash/isEqual';
 
 const styles = (theme) => ({
@@ -473,9 +473,9 @@ class F83Form extends React.PureComponent {
 
 	handleSaveRow = async (e, featureId) => {
 		
-		if(!this.isLevel3Validate()){
-			return null;
-		}
+		// if(!this.isLevel3Validate()){
+		// 	return null;
+		// }
 
 		//let myForm = document.getElementById("myForm");
 		let featureTypeEle = document.getElementById(`featureTypeId-${featureId}`);
