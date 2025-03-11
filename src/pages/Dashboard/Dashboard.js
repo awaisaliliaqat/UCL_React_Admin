@@ -108,8 +108,8 @@ import R76Reports from "./Contents/Forms/R76Reports";
 import F77Form from "./Contents/Forms/F77Form";
 import F82Form from "./Contents/Forms/F82Form";
 import F82Reports from "./Contents/Forms/F82Reports";
-import F83Form from "./Contents/Forms/F83Form";
-import F83Reports from "./Contents/Forms/F83Reports";
+import F83Form from "./Contents/Forms/F83Form/F83Form";
+import F83Reports from "./Contents/Forms/F83Form/F83Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentProgramme from "./Contents/Reports/ChangeStudentProgramme/ChangeStudentProgramme";
 import CovidVaccineCertificateApproval from "./Contents/Reports/CovidVaccineCertificateApproval/CovidVaccineCertificateApproval";
@@ -255,6 +255,8 @@ import F353Form from "./Contents/Forms/F353Form/F353Form";
 import F353Reports from "./Contents/Forms/F353Form/F353Reports";
 import F354Form from "./Contents/Forms/F354Form/F354Form";
 import F354Reports from "./Contents/Forms/F354Form/F354Reports";
+import F355Form from "./Contents/Forms/F355Form/F355Form";
+import F355Reports from "./Contents/Forms/F355Form/F355Reports";
 
 const drawerWidth = 283;
 
@@ -3787,6 +3789,36 @@ const Dashboard = (props) => {
 					render={(props) => {
 						return (
 							<F354Reports
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F355Form"
+					exact
+					path="/dashboard/F355Form"
+					render={(props) => {
+						return (
+							<F355Form
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F355Form"
+					exact
+					path="/dashboard/F355Reports"
+					render={(props) => {
+						return (
+							<F355Reports
 								{...props}
 								isDrawerOpen={isDrawerOpen}
 								setDrawerOpen={setDrawerOpen}

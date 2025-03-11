@@ -2,13 +2,14 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import { DatePicker } from "@material-ui/pickers";
-import { Divider, CircularProgress, Grid, Button, Typography, TextField, MenuItem, IconButton, Box, } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
+import { Divider, CircularProgress, Grid, Button, Typography, TextField, MenuItem, IconButton, Box, Chip, } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
+import {Delete as DeleteIcon} from "@material-ui/icons";
 import { isBefore, startOfDay, parse, format, differenceInDays, isAfter, isEqual } from 'date-fns';
-import F353FormTableComponent from "./chunks/F353FormTableComponent";
+import F355FormTableComponent from "./chunks/F355FormTableComponent";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { IsEmpty } from "../../../../../utils/helper";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 
 const styles = () => ({
@@ -38,7 +39,7 @@ const styles = () => ({
 	},
 });
 
-class F353Form extends Component {
+class F355Form extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -66,6 +67,10 @@ class F353Form extends Component {
 			leaveYearsData: [],
 			leaveYearStartDate: "",
 			leaveYearEndDate: "",
+			employeeData: [],
+			employeeDataLoading: false,
+			employeeObject: null,
+			employeeObjectError: "",
 		};
 	}
 
@@ -92,51 +97,94 @@ class F353Form extends Component {
 				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
 			}),
 		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					const { CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE } = json;
-					if (CODE === 1) {
-						if (DATA.length) {
-							let data = DATA.find((d, i) => d.isCurrent == 1);
-							this.setState({
-								leaveYearsData: DATA,
-								leaveYearStartDate: data.startDate,
-								leaveYearEndDate: data.endDate,
-							});
-						}
-					} else {
-						//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
-						this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>, "error" );
-					}
-					console.log("loadLeaveYears:", json);
-				},
-				(error) => {
-					const { status } = error;
-					if (status == 401) {
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE} = json;
+				if (CODE === 1) {
+					if (DATA.length) {
+						let data = DATA.find((d, i) => d.isCurrent == 1);
 						this.setState({
-							isLoginMenu: true,
-							isReload: true,
+							leaveYearsData: DATA,
+							leaveYearStartDate: data.startDate,
+							leaveYearEndDate: data.endDate,
 						});
-					} else {
-						console.log(error);
-						// alert("Failed to Save ! Please try Again later.");
-						this.handleOpenSnackbar( "Failed to Save ! Please try Again later.", "error" );
 					}
+				} else {
+					//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br />{USER_MESSAGE}</span>, "error");
 				}
-			);
+				console.log("loadLeaveYears:", json);
+			},
+			(error) => {
+				const {status} = error;
+				if (status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.log(error);
+					// alert("Failed to Save ! Please try Again later.");
+					this.handleOpenSnackbar("Failed to Save ! Please try Again later.", "error");
+				}
+			}
+		);
+	};
+
+	getEmployeesData = async () => {
+		this.setState({ employeeDataLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C355CommonEmployeesProxyLeaves/ReportingEmployeesView`;
+		await fetch(url, {
+		  	method: "GET",
+		  	headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+		  	}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE} = json;
+				if (CODE === 1) {
+					this.setState({
+				  		employeeData: DATA || [],
+					});
+			  	} else {
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>, "error");
+			  }
+			  console.log(json);
+			},
+			(error) => {
+				const {status} = error;
+			  	if (status == 401) {
+					this.setState({
+				  		isLoginMenu: true,
+				  		isReload: true,
+					});
+			  	} else {
+					console.log(error);
+					this.handleOpenSnackbar("Failed to Get Data ! Please try Again later.","error");
+			  	}
+			}
+		);
+		this.setState({ employeeDataLoading: false });
 	};
 
 	loadLeaveTypes = async () => {
 		this.setState((prevState) => ({
 			isLoading: { ...prevState.isLoading, leaveTypes: true },
 		}));
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/CommonLeaveTypesView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C355CommonEmployeesProxyLeaves/CommonLeaveTypesView`;
 		await fetch(url, {
 			method: "POST",
 			headers: new Headers({
@@ -151,21 +199,23 @@ class F353Form extends Component {
 		})
 		.then(
 			(json) => {
-				const { CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE } = json;
+				const {CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE} = json;
 				if (CODE === 1) {
 					if (DATA.length) {
-						this.setState({ leaveTypeMenuItems: DATA });
+						this.setState({
+							leaveTypeMenuItems: DATA,
+						});
 					} else {
-						window.location = "#/dashboard/F353Form";
+						window.location = "#/dashboard/F355Form";
 					}
 				} else {
 					//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
-					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>, "error" );
 				}
 				console.log("loadLeaveTypes:", json);
 			},
 			(error) => {
-				const { status } = error;
+				const {status} = error;
 				if (status == 401) {
 					this.setState({
 						isLoginMenu: true,
@@ -174,7 +224,7 @@ class F353Form extends Component {
 				} else {
 					console.log(error);
 					// alert("Failed to Save ! Please try Again later.");
-					this.handleOpenSnackbar( "Failed to Fetch ! Please try Again later.", "error" );
+					this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.", "error");
 				}
 			}
 		);
@@ -187,7 +237,7 @@ class F353Form extends Component {
 		this.setState((prevState) => ({
 			isLoading: { ...prevState.isLoading, leaveTypes: true },
 		}));
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/UserLeavePlanView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C355CommonEmployeesProxyLeaves/UserLeavePlanView`;
 		await fetch(url, {
 			method: "POST",
 			headers: new Headers({
@@ -202,7 +252,7 @@ class F353Form extends Component {
 		})
 		.then(
 			(json) => {
-				const { CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE } = json;
+				const {CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE} = json;
 				if (CODE === 1) {
 					if (DATA.length) {
 						this.setState({
@@ -211,12 +261,12 @@ class F353Form extends Component {
 					}
 				} else {
 					//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
-					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>, "error" );
 				}
 				console.log("loadLeavePlans:", json);
 			},
 			(error) => {
-				const { status } = error;
+				const {status} = error;
 				if (status == 401) {
 					this.setState({
 						isLoginMenu: true,
@@ -225,7 +275,7 @@ class F353Form extends Component {
 				} else {
 					console.log(error);
 					// alert("Failed to Save ! Please try Again later.");
-					this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.","error");
+					this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.", "error" );
 				}
 			}
 		);
@@ -239,19 +289,18 @@ class F353Form extends Component {
 	};
 
 	onFormSubmit = async (e) => {
-		//e.preventDefault();
-		if (
-			// !this.islabelValid() ||
-			// !this.isDateValid() ||
-			// !this.isEmployeeValid()
-			false
-		) {
+		if (!IsEmpty(e)) {
+			e.preventDefault();
+		}
+		const { employeeLeavesData } = this.state;
+		if (employeeLeavesData.length === 0) {
+			this.handleOpenSnackbar("Please add at least one record.", "error");
 			return;
 		}
 		let myForm = document.getElementById("myForm");
 		const data = new FormData(myForm);
 		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/Save`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C355CommonEmployeesProxyLeaves/Save`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -267,10 +316,10 @@ class F353Form extends Component {
 		})
 		.then(
 			(json) => {
-				const { CODE, USER_MESSAGE, SYSTEM_MESSAGE } = json;
+				const { CODE, SYSTEM_MESSAGE, USER_MESSAGE } = json;
 				if (CODE === 1) {
 					//alert(json.USER_MESSAGE);
-					this.handleOpenSnackbar(USER_MESSAGE, "success");
+					this.handleOpenSnackbar(json.USER_MESSAGE, "success");
 					setTimeout(() => {
 						// if(this.state.recordId!=0){
 						//     window.location="#/dashboard/F353Reports";
@@ -294,7 +343,7 @@ class F353Form extends Component {
 				} else {
 					console.log(error);
 					//alert("Failed to Save ! Please try Again later.");
-					this.handleOpenSnackbar( "Failed to Save ! Please try Again later.", "error" );
+					this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
 				}
 			}
 		);
@@ -302,7 +351,7 @@ class F353Form extends Component {
 	};
 
 	viewReport = () => {
-		window.location = "#/dashboard/F353Reports";
+		window.location = "#/dashboard/F355Reports";
 	};
 
 	islabelValid = () => {
@@ -323,8 +372,7 @@ class F353Form extends Component {
 
 		// Check if To Date is before From Date
 		if (isAfter(startOfDay(fromDate), startOfDay(toDate))) {
-			errors.toDateError =
-				"The To Date should be later or equal to the From Date.";
+			errors.toDateError="The To Date should be later or equal to the From Date.";
 			document.getElementById("toDate").focus();
 		}
 
@@ -334,21 +382,19 @@ class F353Form extends Component {
 			const leaveEnd = parse(leave.toDate, "dd-MM-yyyy", new Date());
 
 			return (
-				isEqual(fromDate, leaveStart) ||
+				leave.employeeId==this.state.employeeObject?.id &&
+				(isEqual(fromDate, leaveStart) ||
 				isEqual(fromDate, leaveEnd) ||
 				isEqual(toDate, leaveStart) ||
 				isEqual(toDate, leaveEnd) ||
 				(isBefore(fromDate, leaveEnd) && isAfter(toDate, leaveStart)) ||
 				(isBefore(fromDate, leaveEnd) && isAfter(fromDate, leaveStart)) ||
 				(isBefore(toDate, leaveEnd) && isAfter(toDate, leaveStart))
-			);
+			));
 		});
 
 		if (isOverlapping) {
-			this.handleOpenSnackbar(
-				"The selected dates overlap with existing leave dates.",
-				"error"
-			);
+			this.handleOpenSnackbar("The selected dates overlap with existing leave dates.", "error");
 			return false;
 		}
 
@@ -371,6 +417,7 @@ class F353Form extends Component {
 		switch (name) {
 			case "leaveTypeId": {
 				if (value !== 1) {
+					const { leaveYearStartDate, leaveYearEndDate } = this.state;
 					updates = {
 						...updates,
 						fromDate: startOfDay(new Date()),
@@ -378,21 +425,18 @@ class F353Form extends Component {
 						toDate: startOfDay(new Date()),
 						toDateError: "",
 						noOfDays: 1,
-						appliedLeaveDataPlan: [{
-								startOnDate: startOfDay(new Date(this.state.leaveYearStartDate)),
-								endOnDate: startOfDay(new Date(this.state.leaveYearEndDate))
-							}],
+						appliedLeaveDataPlan: [
+							{
+								startOnDate: startOfDay(new Date(leaveYearStartDate)),
+								endOnDate: startOfDay(new Date(leaveYearEndDate)),	
+							},
+						],
 					};
 				} else {
 					const { employeeLeavePlanData } = this.state;
 					if (employeeLeavePlanData.length > 0) {
-						const startOnDate = startOfDay(
-							new Date(employeeLeavePlanData[0].startOnDate)
-						);
-						const endOnDate = startOfDay(
-							new Date(employeeLeavePlanData[0].endOnDate)
-						);
-
+						const startOnDate = startOfDay( new Date(employeeLeavePlanData[0].startOnDate) );
+						const endOnDate = startOfDay( new Date(employeeLeavePlanData[0].endOnDate) );
 						updates = {
 							...updates,
 							fromDate: startOnDate,
@@ -423,10 +467,7 @@ class F353Form extends Component {
 				updates = {
 					...updates,
 					toDateError: "",
-					noOfDays:
-						Math.abs(
-							differenceInDays(startOfDay(this.state.toDate), startOfDay(value))
-						) + 1,
+					noOfDays: Math.abs( differenceInDays(startOfDay(this.state.toDate), startOfDay(value)) ) + 1,
 				};
 				break;
 			}
@@ -482,6 +523,8 @@ class F353Form extends Component {
 
 		const obj = {
 			recordIndex: this.state.recordIndex,
+			employeeId: this.state.employeeObject?.id,
+			employeeLabel: this.state.employeeObject?.label,
 			leaveTypeId: this.state.leaveTypeId,
 			leaveTypeLabel: leaveTypeLabel || "",
 			fromDate: format(this.state.fromDate, "dd-MM-yyyy"),
@@ -490,13 +533,11 @@ class F353Form extends Component {
 		};
 		this.setState((prevState) => ({
 			recordIndex: prevState.recordIndex + 1,
-			leaveTypeId: "",
-			fromDate: startOfDay(new Date()),
-			toDate: startOfDay(new Date()),
-			noOfDays:
-				Math.abs(
-					differenceInDays(startOfDay(new Date()), startOfDay(new Date()))
-				) + 1,
+			employeeObject: null,
+			//leaveTypeId: "",
+			//fromDate: startOfDay(new Date(this.state.lean)),
+			//toDate: startOfDay(new Date()),
+			//noOfDays: Math.abs(differenceInDays(startOfDay(new Date()), startOfDay(new Date()))) + 1,
 			isLoading: { ...prevState.isLoading, isLoading: false },
 			employeeLeavesData: [...prevState.employeeLeavesData, obj],
 		}));
@@ -515,6 +556,7 @@ class F353Form extends Component {
 	componentDidMount() {
 		this.props.setDrawerOpen(false);
 		this.loadLeaveYears();
+		this.getEmployeesData()
 		this.loadLeaveTypes();
 		this.loadLeavePlans();
 	}
@@ -523,6 +565,22 @@ class F353Form extends Component {
 		const { classes } = this.props;
 
 		const columns = [
+			{
+				name: "employee",
+				title: "Employee",
+				getCellValue: (rowData) => {
+					return (
+						<>
+							<Box>{rowData.employeeLabel}</Box>
+							<TextField
+								type="hidden"
+								value={rowData.employeeId}
+								name="employeeId"
+							/>
+						</>
+					);
+				},
+			},
 			{
 				name: "leaveTypeLabel",
 				title: "Leave Type",
@@ -611,7 +669,7 @@ class F353Form extends Component {
 				<div className={classes.mainContainer}>
 					<div className={classes.titleContainer}>
 						<Typography className={classes.title} variant="h5">
-							{"Employee Leave Form"}
+							{"Employees Proxy Leave Form"}
 							<br />
 						</Typography>
 					</div>
@@ -623,7 +681,48 @@ class F353Form extends Component {
 						alignItems="center"
 						spacing={2}
 					>
-						<Grid item xs={12} sm={12} md={5}>
+						<Grid item xs={12} sm={6} md={3}>
+							<Autocomplete
+								id="employeeObject"
+								fullWidth
+								aria-autocomplete="none"
+								getOptionLabel={(option) => typeof option.label == "string" ? option.label : "" }
+								getOptionSelected={(option, value) => option.id === value.id}
+								options={this.state.employeeData}
+								loading={this.state.employeeDataLoading}
+								value={this.state.employeeObject}
+								onChange={(e, value) =>
+									this.onHandleChange({
+										target: { name: "employeeObject", value },
+									})
+								}
+								renderTags={(tagValue, getTagProps) =>
+									tagValue.map((option, index) => (
+										<Chip
+											key={option}
+											label={option.label}
+											color="primary"
+											variant="outlined"
+											{...getTagProps({ index })}
+										/>
+									))
+								}
+								renderInput={(params) => {
+									const inputProps = params.inputProps;
+									return (
+										<TextField
+											variant="outlined"
+											error={!!this.state.employeeObjectError}
+											helperText={this.state.employeeObjectError}
+											inputProps={inputProps}
+											label="Employees"
+											{...params}
+										/>
+									);
+								}}
+							/>
+						</Grid>
+						<Grid item xs={12} sm={6} md={2}>
 							<TextField
 								name="leaveTypeId"
 								label="Leave Type"
@@ -747,7 +846,8 @@ class F353Form extends Component {
 									disabled={
 										!this?.state?.leaveTypeId ||
 										!this?.state?.fromDate ||
-										!this?.state?.toDate
+										!this?.state?.toDate ||
+										!this?.state?.employeeObject?.id
 									}
 									onClick={(e) => this.handleAdd(e)}
 									style={{ padding: "1.7rem" }}
@@ -768,7 +868,7 @@ class F353Form extends Component {
 					</Grid>
 					<Grid item xs={12}>
 						<form id="myForm">
-							<F353FormTableComponent
+							<F355FormTableComponent
 								columns={columns}
 								rows={this.state.employeeLeavesData || []}
 							/>
@@ -799,14 +899,14 @@ class F353Form extends Component {
 	}
 }
 
-F353Form.propTypes = {
+F355Form.propTypes = {
 	classes: PropTypes.object,
 	setDrawerOpen: PropTypes.func,
 };
 
-F353Form.defaultProps = {
+F355Form.defaultProps = {
 	classes: {},
 	setDrawerOpen: (fn) => fn,
 };
 
-export default withStyles(styles)(F353Form);
+export default withStyles(styles)(F355Form);
