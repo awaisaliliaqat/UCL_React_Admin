@@ -248,7 +248,7 @@ class F355Reports extends Component {
 									<ArrowBackIcon fontSize="small" color="primary" />
 								</IconButton>
 							</Tooltip>
-							{"Employees Proxy Leave Reports"}
+							{"Employees Leave on Behalf of Employee Reports"}
 							<br />
 						</Typography>
 					</div>

@@ -669,7 +669,7 @@ class F355Form extends Component {
 				<div className={classes.mainContainer}>
 					<div className={classes.titleContainer}>
 						<Typography className={classes.title} variant="h5">
-							{"Employees Proxy Leave Form"}
+							{"Employees Leave on Behalf of Employee Form"}
 							<br />
 						</Typography>
 					</div>
