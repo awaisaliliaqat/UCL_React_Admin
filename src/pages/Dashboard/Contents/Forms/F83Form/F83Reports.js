@@ -56,7 +56,7 @@ class F83Reports extends Component {
 
 	getData = async () => {
 		this.setState({isLoading: true});
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CommonFeaturesLevelWiseView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CharOfFeatures/LevelWiseView`;
 		await fetch(url, {
 			method: "POST",
 			headers: new Headers({

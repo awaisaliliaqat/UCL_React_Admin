@@ -1,15 +1,12 @@
 import React, { Component, Fragment, useEffect } from "react";
-import { CircularProgress, Collapse, Divider, Grid, IconButton, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
-import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
+import { CircularProgress, Collapse, Divider, Grid, IconButton, InputAdornment, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@material-ui/core";
+import { ExpandMore, SaveOutlined, SettingsOutlined, AddOutlined } from '@material-ui/icons';
 import { withStyles } from "@material-ui/styles";
 import clsx from "clsx";
+import isEqual from 'lodash/isEqual';
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import isEqual from 'lodash/isEqual';
 
 const styles = (theme) => ({
 	root: {
@@ -110,7 +107,7 @@ const StyledTableCell = withStyles((theme) => ({
 				variant="outlined"
 				fullWidth
 				size="small"
-				name="typeLabel"
+				name="featureTypeId"
 				defaultValue={feature.typeId || ""}
 				select
 				inputProps={{
@@ -232,7 +229,7 @@ const StyledTableCell = withStyles((theme) => ({
 					color="primary"
 					onClick={(e) => handleSaveRow(e, feature.id)}
 					>
-					<SaveOutlinedIcon />
+					<SaveOutlined />
 					</IconButton>
 				</Tooltip>
 			</StyledTableCell>
@@ -254,6 +251,8 @@ class F83Form extends React.PureComponent {
 			snackbarMessage: "",
 			snackbarSeverity: "",
 			toggleLevelForm: false,
+			typeLabel: "",
+			typeLabelError: "",
 			level1: "",
 			level1Error: "",
 			level2: "",
@@ -294,7 +293,7 @@ class F83Form extends React.PureComponent {
 
 	loadFeatureTypes = async () => {
 		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CommonFeaturesTypesView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CharOfFeatures/TypesView`;
 		await fetch(url, {
 			method: "POST",
 			headers: new Headers({
@@ -335,7 +334,7 @@ class F83Form extends React.PureComponent {
 
 	loadFeatureLevels = async () => {
 		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CommonFeaturesLevelsView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CharOfFeatures/LevelsView`;
 		await fetch(url, {
 			method: "POST",
 			headers: new Headers({
@@ -383,7 +382,7 @@ class F83Form extends React.PureComponent {
 
 	loadData = async () => {
 		this.setState({ isLoadingFeatures: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CommonFeaturesView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CharOfFeatures/View`;
 		await fetch(url, {
 			method: "POST",
 			headers: new Headers({
@@ -422,19 +421,6 @@ class F83Form extends React.PureComponent {
 		this.setState({ isLoadingFeatures: false });
 	};
 
-	isFeatureValid = () => {
-		let featureId = this.state.featureId;
-		let isValid = true;
-		if (featureId.length == 0) {
-			this.setState({ featureIdError: "Please select at least one feature." });
-			document.getElementById("featureId").focus();
-			isValid = false;
-		} else {
-			this.setState({ featureIdError: "" });
-		}
-		return isValid;
-	};
-
 	onHandleChange = (e) => {
 		const { name, value } = e.target;
 		const errName = `${name}Error`;
@@ -471,13 +457,84 @@ class F83Form extends React.PureComponent {
 		});
 	};
 
+	isTypeLabelValid = () => {
+		let isValid = true;        
+        if (this.state.typeLabel==null || this.state.typeLabel.trim() === "") {
+            this.setState({typeLabelError:"Please enter Label"});
+            document.getElementById("typeLabel").focus();
+            isValid = false;
+        } else if(this.state.typeLabel!=null || this.state.typeLabel.trim().length > 0){
+			const levelValue = this.state.typeLabel.trim();
+			const menuItemsKey = `featuresTypesMenuItems`;
+			// Ensure the array is initialized properly
+			let menuItems = this.state[menuItemsKey] ? [...this.state[menuItemsKey]] : [];
+			// Check if the level value already exists
+			const levelExists = menuItems.some(item => item.label.trim() === levelValue);
+			if (levelExists){
+				this.setState({ [`typeLabelError`]: "Value already exists in the list" });
+				document.getElementById("typeLabel").focus();
+				isValid = false;
+			} else {
+				this.setState({ [`typeLabelError`]: "" });
+			}
+		}
+		return isValid;
+	};
+
+	handleSaveType = async () => {
+		if(!this.isTypeLabelValid()){
+			return null;
+		}
+		this.setState({ isLoading: true });
+		const data = new FormData();
+		data.append("label", this.state.typeLabel.trim());
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CharOfFeatures/TypeSave`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then((json) => {
+			const { CODE, USER_MESSAGE, SYSTEM_MESSAGE } = json;
+				if (CODE === 1) {
+					this.handleOpenSnackbar(USER_MESSAGE+" and value added into list.", "success");
+					this.setState({ typeLabel: "" });
+					this.loadFeatureTypes();
+				} else {
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+				console.log("handleSaveType : ", json);
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: false,
+					});
+				} else {
+					console.log(error);
+					this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
+				}
+			}
+		);
+		this.setState({ isLoading: false });
+	};
+
 	handleSaveRow = async (e, featureId) => {
 		
 		// if(!this.isLevel3Validate()){
 		// 	return null;
 		// }
 
-		//let myForm = document.getElementById("myForm");
 		let featureTypeEle = document.getElementById(`featureTypeId-${featureId}`);
 		let featureTypeId = parseInt(featureTypeEle.value);
 		if(isNaN(featureTypeId) || featureTypeId==0){ 
@@ -589,11 +646,11 @@ class F83Form extends React.PureComponent {
 		
 		return (
 			<Fragment>
-				{/* <LoginMenu
+				<LoginMenu
 					reload={this.state.isReload}
 					open={this.state.isLoginMenu}
 					handleClose={() => this.setState({ isLoginMenu: false })}
-				/> */}
+				/>
 				<form id="myForm" onSubmit={this.isFormValid}>
 					<TextField type="hidden" name="id" value={this.state.recordId} />
 					<Grid 
@@ -620,7 +677,7 @@ class F83Form extends React.PureComponent {
 										onClick={this.handleToggleLevlForm}
 										size="small"
 									>
-										<ExpandMoreIcon color="primary" />
+										<ExpandMore color="primary" />
 									</IconButton>
 								</Tooltip>
 							</div>
@@ -634,8 +691,43 @@ class F83Form extends React.PureComponent {
 						<Grid container>
 							<Grid item xs={12}>
 								<Collapse in={this.state.toggleLevelForm}>
-									<Grid container justifyContent="center" alignItems="center">
-										<Grid item xs={10} md={4}>
+									<Grid container justifyContent="center" alignItems="center" spacing={2}>
+									<Grid item xs={12} md={4}>
+											<TextField
+												name="typeLabel"
+												label="Level 1"
+												value={this.state.typeLabel}
+												onChange={this.onHandleChange}
+												className={classes.textField}
+												margin="normal"
+												variant="outlined"
+												fullWidth
+												error={!!this.state.typeLabelError}
+												helperText={this.state.typeLabelError}
+												size="small"
+												required
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<Tooltip title="Add">
+																<span>
+																	<IconButton
+																		variant="outlined"
+																		size="small"
+																		onClick={e => this.handleSaveType()}
+																		disabled={this.state.isLoading}
+																	>
+																		{ this.state.isLoading ? <CircularProgress size={16} /> : <AddOutlined /> } 
+																	</IconButton>
+																</span>
+															</Tooltip>
+														</InputAdornment>
+													),
+													id: "typeLabel"
+												}}
+											/>
+										</Grid>
+										<Grid item xs={12} md={4}>
 											<TextField
 												name="level1"
 												label="Level 2"
@@ -649,25 +741,25 @@ class F83Form extends React.PureComponent {
 												helperText={this.state.level1Error}
 												size="small"
 												required
-												inputProps={{
-													id : "level1"
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<Tooltip title="Add">
+																<IconButton
+																	variant="outlined"
+																	size="small"
+																	onClick={e => this.handleAddLevel(1)}
+																>
+																	<AddOutlined />
+																</IconButton>
+															</Tooltip>
+														</InputAdornment>
+													),
+													id: "level1"
 												}}
 											/>
 										</Grid>
-										<Grid item xs={2} md={1} style={{textAlign: "center"}}>
-											<Button 
-												variant="outlined" 
-												className={classes.button}
-												size="small"
-												onClick={e=>this.handleAddLevel(1)}
-											>
-												Add
-											</Button>
-										</Grid>
-										<Grid item xs={12} md={2}>
-												&emsp;
-										</Grid>
-										<Grid item xs={10} md={4}>
+										<Grid item xs={12} md={4}>
 											<TextField
 												required
 												name="level2"
@@ -681,25 +773,25 @@ class F83Form extends React.PureComponent {
 												error={!!this.state.level2Error}
 												helperText={this.state.level2Error}
 												size="small"
-												inputProps={{
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<Tooltip title="Add">
+																<IconButton
+																	variant="outlined"
+																	size="small"
+																	onClick={e=>this.handleAddLevel(2)}
+																>
+																	<AddOutlined />
+																</IconButton>
+															</Tooltip>
+														</InputAdornment>
+													),
 													id : "level2"
 												}}
 											/>
 										</Grid>
-										<Grid item xs={2} md={1} style={{textAlign: "center"}}>
-											<Button 
-												variant="outlined" 
-												className={classes.button}
-												size="small"
-												onClick={e=>this.handleAddLevel(2)}
-											>
-												Add
-											</Button>
-										</Grid>
-										<Grid item xs={12}>
-												&emsp;
-										</Grid>
-										<Grid item xs={10} md={4}>
+										<Grid item xs={12} md={4}>
 											<TextField
 												required
 												name="level3"
@@ -713,25 +805,25 @@ class F83Form extends React.PureComponent {
 												error={!!this.state.level3Error}
 												helperText={this.state.level3Error}
 												size="small"
-												inputProps={{
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<Tooltip title="Add">
+																<IconButton
+																	variant="outlined"
+																	size="small"
+																	onClick={e=>this.handleAddLevel(3)}
+																>
+																	<AddOutlined />
+																</IconButton>
+															</Tooltip>
+														</InputAdornment>
+													),
 													id : "level3"
 												}}
 											/>
 										</Grid>
-										<Grid item xs={2} md={1} style={{textAlign: "center"}}>
-											<Button 
-												variant="outlined" 
-												className={classes.button}
-												size="small"
-												onClick={e=>this.handleAddLevel(3)}
-											>
-												Add
-											</Button>
-										</Grid>
-										<Grid item xs={12} md={2}>
-												&emsp;
-										</Grid>
-										<Grid item xs={10} md={4}>
+										<Grid item xs={12} md={4}>
 											<TextField
 												required
 												name="level4"
@@ -745,20 +837,23 @@ class F83Form extends React.PureComponent {
 												error={!!this.state.level4Error}
 												helperText={this.state.level4Error}
 												size="small"
-												inputProps={{
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<Tooltip title="Add">
+																<IconButton
+																	variant="outlined"
+																	size="small"
+																	onClick={e=>this.handleAddLevel(4)}
+																>
+																	<AddOutlined />
+																</IconButton>
+															</Tooltip>
+														</InputAdornment>
+													),
 													id : "level4"
 												}}
 											/>
-										</Grid>
-										<Grid item xs={2} md={1} style={{textAlign: "center"}}>
-											<Button 
-												variant="outlined" 
-												className={classes.button}
-												size="small"
-												onClick={e=>this.handleAddLevel(4)}
-											>
-												Add
-											</Button>
 										</Grid>
 										<Grid item xs={12}>
 											<br/>
@@ -777,7 +872,7 @@ class F83Form extends React.PureComponent {
 										<StyledTableCell align="center">L4</StyledTableCell>
 										<StyledTableCell align="center">L5</StyledTableCell>
 										<StyledTableCell align="center">Features</StyledTableCell>
-										<StyledTableCell align="center" width={32} style={{ borderRight: "1px solid rgb(29, 95, 152)" }}><Tooltip title="Action"><SettingsOutlinedIcon /></Tooltip></StyledTableCell>
+										<StyledTableCell align="center" width={32} style={{ borderRight: "1px solid rgb(29, 95, 152)" }}><Tooltip title="Action"><SettingsOutlined /></Tooltip></StyledTableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
