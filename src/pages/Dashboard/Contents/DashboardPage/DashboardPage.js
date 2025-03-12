@@ -267,8 +267,9 @@ class DashboardPage extends React.Component {
 							handleOpenSnackbar={this.handleOpenSnackbar}
 						/>
 					</Grid>
+										
 					{this.state.dashboardFeatures.map((dashboardFeatures, index) =>
-						dashboardFeatures.typeId==100 ? 
+						dashboardFeatures.typeId==100 && false ? 
 						<Grid item xs={12} key={`NucleusControlToolsCard-${index}`}>
 							<NucleusControlToolsCard 
 								data={dashboardFeatures}
@@ -278,6 +279,7 @@ class DashboardPage extends React.Component {
 						:
 							null
 						)}
+					
 						{!this.state.dashboardFeatures?.length && !this.state.isLoading ? 
 							<Grid item xs={12}>
 							<Card className={classes.card}>
@@ -325,7 +327,7 @@ class DashboardPage extends React.Component {
 								null
 						}
 						{!this.state.isLoading && this.state.dashboardFeatures.map((dashboardFeatures, index) =>
-							dashboardFeatures.typeId!=100 ? 
+							dashboardFeatures.typeId!=100 || true ? 
 							<Grid item xs={12} key={`FeaturesCard-${index}`}>
 							<FeaturesCard
 								handleLoginMenuReload={this.handleLoginMenuReload}
