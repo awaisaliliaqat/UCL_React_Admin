@@ -213,13 +213,18 @@ const StyledTableCell = withStyles((theme) => ({
 			</TextField>
 			</StyledTableCell>
 			<StyledTableCell component="td" scope="row">
-			<Typography
-				variant="body2"
-				component="span"
-				style={{ display: "inline-block" }}
-			>
-				{feature.label}
-			</Typography>
+				<TextField 
+					name = "featureLabel"
+					defaultValue={feature.label}
+					variant="outlined" 
+					size="small"
+					fullWidth 
+					multiline
+					inputProps={{
+						id: `featureLabel-${feature.id}`,
+						maxLength: 145,
+					}}
+				/>
 			</StyledTableCell>
 			<StyledTableCell component="td" scope="row">
 				<Tooltip title="Save">
@@ -534,7 +539,7 @@ class F83Form extends React.PureComponent {
 		// if(!this.isLevel3Validate()){
 		// 	return null;
 		// }
-
+		
 		let featureTypeEle = document.getElementById(`featureTypeId-${featureId}`);
 		let featureTypeId = parseInt(featureTypeEle.value);
 		if(isNaN(featureTypeId) || featureTypeId==0){ 
@@ -542,6 +547,24 @@ class F83Form extends React.PureComponent {
 			this.handleOpenSnackbar("Please select feature Level_1", "error" );
 			return;
 		};
+
+		let updatedfeatureEle = document.getElementById(`featureLabel-${featureId}`);
+		let updatedfeatureEleValue = updatedfeatureEle?.value.trim();
+		if(updatedfeatureEleValue==null || updatedfeatureEleValue === ""){
+			updatedfeatureEle.focus();
+			this.handleOpenSnackbar("Please enter Feature Label", "error" );
+			return;
+		} else {
+			let featureLabelEle = document.getElementsByName(`featureLabel`);
+			for(let i=0; i<featureLabelEle.length; i++){
+				if(featureLabelEle[i].value.trim() === updatedfeatureEleValue && featureLabelEle[i].id !== `featureLabel-${featureId}`){
+					featureLabelEle[i].focus();
+					this.handleOpenSnackbar("Feature Label already exists", "error" );
+					return;
+				}
+			}
+		}
+
 		const data = new FormData();
 		data.append("featureId", featureId);
 		data.append("featureTypeId", featureTypeId);
@@ -549,6 +572,7 @@ class F83Form extends React.PureComponent {
 		data.append("featureLevel2", document.getElementById(`featureLevel2-${featureId}`).value.trim());
 		data.append("featureLevel3", document.getElementById(`featureLevel3-${featureId}`).value.trim());
 		data.append("featureLevel4", document.getElementById(`featureLevel4-${featureId}`).value.trim());
+		data.append("featureLabel", updatedfeatureEleValue);
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C83CharOfFeatures/FeatureLevelsSave`;
 		await fetch(url, {
