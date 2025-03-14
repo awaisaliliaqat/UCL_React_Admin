@@ -66,121 +66,117 @@ class F354Form extends Component {
 		});
 	};
 
+	handleCloseSnackbar = (event, reason) => {
+		if (reason === "clickaway") {
+			return;
+		}
+		this.setState({ isOpenSnackbar: false });
+	};
+
 	componentDidMount() {
 		this.props.setDrawerOpen(false);
 		this.loadData();
 	}
 
-	loadData = async() => {
-		this.setState(prevState => ({ isLoading: true } ));
+	loadData = async () => {
+		this.setState(prevState => ({ isLoading: true }));
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C354CommonEmployeesLeavesApproval/View`;
 		await fetch(url, {
-				method: "POST",
-				headers: new Headers({
-						Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
-				})
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+			})
 		})
 		.then(res => {
-				if (!res.ok) {
-						throw res;
-				}
-				return res.json();
-		})
-		.then(json => {
-				if (json.CODE === 1) {
-						if(json.DATA.length){
-								this.setState({
-									employeeLeavesData: json.DATA
-								});
-						} else {
-								window.location = "#/dashboard/F354Form";
-						}
-				} else {
-						//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
-						this.handleOpenSnackbar(json.SYSTEM_MESSAGE+'\n'+json.USER_MESSAGE,"error");
-				}
-				console.log("loadData:", json);
-		},
-		error => {
-				if (error.status == 401) {
-						this.setState({
-								isLoginMenu: true,
-								isReload: true
-						})
-				} else {
-						console.log(error);
-						// alert("Failed to Save ! Please try Again later.");
-						this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.","error");
-				}
-		});
-		this.setState(prevState => ({isLoading: false}));
-}
-
-handleSave = async(id, isApproved, isDeclined) => {
-	const data = new FormData();
-	data.append("id", id);
-	data.append("isApproved", isApproved);
-	data.append("isDeclined", isDeclined);
-	// Set loading for the specific row
-	this.setState(prevState => ({
-		isLoadingApproval: { ...prevState.isLoadingApproval, [id]: true },
-	}));
-	const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C354CommonEmployeesLeavesApproval/SaveApproval`;
-	await fetch(url, {
-			method: "POST", 
-			body: data, 
-			headers: new Headers({
-					Authorization: "Bearer "+localStorage.getItem("uclAdminToken")
-			})
-	})
-	.then(res => {
 			if (!res.ok) {
-					throw res;
+				throw res;
 			}
 			return res.json();
-	})
-	.then(
-		json => {
-				if (json.CODE === 1) {
-						this.handleOpenSnackbar(json.USER_MESSAGE,"success");
-						this.setState(prevState => ({
-							isLoadingApproval: { ...prevState.isLoadingApproval, [id]: false },
-							employeeLeavesData: this.state.employeeLeavesData.filter(item => item.id !== id)
-						}));
-						setTimeout(()=>{
-								// if(this.state.recordId!=0){
-								//     window.location="#/dashboard/F353Reports";
-								// }else{
-										window.location.reload();
-								//}
-						}, 2000);
+		})
+		.then(json => {
+			const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+			if (CODE === 1) {
+				if (DATA.length) {
+					this.setState({ employeeLeavesData: DATA });
 				} else {
-						this.setState(prevState => ({isLoadingApproval: { ...prevState.isLoadingApproval, [id]: false }}));
-						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+					window.location = "#/dashboard/F354Form";
 				}
-				console.log(json);
+			} else {
+				//alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE);
+				this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br />{USER_MESSAGE}</span>, "error");
+			}
+			console.log("loadData:", json);
 		},
 		error => {
-				this.setState(prevState => ({isLoadingApproval: { ...prevState.isLoadingApproval, [id]: false }}));
-				if (error.status == 401) {
-						this.setState({
-								isLoginMenu: true,
-								isReload: false
-						})
-				} else {
-						console.log(error);
-						this.handleOpenSnackbar("Failed to Save ! Please try Again later.","error");
-				}
+			const {status} = error;
+			if (status == 401) {
+				this.setState({
+					isLoginMenu: true,
+					isReload: true
+				})
+			} else {
+				console.log(error);
+				// alert("Failed to Save ! Please try Again later.");
+				this.handleOpenSnackbar("Failed to Fetch ! Please try Again later.", "error");
+			}
 		});
+		this.setState(prevState => ({ isLoading: false }));
 	}
 
-	handleSnackbar = (open, msg, severity) => {
-		this.setState({
-			isOpenSnackbar: open,
-			snackbarMessage: msg,
-			snackbarSeverity: severity,
+	handleSave = async (id, isApproved, isDeclined) => {
+		const data = new FormData();
+		data.append("id", id);
+		data.append("isApproved", isApproved);
+		data.append("isDeclined", isDeclined);
+		// Set loading for the specific row
+		this.setState(prevState => ({
+			isLoadingApproval: { ...prevState.isLoadingApproval, [id]: true },
+		}));
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C354CommonEmployeesLeavesApproval/SaveApproval`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken")
+			})
+		})
+		.then(res => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(json => {
+			const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+			if (CODE === 1) {
+				this.handleOpenSnackbar(USER_MESSAGE, "success");
+				this.setState(prevState => ({
+					isLoadingApproval: { ...prevState.isLoadingApproval, [id]: false },
+					employeeLeavesData: this.state.employeeLeavesData.filter(item => item.id !== id)
+				}));
+				// setTimeout(() => {
+				// 	window.location.reload();
+				// }, 2000);
+			} else {
+				this.setState(prevState => ({ isLoadingApproval: { ...prevState.isLoadingApproval, [id]: false } }));
+				this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br />{USER_MESSAGE}</span>, "error");
+			}
+			console.log("handleSave : ", json);
+		},
+		error => {
+			const {status} = error;
+			this.setState(prevState => ({ isLoadingApproval: { ...prevState.isLoadingApproval, [id]: false } }));
+			if (status == 401) {
+				this.setState({
+					isLoginMenu: true,
+					isReload: false
+				})
+			} else {
+				console.log(error);
+				this.handleOpenSnackbar("Failed to Save ! Please try Again later.", "error");
+			}
 		});
-	};
+	}
 
 	viewReport = () => {
 		window.location = "#/dashboard/F354Reports";
@@ -188,7 +184,7 @@ handleSave = async(id, isApproved, isDeclined) => {
 
 	handleDelete = (rowData) => {
 		const filterData = this.state.employeeLeavesData.filter((item) => item.recordIndex !== rowData.recordIndex);
-		this.setState({employeeLeavesData: [...filterData]});
+		this.setState({ employeeLeavesData: [...filterData] });
 	};
 
 	render() {
@@ -198,45 +194,46 @@ handleSave = async(id, isApproved, isDeclined) => {
 		const { isLoadingApproval } = this.state;
 
 		const columns = [
-			{ name: "userLabel", title: "Employee"},
-			{ name: "leaveTypeLabel", title: "Leave Type"},
-			{ name: "startOnDate", title: "From Date"},
-			{ name: "endOnDate", title: "To Date"},
-			{ name: "noOfDays", title: "Days"},
-			{ name: "createdOn", title: "Requested On"},
-			{ name: "action", title: "Action",
+			{ name: "userLabel", title: "Employee" },
+			{ name: "leaveTypeLabel", title: "Leave Type" },
+			{ name: "startOnDate", title: "From Date" },
+			{ name: "endOnDate", title: "To Date" },
+			{ name: "noOfDays", title: "Days" },
+			{ name: "createdOn", title: "Requested On" },
+			{
+				name: "action", title: "Action",
 				getCellValue: (rowData) => {
 					console.log(rowData);
 					return (
 						<>
-							<IconButton 
-								aria-label="Approve" 
-								className={`${classes.margin} ${classes.approvedButton}`} 
+							<IconButton
+								aria-label="Approve"
+								className={`${classes.margin} ${classes.approvedButton}`}
 								onClick={() => this.handleSave(rowData.id, 1, 0)}
 								disabled={isLoadingApproval[rowData.id]}
 							>
 								{isLoadingApproval[rowData.id] ? (
 									<CircularProgress size={24} color="inherit" />
 								) : (
-								<Tooltip title="Approve">
-									<ThumbUpAltOutlinedIcon />
-								</Tooltip>
+									<Tooltip title="Approve">
+										<ThumbUpAltOutlinedIcon />
+									</Tooltip>
 								)}
 							</IconButton>
-							<IconButton 
+							<IconButton
 								color="secondary"
-								aria-label="Declined" 
-								className={classes.margin} 
+								aria-label="Declined"
+								className={classes.margin}
 								onClick={() => this.handleSave(rowData.id, 0, 1)}
 								disabled={isLoadingApproval[rowData.id]}
 							>
 								{isLoadingApproval[rowData.id] ? (
 									<CircularProgress size={24} color="inherit" />
 								) : (
-								
-								<Tooltip title="Decline">
-									<ThumbDownAltOutlinedIcon />
-								</Tooltip>
+
+									<Tooltip title="Decline">
+										<ThumbDownAltOutlinedIcon />
+									</Tooltip>
 								)}
 							</IconButton>
 						</>
@@ -272,7 +269,7 @@ handleSave = async(id, isApproved, isDeclined) => {
 						isOpen={this.state.isOpenSnackbar}
 						message={this.state.snackbarMessage}
 						severity={this.state.snackbarSeverity}
-						handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
+						handleCloseSnackbar={this.handleCloseSnackbar}
 					/>
 					<BottomBar
 						leftButtonText="View"
