@@ -1,15 +1,15 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
+import { Divider, Grid, Typography, IconButton, Tooltip, Box, } from "@material-ui/core";
+import { format } from 'date-fns';
+import { ArrowBack }  from "@material-ui/icons";
+import FilterOutline from "mdi-material-ui/FilterOutline";
+import F354ReportsTableComponent from "./chunks/F354ReportsTableComponent";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-
-import { Divider, CircularProgress, Grid, Typography, IconButton, Tooltip, Box, } from "@material-ui/core";
-import F354ReportsTableComponent from "./chunks/F354ReportsTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
-import { format } from 'date-fns';
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const styles = () => ({
 	mainContainer: {
@@ -45,6 +45,7 @@ class F354Reports extends Component {
 			isLoading: {
 				isLoading : false
 			},
+			showTableFilter: false,
 			isLoginMenu: false,
 			isReload: false,
 			isOpenSnackbar: false,
@@ -70,9 +71,19 @@ class F354Reports extends Component {
 		this.loadData();
 	}
 
-	onHandleChange = (event) => {
-		const { name, value } = event.target;
-		this.setState({ [name]: value });
+	handleOpenSnackbar = (msg, severity) => {
+		this.setState({
+			isOpenSnackbar: true,
+			snackbarMessage: msg,
+			snackbarSeverity: severity,
+		});
+	};
+
+	handleCloseSnackbar = (event, reason) => {
+		if (reason === "clickaway") {
+			return;
+		}
+		this.setState({ isOpenSnackbar: false });
 	};
 
 	onSearchClick = async (e) => {
@@ -155,6 +166,10 @@ class F354Reports extends Component {
 		window.location = "#/dashboard/F354Reports";
 	};
 
+	handleToggleTableFilter = () => {
+		this.setState({ showTableFilter: !this.state.showTableFilter });
+	};
+
 	handleDelete = (rowData) => {
 		const filterData = this.state.employeeLeavesData.filter(
 			(item) => item.employeeID !== rowData.employeeID
@@ -172,27 +187,33 @@ class F354Reports extends Component {
 		const columns = [
 			{ name: "userLabel", title: "Employee"},
 			{ name: "leaveTypeLabel", title: "Leave Type" },
-			{ name: "startOnDate", title: "From Date" },
-			{ name: "endOnDate", title: "To Date" },
+			{ name: "startOnDate", title: "From Date", 
+				getCellValue: (rowData) => {
+					return format(new Date(rowData.startOnDate), "dd-MM-yyyy");				
+				}
+			},
+			{ name: "endOnDate", title: "To Date", 
+				getCellValue: (rowData) => {
+					return format(new Date(rowData.endOnDate), "dd-MM-yyyy");				
+				}
+			},
 			{ name: "noOfDays", title: "Days" },
 			{ name: "approvalStatus", title: "Approval Status",
 				getCellValue: (rowData) => {
-						let color = '';
-						let approvalStatus = '';
-						if(rowData.isApproved==1){
-							color = 'success.main';
-							approvalStatus = 'Approved';
-						} else if(rowData.isDeclined==1) {
-							color = 'error.main';
-							approvalStatus = 'Declined';
-						} else {
-							color = 'warning.main';
-							approvalStatus ='Pending'
-						}
-						return (
-							<Box color={color}>{approvalStatus}</Box>
-						)
-			 }
+					let color = '';
+					let approvalStatus = '';
+					if(rowData.isApproved==1){
+						color = 'success.main';
+						approvalStatus = 'Approved';
+					} else if(rowData.isDeclined==1) {
+						color = 'error.main';
+						approvalStatus = 'Declined';
+					} else {
+						color = 'warning.main';
+						approvalStatus ='Pending'
+					}
+					return (approvalStatus);
+			 	}
 			},
 			{ name: "statusChangedOn", title: "Status On",
 				getCellValue: (rowData) => {
@@ -204,8 +225,8 @@ class F354Reports extends Component {
 						} else{
 							statusOn = rowData.createdOn;
 						}
-						return statusOn;
-			 }
+						return format(new Date(statusOn), "dd-MM-yyyy hh:mm a");
+			 	}
 			},
 			{ name: "statusChangedBy", title: "Status By",
 				getCellValue: (rowData) => {
@@ -217,10 +238,8 @@ class F354Reports extends Component {
 					} else{
 						statusBy = rowData.createdByLabel;
 					}
-					return (
-						<Box>{statusBy}</Box>
-					)
-			 }
+					return (statusBy);
+			 	}
 			}
 			// {
 			//   name: "action",
@@ -253,12 +272,21 @@ class F354Reports extends Component {
 						<Typography className={classes.title} variant="h5">
 							<Tooltip title="Back">
 								<IconButton onClick={() => window.history.back()}>
-									<ArrowBackIcon fontSize="small" color="primary" />
+									<ArrowBack fontSize="small" color="primary" />
 								</IconButton>
 							</Tooltip>
 							{"Employee Leave Approval Report"}
-							<br />
 						</Typography>
+						<div style={{ float: "right" }}>
+						<Tooltip title="Table Filter">
+							<IconButton
+								style={{ marginLeft: "-10px" }}
+								onClick={() => this.handleToggleTableFilter()}
+							>
+								<FilterOutline color="primary" />
+							</IconButton>
+						</Tooltip>
+						</div>
 					</div>
 					<Divider className={classes.divider} />
 					<br />
@@ -267,13 +295,14 @@ class F354Reports extends Component {
 							isLoading={this.state.isLoading?.isLoading}
 							columns={columns}
 							rows={this.state.employeeLeavesData}
+							showFilter={this.state.showTableFilter}
 						/>
 					</Grid>
 					<CustomizedSnackbar
 						isOpen={this.state.isOpenSnackbar}
 						message={this.state.snackbarMessage}
 						severity={this.state.snackbarSeverity}
-						handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
+						handleCloseSnackbar={this.handleCloseSnackbar}
 					/>
 					<BottomBar
 						leftButtonText="View"
