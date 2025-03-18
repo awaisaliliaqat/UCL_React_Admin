@@ -11,6 +11,7 @@ import BottomBar from "../../../../../components/BottomBar/BottomBar";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { format } from 'date-fns';
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import { withRouter } from 'react-router-dom';
 
 const styles = () => ({
   mainContainer: {
@@ -252,7 +253,7 @@ class F353Form extends Component {
           <div className={classes.titleContainer}>
             <Typography className={classes.title} variant="h5">
               <Tooltip title="Back">
-								<IconButton onClick={() => window.history.back()}>
+								<IconButton onClick={() => this.props.history.goBack()}>
 									<ArrowBackIcon fontSize="small" color="primary" />
 								</IconButton>
 							</Tooltip>
@@ -302,4 +303,4 @@ F353Form.defaultProps = {
   classes: {},
   setDrawerOpen: (fn) => fn,
 };
-export default withStyles(styles)(F353Form);
+export default withRouter(withStyles(styles)(F353Form));

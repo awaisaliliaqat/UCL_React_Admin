@@ -10,6 +10,7 @@ import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { IsEmpty } from "../../../../../utils/helper";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
+import { withRouter } from "react-router-dom";
 
 const styles = () => ({
 	mainContainer: {
@@ -250,7 +251,9 @@ class F353Form extends Component {
 		}
 		let myForm = document.getElementById("myForm");
 		const data = new FormData(myForm);
-		this.setState({ isLoading: true });
+		this.setState((prevState) => ({
+			isLoading: { ...prevState.isLoading, isLoading: true },
+		}));
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C353CommonEmployeesLeaves/Save`;
 		await fetch(url, {
 			method: "POST",
@@ -298,12 +301,14 @@ class F353Form extends Component {
 				}
 			}
 		);
-		this.setState({ isLoading: false });
+		this.setState((prevState) => ({
+			isLoading: { ...prevState.isLoading, isLoading: false },
+		}));
 	};
 
 	viewReport = () => {
-		window.location = "#/dashboard/F353Reports";
-	};
+        this.props.history.push("/dashboard/F353Reports");
+    };
 
 	islabelValid = () => {
 		let isValid = true;
@@ -786,7 +791,7 @@ class F353Form extends Component {
 						leftButtonHide={false}
 						bottomLeftButtonAction={this.viewReport}
 						right_button_text="Save"
-						disableRightButton={this.state.employeeLeavesData.length === 0}
+						disableRightButton={this.state.isLoading?.isLoading || this.state.employeeLeavesData.length === 0}
 						loading={this.state.isLoading?.isLoading}
 						isDrawerOpen={this.props.isDrawerOpen}
 						bottomRightButtonAction={() => {
@@ -809,4 +814,4 @@ F353Form.defaultProps = {
 	setDrawerOpen: (fn) => fn,
 };
 
-export default withStyles(styles)(F353Form);
+export default withRouter(withStyles(styles)(F353Form));
