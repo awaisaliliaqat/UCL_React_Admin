@@ -53,10 +53,19 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 const ControlledDialog = props => {
+  
   const { handleClose, open, title, content, isFullScreen, enableBackDrop } = props;
+  
+  const handleDialogClose = (event, reason) => {
+    if (reason === 'backdropClick' && !enableBackDrop) {
+      return;
+    }
+    handleClose(event, reason);
+  };
+
   return (
     <div>
-      <Dialog backdropclick={!enableBackDrop} fullScreen={isFullScreen} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+      <Dialog fullScreen={isFullScreen} onClose={handleDialogClose} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
           {title}
         </DialogTitle>
@@ -66,9 +75,7 @@ const ControlledDialog = props => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Close
-                   </Button>
+          <Button onClick={handleClose} color="primary">Close</Button>
         </DialogActions>
       </Dialog>
     </div>
