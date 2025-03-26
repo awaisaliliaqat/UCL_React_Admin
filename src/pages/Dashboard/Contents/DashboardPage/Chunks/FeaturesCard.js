@@ -1,14 +1,14 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Card, Grid, Typography, Box, List, ListItem, ListItemText, Divider, Collapse, Tooltip, IconButton, FormControlLabel, Checkbox } from "@material-ui/core";
+import { Card, Grid, Typography, Box, List, ListItem, ListItemText, Divider, Collapse, Tooltip, IconButton, FormControlLabel, Checkbox, Dialog, DialogContent, Button } from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { green } from '@material-ui/core/colors';
-import AddBoxIcon from "@material-ui/icons/AddBox";
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 import { useHistory } from "react-router-dom";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import clsx from "clsx";
 import StarBorderRoundedIcon from '@material-ui/icons/StarBorderRounded';
 import StarRoundedIcon from '@material-ui/icons/StarRounded';
+import CloseIcon from '@material-ui/icons/Close';
+import { ZoomOutMapOutlined }  from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
 	card: {
@@ -176,10 +176,26 @@ const FeaturesCard = ({handleLoginMenuReload, handleLoginMenu, handleOpenSnackba
 	const [toggleLevelForm, setToggleLevelForm] = useState(false);
 
 	const [checkedItems, setCheckedItems] = useState({}); // State to track checked checkboxes
+
+	const [dialogOpen, setDialogOpen] = useState(false);
+
+	const [selectedItem, setSelectedItem] = useState(null);
+
+	const [selectedItemColorClasses, setSelectedItemColorClasses] = useState("");  
 	
 	const handleToggleLevlForm = () => {
 		setToggleLevelForm(!toggleLevelForm);
 	};
+
+	const handleDialogOpen = (leavel1, colorClasses) => {
+		setSelectedItem(leavel1);
+		setDialogOpen(true);
+		setSelectedItemColorClasses(colorClasses);
+	  };
+	
+	  const handleDialogClose = () => {
+		setDialogOpen(false);
+	  };
 
 	const handleChangeFavourite = async (event, featureId) => {
 		const isChecked = event.target.checked;	
@@ -264,87 +280,199 @@ const FeaturesCard = ({handleLoginMenuReload, handleLoginMenu, handleOpenSnackba
 				</div>
 			</Typography>
 			<Collapse in={toggleLevelForm}>
-			<br/>
-			<Grid container spacing={2}>
-				{data?.level1.map((l1, l1Index)=> { 
-					// Cycle through themes using modulus operator
-					const themeClass = themes[dataIndex % themes.length];
-					return (
-				<Grid key={`level1-${l1Index}`} item xs={12} md={6}>
-					{/* <Box className={`${classes.item} ${classes.blueBackground}`}> */}
-					<Box className={`${classes.item} ${classes[themeClass]}`}>
-						<Box className={classes.dragHandle}>
-							<Box className={classes.dot}></Box>
-							<Box className={classes.dot}></Box>
-							<Box className={classes.dot}></Box>
-						</Box>
-						<Divider className={classes.sideBar} />
-						<Box style={{width:"100%"}}>
-							<Box style={{display:"flex"}}>
-								<PlaylistAddCheckIcon className={classes.icon} />
-								<Typography variant="subtitle1" style={{ fontWeight: 600 }}>
-									{l1?.level1Label || "" }
-								</Typography>
-							</Box>
-							{l1?.level2.map((l2, l2Index) =>
-								<Fragment key={`level2-${l2Index}`}>
-									<Box style={{display:"flex"}}>
-										<Typography variant="caption" display="block" style={{paddingLeft:"3.1rem", marginTop:-10}}>
-											{l2?.level2Label || ""}
-										</Typography>
+				<br/>
+				<Grid container spacing={2}>
+					{data?.level1.map((l1, l1Index)=> { 
+						// Cycle through themes using modulus operator
+						const themeClass = themes[dataIndex % themes.length];
+						return (
+						<Grid key={`level1-${l1Index}`} item xs={12} md={6}>
+							{/* <Box className={`${classes.item} ${classes.blueBackground}`}> */}
+							<Box className={`${classes.item} ${classes[themeClass]}`}>
+								<Box className={classes.dragHandle}>
+									<Box className={classes.dot}></Box>
+									<Box className={classes.dot}></Box>
+									<Box className={classes.dot}></Box>
+								</Box>
+								<Divider className={classes.sideBar} />
+								<Box style={{width:"100%"}}>
+									<Box style={{display:"flex", justifyContent:"space-between"}}>
+										<Box style={{display:"flex"}}>
+											<PlaylistAddCheckIcon className={classes.icon} />
+											<Typography variant="subtitle1" style={{ fontWeight: 600 }}>
+												{l1?.level1Label || "" }
+											</Typography>
+										</Box>
+										<Box>
+											<IconButton 
+												variant="outlined" 
+												size="small" 
+												onClick={() => handleDialogOpen(l1, `${classes[themeClass]}`)}
+											>
+												<ZoomOutMapOutlined fontSize="small" className={`${classes[themeClass]}`} />
+											</IconButton>
+										</Box>
 									</Box>
-									<Box className={classes.listBox}>
-									{l2?.level3.map((l3, l3Index) =>
-										<Fragment key={`level3-${l3Index}`}>
-										<Typography variant="subtitle2" display="block">{l3?.level3Label || ""}</Typography>
-										{l3?.level4.map((l4, l4Index) =>
-											<List key={`level4-${l4Index}`}>
-											{l4.level5.map((l5, l5Index) => { 
-												
-												return (
-												<ListItem key={`level5-${l5Index}`} className={classes.listItem}>
-													<Box 
-														style={{marginTop:0, marginRight:4, marginBottom:4}}
-													>
-															•&nbsp;
-													</Box>
-													<ListItemText 
-														primary={l5.label} 
-														secondary={l4.leval4Label} 
-														primaryTypographyProps={{ className: classes.listText }} 
-														secondaryTypographyProps={{ className: classes.listSecoundaryText }}
-														onClick={(e)=> history.push(`${l5.webUrl}`) }
-													/>
-													<FormControlLabel
-														label=""
-														labelPlacement="start"
-														value={l5.id}
-														control={
-															<ColouredCheckbox 
-																icon={<StarBorderRoundedIcon />} 
-																checkedIcon={<StarRoundedIcon />} 
-																name="favouriteId"
-																checked={!!checkedItems[l5.id]} // Ensure boolean value
-                                            					onChange={(event) => handleChangeFavourite(event, l5.id)}
-																style={{padding:4}}
+									{l1?.level2.map((l2, l2Index) =>
+										<Fragment key={`level2-${l2Index}`}>
+											<Box style={{display:"flex"}}>
+												<Typography variant="caption" display="block" style={{paddingLeft:"3.1rem", marginTop:-10}}>
+													{l2?.level2Label || ""}
+												</Typography>
+											</Box>
+											<Box className={classes.listBox}>
+											{l2?.level3.map((l3, l3Index) =>
+												<Fragment key={`level3-${l3Index}`}>
+												<Typography variant="subtitle2" display="block">{l3?.level3Label || ""}</Typography>
+												{l3?.level4.map((l4, l4Index) =>
+													<List key={`level4-${l4Index}`}>
+													{l4.level5.map((l5, l5Index) => { 
+														
+														return (
+														<ListItem key={`level5-${l5Index}`} className={classes.listItem}>
+															<Box 
+																style={{marginTop:0, marginRight:4, marginBottom:4}}
+															>
+																	•&nbsp;
+															</Box>
+															<ListItemText 
+																primary={l5.label} 
+																secondary={l4.leval4Label} 
+																primaryTypographyProps={{ className: classes.listText }} 
+																secondaryTypographyProps={{ className: classes.listSecoundaryText }}
+																onClick={(e)=> history.push(`${l5.webUrl}`) }
 															/>
-														}
-													/>
-												</ListItem>
-											)})}
-											</List>
-										)}
+															<FormControlLabel
+																label=""
+																labelPlacement="start"
+																value={l5.id}
+																control={
+																	<ColouredCheckbox 
+																		icon={<StarBorderRoundedIcon />} 
+																		checkedIcon={<StarRoundedIcon />} 
+																		name="favouriteId"
+																		checked={!!checkedItems[l5.id]} // Ensure boolean value
+																		onChange={(event) => handleChangeFavourite(event, l5.id)}
+																		style={{padding:4}}
+																	/>
+																}
+															/>
+														</ListItem>
+													)})}
+													</List>
+												)}
+												</Fragment>
+											)}
+											</Box>
 										</Fragment>
 									)}
-									</Box>
-								</Fragment>
-							)}
-						</Box>
-					</Box>
+								</Box>
+							</Box>
+						</Grid>
+					)})}
 				</Grid>
-				)})}
-			</Grid>
 			</Collapse>
+			{/* Dialog for detailed view */}
+			<Dialog
+				open={dialogOpen}
+				onClose={handleDialogClose}
+				fullWidth
+				maxWidth="md"
+				scroll="paper"
+			>
+				{selectedItem && (
+					<DialogContent className={selectedItemColorClasses}>
+						<Box style={{ width: "100%" }}>
+							<Box style={{ display: "flex", justifyContent:"space-between" }}>
+								<Box style={{ display: "flex" }}>
+									<PlaylistAddCheckIcon className={classes.icon} />
+									<Typography variant="subtitle1" style={{ fontWeight: 600 }}>
+										{selectedItem?.level1Label || ""}
+									</Typography>
+								</Box>
+								<Box style={{ display: "flex" }}>
+									<Button size="small" onClick={handleDialogClose} style={{minWidth:"auto", padding: "0px 0px 12px 0px"}}>
+										<CloseIcon fontSize="small" className={selectedItemColorClasses} />
+									</Button>
+								</Box>
+							</Box>
+							{selectedItem?.level2.map((l2, l2Index) => (
+								<Fragment key={`dialog-level2-${l2Index}`}>
+								<Box style={{ display: "flex" }}>
+									<Typography
+										variant="caption"
+										display="block"
+										style={{ paddingLeft: "3.1rem", marginTop: -10 }}
+									>
+									{l2?.level2Label || ""}
+									</Typography>
+								</Box>
+								<Box className={classes.listBox} style={{ height: "auto", maxHeight: "400px" }}>
+									{l2?.level3.map((l3, l3Index) => (
+									<Fragment key={`dialog-level3-${l3Index}`}>
+										<Typography variant="subtitle2" display="block">
+										{l3?.level3Label || ""}
+										</Typography>
+										{l3?.level4.map((l4, l4Index) => (
+										<List key={`dialog-level4-${l4Index}`}>
+											{l4.level5.map((l5, l5Index) => (
+											<ListItem
+												key={`dialog-level5-${l5Index}`}
+												className={classes.listItem}
+											>
+												<Box
+													style={{
+														marginTop: 0,
+														marginRight: 4,
+														marginBottom: 4
+													}}
+												>
+													•&nbsp;
+												</Box>
+												<ListItemText
+													primary={l5.label}
+													secondary={l4.leval4Label}
+													primaryTypographyProps={{
+														className: classes.listText
+													}}
+													secondaryTypographyProps={{
+														className: classes.listSecoundaryText
+													}}
+													onClick={(e) => {
+														history.push(`${l5.webUrl}`);
+														handleDialogClose();
+													}}
+												/>
+												<FormControlLabel
+													label=""
+													labelPlacement="start"
+													value={l5.id}
+													control = {
+														<ColouredCheckbox
+															icon={<StarBorderRoundedIcon />}
+															checkedIcon={<StarRoundedIcon />}
+															name="favouriteId"
+															checked={!!checkedItems[l5.id]}
+															onChange={(event) =>
+																handleChangeFavourite(event, l5.id)
+															}
+															style={{ padding: 4 }}
+														/>
+													}
+												/>
+											</ListItem>
+											))}
+										</List>
+										))}
+									</Fragment>
+									))}
+								</Box>
+								</Fragment>
+							))}
+						</Box>
+					</DialogContent>
+				)}
+			</Dialog>
 		</Card>
 	);
 };
