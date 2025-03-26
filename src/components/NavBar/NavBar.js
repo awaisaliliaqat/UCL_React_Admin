@@ -333,7 +333,7 @@ const NavBar = forwardRef((props, ref) => {
         >
           <div style={{ display: "flex" }}>
             {isAuthorize && (
-              <IconButton
+              <Button
                 color="inherit"
                 aria-label="open drawer"
                 edge="start"
@@ -342,7 +342,7 @@ const NavBar = forwardRef((props, ref) => {
                 onClick={(e) => setOpenMenu(e)}
               >
                 {isOpenMenu ? <ArrowBackIosIcon /> : <MenuIcon />}
-              </IconButton>
+              </Button>
             )}
 
             <IconButton
