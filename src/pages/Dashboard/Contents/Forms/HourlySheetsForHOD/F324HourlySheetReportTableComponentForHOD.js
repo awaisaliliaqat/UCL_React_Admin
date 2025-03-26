@@ -69,7 +69,7 @@ class F322HourlySheetReportTableComponentForCoordinator extends Component {
         "lessThan",
         "lessThanOrEqual",
       ],
-      pageSizes: [5, 10, 15, 20],
+      pageSizes: [10, 25, 50, 100],
       defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
@@ -129,7 +129,7 @@ class F322HourlySheetReportTableComponentForCoordinator extends Component {
           />
           {/* <SelectionState />  */}
           {/* <GroupingState defaultGrouping={[{ columnName: 'product' }]} defaultExpandedGroups={['EnviroCare Max']} /> */}
-          <PagingState defaultCurrentPage={1} defaultPageSize={10} />
+          <PagingState defaultCurrentPage={0} defaultPageSize={pageSizes[0]} />
           <IntegratedFiltering />
           <IntegratedSorting />
           <IntegratedPaging />
