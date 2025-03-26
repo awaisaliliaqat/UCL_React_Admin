@@ -152,6 +152,26 @@ const useStyles = makeStyles((theme) => ({
 	levelFormExpand: {
 		transform: "rotate(180deg)"
 	},
+	dialog: {
+		overflow:"auto", 
+		paddingRight: "0.5rem",
+		/* width */
+		'&::-webkit-scrollbar' : {
+				width: "0.5rem",
+			},
+		/* Track */
+		'&::-webkit-scrollbar-track' : {
+			background: "rgba(0, 0, 0, 0.05)", 
+		}, 
+		/* Handle */
+		"&::-webkit-scrollbar-thumb" : {
+			background: "rgba(0, 0, 0, 0.1)", 
+		},
+		/* Handle on hover */
+		'&::-webkit-scrollbar-thumb:hover' : {
+			background: "rgba(0, 0, 0, 0.2)",
+		}
+	},
 }));
 
 const ColouredCheckbox = withStyles((theme) => ({
@@ -381,7 +401,7 @@ const FeaturesCard = ({handleLoginMenuReload, handleLoginMenu, handleOpenSnackba
 				scroll="paper"
 			>
 				{selectedItem && (
-					<DialogContent className={selectedItemColorClasses}>
+					<DialogContent className={`${selectedItemColorClasses+" "+classes.dialog}`}>
 						<Box style={{ width: "100%" }}>
 							<Box style={{ display: "flex", justifyContent:"space-between" }}>
 								<Box style={{ display: "flex" }}>
@@ -407,7 +427,7 @@ const FeaturesCard = ({handleLoginMenuReload, handleLoginMenu, handleOpenSnackba
 									{l2?.level2Label || ""}
 									</Typography>
 								</Box>
-								<Box className={classes.listBox} style={{ height: "auto", maxHeight: "400px" }}>
+								<Box className={classes.listBox} style={{ height: "auto" }}>
 									{l2?.level3.map((l3, l3Index) => (
 									<Fragment key={`dialog-level3-${l3Index}`}>
 										<Typography variant="subtitle2" display="block">
