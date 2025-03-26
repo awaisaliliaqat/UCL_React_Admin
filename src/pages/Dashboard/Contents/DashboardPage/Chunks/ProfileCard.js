@@ -106,7 +106,7 @@ const ProfileCard = (props) => {
 				} else {
 					handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 				}
-				console.log("getProfileCardData", json);
+				//console.log("getProfileCardData", json);
 			},
 			(error) => {
 				if (error.status == 401) {

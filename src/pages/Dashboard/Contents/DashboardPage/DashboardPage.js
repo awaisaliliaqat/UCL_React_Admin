@@ -108,7 +108,7 @@ class DashboardPage extends React.Component {
 				} else {
 					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 				}
-				console.log("getFavouriteFeatures", json);
+				//console.log("getFavouriteFeatures", json);
 			},
 			(error) => {
 				if (error.status == 401) {
@@ -127,14 +127,14 @@ class DashboardPage extends React.Component {
 
 	getDashboardFeatures = async (dashboardId) => {
 		this.setState({isLoading: true});
-		let formData = new FormData();
-		dashboardId = parseInt(dashboardId);
-		if(isNaN(dashboardId)){ dashboardId=0; }
-		formData.append("dashboardId",  dashboardId);
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonEmployeeDashboard/FeaturesLevelWiseByDashboardId`;
+		// let formData = new FormData();
+		// dashboardId = parseInt(dashboardId);
+		// if(isNaN(dashboardId)){ dashboardId=0; }
+		// formData.append("dashboardId",  dashboardId);
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonEmployeeDashboard/FeaturesLevelWiseByUserId`;
 		await fetch(url, {
 			method: "POST",
-			body: formData,
+			//body: formData,
 			headers: new Headers({
 				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
 			}),
@@ -158,7 +158,7 @@ class DashboardPage extends React.Component {
 				} else {
 					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 				}
-				console.log("getDashboardFeatures", json);
+				//console.log("getDashboardFeatures", json);
 			},
 			(error) => {
 				if (error.status == 401) {
@@ -176,6 +176,7 @@ class DashboardPage extends React.Component {
 	};
 
 	componentDidMount(){
+		this.props.setDrawerOpen(false);
 		const { dashboardId } = this.props.match.params;
 		if (dashboardId!=0) {
 			this.getFavouriteFeatures();
@@ -301,6 +302,12 @@ class DashboardPage extends React.Component {
 							: this.state.isLoading ?
 								<Grid item xs={12}>
 									<Card className={classes.card}>
+										<Typography 
+											variant="h6"
+											className={classes.title}
+										>
+											<Skeleton variant="rect" width="100%" />
+										</Typography>
 										<Typography 
 											variant="h6"
 											className={classes.title}

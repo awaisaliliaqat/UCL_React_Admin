@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Card, Typography, Box, makeStyles, IconButton, Button} from "@material-ui/core";
+import { Card, Typography, Box, makeStyles, Button} from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import { Skeleton } from "@material-ui/lab";
@@ -149,8 +149,9 @@ const ReportingToCard = (props) => {
 		})
 		.then(
 			(json) => {
-				if (json.CODE === 1) {
-					let data = json.DATA || [];
+				const {CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE} = json;
+				if (CODE === 1) {
+					let data = DATA || [];
 					let dataLength = data.length;
 					for(let i=0; i<dataLength ;i++){
 						data[i].name = data[i].userName;
@@ -172,12 +173,13 @@ const ReportingToCard = (props) => {
 						setData(data);
 					}
 				} else {
-					handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+					handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
 				}
-				console.log("getReportingToCardData", json);
+				//console.log("getReportingToCardData", json);
 			},
 			(error) => {
-				if (error.status == 401) {
+				const { status } = error;
+				if (status == 401) {
 					handleLoginMenuReload(true);
 					handleLoginMenu(true);
 				} else {
