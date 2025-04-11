@@ -176,6 +176,7 @@ class F208Reports extends Component {
       { name: "termLabel", title: "Term" },
       { name: "fromDateReport", title: "Start Date" },
       { name: "toDateReport", title: "End Date" },
+      { name: "lastTeachingDateReport", title: "Last Teaching Date" },
       { name: "action", title: "Action" },
     ];
 
@@ -217,7 +218,7 @@ class F208Reports extends Component {
                   style={{ marginLeft: "-10px" }}
                   onClick={this.handleToggleTableFilter}
                 >
-                  <FilterIcon fontSize="default" color="primary" />
+                  <FilterIcon color="primary" />
                 </IconButton>
               </Tooltip>
             </div>
