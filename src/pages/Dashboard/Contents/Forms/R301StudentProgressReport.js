@@ -666,7 +666,6 @@ class DisplayAdmissionApplications extends Component {
               size="small"
               className={classes.table}
               aria-label="customized table"
-              size="small"
             >
               <TableHead>
               <TableRow>
