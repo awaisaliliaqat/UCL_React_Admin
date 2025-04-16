@@ -244,7 +244,7 @@ class F357Form extends Component {
 		data.append("academicSessionId", this.state.academicSessionId);
 		data.append("fromDate", format(this.state.fromDate, "dd-MM-yyyy"));
 		data.append("toDate", format(this.state.fromDate, "dd-MM-yyyy"));
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeesView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeesWithSheetStatusView`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -394,6 +394,9 @@ class F357Form extends Component {
 					openDialog={this.state.openDialog}
 					handleOpenDialog={this.handleOpenDialog}
 					handleCloseDialog={this.handleCloseDialog}
+					academicsSessionId={this.state.academicSessionId}
+					fromDate={this.state.fromDate}
+					toDate={this.state.toDate}
 					rowData={this.state.dialogRowData}
 					handleIsExistUpdate={this.handleIsExistUpdate}
 				/>

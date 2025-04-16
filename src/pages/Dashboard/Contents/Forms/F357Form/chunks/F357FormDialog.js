@@ -9,8 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
-import { Box, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from '@material-ui/core';
-import { numberExp } from "../../../../../../utils/regularExpression";
+import { Box, CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import AddIcon from '@material-ui/icons/Add';
 import { DatePicker } from '@material-ui/pickers';
@@ -69,7 +68,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handleOpenDialog, handleCloseDialog, rowData, handleIsExistUpdate }) {
+export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handleOpenDialog, handleCloseDialog, academicsSessionId, fromDate, toDate ,rowData, handleIsExistUpdate }) {
 
     const classes = useStyles();
 
@@ -98,10 +97,11 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 
     };
     const [state, setState] = useState(initialStates);
-
     const initialLoadingStates = {
+        employeeComments : false,
         employeePayroll : false,
-        teacherSections: false
+        teacherSections: false,
+        employeeSheet: false
     };
     const [isLoading, setIsLoading] = useState(initialLoadingStates);
     const [teacherSectionsData, setTeacherSectionsData] = useState([]);
@@ -109,11 +109,11 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 
     const getTeacherSectionDetails = async() => {
         setIsLoading((prevState) => {
-            return ({ ...prevState, [`teacherSections`]: true });
+            return ({ ...prevState, teacherSections: true });
         });
         let data =  new FormData();
         data.append("employeeId", rowData?.id);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/TeacherSectionsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/CoursesTeachersView`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -148,13 +148,13 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 			}
 		);
         setIsLoading((prevState) => {
-            return ({ ...prevState, [`teacherSections`]: false });
+            return ({ ...prevState, teacherSections: false });
         })
     }
 
     const getEmployeePayroll = async() => {
         setIsLoading((prevState) => {
-            return ({ ...prevState, [`employeePayroll`]: true });
+            return ({ ...prevState, employeePayroll: true });
         });
         let data =  new FormData();
         data.append("employeeId", rowData?.id);
@@ -201,12 +201,324 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 			}
 		);
         setIsLoading((prevState) => {
-            return ({ ...prevState, [`employeePayroll`]: false });
+            return ({ ...prevState, employeePayroll: false });
         })
+    }
+
+    const handleEmployeeCommentsView = async() => {
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeComments: true });
+        });
+        let data =  new FormData();
+        data.append("employeeId", rowData?.id);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeeCommentsView`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					let data = DATA || [];
+                    let dataLength = data.length;
+                    let commentDataArry = [];
+                    for(let i=0; i<dataLength; i++){
+                        let  {id, commentDate, commentDateDisplay, comment }  = data[i];
+                        commentDataArry.unshift({id: id, commentDate: commentDateDisplay, comment:comment}); 
+                    }
+                    setState((prevState) => {
+                        return ({ ...prevState, commentDate:new Date(), comment:"", commentData: commentDataArry })
+                    });
+				} else {
+					handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeComments: false });
+        });
+    }
+
+    const handleEmployeeCommentSave = async(commentDate, comment) => {
+        let data =  new FormData();
+        data.append("employeeId", rowData?.id);
+        data.append("commentDate", commentDate);
+        data.append("comment", comment);
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeComments: true });
+        });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeeCommentSave`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
+                    handleEmployeeCommentsView();
+				} else {
+					handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeComments: false });
+        });
+    }
+
+    const handleEmployeeCommentDelete = async(commentId) => {
+        let data =  new FormData();
+        data.append("commentId", commentId);
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeComments: true });
+        });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeeCommentDelete`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
+                    //handleEmployeeCommentsView();
+				} else {
+					handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeComments: false });
+        });
+    }
+
+    const handleClaimHoursSave = async(academicsSessionId, courseId, index) => {
+        let data =  new FormData();
+        let claimHours = parseFloat(teacherSectionsData[index]?.claimHours);
+        if(isNaN(claimHours) || claimHours<=0){ handleOpenSnackbar("Claim Hours not valid","error"); return; }
+        data.append("academicsSessionId", academicsSessionId);
+        data.append("courseId", courseId);
+        data.append("teacherId", rowData?.id);
+        data.append("claimHours", claimHours);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/CoursesTeachersSave`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
+				} else {
+					handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+    }
+
+    const getSheet = async() => {
+        let data =  new FormData();
+        data.append("academicsSessionId", academicsSessionId);
+        data.append("employeeId", rowData?.id);
+        data.append("fromDate", format(fromDate,"dd-MM-yyyy"));
+        data.append("toDate", format(toDate,"dd-MM-yyyy"));
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/View`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					let data = DATA || [];
+                    let dataLength = data.length;
+                    if(dataLength>0){
+                        let {rateNextYear, rateIncreasePercentage, salaryNextYear, salaryIncreasePercentage} = data[0];
+                        setState((prevState) => {
+                            return ({ 
+                                ...prevState, 
+                                rateNextYear: formatNumber(rateNextYear),
+                                rateIncreasePer: formatNumber(rateIncreasePercentage),
+                                salaryNextYear: formatNumber(salaryNextYear),
+                                salaryIncreasePer: formatNumber(salaryIncreasePercentage)
+                            });
+                        });
+                    }
+				} else {
+					handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+    }
+
+    const handleSave = async() => {
+        //handleIsExistUpdate(rowData);
+        let data =  new FormData();
+        data.append("id", 0);
+        data.append("academicsSessionId", academicsSessionId);
+        data.append("employeeId", rowData?.id);
+        data.append("fromDate", format(fromDate,"dd-MM-yyyy"));
+        data.append("toDate", format(toDate,"dd-MM-yyyy"));
+        data.append("rateNextYear", state.rateNextYear);
+        data.append("rateIncreasePercentage", state.rateIncreasePer);
+        data.append("salaryNextYear", state.salaryNextYear);
+        data.append("salaryIncreasePercentage", state.salaryIncreasePer);
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeSheet: true });
+        });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/Save`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
+                    handleIsExistUpdate(rowData);
+				} else {
+					handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeSheet: false });
+        });
     }
 
     const formatNumber = (num) => {
         return Number.isInteger(num) ? num : parseFloat(num.toFixed(2));
+    };
+
+    const handleSetClaimHours = (e, index) => {
+        const { value } = e.target;
+        let regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
+        if (value && !regex.test(value)) {
+            return;
+        }
+        setTeacherSectionsData(prevState => {
+            const updated = [...prevState];
+            updated[index] = {
+                ...updated[index],
+                claimHours: value
+            };
+            return updated;
+        });
     };
 
     const handleChange = (e) => {
@@ -270,7 +582,6 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
             default:
         }
         setState((prevState) => {
-            console.log(prevState);
             return ({ ...prevState, [name]: value })
         });
     }
@@ -285,26 +596,33 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
             });
             return;
         }
-        commentDataArry.unshift({commentDate:commentDate, comment:comment});
-        setState((prevState) => {
-            return ({ ...prevState, commentDate:new Date(), comment:"", commentData: commentDataArry })
-        });
+        // commentDataArry.unshift({commentDate:commentDate, comment:comment});
+        // setState((prevState) => {
+        //     return ({ ...prevState, commentDate:new Date(), comment:"", commentData: commentDataArry })
+        // });
+        handleEmployeeCommentSave(commentDate, comment);
     }
 
     const handleDeleteComment=(dataIndex)=>{
         let commentDataArry = [...state.commentData];
+        let commentId = commentDataArry[dataIndex].id;
         commentDataArry.splice(dataIndex, 1);
         setState((prevState) => {
             return ({ ...prevState, commentData: commentDataArry })
         });
+        handleEmployeeCommentDelete(commentId);
     }
 
     useEffect(() => {
         if(openDialog===false){
             setState(initialStates);
+            setPayrollData([]);
+            setTeacherSectionsData([]);
         } else {
+            handleEmployeeCommentsView();
             getTeacherSectionDetails();
             getEmployeePayroll();
+            getSheet()
         }
     }, [openDialog]);
 
@@ -318,8 +636,14 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                     <Typography variant="h6" className={classes.title}>
                         {rowData?.id + " - " + rowData?.displayName}
                     </Typography>
-                    <Button autoFocus color="inherit" onClick={(e)=>handleIsExistUpdate(rowData)}>
-                        save
+                    <Button 
+                        autoFocus 
+                        color="inherit"
+                        disabled={isLoading.employeeSheet} 
+                        onClick={(e)=>
+                            handleSave()
+                        }>
+                        {isLoading.employeeSheet ? <CircularProgress size={24} style={{color:"lightgray"}} /> : "Save" }
                     </Button>
                 </Toolbar>
             </AppBar>
@@ -419,18 +743,21 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                                         padding: "4px 6px"
                                                     }
                                                 }}
+                                                autoComplete="off"
                                             />
                                         </TableCell>
                                         <TableCell align="center">
                                             <Tooltip title="Add">
+                                                <span>
                                                 <Button
                                                     size="small"
                                                     style={{padding:"0px 8px", minWidth:"auto"}}
                                                     onClick={() => handleAddComment()}
-
+                                                    disabled={isLoading.employeeComments}
                                                 >
-                                                    <AddIcon color="primary" />
+                                                   {isLoading.employeeComments ? <CircularProgress size={18} /> : <AddIcon color="primary" /> }
                                                 </Button>
+                                                </span>
                                             </Tooltip>
                                         </TableCell>
                                     </TableRow>
@@ -503,7 +830,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                         teacherSectionsData.length>0 ?  
                                             teacherSectionsData.map((obj, index)=>
                                                 <TableRow className={classes.tableRowHover} key={"teacherSectionsData-"+index}>
-                                                    <TableCell component="th" scope="row">{obj.sessionLabel}</TableCell>
+                                                    <TableCell component="th" scope="row">{obj.academicsSessionLabel}</TableCell>
                                                     {/* <TableCell component="th" scope="row">{obj.label}</TableCell> */}
                                                     <TableCell component="th" scope="row">{obj.courseLabel}</TableCell>
                                                     <TableCell align="left">{obj.durationPerSession}</TableCell>
@@ -514,11 +841,14 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                                             placeholder=""
                                                             variant="outlined"
                                                             size='small'
+                                                            value={obj.claimHours || ""}
+                                                            onChange={e=>handleSetClaimHours(e, index)}
                                                             inputProps={{
                                                                 style : {
                                                                     padding: "4px 6px"
                                                                 }
                                                             }}
+                                                            autoComplete="off"
                                                         />
                                                     </TableCell>
                                                     <TableCell style={{textAlign:"center"}}>
@@ -526,7 +856,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                                             <Button
                                                                 size="small"
                                                                 style={{padding:"0px 8px", minWidth:"auto"}}
-                                                                onClick={() => handleOpenSnackbar("Saved", "success")}
+                                                                onClick={(e) => handleClaimHoursSave(obj.academicsSessionId, obj.courseId, index) }
                                                             >
                                                                 <SaveOutlinedIcon color="primary" />
                                                             </Button>
