@@ -524,6 +524,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
     const handleChange = (e) => {
         let {name, value} = e.target;
         let {rate, rateNextYear, rateIncreasePer, salary, salaryNextYear, salaryIncreasePer} = state;
+        let regex = null;
         switch(name){
             case "firstName":
             case "lastName":
@@ -543,6 +544,10 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                 });
             break;
             case "rateNextYear" :
+                regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
+                if (value && !regex.test(value)) {
+                    return;
+                }
                 let rateIncreasePer = ((value - rate) / rate) * 100;
                 if (isNaN(rateIncreasePer) || !isFinite(rateIncreasePer)) {
                     rateIncreasePer = 0;
@@ -552,6 +557,10 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                 });
             break;
             case "rateIncreasePer" :
+                regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
+                if (value && !regex.test(value)) {
+                    return;
+                }
                 let rateNextYear = rate * (1 + value/100);
                 if (isNaN(rateNextYear) || !isFinite(rateNextYear)) {
                     rateNextYear = 0;
@@ -561,6 +570,10 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                 });
             break;
             case "salaryNextYear" :
+                regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
+                if (value && !regex.test(value)) {
+                    return;
+                }
                 let salaryIncreasePer = ((value - salary) / salary) * 100;
                 if (isNaN(salaryIncreasePer) || !isFinite(salaryIncreasePer)) {
                     salaryIncreasePer = 0;
@@ -571,6 +584,10 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
             
             break;
             case "salaryIncreasePer" :
+                regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
+                if (value && !regex.test(value)) {
+                    return;
+                }
                 let salaryNextYear = salary * (1 + value/100);
                 if (isNaN(salaryNextYear) || !isFinite(salaryNextYear)) {
                     salaryNextYear = 0;
