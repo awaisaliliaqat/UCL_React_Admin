@@ -1,58 +1,9 @@
 import React, { Component } from "react";
-import { Paper, Input, Typography } from "@material-ui/core";
-import {
-  createStyles,
-  withStyles,
-  WithStyles,
-  Theme,
-  responsiveFontSizes,
-} from "@material-ui/core/styles";
-import {
-  Column,
-  FilteringState,
-  GroupingState,
-  IntegratedFiltering,
-  IntegratedGrouping,
-  IntegratedPaging,
-  IntegratedSelection,
-  IntegratedSorting,
-  PagingState,
-  SelectionState,
-  SortingState,
-  DataTypeProvider,
-  DataTypeProviderProps,
-} from "@devexpress/dx-react-grid";
-import {
-  DragDropProvider,
-  Grid,
-  GroupingPanel,
-  PagingPanel,
-  Table,
-  TableFilterRow,
-  TableGroupRow,
-  TableHeaderRow,
-  TableSelection,
-  Toolbar,
-  VirtualTable,
-  TableColumnResizing,
-} from "@devexpress/dx-react-grid-material-ui";
+import { Paper } from "@material-ui/core";
+import { FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
+import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow, } from "@devexpress/dx-react-grid-material-ui";
 
-const getInputValue = (value) => (value === undefined ? "" : value);
-
-const getColor = (amount) => {
-  if (amount < 3000) {
-    return "#F44336";
-  }
-  if (amount < 5000) {
-    return "#FFC107";
-  }
-  if (amount < 8000) {
-    return "#FF5722";
-  }
-  return "#009688";
-};
-
-class F337MonthlyEmployeeApprovalReportTableComponent extends Component {
+class F337FormReportTableComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -69,7 +20,7 @@ class F337MonthlyEmployeeApprovalReportTableComponent extends Component {
         "lessThan",
         "lessThanOrEqual",
       ],
-      pageSizes: [5, 10, 15, 20],
+      pageSizes: [10, 25, 50, 100],
       defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
@@ -79,7 +30,7 @@ class F337MonthlyEmployeeApprovalReportTableComponent extends Component {
         //{ columnName: "ID", width: 100 },
         // { columnName: "shortLabel", wordWrapEnabled: true },
         { columnName: "label", wordWrapEnabled: true },
-        { columnName: "action", width: 120 },
+        { columnName: "action", width: 130 },
       ],
       defaultColumnWidths: [
         { columnName: "ID", minWidth: 100, maxWidth: 100 },
@@ -157,4 +108,4 @@ class F337MonthlyEmployeeApprovalReportTableComponent extends Component {
   }
 }
 
-export default F337MonthlyEmployeeApprovalReportTableComponent;
+export default F337FormReportTableComponent;

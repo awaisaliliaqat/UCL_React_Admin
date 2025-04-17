@@ -1,36 +1,36 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Paper } from "@material-ui/core";
-import {
-  SummaryState,
-  GroupingState,
-  IntegratedGrouping,
-  IntegratedSummary,
-  DataTypeProvider,
-} from "@devexpress/dx-react-grid";
-import {
-  Grid,
-  VirtualTable,
-  TableHeaderRow,
-  TableGroupRow,
-  TableSummaryRow,
-  TableFixedColumns,
-} from "@devexpress/dx-react-grid-material-ui";
+import { SummaryState, GroupingState, IntegratedGrouping, IntegratedSummary, DataTypeProvider, } from "@devexpress/dx-react-grid";
+import { Grid, VirtualTable, TableHeaderRow, TableGroupRow, TableSummaryRow, TableFixedColumns, } from "@devexpress/dx-react-grid-material-ui";
 
 // Sticky header logic
-const StickyHeaderCell = (props) => (
-  <VirtualTable.Cell
-    {...props}
-    style={{
-      ...props.style,
-      top: 0,
-      zIndex: 10,
-      position: "sticky",
-      background: "#fff",
-      borderBottom: "1px solid #ccc",
-    }}
-  />
-);
+const StickyHeaderCell = ({
+	style,
+	getCellWidth,
+	onWidthDraft,
+	onWidthDraftCancel,
+	onWidthDraftStart,
+	onWidthDraftUpdate,
+	onWidthChange,
+	resizingEnabled,
+	draggingEnabled,
+	...restProps
+}) => {
+	return (
+		<VirtualTable.Cell
+			{...restProps}
+			style={{
+				...style,
+				top: 0,
+				zIndex: 10,
+				position: "sticky",
+				background: "#fff",
+				borderBottom: "1px solid #ccc",
+			}}
+		/>
+	);
+};
 
 const CurrencyFormatter = ({ value }) => value.toLocaleString("en-US");
 
@@ -38,29 +38,26 @@ const CurrencyTypeProvider = (props) => (
   <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
 );
 
-const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
+const F336SummaryViewTableComponent = (props) => {
   const [tableColumnExtensions] = useState([
     { columnName: "id", align: "left", width: "80px" },
-    { columnName: "displayName", align: "left", width: "110px" },
-    { columnName: "totalWorkingDays", align: "right", width: "100px" },
-    { columnName: "totalAttendedDays", align: "right", width: "100px" },
-    {
-      columnName: "totalAttendanceMissingDays",
-      align: "right",
-      width: "100px",
-    },
-    { columnName: "missingAttendanceDates", align: "right", width: "150px" },
+    { columnName: "displayName", align: "left", width: "150px", wordWrapEnabled: true },
+    { columnName: "totalWorkingDays", align: "left", width: "100px" },
+    { columnName: "totalAttendedDays", align: "left", width: "100px" },
+    { columnName: "totalAttendanceMissingDays", align: "left", width: "100px", },
+    { columnName: "missingAttendanceDates", align: "left", width: "150px", wordWrapEnabled: true },
     { columnName: "totalLateDays", align: "right", width: "100px" },
-    { columnName: "lateDates", align: "right", width: "150px" },
-    { columnName: "adjustedLateDays", align: "left", width: "150px" },
+    { columnName: "lateDates", align: "left", width: "150px" },
+    { columnName: "adjustedLateDays", align: "center", width: "100px", wordWrapEnabled: true },
     { columnName: "checkOut2", align: "left", width: "150px" },
     { columnName: "sumLateTime", align: "left", width: "100px" },
     { columnName: "sumEarlyDeparture", align: "left", width: "120px" },
     { columnName: "sumBreakTime", align: "left", width: "100px" },
     { columnName: "sumOverTime", align: "left", width: "100px" },
     { columnName: "sumShortTime", align: "left", width: "100px" },
-    { columnName: "adjustedAbsentDays", align: "left", width: "150px" },
-    { columnName: "remarks", align: "left", width: "250px" },
+    { columnName: "adjustedAbsentDays", align: "center", width: "100px", wordWrapEnabled: true },
+    { columnName: "adjustedOverTime", align: "center", width: "100px", wordWrapEnabled: true },
+    { columnName: "remarks", align: "left", width: "250px", wordWrapEnabled: true },
   ]);
 
   const [groupSummaryItems] = useState([
@@ -112,18 +109,18 @@ const F336MonthlyEmployeeAttendanceTableComponent = (props) => {
   );
 };
 
-F336MonthlyEmployeeAttendanceTableComponent.propTypes = {
+F336SummaryViewTableComponent.propTypes = {
   data: PropTypes.object,
   columns: PropTypes.array,
   expandedGroups: PropTypes.array,
   showFilter: PropTypes.bool,
 };
 
-F336MonthlyEmployeeAttendanceTableComponent.defaultProps = {
+F336SummaryViewTableComponent.defaultProps = {
   data: {},
   columns: [],
   expandedGroups: [],
   showFilter: false,
 };
 
-export default F336MonthlyEmployeeAttendanceTableComponent;
+export default F336SummaryViewTableComponent;

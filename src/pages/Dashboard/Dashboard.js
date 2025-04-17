@@ -218,13 +218,13 @@ import F332EmployeeTaxCertificateView from "./Contents/Forms/EmployeeTaxCertific
 import F332EmployeeTaxCertificateReport from "./Contents/Forms/EmployeeTaxCertificate/F332EmployeeTaxCertificateReport";
 import F333ConsolitdatedSheetsForSalaryHistory from "./Contents/Forms/ConsolidatedSalaryHistory/F333ConsolitdatedSheetsForSalaryHistory";
 import F333SalaryHistoryView from "./Contents/Forms/ConsolidatedSalaryHistory/Views/F333SalaryHistoryView";
-import F334Form from "./Contents/Forms/F334ConsolidatedSheetsAccountsOffice/F334Form";
-import F334Reports from "./Contents/Forms/F334ConsolidatedSheetsAccountsOffice/F334Reports";
+import F334Form from "./Contents/Forms/F334Form/F334Form";
+import F334Reports from "./Contents/Forms/F334Form/F334Reports";
 import F335DefineShiftManagement from "./Contents/Forms/ShiftManagement/F335DefineShiftManagement";
 import R335ShiftManagementReport from "./Contents/Forms/ShiftManagement/R335ShiftManagementReport";
 import F336Form from "./Contents/Forms/F336Form/F336Form";
-import F337MonthlyEmployeeApproval from "./Contents/Forms/MonthlyEmployeeApproval/F337MonthlyEmployeeApproval";
-import F337ViewRecordForMonthlyApproval from "./Contents/Forms/MonthlyEmployeeApproval/View/F337ViewRecordForMonthlyApproval";
+import F337Form from "./Contents/Forms/F337Form/F337Form";
+import F337SummaryView from "./Contents/Forms/F337Form/View/F337SummaryView";
 import R338AttendanceDailyReport from "./Contents/Forms/R338AttendanceDailyReport";
 import F339AddManualAttendance from "./Contents/Forms/AddManualAttendance/F339AddManualAttendance";
 import R340Reports from "./Contents/Forms/R340Reports";
@@ -3586,12 +3586,12 @@ const Dashboard = (props) => {
 
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="F337MonthlyEmployeeApproval"
+				name="F337Form"
 				exact
-				path="/dashboard/F337MonthlyEmployeeApproval"
+				path="/dashboard/F337Form"
 				render={(props) => {
 				  return (
-					<F337MonthlyEmployeeApproval
+					<F337Form
 					  {...props}
 					  isDrawerOpen={isDrawerOpen}
 					  setDrawerOpen={setDrawerOpen}
@@ -3599,15 +3599,14 @@ const Dashboard = (props) => {
 				  );
 				}}
 			  />
-
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="F337ViewRecordForMonthlyApproval"
+				name="F337Form"
 				exact
-				path="/dashboard/F337ViewRecordForMonthlyApproval/:recordId"
+				path="/dashboard/F337SummaryView/:recordId"
 				render={(props) => {
 				  return (
-					<F337ViewRecordForMonthlyApproval
+					<F337SummaryView
 					  {...props}
 					  isDrawerOpen={isDrawerOpen}
 					  setDrawerOpen={setDrawerOpen}
@@ -3615,7 +3614,6 @@ const Dashboard = (props) => {
 				  );
 				}}
 			  />
-
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
 				name="F323HourlySheetForHeads"

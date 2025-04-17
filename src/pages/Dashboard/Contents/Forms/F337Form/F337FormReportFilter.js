@@ -49,7 +49,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const F337MonthlyEmployeeApprovalReportFilter = (props) => {
+const F337FormReportFilter = (props) => {
   const classes = useStyles();
   const {
     values,
@@ -251,7 +251,7 @@ const F337MonthlyEmployeeApprovalReportFilter = (props) => {
   );
 };
 
-F337MonthlyEmployeeApprovalReportFilter.defaultProps = {
+F337FormReportFilter.defaultProps = {
   onHandleChange: (fn) => fn,
   getDataByStatus: (fn) => fn,
   values: {},
@@ -261,7 +261,7 @@ F337MonthlyEmployeeApprovalReportFilter.defaultProps = {
   isLoading: false,
 };
 
-F337MonthlyEmployeeApprovalReportFilter.propTypes = {
+F337FormReportFilter.propTypes = {
   onHandleChange: PropTypes.func,
   values: PropTypes.object,
   getDataByStatus: PropTypes.func,
@@ -271,4 +271,4 @@ F337MonthlyEmployeeApprovalReportFilter.propTypes = {
   isLoading: PropTypes.bool,
 };
 
-export default F337MonthlyEmployeeApprovalReportFilter;
+export default F337FormReportFilter;

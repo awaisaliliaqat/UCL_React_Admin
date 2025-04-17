@@ -339,7 +339,7 @@ class F334Reports extends Component {
 					 }}
 				  >
 					 {this.state.monthMenuItems?.map((item) => (
-						<MenuItem key={`monthId-${item.monthName}`} value={item.id}>
+						<MenuItem key={`monthMenuItems-${item.id}`} value={item.id}>
 						  {item.monthName}
 						</MenuItem>
 					 ))}
