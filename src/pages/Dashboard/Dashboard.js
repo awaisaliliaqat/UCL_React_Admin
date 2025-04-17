@@ -218,13 +218,11 @@ import F332EmployeeTaxCertificateView from "./Contents/Forms/EmployeeTaxCertific
 import F332EmployeeTaxCertificateReport from "./Contents/Forms/EmployeeTaxCertificate/F332EmployeeTaxCertificateReport";
 import F333ConsolitdatedSheetsForSalaryHistory from "./Contents/Forms/ConsolidatedSalaryHistory/F333ConsolitdatedSheetsForSalaryHistory";
 import F333SalaryHistoryView from "./Contents/Forms/ConsolidatedSalaryHistory/Views/F333SalaryHistoryView";
-// import F334MonthlyEmployeeAttendance from "./Contents/Forms/MonthlyEmployeeAttendance/F334MonthlyEmployeeAttendance";
 import F334Form from "./Contents/Forms/F334ConsolidatedSheetsAccountsOffice/F334Form";
 import F334Reports from "./Contents/Forms/F334ConsolidatedSheetsAccountsOffice/F334Reports";
 import F335DefineShiftManagement from "./Contents/Forms/ShiftManagement/F335DefineShiftManagement";
 import R335ShiftManagementReport from "./Contents/Forms/ShiftManagement/R335ShiftManagementReport";
-import F336MonthlyEmployeeAttendance from "./Contents/Forms/MonthlyEmployeeAttendance/F336MonthlyEmployeeAttendance";
-import F349MonthlyEmployeeAttendanceCo from "./Contents/Forms/MonthlyEmployeeAttendanceCo/F349MonthlyEmployeeAttendanceCo";
+import F336Form from "./Contents/Forms/F336Form/F336Form";
 import F337MonthlyEmployeeApproval from "./Contents/Forms/MonthlyEmployeeApproval/F337MonthlyEmployeeApproval";
 import F337ViewRecordForMonthlyApproval from "./Contents/Forms/MonthlyEmployeeApproval/View/F337ViewRecordForMonthlyApproval";
 import R338AttendanceDailyReport from "./Contents/Forms/R338AttendanceDailyReport";
@@ -241,6 +239,7 @@ import R346StudentDetailReport from "./Contents/Forms/StudentAttendanceFeature/R
 import F347ShiftReassignment from "./Contents/Forms/ShiftReassignment/F347ShiftReassignment";
 import R347ShiftAssignmentView from "./Contents/Forms/ShiftReassignment/R347ShiftAssignmentView";
 // import F348Form from "./Contents/Forms/F348Form";
+import F349Form from "./Contents/Forms/F349Form/F349Form";
 import F348DefineTimetableActivation from "./Contents/Forms/Timetable Pause-Unpause/F348DefineTimetableActivation";
 import R348TimeTableActivationView from "./Contents/Forms/Timetable Pause-Unpause/R348TimeTableActivationView";
 import R350MonthlyEmployeeLateDaysReportforPayroll from "./Contents/Forms/MonthlyLateDaysForPayroll/R350MonthlyEmployeeLateDaysReportforPayroll";
@@ -592,12 +591,13 @@ const Dashboard = (props) => {
 
 					<SetRoute
 						setValue={(value) => handleValueChange(value)}
-						name="F336MonthlyEmployeeAttendance"
+						name="F336Form"
 						exact
-						path="/dashboard/F336MonthlyEmployeeAttendance"
+						// path="/dashboard/F336MonthlyEmployeeAttendance"
+						path="/dashboard/F336Form"
 						render={(props) => {
 							return (
-								<F336MonthlyEmployeeAttendance
+								<F336Form
 									{...props}
 									isDrawerOpen={isDrawerOpen}
 									setDrawerOpen={setDrawerOpen}
@@ -671,12 +671,13 @@ const Dashboard = (props) => {
 
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="F349MonthlyEmployeeAttendanceCo"
+				name="F349Form"
 				exact
-				path="/dashboard/F349MonthlyEmployeeAttendanceCo"
+				//path="/dashboard/F349MonthlyEmployeeAttendanceCo"
+				path="/dashboard/F349Form"
 				render={(props) => {
 				  return (
-					<F349MonthlyEmployeeAttendanceCo
+					<F349Form
 					  {...props}
 					  isDrawerOpen={isDrawerOpen}
 					  setDrawerOpen={setDrawerOpen}
