@@ -242,10 +242,10 @@ import R347ShiftAssignmentView from "./Contents/Forms/ShiftReassignment/R347Shif
 import F349Form from "./Contents/Forms/F349Form/F349Form";
 import F348DefineTimetableActivation from "./Contents/Forms/Timetable Pause-Unpause/F348DefineTimetableActivation";
 import R348TimeTableActivationView from "./Contents/Forms/Timetable Pause-Unpause/R348TimeTableActivationView";
-import R350MonthlyEmployeeLateDaysReportforPayroll from "./Contents/Forms/MonthlyLateDaysForPayroll/R350MonthlyEmployeeLateDaysReportforPayroll";
-import R350EmployeesWithFinalApproval from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesWithFinalApproval/R350EmployeesWithFinalApproval";
-import R350EmployeesNotSubmitted from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesNotSubmitted/R350EmployeesNotSubmitted";
-import R350EmployeesWithPendingForApproval from "./Contents/Forms/MonthlyLateDaysForPayroll/EmployeesWithPendingForApproval/R350EmployeesWithPendingForApproval";
+import R350Reports from "./Contents/Reports/R350Reports/R350Reports";
+import R350EmployeesWithFinalApproval from "./Contents/Reports/R350Reports/EmployeesWithFinalApproval/R350EmployeesWithFinalApproval";
+import R350EmployeesNotSubmitted from "./Contents/Reports/R350Reports/EmployeesNotSubmitted/R350EmployeesNotSubmitted";
+import R350EmployeesWithPendingForApproval from "./Contents/Reports/R350Reports/EmployeesWithPendingForApproval/R350EmployeesWithPendingForApproval";
 import F351Form from "./Contents/Forms/F351Form/F351Form";
 import F351Reports from "./Contents/Forms/F351Form/F351Reports";
 import F352Form from "./Contents/Forms/F352Form/F352Form";
@@ -608,12 +608,12 @@ const Dashboard = (props) => {
 
 					<SetRoute
 						setValue={(value) => handleValueChange(value)}
-						name="R350MonthlyEmployeeLateDaysReportforPayroll"
+						name="R350Reports"
 						exact
-						path="/dashboard/R350MonthlyEmployeeLateDaysReportforPayroll"
+						path="/dashboard/R350Reports"
 						render={(props) => {
 							return (
-								<R350MonthlyEmployeeLateDaysReportforPayroll
+								<R350Reports
 									{...props}
 									isDrawerOpen={isDrawerOpen}
 									setDrawerOpen={setDrawerOpen}

@@ -37,7 +37,9 @@ const F334ReportsTableComponent = (props) => {
     { columnName: "grossSalaryAmount", align: "right",  wordWrapEnabled: true, width: 100 },
     { columnName: "adjustedAbsentDays", align: "center", wordWrapEnabled: true, width: 100 },
     { columnName: "adjustedLateDays", align: "center", wordWrapEnabled: true, width: 100},
-    { columnName: "deductionAmount", align: "right", wordWrapEnabled: true, width: 100}
+    { columnName: "deductionAmount", align: "right", wordWrapEnabled: true, width: 100},
+    { columnName: "adjustedOverTime", align: "center", wordWrapEnabled: true, width: 110},
+    { columnName: "overTimeAmount", align: "right", wordWrapEnabled: true, width: 100}
   ]);
 
   const [groupSummaryItems] = useState([
@@ -52,7 +54,7 @@ const F334ReportsTableComponent = (props) => {
     { columnName: "deductionAmount", type: "sum" }
   ]);
 
-  const [currencyColumns] = useState(["rate","claimAmount","grossSalaryAmount","deductionAmount"]);
+  const [currencyColumns] = useState(["rate","claimAmount","grossSalaryAmount","deductionAmount", "overTimeAmount"]);
   
   const { data, columns } = props;
 

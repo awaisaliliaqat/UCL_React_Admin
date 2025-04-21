@@ -279,6 +279,8 @@ class F334Form extends Component {
 			formData.append("adjustedAbsentDays", dataList[i].adjustedAbsentDays);
 			formData.append("adjustedLateDays", dataList[i].adjustedLateDays);
 			formData.append("deductionAmount", dataList[i].deductionAmount);
+			formData.append("adjustedOverTime", dataList[i].adjustedOverTime);
+			formData.append("overTimeAmount", dataList[i].overTimeAmount);
 		}
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C334ConsolidatedSheetsForAccountsOfficeSave`;
 		await fetch(url, {
@@ -344,6 +346,8 @@ class F334Form extends Component {
 			{ name: "adjustedAbsentDays", title: "Adjusted Absent Days" },
 			{ name: "adjustedLateDays", title: "Adjusted Late Days" },
 			{ name: "deductionAmount", title: "Deduction Amount"},
+			{ name: "adjustedOverTime", title: "Adjusted Over Time (Hours)" },
+			{ name: "overTimeAmount", title: "Over Time Amount"},
 
 		];
 
@@ -358,7 +362,6 @@ class F334Form extends Component {
 			 <div className={classes.titleContainer}>
 				<Typography className={classes.title} variant="h5">
 				  Consolidated Sheets For Accounts Office
-				  <br />
 				</Typography>
 			 </div>
 			 <Divider className={classes.divider} />

@@ -272,6 +272,8 @@ class F334Reports extends Component {
 			{ name: "adjustedAbsentDays", title: "Adjusted Absent Days" },
 			{ name: "adjustedLateDays", title: "Adjusted Late Days" },
 			{ name: "deductionAmount", title: "Deduction Amount"},
+			{ name: "adjustedOverTime", title: "Adjusted Over Time (Hours)" },
+			{ name: "overTimeAmount", title: "Over Time Amount"}
 
 		];
 
@@ -290,8 +292,7 @@ class F334Reports extends Component {
 							<ArrowBackIcon fontSize="small" color="primary" />
 						</IconButton>
 					</Tooltip>
-					{"Consolidated Sheets For Accounts Office Reports"}
-				  	<br />
+					Consolidated Sheets For Accounts Office Reports
 				</Typography>
 			 </div>
 			 <Divider className={classes.divider} />
