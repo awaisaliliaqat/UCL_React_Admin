@@ -411,7 +411,7 @@ const FeaturesCard = ({handleLoginMenuReload, handleLoginMenu, handleOpenSnackba
 									</Typography>
 								</Box>
 								<Box style={{ display: "flex" }}>
-									<Button size="small" onClick={handleDialogClose} style={{minWidth:"auto", padding: "0px 0px 12px 0px"}}>
+									<Button size="small" onClick={handleDialogClose} style={{minWidth:"auto", padding: "0px 8px"}}>
 										<CloseIcon fontSize="small" className={selectedItemColorClasses} />
 									</Button>
 								</Box>
