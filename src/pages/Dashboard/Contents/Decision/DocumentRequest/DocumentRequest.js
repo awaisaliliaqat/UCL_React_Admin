@@ -66,7 +66,7 @@ class DocumentRequest extends Component {
 
     loadAcademicSessions = async () => {
         this.setState({ isLoading: true });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C66CommonAcademicSessionsViewV2`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonAcademicSessionsView`;
         await fetch(url, {
           method: "POST",
           headers: new Headers({
