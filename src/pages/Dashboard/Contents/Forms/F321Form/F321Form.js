@@ -899,7 +899,7 @@ class F321Form extends Component {
 						right_button_text={this.state.isApproved ? "Saved" : "Save"}
 						loading={this.state.isLoading}
 						isDrawerOpen={this.props.isDrawerOpen}
-						disableRightButton={!this.state.sessionId || !this.state.monthId}
+						disableRightButton={!this.state.sessionId || !this.state.monthId || !this.state.employeePayrollsData.length}
 						bottomRightButtonAction={() => this.onApproveClick()}
 					/>
 				</div>
