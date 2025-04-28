@@ -120,8 +120,6 @@ class F356Form extends Component {
 			attendanceDetail: array,
 		};
 
-		console.log(data);
-
 		await fetch(url, {
 			method: "POST",
 			body: JSON.stringify(data),
@@ -199,7 +197,7 @@ class F356Form extends Component {
 						}
 					}
 				} else {
-					this.handleSnackbar( true, <span> {json.SYSTEM_MESSAGE} <br /> {json.USER_MESSAGE} </span>, "error" );
+					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error" );
 				}
 			},
 			(error) => {
@@ -209,11 +207,8 @@ class F356Form extends Component {
 						isReload: true,
 					});
 				} else {
-					this.handleSnackbar(
-						true,
-						"Failed to fetch ! Please try Again later.",
-						"error"
-					);
+					console.error("getAcademicSessions Error : ", error);
+					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.", "error");
 				}
 			}
 		);
@@ -224,11 +219,15 @@ class F356Form extends Component {
 		if (!IsEmpty(e)) {
 			e.preventDefault();
 		}
+		let data = new FormData();
+		data.append("academicSessionId", this.state.academicSessionId);
+		data.append("fromDate", format(this.state.fromDate, "dd-MM-yyyy"));
+		data.append("toDate", format(this.state.fromDate, "dd-MM-yyyy"));
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/View`;
 		await fetch(url, {
 			method: "POST",
-			// body: data,
+			body: data,
 			headers: new Headers({
 				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
 			}),
@@ -259,6 +258,7 @@ class F356Form extends Component {
 						isReload: false,
 					});
 				} else {
+					console.error("onSearchClick Error : ", error);
 					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
 				}
 			}
@@ -272,7 +272,6 @@ class F356Form extends Component {
 		}
 
 		this.setState({ isLoading: true });
-		console.log(this.state.employeesSalarySheet);
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayrollAttendanceSendForApproval?attendanceSheetId=${this.state.attendanceSheetId}`;
 		// var data = new FormData();
 		// const { employeesSalarySheet } = this.state;
@@ -413,12 +412,40 @@ class F356Form extends Component {
 		});
 	};
 
+	handleCommitChanges = ({ added, changed, deleted }) => {
+		let rows = [...this.state.employeesSalarySheet];
+	  
+		if (added) {
+		  const startingAddedId = rows.length ? rows[rows.length - 1].id + 1 : 0;
+		  added.forEach((row, i) => {
+			rows.push({ id: startingAddedId + i, ...row });
+		  });
+		}
+	  
+		if (changed) {
+			rows = rows.map(row => {
+				if(changed[row.id]) {
+					const updatedRow = { ...row, ...changed[row.id] };
+					console.log(updatedRow);
+					return updatedRow; 
+				} 
+				return row;
+		  	});
+			this.handleOpenSnackbar("Saved", "success");
+		}
+	  
+		if (deleted) {
+		  const deletedSet = new Set(deleted);
+		  rows = rows.filter(row => !deletedSet.has(row.id));
+		}
+	  
+		this.setState({ employeesSalarySheet: rows });
+	  };
+
 	componentDidMount() {
 		const { recordId } = this.props.match.params;
-
-		// this.props.setDrawerOpen(false);
+		this.props.setDrawerOpen(false);
 		this.getAcademicSessions();
-
 		this.setState({ recordId: recordId }, () => {
 			// this.onSearchClick();
 		});
@@ -451,28 +478,8 @@ class F356Form extends Component {
 				// 	);
 				// },
 			},
-			{ name: "employmentStatus",	title: "Employment Status",
-				// getCellValue: (rowData) => {
-				// 	console.log(rowData);
-				// 	return (
-				// 		<TextField
-				// 			variant="outlined"
-				// 			size="small"
-				// 			name="adjustedAbsentDays"
-				// 			type="number"
-				// 			value={rowData.adjustedAbsentDays || ""}
-				// 			onChange={(event) =>
-				// 				this.handleInputChange(
-				// 					"adjustedAbsentDays",
-				// 					event.target.value,
-				// 					rowData
-				// 				)
-				// 			}
-				// 		/>
-				// 	);
-				// },
-			},
-			{name: "joiningDate", title: "Joining Date",
+			{ name: "jobStatusLabel",	title: "Employment Status"},
+			{ name: "joiningDate", title: "Joining Date",
 				getCellValue: (rowData) => {
 					return (format(new Date(rowData.joiningDate), "dd-MM-yyyy"));
 				},
@@ -488,11 +495,7 @@ class F356Form extends Component {
 			{ name: "text62", title: "Text62"},
 			{ name: "rateThisYear",	title: "Rate This Year"},
 			{ name: "rateNextYear", title: "Rate Next Year"},
-			{ name: "RateIncreasePercentage", title: "Rate Increase%",
-				getCellValue: (rowData) => {
-					return (8);
-				},
-			},
+			{ name: "rateIncreasePercentage", title: "Rate Increase%"},
 			{ name: "monthsThisYear", title: "Months This Year"},
 			{ name: "monthsNextYear",	title: "Months Next Year"},
 			{ name: "salaryThisYear", title: "Salary This Year" },
@@ -508,9 +511,6 @@ class F356Form extends Component {
 			{ name: "comments", title: "Comments on Salary Determination" },
 			{ name: "evaluationScore", title: "Evaluation Score" }
 		];
-
-		console.log(this.state.selectedStudent);
-		console.log(this.state.selectedStudent?.withdrawalData);
 
 		return (
 			<Fragment>
@@ -634,6 +634,7 @@ class F356Form extends Component {
 							isLoading={this.state.isLoading}
 							columns={columns}
 							rows={this.state.employeesSalarySheet}
+							onCommitChanges={this.handleCommitChanges}
 						/>
 					</Grid>
 					<CustomizedSnackbar
@@ -642,6 +643,7 @@ class F356Form extends Component {
 						severity={this.state.snackbarSeverity}
 						handleCloseSnackbar={this.handleCloseSnackbar}
 					/>
+					{/* 
 					<BottomBar
 						leftButtonText="Save"
 						leftButtonHide={true}
@@ -652,7 +654,8 @@ class F356Form extends Component {
 						loading={this.state.isLoading}
 						isDrawerOpen={this.props.isDrawerOpen}
 						bottomRightButtonAction={() => this.handleOpenSnackbar("Feature under development", "info")}
-					/>
+					/> 
+					*/}
 				</Grid>
 			</Fragment>
 		);

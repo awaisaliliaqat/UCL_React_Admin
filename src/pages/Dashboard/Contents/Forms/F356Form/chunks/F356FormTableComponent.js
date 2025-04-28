@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Paper, CircularProgress, TableRow, TableCell, Box } from "@material-ui/core";
-import { SummaryState, GroupingState, IntegratedGrouping, IntegratedSummary, DataTypeProvider, } from "@devexpress/dx-react-grid";
-import { Grid, VirtualTable, TableHeaderRow, TableGroupRow, TableSummaryRow, TableFixedColumns, } from "@devexpress/dx-react-grid-material-ui";
+import { SummaryState, IntegratedSummary, DataTypeProvider, EditingState, IntegratedFiltering, FilteringState } from "@devexpress/dx-react-grid";
+import { Grid, VirtualTable, TableHeaderRow, TableFixedColumns, TableEditRow, TableEditColumn, TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
 
 // Sticky header logic
 const StickyHeaderCell = ({
@@ -17,16 +17,17 @@ const StickyHeaderCell = ({
 	draggingEnabled,
 	...restProps
 }) => {
+	console.log(restProps);
 	return (
 		<VirtualTable.Cell
 			{...restProps}
 			style={{
 				...style,
-				top: 0,
-				zIndex: 10,
-				position: "sticky",
-				background: "#fff",
-				borderBottom: "1px solid #ccc",
+				// top: 0,
+				// zIndex: 10,
+				// position: "sticky",
+				// background: "#fff",
+				// borderBottom: "1px solid #ccc",
 			}}
 		/>
 	);
@@ -38,12 +39,14 @@ const CurrencyTypeProvider = (props) => (
 	<DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
 );
 
+const getRowId = row => row.id;
+
 const F356FormTableComponent = (props) => {
 	const [tableColumnExtensions] = useState([
 		{ columnName: "id", align: "left" },
 		{ columnName: "displayName", align: "left", wordWrapEnabled: true},
 		{ columnName: "rolesLabel", align: "center", wordWrapEnabled: true },
-		{ columnName: "employmentStatus", align: "center", wordWrapEnabled: true},
+		{ columnName: "jobStatusLabel", align: "center", wordWrapEnabled: true},
 		{ columnName: "weeklyLoadThisYear", align: "center", wordWrapEnabled: true},
 		{ columnName: "weeklyLoadNextYear", align: "center", wordWrapEnabled: true },
 		{ columnName: "monthsThisYear", align: "center", wordWrapEnabled: true},
@@ -54,6 +57,10 @@ const F356FormTableComponent = (props) => {
 		{ columnName: "yearlySalaryNextYear", align: "center", wordWrapEnabled: true },
 		{ columnName: "yearlyExpenseThisYear", align: "center", wordWrapEnabled: true },
 		{ columnName: "yearlyExpenseNextYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "rateNextYear", align: "right", wordWrapEnabled: true },
+		{ columnName: "rateIncreasePercentage", align: "center", wordWrapEnabled: true },
+		{ columnName: "salaryNextYear", align: "right", wordWrapEnabled: true },
+		{ columnName: "salaryIncreasePercentage", align: "center", wordWrapEnabled: true },
 		{ columnName: "comments", align: "center", wordWrapEnabled: true, width:250 }
 	]);
 
@@ -67,8 +74,44 @@ const F356FormTableComponent = (props) => {
 		{ columnName: "ratePerHour", type: "avg" },
 	]);
 
-	const { isLoading, rows, columns} = props;
-	const [currencyColumns] = useState(["perHourRate", "totalAmount"]);
+	const [editingColumnExtensions] = useState([
+		{ columnName: 'rolesLabel', editingEnabled: false },
+		{ columnName: 'id', editingEnabled: false },
+		{ columnName: 'displayName', editingEnabled: false },
+		{ columnName: 'jobStatusLabel', editingEnabled: false },
+		{ columnName: 'position', editingEnabled: false },
+		{ columnName: 'joiningDate', editingEnabled: false },
+		{ columnName: 'leavingDate', editingEnabled: false },
+		{ columnName: 'weeklyLoadThisYear', editingEnabled: false },
+		{ columnName: 'weeklyLoadNextYear', editingEnabled: false },
+		{ columnName: 'text61', editingEnabled: true },
+		{ columnName: 'text62', editingEnabled: true },
+		{ columnName: 'rateThisYear', editingEnabled: false },
+		{ columnName: 'rateNextYear', editingEnabled: false },
+		{ columnName: 'rateIncreasePercentage', editingEnabled: false },
+		{ columnName: 'monthsThisYear', editingEnabled: false },
+		{ columnName: 'monthsNextYear', editingEnabled: false },
+		{ columnName: 'salaryThisYear', editingEnabled: false },
+		{ columnName: 'salaryNextYear', editingEnabled: false },
+		{ columnName: 'salaryIncreasePercentage', editingEnabled: false },
+		{ columnName: 'yearlyClaimThisYear', editingEnabled: false },
+		{ columnName: 'yearlyClaimNextYear', editingEnabled: false },
+		{ columnName: 'yearlySalaryThisYear', editingEnabled: false },
+		{ columnName: 'yearlySalaryNextYear', editingEnabled: false },
+		{ columnName: 'yearlyExpenseThisYear', editingEnabled: false },
+		{ columnName: 'yearlyExpenseNextYear', editingEnabled: false },
+		{ columnName: 'percentChange', editingEnabled: false },
+		{ columnName: 'comments', editingEnabled: false },
+		{ columnName: 'evaluationScore', editingEnabled: false }
+		// Add more as needed
+	  ]);
+	
+
+	const [leftFixedColumns] = useState([TableEditColumn.COLUMN_TYPE, "id", "displayName"]);
+
+	const { isLoading, rows, columns, onCommitChanges} = props;
+
+	const [currencyColumns] = useState(["rateNextYear", "salaryNextYear"]);
 
 	const NoDataRow = () => (
 		<TableRow>
@@ -84,22 +127,39 @@ const F356FormTableComponent = (props) => {
 
 	return (
 		<Paper>
-			<Grid rows={isLoading ? [] : rows} columns={columns}>
-				<CurrencyTypeProvider for={currencyColumns} />
+			<Grid 
+				rows={isLoading ? [] : rows} 
+				columns={columns}
+				getRowId={getRowId}
+			>
+				<FilteringState />
+				<IntegratedFiltering />
+				<CurrencyTypeProvider 
+					for={currencyColumns} 
+				/>
 				<SummaryState
 					totalItems={totalSummaryItems}
 					groupItems={groupSummaryItems}
 				/>
 				<IntegratedSummary />
+				<EditingState
+					columnExtensions={editingColumnExtensions}
+					onCommitChanges={onCommitChanges}
+				/>
 				<VirtualTable
 					noDataRowComponent={NoDataRow} 
 					columnExtensions={tableColumnExtensions} 
 				/>
 				<TableHeaderRow cellComponent={StickyHeaderCell} />
-				{/* Sticky header */}
-				{/* <TableGroupRow /> */}
-				{/* <TableSummaryRow /> */}
-				<TableFixedColumns leftColumns={["id", "displayName"]} />
+				{/* <TableFilterRow showFilterSelector /> */}
+				<TableEditRow />
+				<TableEditColumn
+					showEditCommand
+					width={170}
+				/>
+				<TableFixedColumns 
+					leftColumns={leftFixedColumns} 
+				/>
 			</Grid>
 		</Paper>
 	);
