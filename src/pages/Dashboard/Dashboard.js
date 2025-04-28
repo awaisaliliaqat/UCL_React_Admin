@@ -193,7 +193,8 @@ import R317TeacherCoursesHistory from "./Contents/Reports/TeacherCoursesHistory/
 import R318EmployeeActivationHistory from "./Contents/Reports/EmployeeActivationHistory/R318EmployeeActivationHistory";
 import F319DefineEmployeeSalaryAllowancesLabelFrom from "./Contents/Forms/DefineEmployeeSalaryAllowancesLabel/F319DefineEmployeeSalaryAllowancesLabelFrom";
 import F320DefineEmployeeSalaryDeductionsLabelFrom from "./Contents/Forms/DefineEmployeeSalaryDeductionsLabel/F320DefineEmployeeSalaryDeductionsLabelFrom";
-import F321DefineEmployeesMonthlySalary from "./Contents/Forms/DefineEmployeesMonthlySalary/F321DefineEmployeesMonthlySalary";
+import F321Form from "./Contents/Forms/F321Form/F321Form";
+import F321Reports from "./Contents/Forms/F321Form/View/F321Reports";
 import F322HourlySheetsForCoordinators from "./Contents/Forms/HourlySheetsForCoordinators/F322HourlySheetsForCoordinators";
 import F323HourlySheetsForHeads from "./Contents/Forms/HourlySheetsForHeads/F323HourlySheetsForHeads";
 // import F324HourlySheetsForHOD from "./Contents/Forms/HourlySheetsForHOD/F324HourlySheetsForHOD";
@@ -205,7 +206,6 @@ import F323HourlySheetsForHead from "./Contents/Forms/HourlySheetsForHeads/F323H
 import F323ViewRecordForHead from "./Contents/Forms/HourlySheetsForHeads/View/F323ViewRecordForHead";
 import R325PaidStudentList from "./Contents/Decision/R325PaidStudentList/R325PaidStudentList";
 import F326ConsolitdatedSheetsForDirector from "./Contents/Forms/ConsolidatedSheetForDirector/F326ConsolitdatedSheetsForDirector";
-import F321DefineEmployeesMonthlySalaryView from "./Contents/Forms/DefineEmployeesMonthlySalary/F321DefineEmployeesMonthlySalaryView/F321DefineEmployeesMonthlySalaryView";
 import R327UploadedFeeVoucher from "./Contents/Decision/R327UploadedFeeVoucher/R327UploadedFeeVoucher";
 import F327DefineEmployeesLoan from "./Contents/Forms/StudentLoanRequest/F327DefineEmployeesLoan";
 import R327EmployeesLoanView from "./Contents/Forms/StudentLoanRequest/R327EmployeesLoanView";
@@ -227,7 +227,7 @@ import F337Form from "./Contents/Forms/F337Form/F337Form";
 import F337SummaryView from "./Contents/Forms/F337Form/View/F337SummaryView";
 import R338AttendanceDailyReport from "./Contents/Forms/R338AttendanceDailyReport";
 import F339AddManualAttendance from "./Contents/Forms/AddManualAttendance/F339AddManualAttendance";
-import R340Reports from "./Contents/Forms/R340Reports";
+import R340Reports from "./Contents/Reports/R340Reports/R340Reports";
 import R341Reports from "./Contents/Forms/R341Reports";
 import R342AllEmployeeGateAttendance from "./Contents/Forms/R342AllEmployeeGateAttendance";
 import F343LinkEnrollmentIds from "./Contents/Forms/LinkEnrollmentIds/F343LinkEnrollmentIds";
@@ -3344,15 +3344,14 @@ const Dashboard = (props) => {
 				  );
 				}}
 			  />
-
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="F321DefineEmployeesMonthlySalary"
+				name="F321Form"
 				exact
-				path="/dashboard/F321DefineEmployeesMonthlySalary/:id"
+				path="/dashboard/F321Form"
 				render={(props) => {
 				  return (
-					<F321DefineEmployeesMonthlySalary
+					<F321Form
 					  {...props}
 					  isDrawerOpen={isDrawerOpen}
 					  setDrawerOpen={setDrawerOpen}
@@ -3360,15 +3359,14 @@ const Dashboard = (props) => {
 				  );
 				}}
 			  />
-
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="F321DefineEmployeesMonthlySalaryView"
+				name="F321Reports"
 				exact
-				path="/dashboard/F321DefineEmployeesMonthlySalaryView/:id"
+				path="/dashboard/F321Reports"
 				render={(props) => {
 				  return (
-					<F321DefineEmployeesMonthlySalaryView
+					<F321Reports
 					  {...props}
 					  isDrawerOpen={isDrawerOpen}
 					  setDrawerOpen={setDrawerOpen}
@@ -3376,7 +3374,6 @@ const Dashboard = (props) => {
 				  );
 				}}
 			  />
-
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
 				name="F322HourlySheetForCoordinators"

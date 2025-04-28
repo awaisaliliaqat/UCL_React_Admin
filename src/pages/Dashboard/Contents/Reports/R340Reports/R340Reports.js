@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from "react";
 import { Divider, IconButton, Tooltip, CircularProgress, Grid, Button, Typography, TextField, MenuItem, } from "@material-ui/core";
 import { DatePicker } from "@material-ui/pickers";
-import ExcelIcon from "../../../../assets/Images/excel.png";
-import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
+import ExcelIcon from "../../../../../assets/Images/excel.png";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import R340ReportsTableComponent from "./R340ReportsTableComponent";
 import FilterIcon from "mdi-material-ui/FilterOutline";
-import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 class R340Reports extends Component {

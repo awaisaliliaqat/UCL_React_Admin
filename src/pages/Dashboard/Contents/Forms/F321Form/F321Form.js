@@ -1,7 +1,10 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/styles";
-import { Divider, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, Paper, CircularProgress, TextField, MenuItem, FormControlLabel, Checkbox } from "@material-ui/core";
+import { 
+	Divider, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, Paper, 
+	CircularProgress, TextField, MenuItem, FormControlLabel, Checkbox 
+} from "@material-ui/core";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import BottomBar from "../../../../../components/BottomBar/BottomBar";
@@ -32,6 +35,7 @@ const styles = () => ({
 	},
 	subColumnCell: {
 		textAlign: "center", // Adjust based on alignment needs
+		padding: 8
 	},
 });
 
@@ -42,7 +46,7 @@ const StyledTableCell = withStyles((theme) => ({
 		color: "white",
 	},
 	body: {
-		// fontSize: 14,
+		// fontSize: ".9rem",
 	},
 }))(TableCell);
 
@@ -54,7 +58,7 @@ const StyledTableRow = withStyles((theme) => ({
 	},
 }))(TableRow);
 
-class F321DefineEmployeesMonthlySalary extends Component {
+class F321Form extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -95,95 +99,46 @@ class F321DefineEmployeesMonthlySalary extends Component {
 				{ id: 1, name: "id", title: "ID", colspan: 1 },
 				{ id: 2, name: "userLabel", title: "Employee", colspan: 1 },
 				// { id: 3, name: "payrollMonths", title: "Number of Months", colspan: 1 },
-				{
-					id: 4,
-					name: "perMonthSalary",
-					title: "Per Month Salary",
-					colspan: 1,
-				},
-
-				{
-					id: 5,
-					name: "leaveInCashment",
-					title: "Leave Encashment",
-					colspan: 2,
+				{ id: 4, name: "perMonthSalary", title: "Per Month Salary", colspan: 1, },
+				{ id: 5, name: "leaveInCashment", title: "Leave Encashment", colspan: 2, 
 					subColumns: [
-						{
-							id: 1,
-							label: "Days",
-							isActive: 1,
-						},
-						{
-							id: 2,
-							label: "Amount",
-							isActive: 1,
-						},
+						{ id: 1, label: "Days", isActive: 1, },
+						{ id: 2, label: "Amount", isActive: 1, },
 					],
 				},
-				// {
-				//   id: 6,
-				//   name: "",
-				//   title: "Loan",
-				//   colspan: 1,
-				//   subColumns: [
-				//     {
-				//       id: 1,
-				//       label: "Amount",
-				//       isActive: 1,
-				//     },
-				//   ],
-				// },
-				{
-					id: 7,
-					name: "allowances",
-					title: "Allowances",
-					colspan: 1,
-					subColumns: [],
-				},
+				{ id: 7, name: "allowances", title: "Allowances", colspan: 1, subColumns: [], },
 				{ id: 6, name: "grossSalary", title: "Gross Salary", colspan: 1 },
-
-				{
-					id: 8,
-					name: "deductions",
-					title: "Deductions",
-					colspan: 1,
-					subColumns: [],
-				},
+				{ id: 8, name: "deductions", title: "Deductions", colspan: 1, subColumns: [], },
 				{ id: 9, name: "netSalary", title: "Net Salary", colspan: 1 },
 			],
 		};
 	}
 
-	handleSnackbar = (open, msg, severity) => {
+	handleOpenSnackbar = (msg, severity) => {
 		this.setState({
-			isOpenSnackbar: open,
+			isOpenSnackbar: true,
 			snackbarMessage: msg,
 			snackbarSeverity: severity,
 		});
 	};
 
+	handleCloseSnackbar = (event, reason) => {
+		if (reason === "clickaway") {
+			return;
+		}
+		this.setState({ isOpenSnackbar: false });
+	};
+
 	getDataForMonths = (data) => {
-
-		const formattedArray = Object.entries(data[0]).map(
-			([monthName, dates]) => ({
-				fromDate: dates[0],
-				toDate: dates[1],
-				monthName,
-			})
-		);
-
+		const formattedArray = Object.entries(data[0]).map( ([monthName, dates]) => ({ fromDate: dates[0], toDate: dates[1], monthName, }) );
 		const sortedArray = formattedArray.sort(
 			(a, b) => new Date(a.fromDate) - new Date(b.fromDate)
 		);
-
 		const augustIndex = sortedArray.findIndex((item) =>
 			item.monthName.includes("August")
 		);
-
 		const rearrangedArray = [ ...sortedArray.slice(augustIndex), ...sortedArray.slice(0, augustIndex), ];
-
 		return rearrangedArray;
-
 	};
 
 	getAllowancesColumnData = async () => {
@@ -208,14 +163,19 @@ class F321DefineEmployeesMonthlySalary extends Component {
 					let data = json.DATA || [];
 					let { columns } = this.state;
 					let index = columns.findIndex((item) => item.id == 7);
-					columns[index]["subColumns"] = data;
-					columns[index]["colspan"] = data.length == 0 ? 1 : data.length;
+					let updatedAllowances = [
+						...data,
+						{ id: 1001, isActive: 1, label: "Over Time" }
+					];
+					columns[index]["subColumns"] = updatedAllowances;
+					columns[index]["colspan"] = updatedAllowances.length == 0 ? 1 : updatedAllowances.length;
+					
 					this.setState({
 						columns,
 						allowances: data,
 					});
 				} else {
-					this.handleSnackbar(true,<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
 				}
 			},
 			(error) => {
@@ -225,7 +185,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 						isReload: true,
 					});
 				} else {
-					this.handleSnackbar(true,"Failed to fetch, Please try again later.","error");
+					this.handleOpenSnackbar("Failed to fetch, Please try again later.","error");
 					console.log(error);
 				}
 			}
@@ -255,35 +215,24 @@ class F321DefineEmployeesMonthlySalary extends Component {
 			.then(
 				(json) => {
 					if (json.CODE === 1) {
+
 						let data = json.DATA || [];
 						let { columns } = this.state;
 						let index = columns.findIndex((item) => item.id == 8);
 						let updatedDeductions = [
 							 ...data ,
-							{
-								// deductionValue: item.adjustedAbsentDays,
-								id: 8,
-								isActive: 1,
-								label: "Adjusted Absent Days",
-							},
-							{
-								// deductionValue: item.adjustedAbsentDays,
-								id: 9,
-								isActive: 1,
-								label: "Adjusted Late Days",
-							}
+							{ id: 2001, isActive: 1, label: "Absent Days" },
+							{ id: 2002, isActive: 1, label: "Late Days" }
 						];
-
 						columns[index]["subColumns"] = updatedDeductions;
 						columns[index]["colspan"] = updatedDeductions.length == 0 ? 1 : updatedDeductions.length;
-
 						this.setState({
 							columns,
 							deductions: data,
 						});
 
 					} else {
-						this.handleSnackbar(true,<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error" );
+						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error" );
 					}
 				},
 				(error) => {
@@ -293,7 +242,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 							isReload: true,
 						});
 					} else {
-						this.handleSnackbar(true, <span>Failed to fetch, Please try again later.</span>, "error" );
+						this.handleOpenSnackbar(<span>Failed to fetch, Please try again later.</span>, "error" );
 						console.log(error);
 					}
 				}
@@ -324,34 +273,14 @@ class F321DefineEmployeesMonthlySalary extends Component {
 				(json) => {
 					if (json.CODE === 1) {
 						let data = json.DATA || [];
-						const allowances = this.state.allowances.map((item) => ({
-							...item,
-							allowanceValue: 0,
-						}));
-						const deductions = this.state.deductions.map((item) => ({
-							...item,
-							deductionValue: 0,
-						}));
-
+						const allowances = this.state.allowances.map((item) => ({ ...item, allowanceValue: 0, }));
+						const deductions = this.state.deductions.map((item) => ({ ...item, deductionValue: 0, }));
 						const transformedData = data.map((item) => {
-							const lateDays =
-								item.adjustedLateDays !== ""
-									? Number(item.adjustedLateDays)
-									: 0;
-
-							const absentDays =
-								item.adjustedAbsentDays !== ""
-									? Number(item.adjustedAbsentDays)
-									: 0;
-							const lateDaysSalary = (item.perMonthSalary / 30) * absentDays;
-
-							const totalNetSalary = item.perMonthSalary - lateDaysSalary;
-							// console.log(
-							//   totalNetSalary,
-							//   lateDaysSalary,
-							//   item.perMonthSalary,
-							//   "totalNetSalary"
-							// );
+							const overTimeAmount = Number.isFinite(parseFloat(item.overTimeAmount)) ? parseFloat(item.overTimeAmount) : 0;
+							const absentDaysAmount = Number.isFinite(parseFloat(item.lateDaysAmount)) ? parseFloat(item.lateDaysAmount) : 0;
+							const lateDaysAmount = Number.isFinite(parseFloat(item.lateDaysAmount)) ? parseFloat(item.lateDaysAmount) : 0;
+							const totalGrossSalary = item.perMonthSalary + overTimeAmount;
+							const totalNetSalary = totalGrossSalary - absentDaysAmount - lateDaysAmount;
 							return {
 								employeeId: item.userId.toString(),
 								userLabel: item.userLabel,
@@ -360,40 +289,27 @@ class F321DefineEmployeesMonthlySalary extends Component {
 								homeRent: 0,
 								fakeGrossSallary: Number(item.perMonthSalary) || 0,
 								id: item.userId,
-								grossSalary: Number(item.perMonthSalary) || 0,
+								//grossSalary: Number(item.perMonthSalary) || 0,
+								grossSalary: Number(totalGrossSalary) || 0,
 								netSalary: Number(totalNetSalary)?.toFixed(2) || 0,
 								leaveInCashDays: 0,
 								leaveInCashAmount: 0,
 								loan: 0,
 								leaveInCashment: [
-									{
-										id: 1,
-										label: "Days",
-										isActive: 1,
-										value: 0,
-									},
-									{
-										id: 2,
-										label: "Amount",
-										isActive: 1,
-										value: 0,
-									},
+									{ id: 1, label: "Days", isActive: 1, value: 0 },
+									{ id: 2, label: "Amount", isActive: 1, value: 0 },
 								],
-								allowances: [...allowances],
+								adjustedOverTime: item.adjustedOverTime,
+								allowances: [
+									...allowances,
+									{ allowanceValue:overTimeAmount, id:1001, isActive:1, label:"Over Time" }
+								],
+								adjustedAbsentDays : item.adjustedAbsentDays,
+								adjustedLateDays : item.adjustedLateDays,
 								deductions: [
 									...deductions,
-									{
-										deductionValue: absentDays || 0,
-										id: 8,
-										isActive: 1,
-										label: "Adjusted Absent Days",
-									},
-									{
-										deductionValue: lateDays || 0,
-										id: 9,
-										isActive: 1,
-										label: "Adjusted Late Days",
-									},
+									{ deductionValue:absentDaysAmount, id:2001, isActive:1, label:"Absent Days" },
+									{ deductionValue:lateDaysAmount, id:2002, isActive:1, label:"Late Days" },
 								],
 							};
 						});
@@ -402,11 +318,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 							employeePayrollsData: transformedData,
 						});
 					} else {
-						this.handleSnackbar(
-							true,
-							json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-							"error"
-						);
+						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error" );
 					}
 				},
 				(error) => {
@@ -416,11 +328,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 							isReload: true,
 						});
 					} else {
-						this.handleSnackbar(
-							true,
-							"Failed to fetch, Please try again later.",
-							"error"
-						);
+						this.handleOpenSnackbar("Failed to fetch, Please try again later.", "error" );
 						console.log(error);
 					}
 				}
@@ -455,11 +363,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 							sessionData: data,
 						});
 					} else {
-						this.handleSnackbar(
-							true,
-							json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-							"error"
-						);
+						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error" );
 					}
 				},
 				(error) => {
@@ -469,11 +373,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 							isReload: true,
 						});
 					} else {
-						this.handleSnackbar(
-							true,
-							"Failed to fetch, Please try again later.",
-							"error"
-						);
+						this.handleOpenSnackbar("Failed to fetch, Please try again later.", "error" );
 						console.log(error);
 					}
 				}
@@ -513,11 +413,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 							yearData: data,
 						});
 					} else {
-						this.handleSnackbar(
-							true,
-							json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-							"error"
-						);
+						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>, "error" );
 					}
 				},
 				(error) => {
@@ -527,11 +423,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 							isReload: true,
 						});
 					} else {
-						this.handleSnackbar(
-							true,
-							"Failed to fetch, Please try again later.",
-							"error"
-						);
+						this.handleOpenSnackbar("Failed to fetch, Please try again later.", "error" );
 						console.log(error);
 					}
 				}
@@ -556,6 +448,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 	};
 
 	componentDidMount() {
+		this.props.setDrawerOpen(false);
 		this.getSessionData();
 		this.loadAllData();
 	}
@@ -579,39 +472,24 @@ class F321DefineEmployeesMonthlySalary extends Component {
 			} else {
 				updatedEmployeePayrollsData[employeeIndex][type] = value ? parseFloat(value) : 0;
 			}
-
 			const totalAllowances = updatedEmployeePayrollsData[ employeeIndex ].allowances.reduce( (acc, allowance) => acc + allowance.allowanceValue, 0 );
 			const totalDeductions = updatedEmployeePayrollsData[ employeeIndex ].deductions.reduce( (acc, deduction) => acc + deduction.deductionValue, 0 );
-
 			updatedEmployeePayrollsData[employeeIndex].grossSalary = Number(updatedEmployeePayrollsData[employeeIndex].fakeGrossSallary) + Number(totalAllowances);
 			updatedEmployeePayrollsData[employeeIndex].netSalary = Number(updatedEmployeePayrollsData[employeeIndex].fakeGrossSallary) + Number(totalAllowances) - Number(totalDeductions);
-
 			return { employeePayrollsData: updatedEmployeePayrollsData };
-		
 		});
 	
 	};
 	
-	handleLeaveEncashmentChange = (
-		type,
-		leaveIndex,
-		allowanceOrDeductionIndex,
-		value
-	) => {
+	handleLeaveEncashmentChange = ( type, leaveIndex, allowanceOrDeductionIndex, value ) => {
 		this.setState((prevState) => {
 			const updatedEmployeePayrollsData = [...prevState.employeePayrollsData];
 			const employee = updatedEmployeePayrollsData[leaveIndex];
-
 			if (type === "leaveInCashment") {
-				employee[type][allowanceOrDeductionIndex] = {
-					...employee[type][allowanceOrDeductionIndex],
-					value: value ? parseFloat(parseFloat(value).toFixed(2)) : 0,
-				};
-
+				employee[type][allowanceOrDeductionIndex] = { ...employee[type][allowanceOrDeductionIndex], value: value ? parseFloat(parseFloat(value).toFixed(2)) : 0 };
 				const days = parseFloat(employee.leaveInCashment[0].value) || 0;
 				const leaveInCashAmount = (employee.perMonthSalary / 30.5) * days;
 				const leaveIn = parseFloat(leaveInCashAmount.toFixed(0));
-
 				if (allowanceOrDeductionIndex === 0) {
 					const days = parseFloat(employee.leaveInCashment[0].value) || 0;
 					const leaveInCashAmount = (employee.perMonthSalary / 30.5) * days;
@@ -623,42 +501,14 @@ class F321DefineEmployeesMonthlySalary extends Component {
 			} else {
 				employee[type] = value ? parseFloat(value) : 0;
 			}
-
-			const totalAllowancesSum = employee.allowances.reduce(
-				(acc, allowance) => acc + (allowance.allowanceValue || 0),
-				0
-			);
-			const totalDeductionsSum = employee.deductions.reduce(
-				(acc, allowance) => acc + (allowance.deductionValue || 0),
-				0
-			);
-
+			const totalAllowancesSum = employee.allowances.reduce((acc, allowance) => acc + (allowance.allowanceValue || 0), 0);
+			const totalDeductionsSum = employee.deductions.reduce((acc, allowance) => acc + (allowance.deductionValue || 0), 0);
 			const days = parseFloat(employee.leaveInCashment[0].value) || 0;
 			const leaveInCashAmount = (employee.perMonthSalary / 30.5) * days;
 			const leaveIn = parseFloat(leaveInCashAmount.toFixed(0));
-
-			employee.grossSalary = Number(
-				(
-					Number(employee.perMonthSalary) +
-					leaveIn +
-					totalAllowancesSum -
-					totalDeductionsSum
-				).toFixed(0)
-			);
-
-			employee.netSalary = Number(
-				(
-					Number(employee.perMonthSalary) +
-					leaveIn +
-					totalAllowancesSum -
-					totalDeductionsSum
-				).toFixed(0)
-			);
-
-			employee.fakeGrossSallary = Number(
-				(Number(employee.perMonthSalary) + leaveIn).toFixed(0)
-			);
-
+			employee.grossSalary = Number((Number(employee.perMonthSalary) + leaveIn + totalAllowancesSum -	totalDeductionsSum).toFixed(0));
+			employee.netSalary = Number( ( Number(employee.perMonthSalary) + leaveIn + totalAllowancesSum - totalDeductionsSum ).toFixed(0) );
+			employee.fakeGrossSallary = Number( (Number(employee.perMonthSalary) + leaveIn).toFixed(0) );
 			return { employeePayrollsData: updatedEmployeePayrollsData };
 		});
 	};
@@ -674,9 +524,11 @@ class F321DefineEmployeesMonthlySalary extends Component {
 			sessionId: this.state.sessionId,
 			isEditable: this.state.isEditable,
 			employeePayrolls: this.state.employeePayrollsData.map((employee) => {
-				// Separate deductions with id 8 and 9
-				const absentDays = employee.deductions.find((deduction) => deduction.id === 8) ?.deductionValue || 0;
-				const lateDays = employee.deductions.find((deduction) => deduction.id === 9) ?.deductionValue || 0;
+				// Separate allowances with id 1001
+				const overTimeAmount = employee.allowances.find((allowance) => allowance.id === 1001) ?.allowanceValue || 0;
+				// Separate deductions with id 2001 and 2002
+				const absentDaysAmount = employee.deductions.find((deduction) => deduction.id === 2001) ?.deductionValue || 0;
+				const lateDaysAmount = employee.deductions.find((deduction) => deduction.id === 2002) ?.deductionValue || 0;
 				return {
 					employeeId: employee.employeeId,
 					homeRent: Number(employee.homeRent.toFixed(0)),
@@ -684,12 +536,14 @@ class F321DefineEmployeesMonthlySalary extends Component {
 					netSalary: employee.netSalary,
 					leaveInCashDays: employee.leaveInCashDays,
 					leaveInCashAmount: employee.leaveInCashAmount,
-
-					adjustedAbsentDays: absentDays,
-					adjustedLateDays: lateDays,
-
-					deductions: employee.deductions .filter((deduction) => deduction.id !== 8 && deduction.id !== 9) .map((deduction) => ({ deductionId: deduction.id, deductionValue: Number(deduction.deductionValue.toFixed(2)), })),
-					allowances: employee.allowances.map((allowance) => ({ allowanceId: allowance.id, allowanceValue: Number(allowance.allowanceValue.toFixed(2)), })),
+					adjustedOverTime: employee.adjustedOverTime,
+					overTimeAmount: overTimeAmount,
+					adjustedAbsentDays: employee.adjustedAbsentDays,
+					absentDaysAmount: absentDaysAmount,
+					adjustedLateDays: employee.adjustedLateDays,
+					lateDaysAmount: lateDaysAmount,
+					deductions: employee.deductions .filter((deduction) => deduction.id !== 2001 && deduction.id !== 2002) .map((deduction) => ({ deductionId: deduction.id, deductionValue: Number(deduction.deductionValue.toFixed(2)), })),
+					allowances: employee.allowances .filter((allowance) => allowance.id !== 1001 ) .map((allowance) => ({ allowanceId: allowance.id, allowanceValue: Number(allowance.allowanceValue.toFixed(2)), })),
 				};
 			}),
 		};
@@ -718,9 +572,9 @@ class F321DefineEmployeesMonthlySalary extends Component {
 							employeePayrollsData: [],
 							isEditable: 1
 						});
-						this.handleSnackbar(true, "Saved", "success");
+						this.handleOpenSnackbar("Saved", "success");
 					} else {
-						this.handleSnackbar( true,<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error" );
+						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error" );
 					}
 				},
 				(error) => {
@@ -730,7 +584,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 							isReload: false,
 						});
 					} else {
-						this.handleSnackbar(true,"Failed to fetch ! Please try Again later.","error");
+						this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
 					}
 				}
 			);
@@ -738,7 +592,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 	};
 
 	viewReport = () => {
-		window.location = "#/dashboard/F321DefineEmployeesMonthlySalaryView/0";
+		window.location = "#/dashboard/F321Reports";
 	};
 
 	render() {
@@ -751,17 +605,8 @@ class F321DefineEmployeesMonthlySalary extends Component {
 					open={this.state.isLoginMenu}
 					handleClose={() => this.setState({ isLoginMenu: false })}
 				/>
-				<div
-					style={{
-						padding: 20,
-					}}
-				>
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "space-between",
-						}}
-					>
+				<div style={{ padding: 20, }} >
+					<div style={{ display: "flex", justifyContent: "space-between", }} >
 						<Typography
 							style={{
 								color: "#1d5f98",
@@ -812,34 +657,6 @@ class F321DefineEmployeesMonthlySalary extends Component {
 								})}
 							</TextField>
 						</Grid>
-						{/* <div>
-							<TextField
-								id="yearId"
-								name="yearId"
-								label="Years"
-								required
-								disabled={!this.state.sessionId}
-								style={{
-									width: "300px",
-									marginBottom: 20,
-									marginRight: 20,
-								}}
-								variant="outlined"
-								onChange={this.onHandleChange}
-								value={this.state.yearId}
-								// helperText={this.state.monthIdError}
-								// error={this.state.monthIdError}
-								select
-							>
-								{this.state.yearData.map((item) => {
-									return (
-										<MenuItem key={item.ID} value={item.ID}>
-											{item.Label}
-										</MenuItem>
-									);
-								})}
-							</TextField>
-						</div> */}
 						<Grid item xs={12} md={5}>
 							<TextField
 								id="monthId"
@@ -896,10 +713,11 @@ class F321DefineEmployeesMonthlySalary extends Component {
 								style={{
 									paddingBottom: "30px",
 									marginBottom: "3%",
+									maxHeight: 500
 								}}
 							>
 								<Table className={classes.table}>
-									<TableHead>
+									<TableHead style={{position:"sticky", top:0, zIndex: 1}}>
 										<TableRow
 											style={{
 												border: "1px solid white",
@@ -932,6 +750,8 @@ class F321DefineEmployeesMonthlySalary extends Component {
 																		key={`subColumns-${colIndex}-${subColumnsIndex}`}
 																		style={{
 																			border: "1px solid white",
+																			whiteSpace: "nowrap",
+																			minWidth: 56
 																		}}
 																	>
 																		{item.label || ""}
@@ -955,59 +775,9 @@ class F321DefineEmployeesMonthlySalary extends Component {
 												<TableCell className={classes.subColumnCell}>
 													{employee.userLabel}
 												</TableCell>
-												{/* <TableCell className={classes.subColumnCell}>
-													{/* <TextField
-														size="small"
-														variant="outlined"
-														value={ || ""}
-														onChange={(e) =>
-															this.handleAllowanceDeductionChange(
-																"payrollMonths",
-																employeeIndex,
-																null,
-																e.target.value
-															)
-														}
-													/>
-
-													{employee.payrollMonths}
-												</TableCell> */}
 												<TableCell className={classes.subColumnCell}>
 													{employee.perMonthSalary}
 												</TableCell>
-												{/* <TableCell className={classes.subColumnCell}>
-													<TextField
-														size="small"
-														type="number"
-														variant="outlined"
-														value={employee.leaveInCashDays || ""}
-														onChange={(e) =>
-															this.handleAllowanceDeductionChange(
-																"leaveInCashDays",
-																employeeIndex,
-																null,
-																e.target.value
-															)
-														}
-													/>
-												</TableCell>
-												<TableCell className={classes.subColumnCell}>
-													<TextField
-														size="small"
-														variant="outlined"
-														type="number"
-														value={employee.leaveInCashAmount || ""}
-														name=""
-														onChange={(e) =>
-															this.handleAllowanceDeductionChange(
-																"leaveInCashAmount",
-																employeeIndex,
-																null,
-																e.target.value
-															)
-														}
-													/>
-												</TableCell> */}
 												{employee.leaveInCashment.map((leave, leaveIndex) => (
 													<TableCell
 														key={`leaveInCashment-${leaveIndex}`}
@@ -1015,24 +785,19 @@ class F321DefineEmployeesMonthlySalary extends Component {
 													>
 														<TextField
 															size="small"
-															style={{
-																width: leave.label === "Days" ? "50px" : "100px",
-															}}
+															style={{ width: leave.label === "Days" ? "50px" : "100px" }}
 															variant="outlined"
 															value={leave.value}
 															disabled={leave.label === "Amount"}
 															onChange={(e) =>
-																this.handleLeaveEncashmentChange(
-																	"leaveInCashment",
-																	employeeIndex,
-																	leaveIndex,
-																	Math.max(0, parseFloat(e.target.value) || 0)
-																)
+																this.handleLeaveEncashmentChange( "leaveInCashment", employeeIndex, leaveIndex, Math.max(0, parseFloat(e.target.value) || 0) )
 															}
+															inputProps={{
+																style:{padding: "8px"}
+															}}
 														/>
 													</TableCell>
 												))}
-
 												{employee.allowances.length > 0 ? (
 													employee.allowances.map((allowance, allowanceIndex) => (
 														<TableCell
@@ -1042,18 +807,16 @@ class F321DefineEmployeesMonthlySalary extends Component {
 															<TextField
 																size="small"
 																variant="outlined"
-																style={{
-																	width: "100px",
-																}}
+																fullWidth
 																value={allowance.allowanceValue}
+																disabled={allowance.id===1001}
 																onChange={(e) =>
-																	this.handleAllowanceDeductionChange(
-																		"allowances",
-																		employeeIndex,
-																		allowanceIndex,
-																		e.target.value
-																	)
+																	this.handleAllowanceDeductionChange( "allowances", employeeIndex, allowanceIndex, e.target.value )
 																}
+																inputProps={{
+																	style:{padding: "8px"}
+																}}
+																
 															/>
 														</TableCell>
 													))
@@ -1074,19 +837,15 @@ class F321DefineEmployeesMonthlySalary extends Component {
 															<TextField
 																size="small"
 																variant="outlined"
+																fullWidth
 																value={deduction.deductionValue}
-																style={{
-																	width: "100px",
-																}}
-																disabled={deduction.id === 8 || deduction.id === 9}
+																disabled={deduction.id === 2001 || deduction.id === 2002}
 																onChange={(e) =>
-																	this.handleAllowanceDeductionChange(
-																		"deductions",
-																		employeeIndex,
-																		deductionIndex,
-																		e.target.value
-																	)
+																	this.handleAllowanceDeductionChange( "deductions", employeeIndex, deductionIndex, e.target.value )
 																}
+																inputProps={{
+																	style:{padding: "8px"}
+																}}
 															/>
 														</TableCell>
 													))
@@ -1109,7 +868,7 @@ class F321DefineEmployeesMonthlySalary extends Component {
 						isOpen={this.state.isOpenSnackbar}
 						message={this.state.snackbarMessage}
 						severity={this.state.snackbarSeverity}
-						handleCloseSnackbar={() => this.handleSnackbar(false, "", "")}
+						handleCloseSnackbar={this.handleCloseSnackbar}
 					/>
 				</div>
 				<div>
@@ -1149,11 +908,11 @@ class F321DefineEmployeesMonthlySalary extends Component {
 	}
 }
 
-F321DefineEmployeesMonthlySalary.propTypes = {
+F321Form.propTypes = {
 	classes: PropTypes.object,
 };
 
-F321DefineEmployeesMonthlySalary.defaultProps = {
+F321Form.defaultProps = {
 	classes: {},
 };
-export default withStyles(styles)(F321DefineEmployeesMonthlySalary);
+export default withStyles(styles)(F321Form);

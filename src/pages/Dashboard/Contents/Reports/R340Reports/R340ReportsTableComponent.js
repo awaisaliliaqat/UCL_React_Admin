@@ -1,34 +1,7 @@
 import React, { Component } from "react";
 import { Paper } from "@material-ui/core";
-import {
-  Column,
-  FilteringState,
-  GroupingState,
-  IntegratedFiltering,
-  IntegratedGrouping,
-  IntegratedPaging,
-  IntegratedSelection,
-  IntegratedSorting,
-  PagingState,
-  SelectionState,
-  SortingState,
-  DataTypeProvider,
-  DataTypeProviderProps,
-} from "@devexpress/dx-react-grid";
-import {
-  DragDropProvider,
-  Grid,
-  GroupingPanel,
-  PagingPanel,
-  Table,
-  TableFilterRow,
-  TableGroupRow,
-  TableHeaderRow,
-  TableSelection,
-  Toolbar,
-  VirtualTable,
-  TableColumnResizing,
-} from "@devexpress/dx-react-grid-material-ui";
+import { FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
+import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow, } from "@devexpress/dx-react-grid-material-ui";
 
 class R66ReportsTableComponent extends Component {
   constructor(props) {
