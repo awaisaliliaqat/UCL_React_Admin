@@ -165,7 +165,7 @@ class F321Form extends Component {
 					let index = columns.findIndex((item) => item.id == 7);
 					let updatedAllowances = [
 						...data,
-						{ id: 1001, isActive: 1, label: "Over Time" }
+						{ id: 1001, isActive: 1, label: "Overtime" }
 					];
 					columns[index]["subColumns"] = updatedAllowances;
 					columns[index]["colspan"] = updatedAllowances.length == 0 ? 1 : updatedAllowances.length;
@@ -302,7 +302,7 @@ class F321Form extends Component {
 								adjustedOverTime: item.adjustedOverTime,
 								allowances: [
 									...allowances,
-									{ allowanceValue:overTimeAmount, id:1001, isActive:1, label:"Over Time" }
+									{ allowanceValue:overTimeAmount, id:1001, isActive:1, label:"Overtime" }
 								],
 								adjustedAbsentDays : item.adjustedAbsentDays,
 								adjustedLateDays : item.adjustedLateDays,

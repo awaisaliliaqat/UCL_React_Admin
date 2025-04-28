@@ -205,7 +205,7 @@ class F321Reports extends Component {
 							{
 								deductionId: 1001,
 								isActive: 1,
-								allowanceLabel: "Overtime Amount",
+								allowanceLabel: "Overtime",
 							},
 						];
 
@@ -229,12 +229,12 @@ class F321Reports extends Component {
 							{
 								deductionId: 2001,
 								isActive: 1,
-								allowanceLabel: "Absent Days Amount",
+								allowanceLabel: "Absent Days",
 							},
 							{
 								deductionId: 2002,
 								isActive: 1,
-								allowanceLabel: "Late Days Amount",
+								allowanceLabel: "Late Days",
 							},
 						];
 
@@ -278,7 +278,7 @@ class F321Reports extends Component {
 										amount: item.overTimeAmount || 0,
 										id: 1001,
 										isActive: 1,
-										label: "Overtime Amount",
+										label: "Overtime",
 									},
 								],
 								deductions: [
@@ -287,13 +287,13 @@ class F321Reports extends Component {
 										amount: item.absentDaysAmount || 0,
 										id: 2001,
 										isActive: 1,
-										label: "Absent Days Amount",
+										label: "Absent Days",
 									},
 									{
 										amount: item.lateDaysAmount || 0,
 										id: 2002,
 										isActive: 1,
-										label: "Late Days Amount",
+										label: "Late Days",
 									},
 								],
 							};
