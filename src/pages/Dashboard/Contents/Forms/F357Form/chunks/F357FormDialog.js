@@ -88,13 +88,15 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         comment: "",
         commentError: "",
         commentData: [],
-        rate: 0,
+        rateThisYear: 0,
         rateNextYear: 0,
         rateIncreasePer: 0,
-        salary: 0,
+        monthsThisYear: 0,
+        monthsNextYear: 0,
+        salaryThisYear: 0,
         salaryNextYear: 0,
-        salaryIncreasePer: 0
-
+        salaryIncreasePer: 0,
+        sheetComment: ""
     };
     const [state, setState] = useState(initialStates);
     const initialLoadingStates = {
@@ -179,10 +181,16 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 					let data = DATA || [];
                     let dataLength = data.length;
                     if(dataLength!=0){
-                        let rate = data[dataLength-1].perHourRate;
-                        let salary = data[dataLength-1].perMonthSalary;
+                        let rateThisYear = data[dataLength-1].perHourRate;
+                        let salaryThisYear = data[dataLength-1].perMonthSalary;
+                        let monthsThisYear = data[dataLength-1].payrollMonths;
                         setState((prevState) => {
-                            return ({ ...prevState, rate:rate, salary:salary });
+                            return ({ 
+                                ...prevState, 
+                                rateThisYear: rateThisYear, 
+                                salaryThisYear: salaryThisYear,
+                                monthsThisYear: monthsThisYear 
+                            });
                         });
                     }
 					setPayrollData(data);
@@ -420,14 +428,19 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 					let data = DATA || [];
                     let dataLength = data.length;
                     if(dataLength>0){
-                        let {rateNextYear, rateIncreasePercentage, salaryNextYear, salaryIncreasePercentage} = data[0];
+                        let {rateThisYear, salaryThisYear, monthsThisYear, monthsNextYear, rateNextYear, rateIncreasePercentage, salaryNextYear, salaryIncreasePercentage, comment} = data[0];
                         setState((prevState) => {
                             return ({ 
                                 ...prevState, 
+                                monthsThisYear: monthsThisYear ? formatNumber(monthsThisYear) : prevState.monthsThisYear,
+                                monthsNextYear: monthsNextYear ? formatNumber(monthsNextYear) : prevState.monthsNextYear,
+                                rateThisYear: rateThisYear ? formatNumber(rateThisYear) : prevState.rateThisYear,
+                                salaryThisYear: salaryThisYear ? formatNumber(salaryThisYear) : prevState.salaryThisYear,
                                 rateNextYear: formatNumber(rateNextYear),
                                 rateIncreasePer: formatNumber(rateIncreasePercentage),
                                 salaryNextYear: formatNumber(salaryNextYear),
-                                salaryIncreasePer: formatNumber(salaryIncreasePercentage)
+                                salaryIncreasePer: formatNumber(salaryIncreasePercentage),
+                                sheetComment: comment
                             });
                         });
                     }
@@ -455,10 +468,15 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         data.append("employeeId", rowData?.id);
         data.append("fromDate", format(fromDate,"dd-MM-yyyy"));
         data.append("toDate", format(toDate,"dd-MM-yyyy"));
+        data.append("rateThisYear", state.rateThisYear);
+        data.append("monthsThisYear", state.monthsThisYear);
+        data.append("monthsNextYear", state.monthsNextYear);
+        data.append("salaryThisYear", state.salaryThisYear);
         data.append("rateNextYear", state.rateNextYear);
         data.append("rateIncreasePercentage", state.rateIncreasePer);
         data.append("salaryNextYear", state.salaryNextYear);
         data.append("salaryIncreasePercentage", state.salaryIncreasePer);
+        data.append("comment", state.sheetComment);
         setIsLoading((prevState) => {
             return ({ ...prevState, employeeSheet: true });
         });
@@ -523,7 +541,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 
     const handleChange = (e) => {
         let {name, value} = e.target;
-        let {rate, rateNextYear, rateIncreasePer, salary, salaryNextYear, salaryIncreasePer} = state;
+        let {rateThisYear, rateNextYear, rateIncreasePer, salaryThisYear, salaryNextYear, salaryIncreasePer} = state;
         let regex = null;
         switch(name){
             case "firstName":
@@ -543,12 +561,21 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                     return ({ ...prevState, commentError:false});
                 });
             break;
+            case "rateThisYear" :
+                regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
+                if (value && !regex.test(value)) {
+                    return;
+                }
+                setState((prevState) => {
+                    return ({ ...prevState, rateNextYear: formatNumber(0) ,rateIncreasePer: formatNumber(0) })
+                });
+            break;
             case "rateNextYear" :
                 regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
                 if (value && !regex.test(value)) {
                     return;
                 }
-                let rateIncreasePer = ((value - rate) / rate) * 100;
+                let rateIncreasePer = ((value - rateThisYear) / rateThisYear) * 100;
                 if (isNaN(rateIncreasePer) || !isFinite(rateIncreasePer)) {
                     rateIncreasePer = 0;
                 }
@@ -561,7 +588,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                 if (value && !regex.test(value)) {
                     return;
                 }
-                let rateNextYear = rate * (1 + value/100);
+                let rateNextYear = rateThisYear * (1 + value/100);
                 if (isNaN(rateNextYear) || !isFinite(rateNextYear)) {
                     rateNextYear = 0;
                 }
@@ -569,26 +596,34 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                     return ({ ...prevState, rateNextYear: formatNumber(rateNextYear) })
                 });
             break;
+            case "salaryThisYear" :
+                regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
+                if (value && !regex.test(value)) {
+                    return;
+                }
+                setState((prevState) => {
+                    return ({ ...prevState, salaryNextYear: formatNumber(0), salaryIncreasePer: formatNumber(0) })
+                });
+            break;
             case "salaryNextYear" :
                 regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
                 if (value && !regex.test(value)) {
                     return;
                 }
-                let salaryIncreasePer = ((value - salary) / salary) * 100;
+                let salaryIncreasePer = ((value - salaryThisYear) / salaryThisYear) * 100;
                 if (isNaN(salaryIncreasePer) || !isFinite(salaryIncreasePer)) {
                     salaryIncreasePer = 0;
                 }
                 setState((prevState) => {
                     return ({ ...prevState, salaryIncreasePer: formatNumber(salaryIncreasePer) })
                 });
-            
             break;
             case "salaryIncreasePer" :
                 regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
                 if (value && !regex.test(value)) {
                     return;
                 }
-                let salaryNextYear = salary * (1 + value/100);
+                let salaryNextYear = salaryThisYear * (1 + value/100);
                 if (isNaN(salaryNextYear) || !isFinite(salaryNextYear)) {
                     salaryNextYear = 0;
                 }
@@ -945,6 +980,18 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                             </Table>
                         </TableContainer>
                     </Grid>
+                    <Grid item xs={3}>
+                        <TextField label="Rate This Year" name="rateThisYear" value={state.rateThisYear} variant='outlined' size='small' fullWidth onChange={handleChange} />
+                    </Grid>
+                    <Grid item xs={3}>
+                        <TextField label="Salary This Year" name="salaryThisYear" value={state.salaryThisYear} variant='outlined' size='small' fullWidth onChange={handleChange} />
+                    </Grid>
+                    <Grid item xs={3}>
+                        <TextField label="Months This Year" name="monthsThisYear" value={state.monthsThisYear} variant='outlined' size='small' fullWidth onChange={handleChange} />
+                    </Grid>
+                    <Grid item xs={3}>
+                        <TextField label="Months Next Year" name="monthsNextYear" value={state.monthsNextYear} variant='outlined' size='small' fullWidth onChange={handleChange} />
+                    </Grid>
                     <Grid item xs={6} sm={3}>
                         <TextField label="Rate Next Year" name="rateNextYear" value={state.rateNextYear} variant='outlined' size='small' fullWidth onChange={handleChange} />
                     </Grid>
@@ -956,6 +1003,9 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                     </Grid>
                     <Grid item xs={6} sm={3}>
                         <TextField label="Salary Increase%" name="salaryIncreasePer" value={state.salaryIncreasePer} variant='outlined' size='small' fullWidth onChange={handleChange} />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField label="Comment" name="sheetComment" value={state.sheetComment} variant='outlined' size='small' fullWidth onChange={handleChange} />
                     </Grid>
                 </Grid>
             </form>
