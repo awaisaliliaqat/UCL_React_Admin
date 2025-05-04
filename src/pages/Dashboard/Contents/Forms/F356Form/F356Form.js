@@ -4,7 +4,8 @@ import { withStyles } from "@material-ui/core/styles";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import { DatePicker } from "@material-ui/pickers";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import { Divider, CircularProgress, Grid, Button, Typography, TextField, Tooltip, IconButton, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableHead, TableBody, TableRow, TableCell } from "@material-ui/core";
+import { Divider, CircularProgress, Grid, Button, Typography, TextField, Tooltip, IconButton, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableHead, TableBody, TableRow, TableCell, InputLabel } from "@material-ui/core";
+import FilterOutline from "mdi-material-ui/FilterOutline";
 import F356FormTableComponent from "./chunks/F356FormTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
 import BottomBar from "../../../../../components/BottomBar/BottomBarWithViewColorBlue";
@@ -36,32 +37,26 @@ class F356Form extends Component {
 			isLoading: false,
 			recordId: null,
 			isApprovedByHead: 0,
-
 			isLoginMenu: false,
 			isReload: false,
-
 			isOpenSnackbar: false,
 			snackbarMessage: "",
 			snackbarSeverity: "",
+			showTableFilter: false,
 			isExisted: 1,
-
 			yearId: "",
 			yearData: [],
 			academicSessionsData: [],
 			academicSessionsDataLoading: false,
 			academicSessionId: "",
 			academicSessionIdError: "",
-
 			openDialog: false,
 			selectedStudent: null,
-
 			programmeGroupsData: [],
 			programmeGroupsDataLoading: false,
 			programmeGroupId: "",
-
 			attendanceSheetId: 0,
 			programmeGroupIdError: "",
-
 			expandedGroupsData: [],
 			fromDate: null,
 			toDate: null,
@@ -84,6 +79,10 @@ class F356Form extends Component {
 		}
 		this.setState({ isOpenSnackbar: false });
 	};
+
+	handleToggleTableFilter = () => {
+		this.setState((prevState)=>({ ...prevState, showTableFilter: !prevState.showTableFilter }));
+	}
 	
 	setDatesFromAcademicSession = (academicSessionsLabel) => {
 		if (!academicSessionsLabel || !academicSessionsLabel.includes("-")) return;
@@ -243,6 +242,10 @@ class F356Form extends Component {
 				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
 				if (CODE === 1) {
 					let data = DATA || [];
+					data = data.map((obj) => ({
+						...obj,
+						allowEdit: obj.id === 12621 && false ? false : true
+					}));
 					this.setState({
 						employeesSalarySheet: data,
 					});
@@ -263,83 +266,6 @@ class F356Form extends Component {
 				}
 			}
 		);
-		this.setState({ isLoading: false });
-	};
-
-	onApproveClick = async (e) => {
-		if (!IsEmpty(e)) {
-			e.preventDefault();
-		}
-
-		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayrollAttendanceSendForApproval?attendanceSheetId=${this.state.attendanceSheetId}`;
-		// var data = new FormData();
-		// const { employeesSalarySheet } = this.state;
-		// let array = [];
-		// const groupedData = employeesSalarySheet.map((acc) => {
-		//   const courseDetail = {
-		//     ...acc,
-		//   };
-
-		//   array.push(courseDetail);
-		// });
-
-		// const data = {
-		//   academicSessionId: this.state.academicSessionId,
-		//   yearId: this.state.yearId,
-		//   monthId: this.state.monthId.id,
-		//   attendanceDetail: array,
-		// };
-
-		// console.log(data);
-
-		await fetch(url, {
-			method: "POST",
-			// body: JSON.stringify(data),
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-				"Content-Type": "application/json",
-			}),
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.onSearchClick();
-						this.handleSnackbar(true, "Approved", "success");
-					} else {
-						this.onSearchClick();
-						this.handleSnackbar(
-							true,
-							<span>
-								{json.SYSTEM_MESSAGE}
-								<br />
-								{json.USER_MESSAGE}
-							</span>,
-							"error"
-						);
-					}
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: false,
-						});
-					} else {
-						this.handleSnackbar(
-							true,
-							"Failed to fetch ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
 		this.setState({ isLoading: false });
 	};
 
@@ -414,33 +340,88 @@ class F356Form extends Component {
 
 	handleCommitChanges = ({ added, changed, deleted }) => {
 		let rows = [...this.state.employeesSalarySheet];
-	  
 		if (added) {
 		  const startingAddedId = rows.length ? rows[rows.length - 1].id + 1 : 0;
 		  added.forEach((row, i) => {
 			rows.push({ id: startingAddedId + i, ...row });
 		  });
 		}
-	  
 		if (changed) {
 			rows = rows.map(row => {
 				if(changed[row.id]) {
 					const updatedRow = { ...row, ...changed[row.id] };
-					console.log(updatedRow);
+					this.handleSave(updatedRow);
+					//console.log(updatedRow);
 					return updatedRow; 
 				} 
 				return row;
 		  	});
-			this.handleOpenSnackbar("Saved", "success");
+			// this.handleOpenSnackbar("Saved", "success");
 		}
-	  
 		if (deleted) {
 		  const deletedSet = new Set(deleted);
 		  rows = rows.filter(row => !deletedSet.has(row.id));
 		}
-	  
 		this.setState({ employeesSalarySheet: rows });
-	  };
+	};
+
+	// Utility Method
+	formatNumber = (num) => {
+		return Number(parseFloat(num).toFixed(2)); // 2 decimal formatting
+	};
+
+	handleSave = async(rowData) => {
+		//handleIsExistUpdate(rowData);
+		let data =  new FormData();
+		data.append("id", 0);
+		data.append("academicsSessionId", this.state.academicSessionId);
+		data.append("employeeId", rowData.id);
+		data.append("fromDate", format(this.state.fromDate,"dd-MM-yyyy"));
+		data.append("toDate", format(this.state.toDate,"dd-MM-yyyy"));
+		data.append("rateThisYear", rowData.rateThisYear);
+		data.append("monthsThisYear", rowData.monthsThisYear);
+		data.append("monthsNextYear", rowData.monthsNextYear);
+		data.append("salaryThisYear", rowData.salaryThisYear);
+		data.append("rateNextYear", rowData.rateNextYear);
+		data.append("rateIncreasePercentage", rowData.rateIncreasePercentage);
+		data.append("salaryNextYear", rowData.salaryNextYear);
+		data.append("salaryIncreasePercentage", rowData.salaryIncreasePercentage);
+		data.append("yearlyClaimNextYear", rowData.yearlyClaimNextYear);
+		data.append("comment", rowData.comment);
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/Save`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
+				} else {
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+	}
 
 	componentDidMount() {
 		const { recordId } = this.props.match.params;
@@ -458,7 +439,7 @@ class F356Form extends Component {
 			{ name: "rolesLabel", title: "Category" },
 			{ name: "id", title: "ID" },
 			{ name: "displayName", title: "Name"},
-			{ name: "position",	title: "Position",
+			{ name: "designationsLabel",	title: "Position",
 				// getCellValue: (rowData) => {
 				// 	return (
 				// 		<TextField
@@ -489,10 +470,8 @@ class F356Form extends Component {
 					return (rowData.leavingDate ? format(new Date(rowData.leavingDate), "dd-MM-yyyy") : "");
 				},
 			 },
-			{ name: "weeklyLoadThisYear", title: "Weekly Load This Year" },
-			{ name: "weeklyLoadNextYear", title: "Weekly Load Next Year"},
-			{ name: "text61", title: "Text61"},
-			{ name: "text62", title: "Text62"},
+			// { name: "weeklyLoadThisYear", title: "Weekly Load This Year" },
+			// { name: "weeklyLoadNextYear", title: "Weekly Load Next Year"},
 			{ name: "rateThisYear",	title: "Rate This Year"},
 			{ name: "rateNextYear", title: "Rate Next Year"},
 			{ name: "rateIncreasePercentage", title: "Rate Increase%"},
@@ -508,8 +487,7 @@ class F356Form extends Component {
 			{ name: "yearlyExpenseThisYear", title: "Yearly Expense This Year" },
 			{ name: "yearlyExpenseNextYear", title: "Yearly Expense Next Year" },
 			{ name: "percentChange", title: "Percent Change" },
-			{ name: "comments", title: "Comments on Salary Determination" },
-			{ name: "evaluationScore", title: "Evaluation Score" }
+			{ name: "comment", title: "Comments on Salary Determination" }
 		];
 
 		return (
@@ -523,15 +501,25 @@ class F356Form extends Component {
 					<Grid item xs={12}>
 						<Typography className={classes.title} variant="h5">
 							Employees Salary Increment Sheet
+							<div style={{ display:"inline-block", float:"right", marginTop: -8 }}>
+								<Tooltip title="Table Filter">
+									<IconButton
+										size="small"
+										style={{ marginTop: 8 }}
+										onClick={() => this.handleToggleTableFilter()}
+									>
+										<FilterOutline color="primary" />
+									</IconButton>
+								</Tooltip>
+							</div>
 						</Typography>
 						<Divider className={classes.divider} />
 					</Grid>
 					<Grid item xs={12} md={4}>
 						<TextField
-							id="academicSessionId"
 							name="academicSessionId"
-							variant="outlined"
 							label="Academic Session"
+							variant="outlined"
 							onChange={this.onHandleChange}
 							value={this.state.academicSessionId}
 							error={!!this.state.academicSessionIdError}
@@ -541,7 +529,7 @@ class F356Form extends Component {
 							select
 						>
 							{this.state.academicSessionsData?.map((item) => (
-								<MenuItem key={item} value={item.ID}>
+								<MenuItem key={"academicSessionsData"+item.ID} value={item.ID}>
 									{item.Label}
 								</MenuItem>
 							))}
@@ -632,6 +620,7 @@ class F356Form extends Component {
 					<Grid	item xs={12} style={{marginBottom: "6%"}}>
 						<F356FormTableComponent
 							isLoading={this.state.isLoading}
+							showTableFilter={this.state.showTableFilter}
 							columns={columns}
 							rows={this.state.employeesSalarySheet}
 							onCommitChanges={this.handleCommitChanges}
