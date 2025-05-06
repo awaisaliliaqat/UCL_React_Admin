@@ -96,7 +96,8 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         salaryThisYear: 0,
         salaryNextYear: 0,
         salaryIncreasePer: 0,
-        sheetComment: ""
+        sheetComment: "",
+        isFinalized : 0
     };
     const [state, setState] = useState(initialStates);
     const initialLoadingStates = {
@@ -428,7 +429,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 					let data = DATA || [];
                     let dataLength = data.length;
                     if(dataLength>0){
-                        let {rateThisYear, salaryThisYear, monthsThisYear, monthsNextYear, rateNextYear, rateIncreasePercentage, salaryNextYear, salaryIncreasePercentage, comment} = data[0];
+                        let {rateThisYear, salaryThisYear, monthsThisYear, monthsNextYear, rateNextYear, rateIncreasePercentage, salaryNextYear, salaryIncreasePercentage, comment, isFinalized} = data[0];
                         setState((prevState) => {
                             return ({ 
                                 ...prevState, 
@@ -440,7 +441,8 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                 rateIncreasePer: formatNumber(rateIncreasePercentage),
                                 salaryNextYear: formatNumber(salaryNextYear),
                                 salaryIncreasePer: formatNumber(salaryIncreasePercentage),
-                                sheetComment: comment
+                                sheetComment: comment,
+                                isFinalized: isFinalized
                             });
                         });
                     }
@@ -691,11 +693,11 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                     <Button 
                         autoFocus 
                         color="inherit"
-                        disabled={isLoading.employeeSheet} 
+                        disabled={isLoading.employeeSheet || state.isFinalized} 
                         onClick={(e)=>
                             handleSave()
                         }>
-                        {isLoading.employeeSheet ? <CircularProgress size={24} style={{color:"lightgray"}} /> : "Save" }
+                        {isLoading.employeeSheet ? <CircularProgress size={24} style={{color:"lightgray"}} /> : state.isFinalized ? "Finalized" : "Save" }
                     </Button>
                 </Toolbar>
             </AppBar>
