@@ -26,6 +26,7 @@ import R218StudentProgressReport from '../pages/Dashboard/Contents/Forms/R218Stu
 import R232StudentProgressReport from '../pages/Dashboard/Contents/Forms/R232StudentProgressReport';
 import R220StudentProgressReport from '../pages/Dashboard/Contents/Forms/R220StudentProgressReport';
 import PayrollDashboard from "../pages/PayrollModule/PayrollDashboard";
+import F356Reports from '../pages/Dashboard/Contents/Forms/F356Form/F356Reports';
 
 
 const CheckLogin = () => {
@@ -63,6 +64,7 @@ const AppRoute = () => {
             <PrivateRoutes exact path="/R307ApprovedStudentProgressReports/:id" component={R307ApprovedStudentProgressReports} />
             <PrivateRoutes exact path="/R232StudentProgressReport/:id" component={R232StudentProgressReport} />
             <PrivateRoutes exact path="/PayrollDashboard" component={PayrollDashboard} />
+            <PrivateRoutes exact path="/F356Reports/:academicSessionId/:fromDate/:toDate" component={F356Reports} />
             <PrivateRoutes exact path="*" component={Dashboard} />
           </Switch>
         </Suspense>
