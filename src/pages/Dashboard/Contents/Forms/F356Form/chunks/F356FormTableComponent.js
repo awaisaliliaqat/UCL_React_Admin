@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import GridMaterial from '@material-ui/core/Grid';
-import { TextField, Paper, CircularProgress, TableRow, TableCell, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, } from "@material-ui/core";
+import { TextField, Paper, CircularProgress, TableRow, TableCell, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery } from "@material-ui/core";
 import { Plugin, Template, TemplateConnector, TemplatePlaceholder, } from '@devexpress/dx-react-core';
 import { SummaryState, IntegratedSummary, DataTypeProvider, EditingState, IntegratedFiltering, FilteringState } from "@devexpress/dx-react-grid";
 import { Grid, VirtualTable, TableHeaderRow, TableFixedColumns, TableEditRow, TableEditColumn, TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
@@ -11,11 +11,15 @@ import SaveIcon from '@material-ui/icons/Save';
 import CancelIcon from '@material-ui/icons/Cancel';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useTheme } from '@material-ui/core/styles';
-import { BeeFlower } from "mdi-material-ui";
+
 
 const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 
 	const [state, setState] = useState({ ...row });
+
+	const theme = useTheme();
+
+  	const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
 	useEffect(() => {
 		if (open) {
@@ -133,7 +137,12 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 	};
 
 	return (
-		<Dialog open={open} onClose={onCancelChanges}>
+		<Dialog 
+			open={open} 
+			fullScreen={fullScreen} 
+			maxWidth="md" 
+			onClose={onCancelChanges}
+		>
 			<DialogTitle><Box color="primary.main"><b>{state.id+" - "+state.displayName || "Employee Details"}</b></Box></DialogTitle>
 			<DialogContent>
 				<GridMaterial container spacing={2}>
