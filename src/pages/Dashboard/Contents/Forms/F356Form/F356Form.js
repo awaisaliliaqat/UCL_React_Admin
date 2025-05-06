@@ -221,7 +221,7 @@ class F356Form extends Component {
 		let data = new FormData();
 		data.append("academicSessionId", this.state.academicSessionId);
 		data.append("fromDate", format(this.state.fromDate, "dd-MM-yyyy"));
-		data.append("toDate", format(this.state.fromDate, "dd-MM-yyyy"));
+		data.append("toDate", format(this.state.toDate, "dd-MM-yyyy"));
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/View`;
 		await fetch(url, {
@@ -423,6 +423,11 @@ class F356Form extends Component {
 		);
 	}
 
+	handleGenrateView = () => {
+		const { academicSessionId, fromDate, toDate } = this.state;
+		window.open(`#/F356Reports/${academicSessionId+"/"+format(fromDate, "dd-MM-yyyy")+"/"+format(toDate, "dd-MM-yyyy")}`,"_blank");
+	}
+
 	componentDidMount() {
 		const { recordId } = this.props.match.params;
 		this.props.setDrawerOpen(false);
@@ -617,7 +622,7 @@ class F356Form extends Component {
 					<Grid item xs={12}>
 						<Divider className={classes.divider} />
 					</Grid>
-					<Grid	item xs={12} style={{marginBottom: "6%"}}>
+					<Grid item xs={12} style={{marginBottom: "30px"}}>
 						<F356FormTableComponent
 							isLoading={this.state.isLoading}
 							showTableFilter={this.state.showTableFilter}
@@ -632,19 +637,18 @@ class F356Form extends Component {
 						severity={this.state.snackbarSeverity}
 						handleCloseSnackbar={this.handleCloseSnackbar}
 					/>
-					{/* 
 					<BottomBar
-						leftButtonText="Save"
+						leftButtonText=""
 						leftButtonHide={true}
 						bottomLeftButtonAction={() => this.handleOpenSnackbar("Feature under development", "info") }
-						right_button_text="Save"
+						right_button_text="Genrate"
 						disableLeftButton={this.state.isExisted === 1}
-						disableRightButton={!this.state.employeesSalarySheet.length}
+						disableRightButton={!this.state.academicSessionId}
 						loading={this.state.isLoading}
 						isDrawerOpen={this.props.isDrawerOpen}
-						bottomRightButtonAction={() => this.handleOpenSnackbar("Feature under development", "info")}
+						bottomRightButtonAction={this.handleGenrateView}
 					/> 
-					*/}
+					
 				</Grid>
 			</Fragment>
 		);

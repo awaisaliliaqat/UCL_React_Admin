@@ -391,7 +391,7 @@ const F356FormTableComponent = (props) => {
 	const handleEditingRowIdsChange = (rowIds) => {
 		const allowedIds = rowIds.filter(id => {
 			const row = rows.find(row => row.id === id);
-			return row?.allowEdit !== false;
+			return row?.isFinalized !== 1;
 		});
 		setEditingRowIds(allowedIds);
 	};
@@ -435,7 +435,7 @@ const F356FormTableComponent = (props) => {
 	};
 
 	const EditCell = ({ row, column, children, ...restProps }) => {
-		const allowEdit = row?.allowEdit !== false;
+		const allowEdit = row?.isFinalized !== 1;
 		return (
 			<TableEditColumn.Cell {...restProps}>
 				{allowEdit ? children : null}
@@ -479,7 +479,7 @@ const F356FormTableComponent = (props) => {
 				/>
 				<TableEditColumn
 					showEditCommand
-					// width={170}
+					width={75}
 					commandComponent={EditCommandComponent}
 					cellComponent={EditCell}
 				/>
