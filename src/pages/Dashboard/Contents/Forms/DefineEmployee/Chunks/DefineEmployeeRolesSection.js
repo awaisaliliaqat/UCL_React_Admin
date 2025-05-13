@@ -264,6 +264,7 @@ const DefineEmployeeRolesSection = (props) => {
           }}
         />
       </Grid>
+      {/* 
       <Grid item xs={6}>
         <Autocomplete
           multiple
@@ -321,7 +322,8 @@ const DefineEmployeeRolesSection = (props) => {
             );
           }}
         />
-      </Grid>
+      </Grid> 
+      */}
     </Fragment>
   );
 };
