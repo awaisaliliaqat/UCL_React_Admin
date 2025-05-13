@@ -97,6 +97,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         salaryNextYear: 0,
         salaryIncreasePer: 0,
         sheetComment: "",
+        isConfirmed : 0,
         isFinalized : 0
     };
     const [state, setState] = useState(initialStates);
@@ -104,9 +105,11 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         employeeComments : false,
         employeePayroll : false,
         teacherSections: false,
-        employeeSheet: false
+        employeeSheet: false,
+        employeeDesignations: false
     };
     const [isLoading, setIsLoading] = useState(initialLoadingStates);
+    const [employeeDesignations, setEmployeeDesignations] = useState([]);
     const [teacherSectionsData, setTeacherSectionsData] = useState([]);
     const [payrollData, setPayrollData] = useState([]);
 
@@ -359,6 +362,52 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         });
     }
 
+    const handleEmployeeDesignationsView = async() => {
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeDesignations: true });
+        });
+        let data =  new FormData();
+        data.append("employeeId", rowData?.id);
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeeDesignationsView`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					let data = DATA || [];
+                    let dataLength = data.length;
+                    setEmployeeDesignations(data);
+				} else {
+					handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+        setIsLoading((prevState) => {
+            return ({ ...prevState, employeeDesignations: false });
+        });
+    }
+
     const handleClaimHoursSave = async(academicsSessionId, courseId, index) => {
         let data =  new FormData();
         let claimHours = parseFloat(teacherSectionsData[index]?.claimHours);
@@ -429,7 +478,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 					let data = DATA || [];
                     let dataLength = data.length;
                     if(dataLength>0){
-                        let {rateThisYear, salaryThisYear, monthsThisYear, monthsNextYear, rateNextYear, rateIncreasePercentage, salaryNextYear, salaryIncreasePercentage, comment, isFinalized} = data[0];
+                        let {rateThisYear, salaryThisYear, monthsThisYear, monthsNextYear, rateNextYear, rateIncreasePercentage, salaryNextYear, salaryIncreasePercentage, comment, isConfirmed, isFinalized} = data[0];
                         setState((prevState) => {
                             return ({ 
                                 ...prevState, 
@@ -442,6 +491,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                 salaryNextYear: formatNumber(salaryNextYear),
                                 salaryIncreasePer: formatNumber(salaryIncreasePercentage),
                                 sheetComment: comment,
+                                isConfirmed: isConfirmed,
                                 isFinalized: isFinalized
                             });
                         });
@@ -670,10 +720,12 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
     useEffect(() => {
         if(openDialog===false){
             setState(initialStates);
+            setEmployeeDesignations([]);
             setPayrollData([]);
             setTeacherSectionsData([]);
         } else {
             handleEmployeeCommentsView();
+            handleEmployeeDesignationsView();
             getTeacherSectionDetails();
             getEmployeePayroll();
             getSheet()
@@ -693,11 +745,11 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                     <Button 
                         autoFocus 
                         color="inherit"
-                        disabled={isLoading.employeeSheet || state.isFinalized} 
+                        disabled={isLoading.employeeSheet || state.isFinalized || state.isConfirmed} 
                         onClick={(e)=>
                             handleSave()
                         }>
-                        {isLoading.employeeSheet ? <CircularProgress size={24} style={{color:"lightgray"}} /> : state.isFinalized ? "Finalized" : "Save" }
+                        {isLoading.employeeSheet ? <CircularProgress size={24} style={{color:"lightgray"}} /> : state.isFinalized || state.isConfirmed ? "Confirmed Or Finalized" : "Save" }
                     </Button>
                 </Toolbar>
             </AppBar>
@@ -847,21 +899,30 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
+                                    {!isLoading.employeeDesignations ?
+                                        employeeDesignations.length>0 ?  
+                                            employeeDesignations.map((obj, index)=>
+                                                <TableRow className={classes.tableRowHover} key={"teacherSectionsData-"+index}>
+                                                    <TableCell component="th" scope="row">{obj.fromDate ? format(new Date(obj.fromDate), "dd-MM-yyyy") : ""}</TableCell>
+                                                    <TableCell component="th" scope="row">{obj.jobStatusLabel}</TableCell>
+                                                    <TableCell align="left">{obj.designationLabel}</TableCell>
+                                                </TableRow>    
+                                            )
+                                        :
+                                        <TableRow className={classes.tableRowHover}>
+                                            <TableCell component="th" scope="row" colSpan={3}>
+                                                <Box color="primary.main" align="center">No Data</Box>
+                                            </TableCell>
+                                        </TableRow>
+                                    :
                                     <TableRow className={classes.tableRowHover}>
-                                        <TableCell component="th" scope="row">__/__/____</TableCell>
-                                        <TableCell align="left">HT</TableCell>
-                                        <TableCell align="left">Position 2</TableCell>
+                                        <TableCell component="th" scope="row" colSpan={3}>
+                                            <Skeleton />
+                                            <Skeleton />
+                                            <Skeleton />
+                                        </TableCell>
                                     </TableRow>
-                                    <TableRow className={classes.tableRowHover}>
-                                        <TableCell component="th" scope="row">__/__/____</TableCell>
-                                        <TableCell align="left">FT</TableCell>
-                                        <TableCell align="left">Position 1</TableCell>
-                                    </TableRow>
-                                    <TableRow className={classes.tableRowHover}>
-                                        <TableCell component="th" scope="row">__/__/____</TableCell>
-                                        <TableCell align="left">PT</TableCell>
-                                        <TableCell align="left">Position 3</TableCell>
-                                    </TableRow>
+                                    }
                                 </TableBody>
                             </Table>
                         </TableContainer>
