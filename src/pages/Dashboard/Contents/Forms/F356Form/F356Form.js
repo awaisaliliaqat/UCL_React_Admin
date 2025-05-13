@@ -223,7 +223,7 @@ class F356Form extends Component {
 		data.append("fromDate", format(this.state.fromDate, "dd-MM-yyyy"));
 		data.append("toDate", format(this.state.toDate, "dd-MM-yyyy"));
 		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/View`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/AllEmployeesWithOrWithoutSheetView`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -242,10 +242,12 @@ class F356Form extends Component {
 				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
 				if (CODE === 1) {
 					let data = DATA || [];
-					data = data.map((obj) => ({
-						...obj,
-						allowEdit: obj.id === 12621 && false ? false : true
-					}));
+					const hasConfirmed = data.some(obj => obj.isConfirmed === 1 || obj.isFinalized);
+					if(hasConfirmed){
+						data.map(obj=>{
+							obj.isConfirmed=1;
+						});
+					}
 					this.setState({
 						employeesSalarySheet: data,
 					});
@@ -379,8 +381,8 @@ class F356Form extends Component {
 		data.append("fromDate", format(this.state.fromDate,"dd-MM-yyyy"));
 		data.append("toDate", format(this.state.toDate,"dd-MM-yyyy"));
 		data.append("rateThisYear", rowData.rateThisYear);
-		data.append("monthsThisYear", rowData.monthsThisYear);
-		data.append("monthsNextYear", rowData.monthsNextYear);
+		data.append("monthsThisYear", parseInt(rowData.monthsThisYear) || 0);
+		data.append("monthsNextYear", parseInt(rowData.monthsNextYear) || 0);
 		data.append("salaryThisYear", rowData.salaryThisYear);
 		data.append("rateNextYear", rowData.rateNextYear);
 		data.append("rateIncreasePercentage", rowData.rateIncreasePercentage);
@@ -475,8 +477,8 @@ class F356Form extends Component {
 					return (rowData.leavingDate ? format(new Date(rowData.leavingDate), "dd-MM-yyyy") : "");
 				},
 			 },
-			// { name: "weeklyLoadThisYear", title: "Weekly Load This Year" },
-			// { name: "weeklyLoadNextYear", title: "Weekly Load Next Year"},
+			{ name: "weeklyLoadThisYear", title: "Weekly Load This Year" },
+			{ name: "weeklyLoadNextYear", title: "Weekly Load Next Year"},
 			{ name: "rateThisYear",	title: "Rate This Year"},
 			{ name: "rateNextYear", title: "Rate Next Year"},
 			{ name: "rateIncreasePercentage", title: "Rate Increase%"},

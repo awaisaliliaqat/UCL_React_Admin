@@ -36,6 +36,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 	
 		// Skip number validation for text fields like comment
 		const numericFields = [
+			"rateThisYear", "salaryThisYear",
+			"monthsThisYear", "monthsNextYear",
 			"rateNextYear", "rateIncreasePercentage",
 			"salaryNextYear", "salaryIncreasePercentage",
 			"yearlyClaimNextYear"
@@ -47,21 +49,36 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 	
 		const {
 			rateThisYear,
+			rateNextYear,
 			salaryThisYear,
+			salaryNextYear,
+			yearlyClaimThisYear,
 			yearlyClaimNextYear,
 			yearlyExpenseThisYear,
 			yearlySalaryNextYear
 		} = {
 			rateThisYear: parseFloatSafe(state.rateThisYear),
+			rateNextYear: parseFloatSafe(state.rateNextYear),
 			salaryThisYear: parseFloatSafe(state.salaryThisYear),
+			salaryNextYear: parseFloatSafe(state.salaryNextYear),
+			yearlyClaimThisYear: parseFloatSafe(state.yearlyClaimThisYear),
 			yearlyClaimNextYear: parseFloatSafe(state.yearlyClaimNextYear),
 			yearlyExpenseThisYear: parseFloatSafe(state.yearlyExpenseThisYear),
 			yearlySalaryNextYear: parseFloatSafe(state.yearlySalaryNextYear),
 		};
 	
 		let updates = {};
-	
+		
 		switch (name) {
+			case "rateThisYear": {
+				const rateThis = parseFloatSafe(value);
+				const rateIncPerc = ((rateNextYear - rateThis) / (rateThis || 1)) * 100;
+				updates = {
+					rateThisYear: rateThis,
+					rateIncreasePercentage: formatNumber(rateIncPerc),
+				};
+				break;
+			}
 			case "rateNextYear": {
 				const rateNext = parseFloatSafe(value);
 				const rateIncPerc = ((rateNext - rateThisYear) / (rateThisYear || 1)) * 100;
@@ -77,6 +94,21 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				updates = {
 					rateIncreasePercentage: ratePerc,
 					rateNextYear: formatNumber(calcRateNext),
+				};
+				break;
+			}
+			case "salaryThisYear": {
+				const salaryThis = parseFloatSafe(value);
+				const salaryIncPerc = ((salaryNextYear - salaryThis) / (salaryThis || 1)) * 100;
+				const newYearlySalary = salaryThis * 12;
+				const newExpense = yearlyClaimThisYear + newYearlySalary;
+				const percentChange = ((yearlySalaryNextYear - newExpense) / (newExpense || 1)) * 100;
+				updates = {
+					salaryThisYear: salaryThis,
+					salaryIncreasePercentage: formatNumber(salaryIncPerc),
+					yearlySalaryThisYear: newYearlySalary, 
+					yearlyExpenseThisYear: formatNumber(newExpense),
+					percentChange: formatNumber(percentChange),
 				};
 				break;
 			}
@@ -147,7 +179,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 			<DialogContent>
 				<GridMaterial container spacing={2}>
 					<GridMaterial item xs={3}>
-						<TextField name="rateThisYear" label="Rate This Year" value={state.rateThisYear || ''} fullWidth disabled />
+						<TextField name="rateThisYear" label="Rate This Year" value={state.rateThisYear || ''} onChange={handleChange} fullWidth />
 					</GridMaterial>
 					<GridMaterial item xs={3}>
 						<TextField name="rateNextYear" label="Rate Next Year" value={state.rateNextYear || ''} onChange={handleChange} fullWidth />
@@ -159,7 +191,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 						<TextField name="monthsThisYear" label="Months This Year" value={state.monthsThisYear || ''} onChange={handleChange} fullWidth />
 					</GridMaterial>
 					<GridMaterial item xs={3}>
-						<TextField name="salaryThisYear" label="Salary This Year" value={state.salaryThisYear || ''} fullWidth disabled />
+						<TextField name="salaryThisYear" label="Salary This Year" value={state.salaryThisYear || ''} onChange={handleChange} fullWidth />
 					</GridMaterial>
 					<GridMaterial item xs={3}>
 						<TextField name="salaryNextYear" label="Salary Next Year" value={state.salaryNextYear || ''} onChange={handleChange} fullWidth />
@@ -303,7 +335,10 @@ const StickyHeaderCell = ({
 	);
 };
 
-const CurrencyFormatter = ({ value }) => value.toLocaleString("en-US");
+const CurrencyFormatter = ({ value }) => {
+	const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
+	return safeValue.toLocaleString("en-US")
+};
 
 const CurrencyTypeProvider = (props) => (
 	<DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
@@ -312,6 +347,7 @@ const CurrencyTypeProvider = (props) => (
 const getRowId = row => row.id;
 
 const F356FormTableComponent = (props) => {
+
 	const [tableColumnExtensions] = useState([
 		{ columnName: "id", align: "left", width: 90 },
 		{ columnName: "displayName", align: "left", wordWrapEnabled: true },
@@ -376,7 +412,6 @@ const F356FormTableComponent = (props) => {
 		// Add more as needed
 	]);
 
-
 	const [leftFixedColumns] = useState([TableEditColumn.COLUMN_TYPE, "id", "displayName"]);
 
 	const { isLoading, showTableFilter, rows, columns, onCommitChanges } = props;
@@ -400,7 +435,7 @@ const F356FormTableComponent = (props) => {
 	const handleEditingRowIdsChange = (rowIds) => {
 		const allowedIds = rowIds.filter(id => {
 			const row = rows.find(row => row.id === id);
-			return row?.isFinalized !== 1;
+			return row?.isFinalized !== 1 && row?.isConfirmed!==1;
 		});
 		setEditingRowIds(allowedIds);
 	};
@@ -444,7 +479,7 @@ const F356FormTableComponent = (props) => {
 	};
 
 	const EditCell = ({ row, column, children, ...restProps }) => {
-		const allowEdit = row?.isFinalized !== 1;
+		const allowEdit = row?.isFinalized !== 1 && row?.isConfirmed !== 1;
 		return (
 			<TableEditColumn.Cell {...restProps}>
 				{allowEdit ? children : null}

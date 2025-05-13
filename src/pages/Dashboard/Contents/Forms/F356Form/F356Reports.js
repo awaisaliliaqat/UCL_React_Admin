@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
-import { Box, IconButton, Typography, CircularProgress, Grid } from "@material-ui/core";
+import { Box, IconButton, Typography, CircularProgress, Grid, Button } from "@material-ui/core";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, } from "@material-ui/core";
 import { format, parse } from "date-fns";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
@@ -31,6 +31,15 @@ const styles = (theme) => ({
 		//   minWidth: "7.5in",
 		//   maxWidth: "11in",
 		// },
+	},
+	approveButton: {
+		top: theme.spacing(1),
+		left: theme.spacing(2),
+		zIndex: 1,
+		position: "fixed",
+		"@media print": {
+			display: "none",
+		},
 	},
 	closeButton: {
 		top: theme.spacing(1),
@@ -100,7 +109,7 @@ const styles = (theme) => ({
 		flexDirection: "column",
 	},
 	table: {
-		minWidth: 700
+		minWidth: 700,
 	},
 });
 
@@ -123,7 +132,7 @@ const StyledTableCell = withStyles((theme) => ({
 	body: {
 		fontSize: 13,
 		border: "1px solid rgb(29, 95, 152)",
-		padding: "5px 0px"
+		padding: "5px 3px"
 	},
 }))(TableCell);
 
@@ -141,11 +150,12 @@ class F356Reports extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			documentData: [],
-			data: {},
 			isLoading: false,
 			isLoginMenu: false,
 			isReload: false,
+			isOpenSnackbar: false,
+			snackbarMessage: "",
+			snackbarSeverity: "",
 			academicSessionsData: [],
 			academicSessionId: "",
 			academicSessionLabel: "____-____",
@@ -157,28 +167,11 @@ class F356Reports extends Component {
 				"Months Next Year","Salary This Year","Salary Next Year","Salary Increase%",
 				"Yearly Claim This Year","Yearly Claim Next Year","Yearly Salary This Year",
 				"Yearly Salary Next Year","Yearly Expense This Year","Yearly Expense Next Year","Percent Change",
-				"Comments on Salary Determination", "Final Salary Next Year"
+				"Comments on Salary Determination", "Final Rate Next Year", "Final Salary Next Year"
 			],
 			tableData: [],
-			programmeLabel: "",
-			studentLabel: "",
-			uptoDate: "__/__/____",
-			totalPOS: "_ _",
-			totalAchieved: "_ _",
-			totalPercentage: "_ _",
-			resultClassification: "_ _ _",
-			allStudentData: [],
-			subjectName: "",
-			subjectName: "",
-			textAreaValue: "",
 			academicSessionId: 0,
-			programmeId: 0,
-			sessionTermId: 0,
-			studentId: 0,
-			sessionTermLabel: "",
-			anouncementDate: new Date(),
-			anouncementDateError: "",
-			alevelYear: "",
+			isConfirmed: 0
 		};
 	}
 
@@ -268,7 +261,11 @@ class F356Reports extends Component {
 						let data = json.DATA || [];
 						let dataLength = data.length;
 						if (dataLength) {
-							this.setState({tableData: data});
+							const hasConfirmed = data.some(obj => obj.isConfirmed === 1);
+							this.setState({
+								tableData: data,
+								isConfirmed: hasConfirmed ? 1 : 0
+							});
 						}
 					} else {
 						//alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
@@ -291,6 +288,48 @@ class F356Reports extends Component {
 			);
 		this.setState({ isLoading: false });
 	};
+
+	handleSave = async() => {
+		let data =  new FormData();
+		const tableData = this.state.tableData;
+		for(let i=0; i<tableData.length; i++){
+			data.append("id", parseInt(tableData[i].sheetId) || 0);
+		}
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/IsConfirmedSave`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					this.setState({isConfirmed: 1});
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
+				} else {
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+	}
 
 	componentDidMount() {
 		const { academicSessionId, fromDate, toDate } = this.props.match.params;
@@ -322,6 +361,15 @@ class F356Reports extends Component {
 						</div>
 					</div>
 				)} */}
+				<Button
+					variant="contained"
+					color="primary"
+					className={classes.approveButton}
+					disabled={!this.state.tableData.length || this.state.isConfirmed==1}
+					onClick={this.handleSave}
+				>
+					Send For Approval
+				</Button>
 				<IconButton
 					onClick={() => window.close()}
 					aria-label="close"
@@ -341,22 +389,28 @@ class F356Reports extends Component {
 												fontWeight: 700,
 												textAlign: "center",
 												color: "#2f57a5",
-												width: 200,
 												padding: 5,
-												border: "solid 2px #2f57a5",
+												//border: "solid 2px #2f57a5",
 												display: "block",
-												float: "right",
-												// marginRight: 56
 											}}
 										>
-											Increment Sheet
-											<br />
-											Academic Year
-											<br />
-											{this.state.academicSessionLabel}
-											<br />
-											{this.state.fromDateLabel}&emsp;{this.state.toDateLabel}
+											<span
+												style={{
+													float: "left"
+												}}
+											>
+												Academic Year : {this.state.academicSessionLabel}
+											</span>
+											Employees Increment Sheet
+											<span
+												style={{
+													float: "right"
+												}}
+											>
+												Date : {this.state.fromDateLabel} - {this.state.toDateLabel}
+											</span>
 										</span>
+										
 									</span>
 								</th>
 							</tr>
@@ -364,7 +418,6 @@ class F356Reports extends Component {
 						<tbody>
 							<tr>
 								<td colSpan={this.state.tableHeaderData.length}>
-									<br />
 									<Paper className={classes.root}>
 										<div className={classes.tableWrapper}>
 											<Table size="small" className={classes.table} stickyHeader aria-label={"customized table"}>
@@ -382,31 +435,32 @@ class F356Reports extends Component {
 															{this.state.tableData.length > 0 ? (
 																<Fragment>
 																	{this.state.tableData.map((row, index) => (
-																		<StyledTableRow key={"row" + index}>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.rolesLabel}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.id}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.displayName}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.designationsLabel}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.jobStatusLabel}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.joiningDate ? format(new Date(row.joiningDate), "dd-MM-yyyy") : ""}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.leavingDate ? format(new Date(row.leavingDate), "dd-MM-yyyy") : ""}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.rateThisYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.rateNextYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.rateIncreasePercentage} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.monthsThisYear}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.monthsNextYear}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.salaryThisYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.salaryNextYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.salaryIncreasePercentage} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.yearlyClaimThisYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.yearlyClaimNextYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.yearlySalaryThisYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.yearlySalaryNextYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.yearlyExpenseThisYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.yearlyExpenseNextYear} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.percentChange} /></StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center">{row.comment}</StyledTableCell>
-																			<StyledTableCell key={"[" + index + "]"}  align="center"><CurrencyFormatter value={row.finalSalaryNextYear} /></StyledTableCell>
+																		<StyledTableRow key={"tableData-"+index}>
+																			<StyledTableCell align="center">{row.rolesLabel}</StyledTableCell>
+																			<StyledTableCell align="center">{row.id}</StyledTableCell>
+																			<StyledTableCell align="center">{row.displayName}</StyledTableCell>
+																			<StyledTableCell align="center">{row.designationsLabel}</StyledTableCell>
+																			<StyledTableCell align="center">{row.jobStatusLabel}</StyledTableCell>
+																			<StyledTableCell align="center">{row.joiningDate ? format(new Date(row.joiningDate), "dd-MM-yyyy") : ""}</StyledTableCell>
+																			<StyledTableCell align="center">{row.leavingDate ? format(new Date(row.leavingDate), "dd-MM-yyyy") : ""}</StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.rateThisYear} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.rateNextYear} /></StyledTableCell>
+																			<StyledTableCell align="center"><CurrencyFormatter value={row.rateIncreasePercentage} /></StyledTableCell>
+																			<StyledTableCell align="center">{row.monthsThisYear}</StyledTableCell>
+																			<StyledTableCell align="center">{row.monthsNextYear}</StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.salaryThisYear} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.salaryNextYear} /></StyledTableCell>
+																			<StyledTableCell align="center"><CurrencyFormatter value={row.salaryIncreasePercentage} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.yearlyClaimThisYear} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.yearlyClaimNextYear} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.yearlySalaryThisYear} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.yearlySalaryNextYear} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.yearlyExpenseThisYear} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.yearlyExpenseNextYear} /></StyledTableCell>
+																			<StyledTableCell align="center"><CurrencyFormatter value={row.percentChange} /></StyledTableCell>
+																			<StyledTableCell align="center">{row.comment}</StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.finalRateNextYear} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.finalSalaryNextYear} /></StyledTableCell>
 																		</StyledTableRow>
 																	))}
 																</Fragment>
@@ -414,7 +468,7 @@ class F356Reports extends Component {
 																<TableRow>
 																	<StyledTableCell colSpan={this.state.tableHeaderData.length}>
 																	{this.state.isLoading ?
-																		<center><CircularProgress size={36} /></center>
+																		<center><CircularProgress size={37} /></center>
 																		:
 																		<Box color="primary.main" fontSize={18} textAlign="center" fontWeight="bold">No Data</Box>
 																	}
@@ -425,7 +479,7 @@ class F356Reports extends Component {
 													</TableBody>
 											</Table>
 										</div>
-									</Paper>
+									</Paper>									
 								</td>
 								<td className={classes.bottomSpace}></td>
 							</tr>
