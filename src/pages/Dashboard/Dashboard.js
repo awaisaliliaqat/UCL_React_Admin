@@ -259,6 +259,8 @@ import F355Reports from "./Contents/Forms/F355Form/F355Reports";
 import F356Form from "./Contents/Forms/F356Form/F356Form";
 import F357Form from "./Contents/Forms/F357Form/F357Form";
 import F358Form from "./Contents/Forms/F358Form/F358Form";
+import F359Form from "./Contents/Forms/F359Form/F359Form";
+import F359Reports from "./Contents/Forms/F359Form/F359Reports";
 
 const drawerWidth = 283;
 
@@ -3863,6 +3865,36 @@ const Dashboard = (props) => {
 					render={(props) => {
 						return (
 							<F358Form
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F359Form"
+					exact
+					path="/dashboard/F359Form"
+					render={(props) => {
+						return (
+							<F359Form
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F359Form"
+					exact
+					path="/dashboard/F359Reports"
+					render={(props) => {
+						return (
+							<F359Reports
 								{...props}
 								isDrawerOpen={isDrawerOpen}
 								setDrawerOpen={setDrawerOpen}
