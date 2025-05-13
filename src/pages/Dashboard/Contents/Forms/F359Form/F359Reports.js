@@ -124,7 +124,6 @@ class F359Reports extends Component {
 	};
 
 	deleteData = async (id) => {
-		alert(id);
 		const data = new FormData();
 		data.append("id", Number(id));
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C359CommonEmployeesDesignations/EmployeeDesignationDelete`;
