@@ -37,7 +37,6 @@ class F358Form extends Component {
 		this.state = {
 			isLoading: false,
 			recordId: null,
-			isApprovedByHead: 0,
 			isLoginMenu: false,
 			isReload: false,
 			isOpenSnackbar: false,
@@ -51,18 +50,10 @@ class F358Form extends Component {
 			academicSessionsDataLoading: false,
 			academicSessionId: "",
 			academicSessionIdError: "",
-			openDialog: false,
-			selectedStudent: null,
-			programmeGroupsData: [],
-			programmeGroupsDataLoading: false,
-			programmeGroupId: "",
-			attendanceSheetId: 0,
-			programmeGroupIdError: "",
-			expandedGroupsData: [],
 			fromDate: null,
 			toDate: null,
 			employeesSalarySheet: [],
-			isApproved: false,
+			isAllSheetsFinalized: true,
 		};
 	}
 
@@ -168,8 +159,18 @@ class F358Form extends Component {
 			(json) => {
 				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
 				if (CODE === 1) {
-					let data = DATA || [];
+					let data = (DATA || [])
+					.filter(obj => obj.isConfirmed === 1) // Step 1: keep only confirmed
+					.map(obj => {
+						if (obj.isFinalized !== 1) {
+							obj.finalRateNextYear = obj.rateNextYear;
+							obj.finalSalaryNextYear = obj.salaryNextYear;
+						}
+						return obj;
+					});
+					const isAllSheetsFinalized =  data.some(obj => obj.isFinalized === 0)
 					this.setState({
+						isAllSheetsFinalized: !isAllSheetsFinalized,
 						employeesSalarySheet: data,
 					});
 				} else {
@@ -230,9 +231,7 @@ class F358Form extends Component {
 		switch (name) {
 			case "academicSessionId":
 				this.setState({
-					employeesSalarySheet: [],
-					programmeGroupId: "",
-					programmeGroupIdError: "",
+					employeesSalarySheet: []
 				});
 				let academicSessionLabel = this.state.academicSessionsData.find((obj)=>obj.ID==value)?.Label || "2024-2025";
 				this.setDatesFromAcademicSession(academicSessionLabel);
@@ -292,10 +291,10 @@ class F358Form extends Component {
 	};
 
 	handleSave = async(rowData) => {
-		//handleIsExistUpdate(rowData);
 		let data =  new FormData();
 		data.append("id", rowData.sheetId);
-		data.append("finalSalaryNextYear", rowData.finalSalaryNextYear);
+		data.append("finalRateNextYear", Number(rowData.finalRateNextYear));
+		data.append("finalSalaryNextYear", Number(rowData.finalSalaryNextYear));
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C358CommonEmployeesSalaryIncrementSheet/Save`;
 		await fetch(url, {
 			method: "POST",
@@ -331,6 +330,75 @@ class F358Form extends Component {
 		);
 	}
 
+	handleSaveAll = async() => {
+		const sheet = [...(this.state.employeesSalarySheet || [])].filter(obj => obj.isFinalized !== 1);
+		const sheetLength = sheet.length;
+		if(!sheetLength){
+			this.handleOpenSnackbar(<span>Sheet already finalized</span>,"Info");
+			this.setState({isAllSheetsFinalized: true});
+			return;
+		}
+		// ✅ Validate: both values must be numbers AND at least one > 1
+		const invalidEntries = sheet.filter(obj => {
+			const rate = Number(obj.finalRateNextYear);
+			const salary = Number(obj.finalSalaryNextYear);
+			const hasValidRate = isFinite(rate);
+			const hasValidSalary = isFinite(salary);
+			const oneIsGreaterThanOne = rate > 1 || salary > 1;
+			return !(hasValidRate && hasValidSalary && oneIsGreaterThanOne);
+		});
+		if (invalidEntries.length > 0) {
+			this.handleOpenSnackbar(<span>Each employee must have valid Final Rate or Final Salary</span>,"warning");
+			return;
+		}
+		// Append data for each sheet
+		let data =  new FormData();
+		sheet.forEach(obj => {
+			data.append("id", obj.sheetId);
+			data.append("finalRateNextYear", obj.finalRateNextYear);
+			data.append("finalSalaryNextYear", obj.finalSalaryNextYear);
+		});
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C358CommonEmployeesSalaryIncrementSheet/Save`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					// Mark all those sheets as finalized
+					const updatedSheets = this.state.employeesSalarySheet.map(obj => ({	...obj,	isFinalized: 1 }));
+					this.setState({
+						employeesSalarySheet: updatedSheets,
+						isAllSheetsFinalized: true,
+					});
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
+				} else {
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error(error);
+					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+	}
+
 	handleGenrateView = () => {
 		const { academicSessionId, fromDate, toDate } = this.state;
 		window.open(`#/F356Reports/${academicSessionId+"/"+format(fromDate, "dd-MM-yyyy")+"/"+format(toDate, "dd-MM-yyyy")}`,"_blank");
@@ -349,6 +417,7 @@ class F358Form extends Component {
 		const { classes } = this.props;
 
 		const columns = [
+			{ name: "finalRateNextYear", title: "Final Rate Next Year", required: true},
 			{ name: "finalSalaryNextYear", title: "Final Salary Next Year", required: true},
 			{ name: "id", title: "ID" },
 			{ name: "displayName", title: "Name"},
@@ -364,7 +433,9 @@ class F358Form extends Component {
 				getCellValue: (rowData) => {
 					return (rowData.leavingDate ? format(new Date(rowData.leavingDate), "dd-MM-yyyy") : "");
 				},
-			 },
+			},
+			{ name: "weeklyLoadThisYear", title: "Weekly Load This Year" },
+			{ name: "weeklyLoadNextYear", title: "Weekly Load Next Year"},
 			{ name: "rateThisYear",	title: "Rate This Year"},
 			{ name: "rateNextYear", title: "Rate Next Year"},
 			{ name: "rateIncreasePercentage", title: "Rate Increase%"},
@@ -495,10 +566,8 @@ class F358Form extends Component {
 						<Button
 							variant="outlined"
 							className={classes.button}
-							disabled={
-								this.state.isLoading ||
-								this.state.academicSessionsDataLoading ||
-								this.state.programmeGroupsDataLoading
+							disabled = {
+								this.state.isLoading 
 							}
 							onClick={() => this.onClearAllData()}
 							fullWidth
@@ -525,17 +594,17 @@ class F358Form extends Component {
 						severity={this.state.snackbarSeverity}
 						handleCloseSnackbar={this.handleCloseSnackbar}
 					/>
-					{/* <BottomBar
+					<BottomBar
 						leftButtonText=""
 						leftButtonHide={true}
 						bottomLeftButtonAction={() => this.handleOpenSnackbar("Feature under development", "info") }
-						right_button_text="Genrate"
+						right_button_text="Finalize All"
 						disableLeftButton={this.state.isExisted === 1}
-						disableRightButton={!this.state.academicSessionId}
+						disableRightButton={!this.state.employeesSalarySheet.length || this.state.isAllSheetsFinalized}
 						loading={this.state.isLoading}
 						isDrawerOpen={this.props.isDrawerOpen}
-						bottomRightButtonAction={this.handleGenrateView}
-					/>  */}
+						bottomRightButtonAction={this.handleSaveAll}
+					/> 
 				</Grid>
 			</Fragment>
 		);

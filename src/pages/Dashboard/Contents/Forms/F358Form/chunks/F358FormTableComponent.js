@@ -61,23 +61,39 @@ const EditCell = ({ errors, ...props }) => {
   // Maps the rows to a single object in which each field are is a row IDs
   // and the field's value is true if the cell value is invalid (a column is required
   // but the cell value is empty)
-  const validate = (rows, columns) => Object.entries(rows).reduce(
-	(acc, [rowId, row]) => ({
-	  ...acc,
-	  [rowId]: columns.some(column => column.required && (row[column.name] === '' || !isFinite(Number(row[column.name])) || Number(row[column.name])<=0)),
-	}), {},
-  );
+//   const validate = (rows, columns) => Object.entries(rows).reduce(
+// 	(acc, [rowId, row]) => ({
+// 	  ...acc,
+// 	  [rowId]: columns.some(column => column.required && (row[column.name] === '' || !isFinite(Number(row[column.name])) || Number(row[column.name])<=0)),
+// 	}), {},
+//   );
 
-const getRowId = row => row.id;
+const validate = (rows, columns) =>
+	Object.entries(rows).reduce((acc, [rowId, row]) => {
+	  const finalRate = Number(row.finalRateNextYear);
+	  const finalSalary = Number(row.finalSalaryNextYear);
+	  console.info(row.finalRateNextYear+" - "+row.finalSalaryNextYear);
+	  console.info(finalRate+" - "+finalSalary);
+	  const hasValidRate = isFinite(finalRate);
+	  const hasValidSalary = isFinite(finalSalary);
+	  const oneIsGreaterThanZero = finalRate > 0 || finalSalary > 0;
+	  const isInvalid = !(hasValidRate && hasValidSalary && oneIsGreaterThanZero);
+	  return { ...acc, [rowId]: isInvalid };
+	}, {});
+
+const getRowId = row => row.id; 
 
 const F358FormTableComponent = (props) => {
 	const [tableColumnExtensions] = useState([
+		{ columnName: "finalRateNextYear", align: "center", wordWrapEnabled: true, width:90 },
 		{ columnName: "finalSalaryNextYear", align: "center", wordWrapEnabled: true, width:90 },
 		{ columnName: "id", align: "left", width: 90 },
 		{ columnName: "displayName", align: "left", wordWrapEnabled: true },
 		{ columnName: "designationsLabel", align: "left", wordWrapEnabled: true },
 		{ columnName: "rolesLabel", align: "center", wordWrapEnabled: true },
 		{ columnName: "jobStatusLabel", align: "center", wordWrapEnabled: true },
+		{ columnName: "weeklyLoadThisYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "weeklyLoadNextYear", align: "center", wordWrapEnabled: true },
 		{ columnName: "weeklyLoadThisYear", align: "center", wordWrapEnabled: true },
 		{ columnName: "weeklyLoadNextYear", align: "center", wordWrapEnabled: true },
 		{ columnName: "monthsThisYear", align: "center", wordWrapEnabled: true },
@@ -108,11 +124,14 @@ const F358FormTableComponent = (props) => {
 	]);
 
 	const [editingColumnExtensions] = useState([
+		{ columnName: 'finalRateNextYear', editingEnabled: true },
 		{ columnName: 'finalSalaryNextYear', editingEnabled: true },
 		{ columnName: 'rolesLabel', editingEnabled: false },
 		{ columnName: 'id', editingEnabled: false },
 		{ columnName: 'displayName', editingEnabled: false },
 		{ columnName: 'jobStatusLabel', editingEnabled: false },
+		{ columnName: 'weeklyLoadThisYear', editingEnabled: false },
+		{ columnName: 'weeklyLoadNextYear', editingEnabled: false },
 		{ columnName: 'designationsLabel', editingEnabled: false },
 		{ columnName: 'joiningDate', editingEnabled: false },
 		{ columnName: 'leavingDate', editingEnabled: false },
@@ -137,11 +156,11 @@ const F358FormTableComponent = (props) => {
 		// Add more as needed
 	]);
 
-	const [leftFixedColumns] = useState([TableEditColumn.COLUMN_TYPE, "finalSalaryNextYear", "id", "displayName"]);
+	const [leftFixedColumns] = useState([TableEditColumn.COLUMN_TYPE, "finalRateNextYear", "finalSalaryNextYear", "id", "displayName"]);
 
 	const { isLoading, showTableFilter, rows, columns, onCommitChanges } = props;
 
-	const [currencyColumns] = useState(["finalSalaryNextYear","rateThisYear", "salaryThisYear", "rateNextYear", "salaryNextYear", "yearlySalaryThisYear", "yearlySalaryNextYear", "yearlyExpenseThisYear", "yearlyExpenseNextYear"]);
+	const [currencyColumns] = useState(["finalRateNextYear","finalSalaryNextYear","rateThisYear", "salaryThisYear", "rateNextYear", "salaryNextYear", "yearlySalaryThisYear", "yearlySalaryNextYear", "yearlyExpenseThisYear", "yearlyExpenseNextYear"]);
 
 	const NoDataRow = () => (
 		<TableRow>
@@ -226,7 +245,15 @@ const F358FormTableComponent = (props) => {
 		);
 	};
 	
-	const onEdited = debounce(edited => setErrors(validate(edited, columns)), 250);
+	// const onEdited = debounce(edited => setErrors(validate(edited, columns)), 250);
+	const onEdited = debounce((edited) => {
+		const merged = Object.entries(edited).reduce((acc, [rowId, changes]) => {
+		  const existingRow = rows.find((r) => r.id === Number(rowId)) || {};
+		  acc[rowId] = { ...existingRow, ...changes };
+		  return acc;
+		}, {});
+		setErrors(validate(merged, columns));
+	  }, 250);
 
 	return (
 		<Paper>
