@@ -55,7 +55,7 @@ import F24Reports from "./Contents/Forms/F24Reports";
 import F25Form from "./Contents/Forms/F25Form";
 import F27Form from "./Contents/Forms/F27Form";
 import F30Form from "./Contents/Forms/F30Form";
-import F31Form from "./Contents/Forms/F31Form";
+import F31Form from "./Contents/Forms/F31Form/F31Form";
 import F33Form from "./Contents/Forms/F33Form";
 import F34Form from "./Contents/Forms/F34Form";
 import F34Reports from "./Contents/Forms/F34Reports";

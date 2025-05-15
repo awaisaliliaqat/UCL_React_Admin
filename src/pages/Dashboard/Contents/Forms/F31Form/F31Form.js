@@ -1,12 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/styles";
-import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import {
-	TextField, Grid, MenuItem, CircularProgress, Divider, Typography,
-	IconButton, Tooltip, Fab
-} from "@material-ui/core";
+import { TextField, Grid, MenuItem, CircularProgress, Divider, Typography, IconButton, Tooltip, Fab } from "@material-ui/core";
 import FilterIcon from "mdi-material-ui/FilterOutline";
-import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import F31FormFilter from "./F31FormFilter";
 import F31FormTableComponent from "./F31FormTableComponent";
 import F31FormPopupComponent from "./F31FormPopupComponent";
@@ -15,6 +10,8 @@ import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { addMinutes, format, isBefore } from 'date-fns';
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
 const styles = () => ({
 	root: {
