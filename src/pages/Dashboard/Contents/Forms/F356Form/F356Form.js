@@ -479,6 +479,8 @@ class F356Form extends Component {
 			 },
 			{ name: "weeklyLoadThisYear", title: "Weekly Load This Year" },
 			{ name: "weeklyLoadNextYear", title: "Weekly Load Next Year"},
+			{ name: "weeklyClaimHoursThisYear", title: "Weekly Claim Hours This Year" },
+			{ name: "weeklyClaimHoursNextYear", title: "Weekly Claim Hours Next Year"},
 			{ name: "rateThisYear",	title: "Rate This Year"},
 			{ name: "rateNextYear", title: "Rate Next Year"},
 			{ name: "rateIncreasePercentage", title: "Rate Increase%"},
