@@ -71,19 +71,15 @@ const CourseRow = (props) => {
 				<StyledTableCell align="center">
 					<Tooltip title="Delete">
 						<span>
-							<Fab
+							<IconButton
 								color="secondary"
 								aria-label="Delete"
 								size="small"
-								style={{
-									height: 36,
-									width: 36
-								}}
 								disabled={isReadOnly}
 								onClick={() => onDelete(rowIndex)}
 							>
-								<DeleteIcon fontSize="small" />
-							</Fab>
+								<DeleteIcon fontSize="default" />
+							</IconButton>
 						</span>
 					</Tooltip>
 				</StyledTableCell>
@@ -122,11 +118,15 @@ class F31FormPopupComponent extends Component {
 		this.state = {
 			recordId: 0,
 			isLoading: false,
+			isDayScheduleLoading: false,
 			isReload: false,
 			isOpenSnackbar: false,
 			snackbarMessage: "",
 			snackbarSeverity: "",
 			popupBoxOpen: false,
+			academicsSessionId: 0,
+			teacherId: 0,
+			sectionId: 0,
 			preTimeDuration: "",
 			preTimeDurationError: "",
 			preDaysMenuItems: [],
@@ -150,15 +150,12 @@ class F31FormPopupComponent extends Component {
 			teacherScheduleObj: {},
 			activeScheduleData: [],
 			activeScheduleObj: {},
+			dayScheduleList: []
 		};
 	}
 
 	getTomorrowDate = () => {
   		return addDays(new Date(), 1);
-	};
-
-	getDateInString = (date) => {
-  		return format(date, 'dd-MM-yyyy');
 	};
 
 	getOccupiedRoomsByDayAndTime(data) {
@@ -182,9 +179,10 @@ class F31FormPopupComponent extends Component {
 		return map;
 	}
 
-	loadActiveScheduleData = async (academicsSessionId) => {
+	loadActiveScheduleData = async (effectiveDate) => {
 		let data = new FormData();
-		data.append("academicsSessionId", academicsSessionId);
+		data.append("academicsSessionId", this.state.academicsSessionId);
+		data.append("effectiveDate", format(effectiveDate, 'dd-MM-yyyy'));
 		// this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsActiveScheduleView`;
 		await fetch(url, {
@@ -206,7 +204,7 @@ class F31FormPopupComponent extends Component {
 				if (CODE === 1) {
 					let data = DATA || [];
 					// filter out current section timetable
-					data = data.filter( element => element.sectionId!==this.props.sectionId);
+					data = data.filter( element => element.sectionId!==this.state.sectionId);
 					data.map(element => {
 						element.displayTime = format(new Date(element.startTime), "hh:mm a");
 						// Add duration (in minutes) converted to milliseconds
@@ -268,10 +266,11 @@ class F31FormPopupComponent extends Component {
     	return result;
 	}
 
-	loadTeacherScheduleData = async (academicsSessionId, teacherId) => {
+	loadTeacherScheduleData = async (effectiveDate) => {
 		let data = new FormData();
-		data.append("academicsSessionId", academicsSessionId);
-		data.append("teacherId", teacherId);
+		data.append("academicsSessionId", this.state.academicsSessionId);
+		data.append("teacherId", this.state.teacherId);
+		data.append("effectiveDate", format(effectiveDate, 'dd-MM-yyyy'));
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsTeacherScheduleView`;
 		await fetch(url, {
@@ -293,7 +292,7 @@ class F31FormPopupComponent extends Component {
 				if (CODE === 1) {
 					let data = DATA || [];
 					// filter out current section timetable
-					data = data.filter( element => element.sectionId!==this.props.sectionId);
+					data = data.filter( element => element.sectionId!==this.state.sectionId);
 					data.map(element => {
 						element.displayTime = format(new Date(element.startTime), "hh:mm a");
 						// Add duration (in minutes) converted to milliseconds
@@ -337,9 +336,9 @@ class F31FormPopupComponent extends Component {
 		this.setState({ isLoading: false });
 	};
 
-	loadData = async (sectionId, effectiveDate) => {
+	loadData = async (effectiveDate) => {
 		let data = new FormData();
-		data.append("sectionId", sectionId);
+		data.append("sectionId", this.state.sectionId);
 		data.append("effectiveDate", effectiveDate);
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsScheduleView`;
@@ -391,26 +390,83 @@ class F31FormPopupComponent extends Component {
 		this.setState({ isLoading: false });
 	};
 
+	dayScheduleValidate = async (dayId, timeStart, duration, roomId, effectiveDate) => {
+		let isValidate = false;
+		let data = new FormData();
+		data.append("academicsSessionId", this.state.academicsSessionId);
+		data.append("teacherId", this.state.teacherId);
+		data.append("dayId", dayId);
+		data.append("startTime", timeStart);
+		data.append("duration", duration);
+		data.append("roomId", roomId);
+		data.append("effectiveDate", format(effectiveDate, 'dd-MM-yyyy'));
+		this.setState({ isDayScheduleLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsScheduleValidator`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE } = json;
+				if (CODE === 1) {
+					let data = DATA || [];
+					// filter out current section timetable
+					data = data.filter( element => element.sectionId!==this.state.sectionId);
+					this.setState({ dayScheduleList: data });
+					if(data.length>0){
+						const endDate = data[0].startTime + data[0].duration * 60 * 1000;
+						this.props.handleOpenSnackbar(<span><b>Time Overlap : </b>{`${data[0].dayLabel+` | `+format(new Date(data[0].startTime),'hh:mm a')+` - `+format(new Date(endDate),'hh:mm a')+` | `+data[0].classRoomLabel+` | `+data[0].sectionLabel}`}</span>, "warning");
+					} else {
+						isValidate = true;
+					}
+				} else {
+					this.props.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>, "error");
+				}
+			},
+			(error) => {
+				if (error.status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: false,
+					});
+				} else {
+					console.log(error);
+					this.props.handleOpenSnackbar("Failed to Save ! Please try Again later.", "error");
+				}
+			}
+		);
+		this.setState({ isDayScheduleLoading: false });
+		return isValidate;
+	};
+
 	handleClickOpen = () => {
-		if (this.props.isReadOnly && this.props.activeDate) {
-			this.loadData(this.props.sectionId, this.props.activeDate);
-			//this.loadData(this.props.sectionId, this.getDateInString(new Date(this.props.activeDateInNumber)) );
-			this.setState({ preDate: this.props.activeDateInNumber });
+		const { isReadOnly, activeDate, activeDateInNumber, teacherId } = this.props;
+		if (isReadOnly && activeDate) {
+			this.loadData(activeDate);
+			this.setState({ preDate: activeDateInNumber });
 		} else {
 			let sessionSelectedDate = sessionStorage.getItem('sessionSelectedDate');
 			if (sessionSelectedDate) {
 				this.handleChangePreDate(new Date(sessionSelectedDate));
 			} else {
-				this.loadData(this.props.sectionId, this.getDateInString(this.state.preDate));
+				this.loadData(format(this.state.preDate, 'dd-MM-yyyy'));
 			}
 		}
-		if(this.props.teacherId){
-			this.loadTeacherScheduleData(this.props.academicsSessionId, this.props.teacherId);
-			this.loadActiveScheduleData(this.props.academicsSessionId);
+		if(teacherId){
+			this.loadTeacherScheduleData(this.state.preDate);
+			this.loadActiveScheduleData(this.state.preDate);
 		}
-		this.setState({
-			popupBoxOpen: true 
-		});
+		this.setState({ popupBoxOpen: true });
 	};
 
 	handleClose = () => {
@@ -420,6 +476,8 @@ class F31FormPopupComponent extends Component {
 			preDay: "",
 			preTimeStart: "",
 			preTimeDuration: "",
+			roomsId: "",
+			roomsObject: null,
 			rowDataArray: [],
 			teacherScheduleData: [],
 			teacherScheduleObj: {},
@@ -489,7 +547,7 @@ class F31FormPopupComponent extends Component {
 		return isValid;
 	};
 
-	handeAddCourseRow = () => {
+	handeAddCourseRow = async () => {
 		if (
 			!this.isPreDateValid() ||
 			!this.isPreDayValid() ||
@@ -497,6 +555,19 @@ class F31FormPopupComponent extends Component {
 			!this.isPreTimeDurationValid() ||
 			!this.isRoomsValid()
 		) {
+			return;
+		}
+		
+		// ✅ Await the validation result properly
+		const isValid = await this.dayScheduleValidate(
+			this.state.preDayId,
+			this.state.preTimeStart,
+			this.state.preTimeDuration,
+			this.state.roomsObject?.ID,
+			this.state.preDate
+		);
+
+		if (!isValid) {
 			return;
 		}
 
@@ -574,8 +645,10 @@ class F31FormPopupComponent extends Component {
 			rowDataArray: this.state.isCopyMode ? this.state.rowDataArray : [],
 		});
 		sessionStorage.setItem('sessionSelectedDate', date);
+		this.loadTeacherScheduleData(date);
+		this.loadActiveScheduleData(date);
 		if (!this.state.isCopyMode) {
-			this.loadData(this.props.sectionId, this.getDateInString(date));
+			this.loadData(format(date, 'dd-MM-yyyy'));
 		}
 	};
 
@@ -609,19 +682,22 @@ class F31FormPopupComponent extends Component {
 		}
 		this.setState({
 			isCopyMode: !this.state.isCopyMode,
-			isReadOnly: !this.state.isReadOnly,
-			//preDate: tomorrowDate
+			isReadOnly: !this.state.isReadOnly
 		});
 		if (this.state.isCopyMode) {
-			this.loadData(this.props.sectionId, this.props.activeDate);
+			
+			this.loadTeacherScheduleData(this.props.activeDateInNumber);
+			this.loadActiveScheduleData(this.props.activeDateInNumber);
+			this.loadData(this.props.activeDate);
 			this.setState({
 				preDate: this.props.activeDateInNumber,
 				upcomingSchedule: this.props.activeDateInNumber
 			});
 		} else {
 			if (Date.now() > this.state.preDate) {
-				//console.log(this.state.upcomingSchedule+" "+new Date(this.state.preDate));
 				this.setState({ preDate: tomorrowDate });
+				this.loadTeacherScheduleData(tomorrowDate);
+				this.loadActiveScheduleData(tomorrowDate);
 			}
 		}
 	}
@@ -631,7 +707,7 @@ class F31FormPopupComponent extends Component {
 			preDate: dateId,
 			rowDataArray: []
 		});
-		this.loadData(this.props.sectionId, dateLabel);
+		this.loadData(dateLabel);
 	}
 
 	handleSave = () => {
@@ -640,15 +716,15 @@ class F31FormPopupComponent extends Component {
 	}
 
 	componentDidMount() {
+		const { preDaysMenuItems, isReadOnly, isLoading, academicsSessionId, teacherId, sectionId } = this.props;
 		this.setState({
-			// preTimeStartMenuItems: this.props.preTimeStartMenuItems,
-			preDaysMenuItems: this.props.preDaysMenuItems,
-			isReadOnly: this.props.isReadOnly,
-			isLoading: this.props.isLoading
+			isReadOnly: isReadOnly,
+			isLoading: isLoading,
+			preDaysMenuItems: preDaysMenuItems,
+			academicsSessionId: academicsSessionId,
+			teacherId: teacherId,
+			sectionId: sectionId
 		});
-		// if (this.state.recordId != 0) {
-		//   this.loadData(this.state.recordId);
-		// }
 	}
 
 	render() {
@@ -690,47 +766,40 @@ class F31FormPopupComponent extends Component {
 					onClose={this.handleClose}
 					aria-labelledby="responsive-dialog-title"
 				>
-					<span style={{ color: "#ffffff" }}>
-						________________________________________________________________________________________________________________________________________________________
-					</span>
 					<DialogTitle style={{ paddingBottom: 0 }} id="responsive-dialog-title">
-						<IconButton
+						<Button
 							aria-label="close"
 							onClick={this.handleClose}
+							color="secondary"
 							style={{
 								position: "relative",
-								top: "-35px",
+								top: "-16px",
 								right: "-24px",
 								float: "right",
+								minWidth: 32
 							}}
 						>
 							<CloseOutlinedIcon color="secondary" />
-						</IconButton>
+						</Button>
 						<Typography
 							style={{
 								color: "#1d5f98",
 								fontWeight: 600,
-								borderBottom: "1px solid rgb(58, 127, 187, 0.3)",
 								fontSize: 20,
 							}}
 						>
 							Timetable
 						</Typography>
-						<Typography color="primary">
-							{this.props.courseLabel +
-								" - " +
-								this.props.sectionTypeLabel +
-								" - " +
-								this.props.sectionLabel +
-								" - " +
-								this.props.teacherName}
-						</Typography>
-						<TextField
-							type="hidden"
-							id="teacherId"
-							name="teacherId"
-							defaultValue={teacherId}
+						<Divider 
+							style={{
+								backgroundColor: 'rgb(58, 127, 187)',
+								opacity: '0.3'
+							}} 
 						/>
+						<Typography color="primary" style={{padding: "4px 0px 8px 0px"}}>
+							{this.props.courseLabel + " - " + this.props.sectionTypeLabel + " - " + this.props.sectionLabel + " - " + this.props.teacherName} 
+						</Typography>
+						<TextField type="hidden" id="teacherId" name="teacherId" defaultValue={teacherId} />
 						<span style={{ float: "right" }}>
 							<span style={{ display: "flex" }}>
 								{this.props.isReadOnly &&
@@ -800,19 +869,6 @@ class F31FormPopupComponent extends Component {
 										style={{ float: "right", marginTop: -25 }}
 										onClick={() => this.handleToggleIsCopyMode()}
 									/>
-									{/* 
-								<Button 
-									variant="contained" 
-									color="primary" 
-									size="small"
-									style={{width: 115, marginTop:-40}}
-									onClick={()=>this.handleToggleIsCopyMode()}
-									disabled={this.state.isCopyMode}
-								>
-									Edit
-								</Button> 
-								*/}
-
 								</Fragment>
 								:
 								""
@@ -947,6 +1003,7 @@ class F31FormPopupComponent extends Component {
 											onChange={this.onAutoCompleteChange}
 											options={this.props.values.roomsData}
 											renderInput={(params) => <TextField error={!!this.state.roomsObjectError} variant="outlined" placeholder="Rooms" {...params} />}
+											disabled={!this.state.preTimeStart}
 										/>
 									</Grid>
 									<Grid item xs={12} md={4}>
@@ -965,12 +1022,17 @@ class F31FormPopupComponent extends Component {
 											aria-label="Add"
 											component="span"
 											onClick={this.handeAddCourseRow}
+											disabled={this.state.isDayScheduleLoading}
 										>
-											<Tooltip title="Add New">
-												<Fab color="primary" aria-label="add" size="small">
-													<AddIcon />
-												</Fab>
-											</Tooltip>
+											{this.state.isDayScheduleLoading ? 
+												<CircularProgress size={24} /> 
+												:
+												<Tooltip title="Add New">
+													<Fab color="primary" aria-label="add" size="small">
+														<AddIcon />
+													</Fab>
+												</Tooltip>
+											}
 										</IconButton>
 									</Grid>
 									<Grid item xs={12}>

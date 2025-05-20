@@ -41,7 +41,7 @@ class F31FormTableComponent extends Component {
         "lessThan",
         "lessThanOrEqual",
       ],
-      pageSizes: [5, 10, 15, 20],
+      pageSizes: [5, 10, 25, 50, 100],
       defaultSorting: [],
       sortingStateColumnExtensions: [
         { columnName: "action", sortingEnabled: false },
