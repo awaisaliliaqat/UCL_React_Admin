@@ -28,8 +28,6 @@ import EditStudentInformation from "./Contents/Decision/EditStudentInformation/E
 import EditStudentInformationAction from "./Contents/Decision/EditStudentInformation/Chunks/EditStudentInformationAction";
 import DefineTeacherFrom from "./Contents/Forms/DefineTeacher/DefineTeacherForm";
 import DefineTeacherReports from "./Contents/Forms/DefineTeacher/DefineTeacherReports";
-import CreateSectionForm from "./Contents/Forms/CreateSection/CreateSectionForm";
-import CreateSectionReports from "./Contents/Forms/CreateSection/CreateSectionReports";
 import AssignSectionToStudentFrom from "./Contents/Forms/AssignSectionToStudent/AssignSectionToStudentForm";
 import AssignSectionToTeacherForm from "./Contents/Forms/AssignSectionToTeacher/AssignSectionToTeacherForm";
 import StudentCourseSelection from "./Contents/Forms/StudentCourseSelection/StudentCourseSelection";
@@ -53,6 +51,8 @@ import F20Reports from "./Contents/Forms/F20Reports";
 import F24Form from "./Contents/Forms/F24Form";
 import F24Reports from "./Contents/Forms/F24Reports";
 import F25Form from "./Contents/Forms/F25Form";
+import F26Form from "./Contents/Forms/F26Form/F26Form";
+import F26Reports from "./Contents/Forms/F26Form/F26Reports";
 import F27Form from "./Contents/Forms/F27Form";
 import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form/F31Form";
@@ -77,7 +77,8 @@ import GradedDiscussionBoardStudentList from "./Contents/LMS/GradedDiscussionBoa
 import GradedDiscussionSummary from "./Contents/Reports/GradedDiscussionSummary/GradedDiscussionSummary";
 import R41Reports from "./Contents/Forms/R41Reports";
 import R46Reports from "./Contents/Forms/R46Reports";
-import R47Reports from "./Contents/Forms/R47Reports";
+// import R47Reports from "./Contents/Forms/R47Reports";
+import R47Reports from "./Contents/Reports/R47Reports/R47Reports";
 import R49Reports from "./Contents/Forms/R49Reports";
 import R54Reports from "./Contents/Forms/R54Reports";
 import R63Reports from "./Contents/Forms/R63Reports";
@@ -187,8 +188,8 @@ import F34ReportsForCentricDashboard from "./Contents/Forms/F34ReportsForCentric
 import F205ReportsForCentricDashboard from "./Contents/Forms/F205ReportsForCentricDashboard";
 import F201FormForCentricDashboard from "./Contents/Forms/F201FormForCentricDashboard";
 import F202FormForCentricDashboard from "./Contents/Forms/F202FormForCentricDashboard";
-import F315DefineEmployeesPayroll from "./Contents/Forms/DefineEmployeesPayroll/F315DefineEmployeesPayroll";
-import R316EmployeesPayrollView from "./Contents/Forms/DefineEmployeesPayroll/R316EmployeesPayrollView";
+import F315Form from "./Contents/Forms/F315Form/F315DefineEmployeesPayroll";
+import R316Reports from "./Contents/Reports/R316Reports/R316EmployeesPayrollView";
 import R317TeacherCoursesHistory from "./Contents/Reports/TeacherCoursesHistory/R317TeacherCoursesHistory";
 import R318EmployeeActivationHistory from "./Contents/Reports/EmployeeActivationHistory/R318EmployeeActivationHistory";
 import F319DefineEmployeeSalaryAllowancesLabelFrom from "./Contents/Forms/DefineEmployeeSalaryAllowancesLabel/F319DefineEmployeeSalaryAllowancesLabelFrom";
@@ -2031,12 +2032,12 @@ const Dashboard = (props) => {
 			  />
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="F315DefineEmployeesPayroll"
+				name="F315Form"
 				exact
-				path="/dashboard/F315DefineEmployeesPayroll/:recordId"
+				path="/dashboard/F315Form/:recordId"
 				render={(props) => {
 				  return (
-					<F315DefineEmployeesPayroll
+					<F315Form
 					  {...props}
 					  isDrawerOpen={isDrawerOpen}
 					/>
@@ -2136,12 +2137,12 @@ const Dashboard = (props) => {
 
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="R316EmployeesPayrollView"
+				name="R316Reports"
 				exact
-				path="/dashboard/R316EmployeesPayrollView"
+				path="/dashboard/R316Reports"
 				render={(props) => {
 				  return (
-					<R316EmployeesPayrollView
+					<R316Reports
 					  {...props}
 					  isDrawerOpen={isDrawerOpen}
 					/>
@@ -2208,21 +2209,21 @@ const Dashboard = (props) => {
 			  />
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="create-sections"
+				name="F26Form"
 				exact
-				path="/dashboard/create-sections/:recordId"
+				path="/dashboard/F26Form/:recordId"
 				render={(props) => {
 				  return (
-					<CreateSectionForm {...props} isDrawerOpen={isDrawerOpen} />
+					<F26Form {...props} isDrawerOpen={isDrawerOpen} />
 				  );
 				}}
 			  />
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="create-sections"
+				name="F26Form"
 				exact
-				path="/dashboard/section-reports"
-				component={CreateSectionReports}
+				path="/dashboard/F26Reports"
+				component={F26Reports}
 			  />
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}

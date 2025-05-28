@@ -62,7 +62,7 @@ class R316EmployeesPayrollView extends Component {
                   deleteRecord={this.DeleteData}
                   editRecord={() =>
                     window.location.replace(
-                      `#/dashboard/F315DefineEmployeesPayroll/${id}`
+                      `#/dashboard/F315Form/${id}`
                     )
                   }
                 />
@@ -167,8 +167,8 @@ class R316EmployeesPayrollView extends Component {
 
   render() {
     const columns = [
-      { name: "id", title: "ID" },
-      { name: "userLabel", title: "Employee" },
+      { name: "id", title: "SR#" },
+      { name: "userLabel", title: "Employee" , getCellValue : rowData => (`${rowData.userId} - ${rowData.userLabel}`)},
       { name: "payrollMonths", title: "Number of Months" },
       { name: "perMonthSalary", title: "Per Month Salary" },
       { name: "perHourRate", title: "Per Hour Rate" },
@@ -207,7 +207,7 @@ class R316EmployeesPayrollView extends Component {
               <Tooltip title="Back">
                 <IconButton
                   onClick={() =>
-                    window.location.replace("#/dashboard/F315DefineEmployeesPayroll/0")
+                    window.location.replace("#/dashboard/F315Form/0")
                   }
                 >
                   <ArrowBackIcon fontSize="small" color="primary" />
