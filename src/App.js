@@ -8,11 +8,11 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#174A84",
+      main: "rgb(23, 74, 132)", //"#174A84",
     },
     secondary: {
       //main: '#b43329',
-      main: "#ff4040",
+      main: "rgb(255, 64, 64)", //"#ff4040",
     },
   },
   typography: {
