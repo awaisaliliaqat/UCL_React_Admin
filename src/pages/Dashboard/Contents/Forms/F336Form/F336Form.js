@@ -50,6 +50,8 @@ class F336Form extends Component {
 		super(props);
 		this.state = {
 			isLoading: false,
+			isLoadingSave: false,
+			isLoadingApproved: false,
 			recordId: null,
 			isApprovedByHead: 0,
 
@@ -194,7 +196,7 @@ class F336Form extends Component {
 		if (!IsEmpty(e)) {
 			e.preventDefault();
 		}
-		this.setState({ isLoading: true });
+		this.setState({ isLoadingSave: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceSave`;
 		const { teachersAttendanceSheetData } = this.state;
 		let array = [];
@@ -227,6 +229,7 @@ class F336Form extends Component {
 				const { CODE, USER_MESSAGE, SYSTEM_MESSAGE } = json;
 				if (CODE === 1) {
 					this.handleOpenSnackbar("Saved", "success");
+					this.setState({teachersAttendanceSheetData : []});
 					this.onSearchClick();
 				} else {
 					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br />{USER_MESSAGE}</span>, "error");
@@ -244,7 +247,7 @@ class F336Form extends Component {
 				}
 			}
 		);
-		this.setState({ isLoading: false });
+		this.setState({ isLoadingSave: false });
 	};
 
 	getAcademicSessions = async () => {
@@ -347,7 +350,7 @@ class F336Form extends Component {
 		if (!IsEmpty(e)) {
 			e.preventDefault();
 		}
-		this.setState({ isLoading: true });
+		this.setState({ isLoadingApproved: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayrollAttendanceSendForApproval?attendanceSheetId=${this.state.attendanceSheetId}`;
 		await fetch(url, {
 			method: "POST",
@@ -366,8 +369,9 @@ class F336Form extends Component {
 			(json) => {
 				const { CODE, USER_MESSAGE, SYSTEM_MESSAGE } = json;
 				if (CODE === 1) {
-					this.handleOpenSnackbar("Approved", "success");
-					this.onSearchClick();
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
+					// this.onSearchClick();
+					this.setState({isExisted:1});
 				} else {
 					this.onSearchClick();
 					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br />{USER_MESSAGE}</span>,"error");
@@ -385,7 +389,7 @@ class F336Form extends Component {
 				}
 			}
 		);
-		this.setState({ isLoading: false });
+		this.setState({ isLoadingApproved: false });
 	};
 
 	onClearAllData = () => {
@@ -1062,18 +1066,13 @@ class F336Form extends Component {
 						// leftButtonHide
 						leftButtonText="Save"
 						leftButtonHide={false}
+						disableLeftButton={this.state.isLoading || this.state.isLoadingSave || this.state.isLoadingApproved || this.state.isExisted === 1}
 						bottomLeftButtonAction={() => this.onSaveClick()}
-						right_button_text={
-							this.state.isApproved ? "Saved" : "Send To Approval"
-						}
-						disableLeftButton={this.state.isExisted === 1}
-						disableRightButton={
-							this?.state?.isExisted === 1 ||
-							this?.state?.attendanceSheetId === 0
-						}
-						loading={this.state.isLoading}
-						isDrawerOpen={this.props.isDrawerOpen}
+						right_button_text={ this.state.isApproved ? "Saved" : "Send To Approval" }
 						bottomRightButtonAction={() => this.onApproveClick()}
+						disableRightButton={ this?.state?.isExisted === 1 || this?.state?.attendanceSheetId === 0 }
+						isDrawerOpen={this.props.isDrawerOpen}
+						loading={this.state.isLoading || this.state.isLoadingSave || this.state.isLoadingApproved}
 					/>
 					{this.state.openDialog && this.state.selectedStudent.length !== 0 && (
 						<Dialog
