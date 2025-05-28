@@ -51,7 +51,7 @@ function BottomBar(props) {
             disabled={props.disableRightButton || props.loading}
             onClick={() => bottomRightButtonAction(props)}
             style={{
-              display: props.hideRightButton ? "none" : "block",
+              display: props.hideRightButton ? "none" : "flex",
             }}
           >
             {props.loading ? (
