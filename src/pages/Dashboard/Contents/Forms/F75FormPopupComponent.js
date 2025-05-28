@@ -403,7 +403,6 @@ class F75FormPopupComponent extends Component {
                     required
                     fullWidth
                     select
-                    helperText={this.state.academicSessionIdError ? this.state.academicSessionIdError : " "}
                     inputProps={{
                       id:"academicSessionIdSA"
                     }}
@@ -427,7 +426,7 @@ class F75FormPopupComponent extends Component {
                     onChange={this.onHandleChange}
                     value={this.state.preModuleId}
                     error={!!this.state.preModuleIdError}
-                    helperText={this.state.preModuleIdError ? this.state.preModuleIdError : " "}
+                    helperText={this.state.preModuleIdError}
                     required
                     fullWidth
                     select
