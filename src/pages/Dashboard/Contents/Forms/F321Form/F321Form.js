@@ -129,6 +129,13 @@ class F321Form extends Component {
 		this.setState({ isOpenSnackbar: false });
 	};
 
+	normalizeAmount = (val) => {
+		const num = parseFloat(val);
+		if (!Number.isFinite(num)) return 0;
+		const fixed = Number(num.toFixed(2));
+		return fixed % 1 === 0 ? Math.trunc(fixed) : fixed;
+	};
+
 	getDataForMonths = (data) => {
 		const formattedArray = Object.entries(data[0]).map( ([monthName, dates]) => ({ fromDate: dates[0], toDate: dates[1], monthName, }) );
 		const sortedArray = formattedArray.sort(
@@ -276,22 +283,22 @@ class F321Form extends Component {
 						const allowances = this.state.allowances.map((item) => ({ ...item, allowanceValue: 0, }));
 						const deductions = this.state.deductions.map((item) => ({ ...item, deductionValue: 0, }));
 						const transformedData = data.map((item) => {
-							const overTimeAmount = Number.isFinite(parseFloat(item.overTimeAmount)) ? parseFloat(item.overTimeAmount) : 0;
-							const absentDaysAmount = Number.isFinite(parseFloat(item.lateDaysAmount)) ? parseFloat(item.lateDaysAmount) : 0;
-							const lateDaysAmount = Number.isFinite(parseFloat(item.lateDaysAmount)) ? parseFloat(item.lateDaysAmount) : 0;
-							const totalGrossSalary = item.perMonthSalary + overTimeAmount;
-							const totalNetSalary = totalGrossSalary - absentDaysAmount - lateDaysAmount;
+							const overTimeAmount = this.normalizeAmount(item.overTimeAmount);
+							const absentDaysAmount = this.normalizeAmount(item.absentDaysAmount);
+							const lateDaysAmount = this.normalizeAmount(item.lateDaysAmount);
+							const totalGrossSalary = this.normalizeAmount(item.perMonthSalary + overTimeAmount);
+							const totalNetSalary = this.normalizeAmount(totalGrossSalary - absentDaysAmount - lateDaysAmount);
 							return {
 								employeeId: item.userId.toString(),
 								userLabel: item.userLabel,
 								payrollMonths: item.payrollMonths,
-								perMonthSalary: Number(item.perMonthSalary) || 0,
+								perMonthSalary: this.normalizeAmount(item.perMonthSalary),
 								homeRent: 0,
-								fakeGrossSallary: Number(item.perMonthSalary) || 0,
+								fakeGrossSallary: this.normalizeAmount(item.perMonthSalary),
 								id: item.userId,
 								//grossSalary: Number(item.perMonthSalary) || 0,
-								grossSalary: Number(totalGrossSalary) || 0,
-								netSalary: Number(totalNetSalary)?.toFixed(2) || 0,
+								grossSalary: this.normalizeAmount(totalGrossSalary),
+								netSalary: this.normalizeAmount(totalNetSalary),
 								leaveInCashDays: 0,
 								leaveInCashAmount: 0,
 								loan: 0,
@@ -447,12 +454,6 @@ class F321Form extends Component {
 		this.setState({ [name]: value });
 	};
 
-	componentDidMount() {
-		this.props.setDrawerOpen(false);
-		this.getSessionData();
-		this.loadAllData();
-	}
-
 	loadAllData = async () => {
 		this.setState({
 			isColumnsLoading: true,
@@ -594,6 +595,12 @@ class F321Form extends Component {
 	viewReport = () => {
 		window.location = "#/dashboard/F321Reports";
 	};
+
+	componentDidMount() {
+		this.props.setDrawerOpen(false);
+		this.getSessionData();
+		this.loadAllData();
+	}
 
 	render() {
 		const { classes } = this.props;
