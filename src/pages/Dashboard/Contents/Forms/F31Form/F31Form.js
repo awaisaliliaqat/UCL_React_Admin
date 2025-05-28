@@ -12,6 +12,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { addMinutes, format, isBefore } from 'date-fns';
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import { isAfter, parseISO } from 'date-fns';
 
 const styles = () => ({
 	root: {
@@ -340,6 +341,15 @@ class F31Form extends Component {
 							let rowData = json.DATA[i];
 							let teacherName = json.DATA[i].teacherName;
 							let activeDate = json.DATA[i].activeDate;
+							let isFutureActiveTimeTableExist = false;
+							const lastDateRaw = json.DATA[i]?.effectiveDatesArray?.at(-1)?.id;
+							// Check if it's a valid number (timestamp)
+							if (typeof lastDateRaw === 'number' && !isNaN(lastDateRaw)) {
+								const date = new Date(lastDateRaw);
+								if (isAfter(date, new Date())) {
+									isFutureActiveTimeTableExist = true;
+								}
+							}
 							json.DATA[i].action = (
 								teacherName ?
 									<Fragment>
@@ -395,7 +405,7 @@ class F31Form extends Component {
 											effectiveDatesArray={json.DATA[i].effectiveDatesArray || []}
 											isLoading={this.state.isLoading}
 										/>
-										{activeDate ?
+										{isFutureActiveTimeTableExist ?
 											<IconButton
 												aria-label="Remove"
 												component="span"
@@ -668,6 +678,7 @@ class F31Form extends Component {
 		this.rowloading(1, data);
 		let formData = new FormData();
 		formData.append("sectionId", data.sectionId);
+		formData.append("activatedOn", data.effectiveDatesArray.at(-1)?.label || format(new Date(), 'dd-MM-yyyy'));
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsScheduleDeactivate`;
 		await fetch(url, {
 			method: "POST",
@@ -687,6 +698,7 @@ class F31Form extends Component {
 					if (json.CODE === 1) {
 						this.rowloading(0, data);
 						this.handleOpenSnackbar(json.USER_MESSAGE, "success");
+						this.loadCourses(this.state.academicSessionId, this.state.programmeGroupId);
 					} else {
 						this.loadCourses(this.state.academicSessionId, this.state.programmeGroupId);
 						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error");
