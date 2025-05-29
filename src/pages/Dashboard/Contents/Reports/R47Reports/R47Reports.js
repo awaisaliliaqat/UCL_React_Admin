@@ -210,6 +210,7 @@ class R46Reports extends Component {
 	getData = async (programGroupId, effectiveDate) => {
 		this.setState({ isLoading: true });
 		let data = new FormData();
+		data.append("academicSessionId", this.state.academicSessionId);
 		data.append("programmeGroupId", programGroupId);
 		data.append("effectiveDate", effectiveDate);
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/lms/C47CommonProgrammesGroupTimeTableView`;
