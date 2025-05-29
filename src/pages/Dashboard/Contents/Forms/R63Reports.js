@@ -41,6 +41,7 @@ class R46Reports extends Component {
 		super(props);
 		this.state = {
 			isLoading: false,
+			isLoadingDates: false,
 			isLoadingRooms: false,
 			showTableFilter: false,
 			showSearchBar: false,
@@ -117,7 +118,7 @@ class R46Reports extends Component {
 	getEffectiveDates = async (courseId) => {
 		let data = new FormData();
 		data.append("classRoomId", courseId);
-		this.setState({ isLoading: true });
+		this.setState({ isLoadingDates: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C63CommonAcademicsScheduleTimeTableEffectiveDatesView`;
 		await fetch(url, {
 			method: "POST",
@@ -158,7 +159,7 @@ class R46Reports extends Component {
 					}
 				}
 			);
-		this.setState({ isLoading: false });
+		this.setState({ isLoadingDates: false });
 	};
 
 	getData = async (courseId, effectiveDate) => {
@@ -365,6 +366,13 @@ class R46Reports extends Component {
 								fullWidth
 								select
 								disabled={!this.state.courseId}
+								InputProps={{
+									endAdornment: this.state.isLoadingDates && (
+										<div style={{ display: 'flex', alignItems: 'center', paddingRight: 16 }}>
+											<CircularProgress size={20} />
+										</div>
+									)
+								}}
 							>
 								{this.state.effectiveDateMenuItems && !this.state.isLoading ? (
 									this.state.effectiveDateMenuItems.map((dt, i) => (
