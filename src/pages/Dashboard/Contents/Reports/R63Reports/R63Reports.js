@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { Typography, TextField, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Divider, CircularProgress, Grid, } from "@material-ui/core";
-import LoginMenu from "../../../../components/LoginMenu/LoginMenu";
-import CustomizedSnackbar from "../../../../components/CustomizedSnackbar/CustomizedSnackbar";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import R63ReportsTable from "./R63ReportsTable";
 
