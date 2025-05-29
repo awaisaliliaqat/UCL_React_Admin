@@ -12,8 +12,7 @@ import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/Cus
 import { alphabetExp, numberExp, emailExp, } from "../../../../../utils/regularExpression";
 import PropTypes from "prop-types";
 import DefineEmployeeRolesSection from "./Chunks/DefineEmployeeRolesSection";
-import { DatePicker, KeyboardTimePicker } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+import { DatePicker } from "@material-ui/pickers";
 
 const styles = () => ({
 	root: {
@@ -159,9 +158,10 @@ class DefineEmployeeForm extends Component {
 		this.getEmployeesRolesData();
 		this.getEmployeesReportingToData();
 		this.getUserInactiveReasonsData();
-		//this.getEmployeesDesignationsData([], [], []);
 		if (this.state.recordId != 0) {
 			this.loadData(this.state.recordId);
+		} else {
+			this.getEmployeesDesignationsData([], [], []);
 		}
 	}
 
@@ -277,7 +277,7 @@ class DefineEmployeeForm extends Component {
 									employeesDepartmentsArray,
 									employeesSubDepartmentsArray,
 									employeesDesignationsArray,
-									inactiveReasonId,
+									inactiveReasonId: inactiveReasonId || "",
 									otherReason,
 									employeeComments,
 									isActive,
@@ -421,7 +421,6 @@ class DefineEmployeeForm extends Component {
 			firstNameError,
 			lastNameError,
 			shiftError,
-
 			displayNameError,
 			mobileNoError,
 			secondaryMobileNoError,
@@ -591,13 +590,15 @@ class DefineEmployeeForm extends Component {
 		} else {
 			employeesEntitiesArrayError = "";
 		}
-
-		// if (!(this.state.employeesDesignationsArray?.length > 0)) {
-		//   isValid = false;
-		//   employeesDesignationsArrayError = "Please select designations";
-		// } else {
-		//   employeesDesignationsArrayError = "";
-		// }
+		
+		if(this.state.recordId==0){
+			if (!(this.state.employeesDesignationsArray?.length > 0)) {
+				isValid = false;
+				employeesDesignationsArrayError = "Please select designations";
+			} else {
+				employeesDesignationsArrayError = "";
+			}
+		}
 
 		if (this.state.isActive == 0) {
 			if (!this.state.inactiveReasonId) {
@@ -645,7 +646,7 @@ class DefineEmployeeForm extends Component {
 		// }
 		// }
 		// }
-
+		console.info(isValid);
 		this.setState({
 			firstNameError,
 			lastNameError,
@@ -1241,10 +1242,12 @@ class DefineEmployeeForm extends Component {
 		for (let i = 0; i < subDepartmentIdsArray.length; i++) {
 			data.append("subDepartmentIds", subDepartmentIdsArray[i]["id"]);
 		}
-		// const designationIdsArray = this.state.employeesDesignationsArray || [];
-		// for (let i = 0; i < designationIdsArray.length; i++) {
-		//   data.append("designationsIds", designationIdsArray[i]["id"]);
-		// }
+		if (this.state.recordId === 0) {
+			const designationIdsArray = this.state.employeesDesignationsArray || [];
+			for (let i = 0; i < designationIdsArray.length; i++) {
+				data.append("designationsIds", designationIdsArray[i]["id"]);
+			}
+		}
 		data.append("reportingToId", this.state.reportingTo);
 		data.append("coordinationId", this.state.coordinationId);
 		data.append("isBankAccount", !this.state.isCheque ? 1 : 0);
@@ -1379,7 +1382,7 @@ class DefineEmployeeForm extends Component {
 									variant="outlined"
 									onChange={this.onHandleChange}
 									value={this.state.firstName}
-									error={this.state.firstNameError}
+									error={!!this.state.firstNameError}
 									helperText={this.state.firstNameError}
 								/>
 							</Grid>
@@ -1393,7 +1396,7 @@ class DefineEmployeeForm extends Component {
 									variant="outlined"
 									onChange={this.onHandleChange}
 									value={this.state.lastName}
-									error={this.state.lastNameError}
+									error={!!this.state.lastNameError}
 									helperText={this.state.lastNameError}
 								/>
 							</Grid>
@@ -1407,7 +1410,7 @@ class DefineEmployeeForm extends Component {
 									variant="outlined"
 									onChange={this.onHandleChange}
 									value={this.state.displayName}
-									error={this.state.displayNameError}
+									error={!!this.state.displayNameError}
 									helperText={this.state.displayNameError}
 								/>
 							</Grid>
@@ -1422,7 +1425,7 @@ class DefineEmployeeForm extends Component {
 									onChange={this.onHandleChange}
 									value={this.state.mobileNo}
 									helperText={this.state.mobileNoError}
-									error={this.state.mobileNoError}
+									error={!!this.state.mobileNoError}
 									inputProps={{
 										maxLength: 11,
 									}}
@@ -1438,7 +1441,7 @@ class DefineEmployeeForm extends Component {
 									onChange={this.onHandleChange}
 									value={this.state.secondaryMobileNo}
 									helperText={this.state.secondaryMobileNoError}
-									error={this.state.secondaryMobileNoError}
+									error={!!this.state.secondaryMobileNoError}
 									inputProps={{
 										maxLength: 11,
 									}}
@@ -1455,7 +1458,7 @@ class DefineEmployeeForm extends Component {
 									onChange={this.onHandleChange}
 									value={this.state.email}
 									helperText={this.state.emailError}
-									error={this.state.emailError}
+									error={!!this.state.emailError}
 								/>
 							</Grid>
 							<Grid item xs={4}>
@@ -1468,7 +1471,7 @@ class DefineEmployeeForm extends Component {
 									onChange={this.onHandleChange}
 									value={this.state.secondaryEmail}
 									helperText={this.state.secondaryEmailError}
-									error={this.state.secondaryEmailError}
+									error={!!this.state.secondaryEmailError}
 								/>
 							</Grid>
 							<Grid item xs={4}>
@@ -1482,7 +1485,7 @@ class DefineEmployeeForm extends Component {
 									onChange={this.onHandleChange}
 									value={this.state.discipline}
 									helperText={this.state.disciplineError}
-									error={this.state.disciplineError}
+									error={!!this.state.disciplineError}
 								/>
 							</Grid>
 							<Grid item xs={4}>
@@ -1496,7 +1499,7 @@ class DefineEmployeeForm extends Component {
 									onChange={this.onHandleChange}
 									value={this.state.jobStatusId}
 									helperText={this.state.jobStatusIdError}
-									error={this.state.jobStatusIdError}
+									error={!!this.state.jobStatusIdError}
 									select
 								>
 									{this.state.jobStatusIdData.map((item) => {
@@ -1559,7 +1562,7 @@ class DefineEmployeeForm extends Component {
 										onChange={this.onHandleChange}
 										value={this.state.password}
 										helperText={this.state.passwordError}
-										error={this.state.passwordError}
+										error={!!this.state.passwordError}
 										InputProps={{
 											endAdornment: (
 												<InputAdornment position="end">
@@ -1704,7 +1707,7 @@ class DefineEmployeeForm extends Component {
 									onChange={this.onHandleChange}
 									value={this.state.shiftId}
 									helperText={this.state.shiftError}
-									error={this.state.shiftError}
+									error={!!this.state.shiftError}
 									disabled={this?.state?.recordId !== 0}
 									select
 								>
@@ -1763,55 +1766,36 @@ class DefineEmployeeForm extends Component {
 									inputVariant="outlined"
 								/>
 							</Grid> */}
-							<Grid
-								style={{ display: "flex" }}
-								alignItems="center"
-								item
-								xs={12}
-							>
-								<Grid
-									style={{ display: "flex" }}
-									alignItems="center"
-									item
-									xs={4}
-								>
-									<Grid
-										component="label"
-										container
-										style={{
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-										}}
-										spacing={1}
-									>
-										<Grid item>Inactive</Grid>
-										<Grid item>
-											<Switch
-												classes={{
-													track: classes.switch_track,
-													switchBase: classes.switch_base,
-													colorPrimary: classes.switch_primary,
-												}}
-												id="isActive"
-												color="primary"
-												checked={this.state.isActive == 1}
-												onChange={(e, checked) =>
-													this.onHandleChange({
-														target: {
-															name: "isActive",
-															value: checked ? 1 : 0,
-														},
-													})
-												}
-											/>
-										</Grid>
-										<Grid item>Active</Grid>
+							<Grid item xs={12}>
+								<Grid container justifyContent="flex-start" alignItems="center"	spacing={1}>
+									<Grid item xs={4}>
+										<Typography component="span">
+											Inactive
+										</Typography>
+										<Switch
+											classes={{
+												track: classes.switch_track,
+												switchBase: classes.switch_base,
+												colorPrimary: classes.switch_primary,
+											}}
+											id="isActive"
+											color="primary"
+											checked={this.state.isActive == 1}
+											onChange={(e, checked) =>
+												this.onHandleChange({
+													target: {
+														name: "isActive",
+														value: checked ? 1 : 0,
+													},
+												})
+											}
+										/>
+										<Typography component="span">
+											Active
+										</Typography>
 									</Grid>
-								</Grid>
-							</Grid>
-							{!this.state.isActive && (
-								<>
+									{!this.state.isActive && (
+									<>
 									<Grid item xs={4}>
 										<TextField
 											id="inactiveReasonId"
@@ -1835,7 +1819,6 @@ class DefineEmployeeForm extends Component {
 											})}
 										</TextField>
 									</Grid>
-
 									{this.state.inactiveReasonId == 1 && (
 										<>
 											<Grid item xs={12} md={4}>
@@ -1866,7 +1849,7 @@ class DefineEmployeeForm extends Component {
 											<Grid item xs={12}>
 												<TextField
 													multiline
-													rows={3}
+													minRows={3}
 													id="otherReason"
 													name="otherReason"
 													label="Other Reason"
@@ -1880,64 +1863,38 @@ class DefineEmployeeForm extends Component {
 												/>
 											</Grid>
 										</>
+										)}
+									</>
 									)}
-								</>
-							)}
-							<Grid
-								style={{ display: "flex" }}
-								alignItems="center"
-								item
-								xs={12}
-							>
-								<Grid
-									style={{ display: "flex" }}
-									alignItems="center"
-									item
-									xs={4}
-								>
-									<Grid
-										component="label"
-										container
-										style={{
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-										}}
-										spacing={1}
-									>
-										<Grid item>Bank Account</Grid>
-										<Grid item>
-											<Switch
-												classes={{
-													track: classes.switch_track,
-													switchBase: classes.switch_base,
-													colorPrimary: classes.switch_primary,
-												}}
-												id="isCheque"
-												color="primary"
-												checked={this.state.isCheque == 1}
-												onChange={(e, checked) =>
-													this.onHandleChange({
-														target: {
-															name: "isCheque",
-															value: checked ? 1 : 0,
-														},
-													})
-												}
-											/>
-										</Grid>
-										<Grid item>Cheque</Grid>
-									</Grid>
 								</Grid>
-								{!this.state.isCheque && (
-									<>
-										<Grid
-											item
-											xs={4}
-											style={{
-												marginLeft: "20px",
+							</Grid>
+							<Grid item xs={12}>
+								<Grid container	spacing={2}>
+									<Grid item xs={4}>
+										<Typography component="span">Bank Account</Typography>
+										<Switch
+											classes={{
+												track: classes.switch_track,
+												switchBase: classes.switch_base,
+												colorPrimary: classes.switch_primary,
 											}}
-										>
+											id="isCheque"
+											color="primary"
+											checked={this.state.isCheque == 1}
+											onChange={(e, checked) =>
+												this.onHandleChange({
+													target: {
+														name: "isCheque",
+														value: checked ? 1 : 0,
+													},
+												})
+											}
+										/>
+										<Typography component="span">Cheque</Typography>
+									</Grid>
+									{!this.state.isCheque && (
+										<>
+										<Grid item xs={4}>
 											<TextField
 												id="bankAccountNumber1"
 												name="bankAccountNumber1"
@@ -1950,36 +1907,30 @@ class DefineEmployeeForm extends Component {
 												value={this.state.bankAccountNumber1}
 												helperText={this.state.bankAccountNumber1Error}
 												error={!!this.state.bankAccountNumber1Error}
-											></TextField>
+											/>
 										</Grid>
-										<Grid
-											item
-											xs={4}
-											style={{
-												marginLeft: "20px",
-											}}
-										>
+										<Grid item xs={4}>
 											<TextField
 												id="bankAccountNumber2"
 												name="bankAccountNumber2"
 												label="Faysal Bank Account Number"
-												// required
 												type="number"
 												fullWidth
 												variant="outlined"
 												onChange={this.onHandleChange}
-												value={this.state.bankAccountNumber2}
+												value={this.state.bankAccountNumber2 || ""}
 												helperText={this.state.bankAccountNumber2Error}
 												error={!!this.state.bankAccountNumber2Error}
-											></TextField>
+											/>
 										</Grid>
-									</>
-								)}
+										</>
+									)}
+								</Grid>
 							</Grid>
 							<Grid item xs={12}>
 								<TextField
 									multiline
-									rows={3}
+									minRows={3}
 									id="employeeComments"
 									name="employeeComments"
 									label="Employee Comments"

@@ -264,7 +264,7 @@ const DefineEmployeeRolesSection = (props) => {
           }}
         />
       </Grid>
-      {/* 
+      
       <Grid item xs={6}>
         <Autocomplete
           multiple
@@ -276,6 +276,9 @@ const DefineEmployeeRolesSection = (props) => {
           fullWidth
           aria-autocomplete="none"
           disableCloseOnSelect
+          error={!!props.state.employeesDesignationsArrayError}
+          helperText={props.state.employeesDesignationsArrayError}
+          disabled={!!props.state.recordId}
           options={props.state.employeesDesignationsData}
           loading={props.state.employeesDesignationsDataLoading}
           value={props.state.employeesDesignationsArray}
@@ -323,7 +326,7 @@ const DefineEmployeeRolesSection = (props) => {
           }}
         />
       </Grid> 
-      */}
+     
     </Fragment>
   );
 };
