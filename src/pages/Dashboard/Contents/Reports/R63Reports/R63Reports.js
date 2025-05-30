@@ -52,6 +52,9 @@ class R46Reports extends Component {
 			isOpenSnackbar: false,
 			snackbarMessage: "",
 			snackbarSeverity: "",
+			academicSessionMenuItems:[],
+			academicSessionId: "",
+			academicSessionIdError: "",
 			coursesMenuItems: [],
 			courseId: "",
 			courseIdError: "",
@@ -75,6 +78,49 @@ class R46Reports extends Component {
 		}
 		this.setState({ isOpenSnackbar: false });
 	};
+
+	loadAcademicSessions = async () => {
+        this.setState({ isLoading: true });
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C10CommonAcademicSessionsView`;
+        await fetch(url, {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+          }),
+        })
+        .then((res) => {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+        })
+        .then(
+            (json) => {
+              if (json.CODE === 1) {
+                let array = json.DATA || [];
+                let res = array.find( (obj) => obj.isActive === 1 );
+                if(res){
+                  this.setState({academicSessionId:res.ID});
+                }
+                this.setState({ academicSessionMenuItems: array });
+              } else {
+                this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br/>{json.USER_MESSAGE}</span>,"error");
+              }
+            },
+            (error) => {
+              if (error.status == 401) {
+                this.setState({
+                  isLoginMenu: true,
+                  isReload: false,
+                });
+              } else {
+                console.log(error);
+                this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+              }
+            }
+        );
+    	this.setState({ isLoading: false });
+    };
 
 	getcourses = async () => {
 		this.setState({ isLoadingRooms: true });
@@ -117,6 +163,7 @@ class R46Reports extends Component {
 
 	getEffectiveDates = async (courseId) => {
 		let data = new FormData();
+		data.append("academicSessionId", this.state.academicSessionId);
 		data.append("classRoomId", courseId);
 		this.setState({ isLoadingDates: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C63CommonAcademicsScheduleTimeTableEffectiveDatesView`;
@@ -165,6 +212,7 @@ class R46Reports extends Component {
 	getData = async (courseId, effectiveDate) => {
 		this.setState({ isLoading: true });
 		let data = new FormData();
+		data.append("academicSessionId", this.state.academicSessionId);
 		data.append("classRoomId", courseId);
 		data.append("effectiveDate", effectiveDate);
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C63CommonAcademicsScheduleRoomSectionsTimeTableView`;
@@ -249,6 +297,7 @@ class R46Reports extends Component {
 
 	componentDidMount() {
 		this.props.setDrawerOpen(false);
+		this.loadAcademicSessions();
 		this.getcourses();
 	}
 
@@ -289,6 +338,25 @@ class R46Reports extends Component {
 							}}
 						/>
 					</Grid>
+						<Grid item xs={12} md={4}>
+							<TextField
+								id="academicSessionId"
+								name="academicSessionId"
+								variant="outlined"
+								label="Academic Session"
+								onChange={this.onHandleChange}
+								value={this.state.academicSessionId}
+								error={!!this.state.academicSessionIdError}
+								helperText={this.state.academicSessionIdError}
+								required
+								fullWidth
+								select
+							>
+							{this.state.academicSessionMenuItems.map((dt) => (
+								<MenuItem key={"academicSessionsData"+dt.ID} value={dt.ID}>{dt.Label}</MenuItem>
+							))}
+							</TextField>
+						</Grid>
 						<Grid item xs={12} md={4}>
 							<Autocomplete
 								fullWidth
