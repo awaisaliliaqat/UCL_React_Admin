@@ -270,7 +270,7 @@ class F31FormPopupComponent extends Component {
 		let data = new FormData();
 		data.append("academicsSessionId", this.state.academicsSessionId);
 		data.append("teacherId", this.state.teacherId);
-		data.append("effectiveDate", format(effectiveDate, 'dd-MM-yyyy'));
+		data.append("effectiveDate", format(this.state.preDate, 'dd-MM-yyyy'));
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsTeacherScheduleView`;
 		await fetch(url, {
@@ -454,17 +454,19 @@ class F31FormPopupComponent extends Component {
 		if (isReadOnly && activeDate) {
 			this.loadData(activeDate);
 			this.setState({ preDate: activeDateInNumber });
+			this.loadTeacherScheduleData(activeDateInNumber);
+			this.loadActiveScheduleData(activeDateInNumber);
 		} else {
 			let sessionSelectedDate = sessionStorage.getItem('sessionSelectedDate');
 			if (sessionSelectedDate) {
 				this.handleChangePreDate(new Date(sessionSelectedDate));
+				this.loadTeacherScheduleData(activeDateInNumber);
+				this.loadActiveScheduleData(activeDateInNumber);
 			} else {
 				this.loadData(format(this.state.preDate, 'dd-MM-yyyy'));
+				this.loadTeacherScheduleData(this.state.preDate);
+				this.loadActiveScheduleData(this.state.preDate);
 			}
-		}
-		if(teacherId){
-			this.loadTeacherScheduleData(this.state.preDate);
-			this.loadActiveScheduleData(this.state.preDate);
 		}
 		this.setState({ popupBoxOpen: true });
 	};
