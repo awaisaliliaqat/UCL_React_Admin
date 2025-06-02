@@ -821,11 +821,11 @@ class F31FormPopupComponent extends Component {
 											{this.props.effectiveDatesArray.length > 0 ? (
 												this.props.effectiveDatesArray.map((dt) => (
 													<MenuItem
-														key={"effectiveDatesArray" + dt.id}
-														value={dt.id}
-														onClick={() => this.handleUpcomingSchedule(dt.id, dt.label)}
+														key={"effectiveDatesArray-"+dt.activatedOn}
+														value={dt.activatedOn}
+														onClick={() => this.handleUpcomingSchedule(dt.activatedOn, dt.activatedOnLabel)}
 													>
-														{dt.label}
+														{dt.activatedOnLabel}
 													</MenuItem>
 												))
 											) : (

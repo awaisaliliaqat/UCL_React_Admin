@@ -29,7 +29,7 @@ class F31FormTableComponent extends Component {
         { name: "teacherName", title: "Teacher" },
         { name: "activeDate", title: "Effective Date", 
           getCellValue: (rowData) => {
-            return (rowData.effectiveDatesArray || []).map(date => date.label).join('  ');
+            return (rowData.effectiveDatesArray || []).map(date => date.activatedOnLabel +" | "+date.deactivatedOnLabel).join('  ');
           },
         },
         { name: "action", title: "Action" },
@@ -56,7 +56,7 @@ class F31FormTableComponent extends Component {
         { columnName: "sectionTypeLabel", wordWrapEnabled: true },
         { columnName: "sectionLabel", wordWrapEnabled: true },
         { columnName: "teacherName", wordWrapEnabled: true },
-        { columnName: "activeDate", wordWrapEnabled: true, align: "center", width: 110 },
+        { columnName: "activeDate", wordWrapEnabled: true, align: "center", width: 180 },
         { columnName: "action", width: 210, align: "center" },
       ],
       defaultColumnWidths: [],

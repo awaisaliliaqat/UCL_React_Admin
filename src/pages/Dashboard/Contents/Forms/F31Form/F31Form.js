@@ -342,7 +342,7 @@ class F31Form extends Component {
 							let teacherName = json.DATA[i].teacherName;
 							let activeDate = json.DATA[i].activeDate;
 							let isFutureActiveTimeTableExist = false;
-							const lastDateRaw = json.DATA[i]?.effectiveDatesArray?.at(-1)?.id;
+							const lastDateRaw = json.DATA[i]?.effectiveDatesArray?.at(-1)?.deactivatedOn;
 							// Check if it's a valid number (timestamp)
 							if (typeof lastDateRaw === 'number' && !isNaN(lastDateRaw)) {
 								const date = new Date(lastDateRaw);
@@ -678,7 +678,7 @@ class F31Form extends Component {
 		this.rowloading(1, data);
 		let formData = new FormData();
 		formData.append("sectionId", data.sectionId);
-		formData.append("activatedOn", data.effectiveDatesArray.at(-1)?.label || format(new Date(), 'dd-MM-yyyy'));
+		formData.append("activatedOn", data.effectiveDatesArray.at(-1)?.activatedOnLabel);
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C31CommonAcademicsScheduleDeactivate`;
 		await fetch(url, {
 			method: "POST",
