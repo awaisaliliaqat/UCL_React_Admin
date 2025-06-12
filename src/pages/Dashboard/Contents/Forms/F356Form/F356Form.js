@@ -1,16 +1,17 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
-import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import { DatePicker } from "@material-ui/pickers";
-import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import { Divider, CircularProgress, Grid, Button, Typography, TextField, Tooltip, IconButton, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableHead, TableBody, TableRow, TableCell, InputLabel } from "@material-ui/core";
-import FilterOutline from "mdi-material-ui/FilterOutline";
+import { FilterOutline } from "mdi-material-ui";
+import { format, parse } from "date-fns";
+import { Divider, CircularProgress, Grid, Button, Typography, TextField,  MenuItem, Tooltip, IconButton } from "@material-ui/core";
 import F356FormTableComponent from "./chunks/F356FormTableComponent";
+import FullScreenDialog from "./chunks/F356FormDialog";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import { IsEmpty } from "../../../../../utils/helper";
 import BottomBar from "../../../../../components/BottomBar/BottomBarWithViewColorBlue";
-import { withRouter } from "react-router-dom";
-import { format, parse } from "date-fns";
+import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
 const styles = (theme) => ({
 	main: {
@@ -36,32 +37,29 @@ class F356Form extends Component {
 		this.state = {
 			isLoading: false,
 			recordId: null,
-			isApprovedByHead: 0,
+			showTableFilter: false,
+
 			isLoginMenu: false,
 			isReload: false,
+
 			isOpenSnackbar: false,
 			snackbarMessage: "",
 			snackbarSeverity: "",
-			showTableFilter: false,
 			isExisted: 1,
+
 			yearId: "",
 			yearData: [],
 			academicSessionsData: [],
 			academicSessionsDataLoading: false,
 			academicSessionId: "",
 			academicSessionIdError: "",
+
 			openDialog: false,
-			selectedStudent: null,
-			programmeGroupsData: [],
-			programmeGroupsDataLoading: false,
-			programmeGroupId: "",
-			attendanceSheetId: 0,
-			programmeGroupIdError: "",
-			expandedGroupsData: [],
+			dialogRowData : null,
+
 			fromDate: null,
 			toDate: null,
 			employeesSalarySheet: [],
-			isApproved: false,
 		};
 	}
 
@@ -80,9 +78,27 @@ class F356Form extends Component {
 		this.setState({ isOpenSnackbar: false });
 	};
 
-	handleToggleTableFilter = () => {
-		this.setState((prevState)=>({ ...prevState, showTableFilter: !prevState.showTableFilter }));
+	handleOpenDialog = (rowData) => {
+		this.setState((preState) => 
+			({
+				openDialog: true,
+				dialogRowData: rowData
+			})
+		)
 	}
+
+	handleCloseDialog = () => {
+		this.setState((preState) => 
+			({
+				openDialog: false,
+				dialogRowData: null
+			})
+		)
+	}
+
+	handleToggleTableFilter = () => {
+		this.setState({ showTableFilter: !this.state.showTableFilter });
+	};
 	
 	setDatesFromAcademicSession = (academicSessionsLabel) => {
 		if (!academicSessionsLabel || !academicSessionsLabel.includes("-")) return;
@@ -94,79 +110,81 @@ class F356Form extends Component {
 		});
 	};
 
-	onSaveClick = async (e) => {
-		if (!IsEmpty(e)) {
-			e.preventDefault();
-		}
+	// onSaveClick = async (e) => {
+	// 	if (!IsEmpty(e)) {
+	// 		e.preventDefault();
+	// 	}
 
-		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceSave`;
-		// var data = new FormData();
-		const { employeesSalarySheet } = this.state;
-		let array = [];
-		const groupedData = employeesSalarySheet.map((acc) => {
-			const courseDetail = {
-				...acc,
-			};
+	// 	this.setState({ isLoading: true });
+	// 	const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C336CommonEmployeePayroleAttendanceSave`;
+	// 	// var data = new FormData();
+	// 	const { employeesSalarySheet } = this.state;
+	// 	let array = [];
+	// 	const groupedData = employeesSalarySheet.map((acc) => {
+	// 		const courseDetail = {
+	// 			...acc,
+	// 		};
 
-			array.push(courseDetail);
-		});
+	// 		array.push(courseDetail);
+	// 	});
 
-		const data = {
-			academicSessionId: this.state.academicSessionId,
-			yearId: this.state.yearId,
-			monthId: this.state.monthId.id,
-			attendanceDetail: array,
-		};
+	// 	const data = {
+	// 		academicSessionId: this.state.academicSessionId,
+	// 		yearId: this.state.yearId,
+	// 		monthId: this.state.monthId.id,
+	// 		attendanceDetail: array,
+	// 	};
 
-		await fetch(url, {
-			method: "POST",
-			body: JSON.stringify(data),
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-				"Content-Type": "application/json",
-			}),
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.onSearchClick();
-						this.handleSnackbar(true, "Saved", "success");
-					} else {
-						this.handleSnackbar(
-							true,
-							<span>
-								{json.SYSTEM_MESSAGE}
-								<br />
-								{json.USER_MESSAGE}
-							</span>,
-							"error"
-						);
-					}
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: false,
-						});
-					} else {
-						this.handleSnackbar(
-							true,
-							"Failed to fetch ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
-		this.setState({ isLoading: false });
-	};
+	// 	console.log(data);
+
+	// 	await fetch(url, {
+	// 		method: "POST",
+	// 		body: JSON.stringify(data),
+	// 		headers: new Headers({
+	// 			Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+	// 			"Content-Type": "application/json",
+	// 		}),
+	// 	})
+	// 		.then((res) => {
+	// 			if (!res.ok) {
+	// 				throw res;
+	// 			}
+	// 			return res.json();
+	// 		})
+	// 		.then(
+	// 			(json) => {
+	// 				if (json.CODE === 1) {
+	// 					this.handleSearch();
+	// 					this.handleSnackbar(true, "Saved", "success");
+	// 				} else {
+	// 					this.handleSnackbar(
+	// 						true,
+	// 						<span>
+	// 							{json.SYSTEM_MESSAGE}
+	// 							<br />
+	// 							{json.USER_MESSAGE}
+	// 						</span>,
+	// 						"error"
+	// 					);
+	// 				}
+	// 			},
+	// 			(error) => {
+	// 				if (error.status == 401) {
+	// 					this.setState({
+	// 						isLoginMenu: true,
+	// 						isReload: false,
+	// 					});
+	// 				} else {
+	// 					this.handleSnackbar(
+	// 						true,
+	// 						"Failed to fetch ! Please try Again later.",
+	// 						"error"
+	// 					);
+	// 				}
+	// 			}
+	// 		);
+	// 	this.setState({ isLoading: false });
+	// };
 
 	getAcademicSessions = async () => {
 		this.setState({ academicSessionsDataLoading: true });
@@ -196,7 +214,7 @@ class F356Form extends Component {
 						}
 					}
 				} else {
-					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error" );
+					this.handleSnackbar( true, <span> {json.SYSTEM_MESSAGE} <br /> {json.USER_MESSAGE} </span>, "error" );
 				}
 			},
 			(error) => {
@@ -206,24 +224,27 @@ class F356Form extends Component {
 						isReload: true,
 					});
 				} else {
-					console.error("getAcademicSessions Error : ", error);
-					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.", "error");
+					this.handleSnackbar(
+						true,
+						"Failed to fetch ! Please try Again later.",
+						"error"
+					);
 				}
 			}
 		);
 		this.setState({ academicSessionsDataLoading: false });
 	};
 
-	onSearchClick = async (e) => {
+	handleSearch = async (e) => {
 		if (!IsEmpty(e)) {
 			e.preventDefault();
 		}
+		this.setState({ isLoading: true });
 		let data = new FormData();
 		data.append("academicSessionId", this.state.academicSessionId);
 		data.append("fromDate", format(this.state.fromDate, "dd-MM-yyyy"));
-		data.append("toDate", format(this.state.toDate, "dd-MM-yyyy"));
-		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/AllEmployeesWithOrWithoutSheetView`;
+		data.append("toDate", format(this.state.fromDate, "dd-MM-yyyy"));
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/EmployeesView`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -242,12 +263,6 @@ class F356Form extends Component {
 				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
 				if (CODE === 1) {
 					let data = DATA || [];
-					const hasConfirmed = data.some(obj => obj.isConfirmed === 1 || obj.isFinalized);
-					if(hasConfirmed){
-						data.map(obj=>{
-							obj.isConfirmed=1;
-						});
-					}
 					this.setState({
 						employeesSalarySheet: data,
 					});
@@ -260,10 +275,10 @@ class F356Form extends Component {
 				if (status == 401) {
 					this.setState({
 						isLoginMenu: true,
-						isReload: false,
+						isReload: true,
 					});
 				} else {
-					console.error("onSearchClick Error : ", error);
+					console.error(error);
 					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
 				}
 			}
@@ -292,9 +307,6 @@ class F356Form extends Component {
 				sessionId = array[i].ID || "";
 			}
 		}
-
-		// this.getProgrammeGroupsBySessionId(sessionId);
-
 		this.setState({
 			academicSessionId: sessionId,
 			academicSessionIdError: "",
@@ -309,9 +321,7 @@ class F356Form extends Component {
 		switch (name) {
 			case "academicSessionId":
 				this.setState({
-					employeesSalarySheet: [],
-					programmeGroupId: "",
-					programmeGroupIdError: "",
+					employeesSalarySheet: []
 				});
 				let academicSessionLabel = this.state.academicSessionsData.find((obj)=>obj.ID==value)?.Label || "2024-2025";
 				this.setDatesFromAcademicSession(academicSessionLabel);
@@ -325,178 +335,51 @@ class F356Form extends Component {
 		});
 	};
 
-	handleInputChange = (fieldName, value, rowData) => {
+	handleIsExistUpdate = (rowData) => {
+		this.handleOpenSnackbar("Saved", "success");
 		const { id } = rowData;
-		const updatedData = this.state.employeesSalarySheet.map((item) =>
-			item.id === id
-				? {
-					...item,
-					[fieldName]: fieldName === "remarks" ? value : Number(value),
-				}
-				: item
+		let employeesSalarySheet = [...this.state.employeesSalarySheet];
+		const updatedData = employeesSalarySheet.map((item) =>
+			item.id === id ? { ...item, isExist: 1 } : { ...item }
 		);
 		this.setState({
 			employeesSalarySheet: updatedData,
 		});
+		this.handleCloseDialog();
 	};
-
-	handleCommitChanges = ({ added, changed, deleted }) => {
-		let rows = [...this.state.employeesSalarySheet];
-		if (added) {
-		  const startingAddedId = rows.length ? rows[rows.length - 1].id + 1 : 0;
-		  added.forEach((row, i) => {
-			rows.push({ id: startingAddedId + i, ...row });
-		  });
-		}
-		if (changed) {
-			rows = rows.map(row => {
-				if(changed[row.id]) {
-					const updatedRow = { ...row, ...changed[row.id] };
-					this.handleSave(updatedRow);
-					//console.log(updatedRow);
-					return updatedRow; 
-				} 
-				return row;
-		  	});
-			// this.handleOpenSnackbar("Saved", "success");
-		}
-		if (deleted) {
-		  const deletedSet = new Set(deleted);
-		  rows = rows.filter(row => !deletedSet.has(row.id));
-		}
-		this.setState({ employeesSalarySheet: rows });
-	};
-
-	// Utility Method
-	formatNumber = (num) => {
-		return Number(parseFloat(num).toFixed(2)); // 2 decimal formatting
-	};
-
-	handleSave = async(rowData) => {
-		//handleIsExistUpdate(rowData);
-		let data =  new FormData();
-		data.append("id", 0);
-		data.append("academicsSessionId", this.state.academicSessionId);
-		data.append("employeeId", rowData.id);
-		data.append("fromDate", format(this.state.fromDate,"dd-MM-yyyy"));
-		data.append("toDate", format(this.state.toDate,"dd-MM-yyyy"));
-		data.append("rateThisYear", rowData.rateThisYear);
-		data.append("monthsThisYear", parseInt(rowData.monthsThisYear) || 0);
-		data.append("monthsNextYear", parseInt(rowData.monthsNextYear) || 0);
-		data.append("salaryThisYear", rowData.salaryThisYear);
-		data.append("rateNextYear", rowData.rateNextYear);
-		data.append("rateIncreasePercentage", rowData.rateIncreasePercentage);
-		data.append("salaryNextYear", rowData.salaryNextYear);
-		data.append("salaryIncreasePercentage", rowData.salaryIncreasePercentage);
-		data.append("yearlyClaimNextYear", rowData.yearlyClaimNextYear);
-		data.append("comment", rowData.comment);
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/Save`;
-		await fetch(url, {
-			method: "POST",
-			body: data,
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-		})
-		.then((res) => {
-			if (!res.ok) {
-				throw res;
-			}
-			return res.json();
-		})
-		.then(
-			(json) => {
-				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
-				if (CODE === 1) {
-					this.handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
-				} else {
-					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
-				}
-			},
-			(error) => {
-				const { status } = error;
-				if (status == 401) {
-					
-				} else {
-					console.error(error);
-					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
-				}
-			}
-		);
-	}
-
-	handleGenrateView = () => {
-		const { academicSessionId, fromDate, toDate } = this.state;
-		window.open(`#/F356Reports/${academicSessionId+"/"+format(fromDate, "dd-MM-yyyy")+"/"+format(toDate, "dd-MM-yyyy")}`,"_blank");
-	}
 
 	componentDidMount() {
 		const { recordId } = this.props.match.params;
 		this.props.setDrawerOpen(false);
 		this.getAcademicSessions();
-		this.setState({ recordId: recordId }, () => {
-			// this.onSearchClick();
-		});
 	}
 
 	render() {
 		const { classes } = this.props;
 
 		const columns = [
-			{ name: "rolesLabel", title: "Category" },
 			{ name: "id", title: "ID" },
 			{ name: "displayName", title: "Name"},
-			{ name: "designationsLabel",	title: "Position",
-				// getCellValue: (rowData) => {
-				// 	return (
-				// 		<TextField
-				// 			variant="outlined"
-				// 			size="small"
-				// 			name="adjustedLateDays"
-				// 			type="number"
-				// 			value={rowData.adjustedLateDays || ""}
-				// 			onChange={(event) =>
-				// 				this.handleInputChange(
-				// 					"adjustedLateDays",
-				// 					event.target.value,
-				// 					rowData
-				// 				)
-				// 			}
-				// 		/>
-				// 	);
-				// },
-			},
-			{ name: "jobStatusLabel",	title: "Employment Status"},
-			{ name: "joiningDate", title: "Joining Date",
+			{ name: "rolesLabel", title: "Roles"},
+			{ name: "entitiesLabel", title: "Entities"},
+			{ name: "mobileNo", title: "Contact#"},
+			{ name: "email", title: "Email"},
+			{ name: "action", title: "Action", 
 				getCellValue: (rowData) => {
-					return (format(new Date(rowData.joiningDate), "dd-MM-yyyy"));
-				},
-			},
-			{ name: "leavingDate", title: "Leaving Date",
-				getCellValue: (rowData) => {
-					return (rowData.leavingDate ? format(new Date(rowData.leavingDate), "dd-MM-yyyy") : "");
-				},
-			 },
-			{ name: "weeklyLoadThisYear", title: "Weekly Load This Year" },
-			{ name: "weeklyLoadNextYear", title: "Weekly Load Next Year"},
-			{ name: "weeklyClaimHoursThisYear", title: "Weekly Claim Hours This Year" },
-			{ name: "weeklyClaimHoursNextYear", title: "Weekly Claim Hours Next Year"},
-			{ name: "rateThisYear",	title: "Rate This Year"},
-			{ name: "rateNextYear", title: "Rate Next Year"},
-			{ name: "rateIncreasePercentage", title: "Rate Increase%"},
-			{ name: "monthsThisYear", title: "Months This Year"},
-			{ name: "monthsNextYear",	title: "Months Next Year"},
-			{ name: "salaryThisYear", title: "Salary This Year" },
-			{ name: "salaryNextYear", title: "Salary Next Year" },
-			{ name: "salaryIncreasePercentage", title: "Salary Increase%" },
-			{ name: "yearlyClaimThisYear", title: "Yearly Claim This Year" },
-			{ name: "yearlyClaimNextYear", title: "Yearly Claim Next Year" },
-			{ name: "yearlySalaryThisYear", title: "Yearly Salary This Year" },
-			{ name: "yearlySalaryNextYear", title: "Yearly Salary Next Year" },
-			{ name: "yearlyExpenseThisYear", title: "Yearly Expense This Year" },
-			{ name: "yearlyExpenseNextYear", title: "Yearly Expense Next Year" },
-			{ name: "percentChange", title: "Percent Change" },
-			{ name: "comment", title: "Comments on Salary Determination" }
+					return (
+						<center>
+						<Button 
+							color="primary"
+							variant="outlined"
+							size="small"
+							onClick={() => this.handleOpenDialog(rowData)}
+						>
+						{rowData?.isExist ?	"Edit" : "Add"}
+						</Button>
+						</center>
+					);
+				}
+			}
 		];
 
 		return (
@@ -506,10 +389,21 @@ class F356Form extends Component {
 					open={this.state.isLoginMenu}
 					handleClose={() => this.setState({ isLoginMenu: false })}
 				/>
+				<FullScreenDialog 
+					handleOpenSnackbar={this.handleOpenSnackbar}
+					openDialog={this.state.openDialog}
+					handleOpenDialog={this.handleOpenDialog}
+					handleCloseDialog={this.handleCloseDialog}
+					academicsSessionId={this.state.academicSessionId}
+					fromDate={this.state.fromDate}
+					toDate={this.state.toDate}
+					rowData={this.state.dialogRowData}
+					handleIsExistUpdate={this.handleIsExistUpdate}
+				/>
 				<Grid container justifyContent="center" alignItems="center" spacing={2} className={classes.main}>
 					<Grid item xs={12}>
 						<Typography className={classes.title} variant="h5">
-							Employees Salary Increment Sheet
+							Employees Salary Increment Revision Sheet
 							<div style={{ display:"inline-block", float:"right", marginTop: -8 }}>
 								<Tooltip title="Table Filter">
 									<IconButton
@@ -526,19 +420,23 @@ class F356Form extends Component {
 					</Grid>
 					<Grid item xs={12} md={4}>
 						<TextField
+							
 							name="academicSessionId"
 							label="Academic Session"
-							variant="outlined"
 							onChange={this.onHandleChange}
 							value={this.state.academicSessionId}
 							error={!!this.state.academicSessionIdError}
 							helperText={this.state.academicSessionIdError}
+							variant="outlined"
 							required
 							fullWidth
 							select
+							InputProps={{
+								id:"academicSessionId"
+							}}
 						>
 							{this.state.academicSessionsData?.map((item) => (
-								<MenuItem key={"academicSessionsData"+item.ID} value={item.ID}>
+								<MenuItem key={"academicSessionsData-"+item.ID} value={item.ID}>
 									{item.Label}
 								</MenuItem>
 							))}
@@ -595,7 +493,7 @@ class F356Form extends Component {
 							color="primary"
 							className={classes.button}
 							disabled={ this.state.isLoading || this.state.academicSessionsDataLoading || !this.state.academicSessionId}
-							onClick={(e) => this.onSearchClick(e)}
+							onClick={(e) => this.handleSearch(e)}
 							fullWidth
 							size="large"
 						>
@@ -626,13 +524,12 @@ class F356Form extends Component {
 					<Grid item xs={12}>
 						<Divider className={classes.divider} />
 					</Grid>
-					<Grid item xs={12} style={{marginBottom: "30px"}}>
+					<Grid item xs={12} style={{marginBottom: "6%"}}>
 						<F356FormTableComponent
+							showFilter={this.state.showTableFilter}
 							isLoading={this.state.isLoading}
-							showTableFilter={this.state.showTableFilter}
 							columns={columns}
 							rows={this.state.employeesSalarySheet}
-							onCommitChanges={this.handleCommitChanges}
 						/>
 					</Grid>
 					<CustomizedSnackbar
@@ -642,17 +539,17 @@ class F356Form extends Component {
 						handleCloseSnackbar={this.handleCloseSnackbar}
 					/>
 					<BottomBar
-						leftButtonText=""
+						leftButtonText="Save"
 						leftButtonHide={true}
 						bottomLeftButtonAction={() => this.handleOpenSnackbar("Feature under development", "info") }
-						right_button_text="Genrate"
+						right_button_text="Save"
 						disableLeftButton={this.state.isExisted === 1}
-						disableRightButton={!this.state.academicSessionId}
+						hideRightButton={true}
+						disableRightButton={!this.state.employeesSalarySheet.length}
 						loading={this.state.isLoading}
 						isDrawerOpen={this.props.isDrawerOpen}
-						bottomRightButtonAction={this.handleGenrateView}
-					/> 
-					
+						bottomRightButtonAction={() => this.handleOpenSnackbar("Feature under development", "info")}
+					/>
 				</Grid>
 			</Fragment>
 		);

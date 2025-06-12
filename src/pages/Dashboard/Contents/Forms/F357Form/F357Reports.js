@@ -146,7 +146,7 @@ const StyledTableRow = withStyles((theme) => ({
 
 const CurrencyFormatter = ({ value }) => typeof value === "number" ? value.toLocaleString("en-US", {maxFractionDigits: 2}) : value;
 
-class F356Reports extends Component {
+class F357Reports extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -241,7 +241,7 @@ class F356Reports extends Component {
 		data.append("academicSessionId", academicsSessionId);
 		data.append("fromDate", fromDate);
 		data.append("toDate", toDate);
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/View`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementSheet/View`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -295,7 +295,7 @@ class F356Reports extends Component {
 		for(let i=0; i<tableData.length; i++){
 			data.append("id", parseInt(tableData[i].sheetId) || 0);
 		}
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356CommonEmployeesSalaryIncrementSheet/IsConfirmedSave`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementSheet/IsConfirmedSave`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -369,6 +369,16 @@ class F356Reports extends Component {
 					onClick={this.handleSave}
 				>
 					Send For Approval
+				</Button>
+				<Button
+					variant="contained"
+					color="primary"
+					className={classes.approveButton}
+					disabled={true}
+					onClick={this.handleSave}
+					style={{marginLeft: "13em"}}
+				>
+					Finilize
 				</Button>
 				<IconButton
 					onClick={() => window.close()}
@@ -497,8 +507,8 @@ class F356Reports extends Component {
 	}
 }
 
-F356Reports.propTypes = {
+F357Reports.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(F356Reports);
+export default withStyles(styles)(F357Reports);

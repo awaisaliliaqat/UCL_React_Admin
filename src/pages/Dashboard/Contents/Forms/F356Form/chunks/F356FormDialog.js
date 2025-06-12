@@ -119,7 +119,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         });
         let data =  new FormData();
         data.append("employeeId", rowData?.id);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/CoursesTeachersView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/CoursesTeachersView`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -164,7 +164,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         });
         let data =  new FormData();
         data.append("employeeId", rowData?.id);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeePayrollView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/EmployeePayrollView`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -193,7 +193,8 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                 ...prevState, 
                                 rateThisYear: rateThisYear, 
                                 salaryThisYear: salaryThisYear,
-                                monthsThisYear: monthsThisYear 
+                                monthsThisYear: monthsThisYear,
+                                monthsNextYear: monthsThisYear
                             });
                         });
                     }
@@ -223,7 +224,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         });
         let data =  new FormData();
         data.append("employeeId", rowData?.id);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeeCommentsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/EmployeeCommentsView`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -278,7 +279,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         setIsLoading((prevState) => {
             return ({ ...prevState, employeeComments: true });
         });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeeCommentSave`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/EmployeeCommentSave`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -323,7 +324,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         setIsLoading((prevState) => {
             return ({ ...prevState, employeeComments: true });
         });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeeCommentDelete`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/EmployeeCommentDelete`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -368,7 +369,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         });
         let data =  new FormData();
         data.append("employeeId", rowData?.id);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/EmployeeDesignationsView`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/EmployeeDesignationsView`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -416,7 +417,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         data.append("courseId", courseId);
         data.append("teacherId", rowData?.id);
         data.append("claimHours", claimHours);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/CoursesTeachersSave`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/CoursesTeachersSave`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -457,7 +458,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         data.append("employeeId", rowData?.id);
         data.append("fromDate", format(fromDate,"dd-MM-yyyy"));
         data.append("toDate", format(toDate,"dd-MM-yyyy"));
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/View`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/View`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -490,10 +491,25 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                 rateIncreasePer: formatNumber(rateIncreasePercentage),
                                 salaryNextYear: formatNumber(salaryNextYear),
                                 salaryIncreasePer: formatNumber(salaryIncreasePercentage),
-                                sheetComment: comment,
+                                sheetComment: (comment && comment.length > 0) ? comment.at(-1).comment : '',
                                 isConfirmed: isConfirmed,
                                 isFinalized: isFinalized
                             });
+                        });
+                    } else {
+                        setState(prev => {
+                            const updatedState = { ...prev };
+                            const rateIncrease = 8;
+                            if (prev.rateThisYear && !isNaN(prev.rateThisYear)) {
+                                updatedState.rateIncreasePer = rateIncrease;
+                                updatedState.rateNextYear = formatNumber(prev.rateThisYear * (1 + rateIncrease / 100));
+                            }
+                            const salaryIncrease = 8;
+                            if (prev.salaryThisYear && !isNaN(prev.salaryThisYear)) {
+                                updatedState.salaryIncreasePer = salaryIncrease;
+                                updatedState.salaryNextYear = formatNumber(prev.salaryThisYear * (1 + salaryIncrease / 100));
+                            }
+                            return updatedState;
                         });
                     }
 				} else {
@@ -528,11 +544,12 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         data.append("rateIncreasePercentage", state.rateIncreasePer);
         data.append("salaryNextYear", state.salaryNextYear);
         data.append("salaryIncreasePercentage", state.salaryIncreasePer);
+        data.append("yearlyClaimNextYear", 0);
         data.append("comment", state.sheetComment);
         setIsLoading((prevState) => {
             return ({ ...prevState, employeeSheet: true });
         });
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementRevisionSheet/Save`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/Save`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -728,7 +745,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
             handleEmployeeDesignationsView();
             getTeacherSectionDetails();
             getEmployeePayroll();
-            getSheet()
+            getSheet();
         }
     }, [openDialog]);
 
@@ -902,7 +919,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                     {!isLoading.employeeDesignations ?
                                         employeeDesignations.length>0 ?  
                                             employeeDesignations.map((obj, index)=>
-                                                <TableRow className={classes.tableRowHover} key={"teacherSectionsData-"+index}>
+                                                <TableRow className={classes.tableRowHover} key={"employeeDesignations-"+index}>
                                                     <TableCell component="th" scope="row">{obj.fromDate ? format(new Date(obj.fromDate), "dd-MM-yyyy") : ""}</TableCell>
                                                     <TableCell component="th" scope="row">{obj.jobStatusLabel}</TableCell>
                                                     <TableCell align="left">{obj.designationLabel}</TableCell>
@@ -948,7 +965,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                                     <TableCell component="th" scope="row">{obj.academicsSessionLabel}</TableCell>
                                                     {/* <TableCell component="th" scope="row">{obj.label}</TableCell> */}
                                                     <TableCell component="th" scope="row">{obj.courseLabel}</TableCell>
-                                                    <TableCell align="left">{obj.durationPerSession}</TableCell>
+                                                    <TableCell align="left">{obj.creditHour}</TableCell>
                                                     <TableCell align="left">
                                                         <TextField
                                                             name="claimHours"
