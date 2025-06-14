@@ -167,11 +167,12 @@ class F357Reports extends Component {
 				"Months Next Year","Salary This Year","Salary Next Year","Salary Increase%",
 				"Yearly Claim This Year","Yearly Claim Next Year","Yearly Salary This Year",
 				"Yearly Salary Next Year","Yearly Expense This Year","Yearly Expense Next Year","Percent Change",
-				"Comments on Salary Determination", "Final Rate Next Year", "Final Salary Next Year"
+				"Comments on Salary Determination", "Suggested Rate Next Year", "Suggested Salary Next Year"
 			],
 			tableData: [],
 			academicSessionId: 0,
-			isConfirmed: 0
+			sheetStatusData : [],
+			sheetStatusId: ""
 		};
 	}
 
@@ -235,13 +236,49 @@ class F357Reports extends Component {
 		this.setState({ academicSessionsDataLoading: false });
 	};
 
+	getSheetStatusView = async () => {
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357SalaryIncrementRevisionSheet/SheetStatusView`;
+		await fetch(url, {
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then((json) => {
+				if (json.CODE === 1) {
+					let array = json.DATA || [];
+					this.setState({ sheetStatusData: array });
+				} else {
+					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error" );
+				}
+			},
+			(error) => {
+				if (error.status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.error(error);
+					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.", "error");
+				}
+			}
+		);
+	};
+
 	getData = async (academicsSessionId, fromDate, toDate) => {
 		this.setState({ isLoading: true });
 		let data = new FormData();
 		data.append("academicSessionId", academicsSessionId);
 		data.append("fromDate", fromDate);
 		data.append("toDate", toDate);
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementSheet/View`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357SalaryIncrementRevisionSheet/View`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -261,17 +298,15 @@ class F357Reports extends Component {
 						let data = json.DATA || [];
 						let dataLength = data.length;
 						if (dataLength) {
-							const hasConfirmed = data.some(obj => obj.isConfirmed === 1);
 							this.setState({
 								tableData: data,
-								isConfirmed: hasConfirmed ? 1 : 0
+								sheetStatusId: data[0].statusId
 							});
 						}
 					} else {
 						//alert(json.SYSTEM_MESSAGE + '\n' + json.USER_MESSAGE);
 						this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error");
 					}
-					console.log("getData", json);
 				},
 				(error) => {
 					if (error.status === 401) {
@@ -289,13 +324,12 @@ class F357Reports extends Component {
 		this.setState({ isLoading: false });
 	};
 
-	handleSave = async() => {
+	handleSheetStatusUpdate = async(statusId) => {
 		let data =  new FormData();
 		const tableData = this.state.tableData;
-		for(let i=0; i<tableData.length; i++){
-			data.append("id", parseInt(tableData[i].sheetId) || 0);
-		}
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357CommonEmployeesSalaryIncrementSheet/IsConfirmedSave`;
+		data.append("id", parseInt(tableData.at(-1).salaryIncrementRevisionSheetId) || 0);
+		data.append("statusId", statusId);
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357SalaryIncrementRevisionSheet/UpdateStatus`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -313,7 +347,9 @@ class F357Reports extends Component {
 			(json) => {
 				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
 				if (CODE === 1) {
-					this.setState({isConfirmed: 1});
+					this.setState({sheetStatusId: statusId});
+					const updatedData = this.state.tableData.map(item => ({ ...item, statusId: statusId }));
+					this.setState({ tableData: updatedData });
 					this.handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
 				} else {
 					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
@@ -331,16 +367,27 @@ class F357Reports extends Component {
 		);
 	}
 
+	handleSendForApproval = () => {
+		this.handleSheetStatusUpdate(2);
+	}
+
+	handleConfirmAndApproved = () => {
+		this.handleSheetStatusUpdate(4);
+	}
+
 	componentDidMount() {
 		const { academicSessionId, fromDate, toDate } = this.props.match.params;
 		this.setState({academicSessionId, fromDateLabel:fromDate, toDateLabel:toDate});
 		this.getAcademicSessions();
+		this.getSheetStatusView();
 		this.getData(academicSessionId, fromDate, toDate);
 	}
 
 	render() {
 
 		const { classes } = this.props;
+
+		const sheetStatusLabel = this.state.sheetStatusData.find( (obj) => obj.id === this.state.sheetStatusId )?.label ?? ". . .";
 		
 		return (
 			<Fragment>
@@ -365,8 +412,8 @@ class F357Reports extends Component {
 					variant="contained"
 					color="primary"
 					className={classes.approveButton}
-					disabled={!this.state.tableData.length || this.state.isConfirmed==1}
-					onClick={this.handleSave}
+					disabled={!this.state.tableData.length || (this.state.sheetStatusId!=1 && this.state.sheetStatusId!=5)}
+					onClick={this.handleSendForApproval}
 				>
 					Send For Approval
 				</Button>
@@ -374,8 +421,8 @@ class F357Reports extends Component {
 					variant="contained"
 					color="primary"
 					className={classes.approveButton}
-					disabled={true}
-					onClick={this.handleSave}
+					disabled={!this.state.tableData.length || this.state.sheetStatusId!==3}
+					onClick={this.handleConfirmAndApproved}
 					style={{marginLeft: "13em"}}
 				>
 					Finilize
@@ -392,36 +439,24 @@ class F357Reports extends Component {
 						<thead>
 							<tr>
 								<th>
-									<span style={{ display: "inlineBlock" }}>
-										<span
-											style={{
-												fontSize: "1em",
-												fontWeight: 700,
-												textAlign: "center",
-												color: "#2f57a5",
-												padding: 5,
-												//border: "solid 2px #2f57a5",
-												display: "block",
-											}}
-										>
-											<span
-												style={{
-													float: "left"
-												}}
-											>
-												Academic Year : {this.state.academicSessionLabel}
-											</span>
-											Employees Increment Sheet
-											<span
-												style={{
-													float: "right"
-												}}
-											>
-												Date : {this.state.fromDateLabel} - {this.state.toDateLabel}
-											</span>
+									<Box 
+										color="primary.main" 
+										display="flex" 
+										justifyContent="space-between" 
+										alignItems="flex-end"
+									>
+										<span>
+											Academic Year : {this.state.academicSessionLabel}
 										</span>
-										
-									</span>
+										<span>
+											Employees Increment Sheet
+											<br/>
+											<small>Status&nbsp;:&ensp;{sheetStatusLabel}</small>
+										</span>
+										<span>
+											Date : {this.state.fromDateLabel} - {this.state.toDateLabel}
+										</span>
+									</Box>
 								</th>
 							</tr>
 						</thead>
@@ -468,9 +503,9 @@ class F357Reports extends Component {
 																			<StyledTableCell align="right"><CurrencyFormatter value={row.yearlyExpenseThisYear} /></StyledTableCell>
 																			<StyledTableCell align="right"><CurrencyFormatter value={row.yearlyExpenseNextYear} /></StyledTableCell>
 																			<StyledTableCell align="center"><CurrencyFormatter value={row.percentChange} /></StyledTableCell>
-																			<StyledTableCell align="center">{row.comment}</StyledTableCell>
-																			<StyledTableCell align="right"><CurrencyFormatter value={row.finalRateNextYear} /></StyledTableCell>
-																			<StyledTableCell align="right"><CurrencyFormatter value={row.finalSalaryNextYear} /></StyledTableCell>
+																			<StyledTableCell align="left">{(row.comments || [])?.map((obj, ind) => <span key={"comment-"+ind}>{obj.comment}<br/></span>)}</StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.suggestedRateNextYear} /></StyledTableCell>
+																			<StyledTableCell align="right"><CurrencyFormatter value={row.suggestedSalaryNextYear} /></StyledTableCell>
 																		</StyledTableRow>
 																	))}
 																</Fragment>
