@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { DatePicker } from "@material-ui/pickers";
 import { FilterOutline } from "mdi-material-ui";
 import { format, parse } from "date-fns";
-import { Divider, CircularProgress, Grid, Button, Typography, TextField,  MenuItem, Tooltip, IconButton } from "@material-ui/core";
+import { Divider, CircularProgress, Grid, Button, Typography, TextField,  MenuItem, Tooltip, IconButton, Box } from "@material-ui/core";
 import F356FormTableComponent from "./chunks/F356FormTableComponent";
 import FullScreenDialog from "./chunks/F356FormDialog";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
@@ -59,7 +59,9 @@ class F356Form extends Component {
 
 			fromDate: null,
 			toDate: null,
+			sheetStatusData: [],
 			employeesSalarySheet: [],
+			sheetStatusId: 0,
 		};
 	}
 
@@ -105,8 +107,8 @@ class F356Form extends Component {
 		const [startYear, endYear] = academicSessionsLabel.split("-");
 		if (!startYear || !endYear) return;
 		this.setState({
-			fromDate: parse(`01-07-${startYear}`, "dd-MM-yyyy", new Date()),
-			toDate: parse(`30-06-${endYear}`, "dd-MM-yyyy", new Date())
+			fromDate: parse(`01-09-${startYear}`, "dd-MM-yyyy", new Date()),
+			toDate: parse(`31-08-${endYear}`, "dd-MM-yyyy", new Date())
 		});
 	};
 
@@ -235,6 +237,42 @@ class F356Form extends Component {
 		this.setState({ academicSessionsDataLoading: false });
 	};
 
+	getSheetStatusView = async () => {
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357SalaryIncrementRevisionSheet/SheetStatusView`;
+		await fetch(url, {
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then((json) => {
+				if (json.CODE === 1) {
+					let array = json.DATA || [];
+					this.setState({ sheetStatusData: array });
+				} else {
+					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error" );
+				}
+			},
+			(error) => {
+				if (error.status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.error(error);
+					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.", "error");
+				}
+			}
+		);
+	};
+
 	handleSearch = async (e) => {
 		if (!IsEmpty(e)) {
 			e.preventDefault();
@@ -263,7 +301,9 @@ class F356Form extends Component {
 				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE} = json;
 				if (CODE === 1) {
 					let data = DATA || [];
+					const sheetStatusId = data.find((obj) => obj.sheetStatusId!=0)?.sheetStatusId || 0;
 					this.setState({
+						sheetStatusId: sheetStatusId,
 						employeesSalarySheet: data,
 					});
 				} else {
@@ -299,7 +339,6 @@ class F356Form extends Component {
 
 	onClearAllData = () => {
 		let sessionId = "";
-
 		let array = this.state.academicSessionsData || [];
 		let arrayLength = array.length;
 		for (let i = 0; i < arrayLength; i++) {
@@ -312,6 +351,7 @@ class F356Form extends Component {
 			academicSessionIdError: "",
 			academicSessionsDataLoading: false,
 			employeesSalarySheet: [],
+			sheetStatusId: 0
 		});
 	};
 
@@ -352,10 +392,14 @@ class F356Form extends Component {
 		const { recordId } = this.props.match.params;
 		this.props.setDrawerOpen(false);
 		this.getAcademicSessions();
+		this.getSheetStatusView();
 	}
 
 	render() {
+
 		const { classes } = this.props;
+
+		const sheetStatusLabel = this.state.sheetStatusData.find( (obj) => obj.id === this.state.sheetStatusId )?.label ?? ". . .";
 
 		const columns = [
 			{ name: "id", title: "ID" },
@@ -543,9 +587,10 @@ class F356Form extends Component {
 						leftButtonHide={true}
 						bottomLeftButtonAction={() => this.handleOpenSnackbar("Feature under development", "info") }
 						right_button_text="Save"
-						disableLeftButton={this.state.isExisted === 1}
+						disableLeftButton={true}
+						otherActions={<Box color="info.main">Status&nbsp;:&ensp;{sheetStatusLabel}</Box>}
 						hideRightButton={true}
-						disableRightButton={!this.state.employeesSalarySheet.length}
+						disableRightButton={true}
 						loading={this.state.isLoading}
 						isDrawerOpen={this.props.isDrawerOpen}
 						bottomRightButtonAction={() => this.handleOpenSnackbar("Feature under development", "info")}

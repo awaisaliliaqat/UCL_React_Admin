@@ -97,8 +97,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         salaryNextYear: 0,
         salaryIncreasePer: 0,
         sheetComment: "",
-        isConfirmed : 0,
-        isFinalized : 0
+        statusId : 1
     };
     const [state, setState] = useState(initialStates);
     const initialLoadingStates = {
@@ -479,7 +478,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
 					let data = DATA || [];
                     let dataLength = data.length;
                     if(dataLength>0){
-                        let {rateThisYear, salaryThisYear, monthsThisYear, monthsNextYear, rateNextYear, rateIncreasePercentage, salaryNextYear, salaryIncreasePercentage, comment, isConfirmed, isFinalized} = data[0];
+                        let {rateThisYear, salaryThisYear, monthsThisYear, monthsNextYear, rateNextYear, rateIncreasePercentage, salaryNextYear, salaryIncreasePercentage, statusId, comments} = data[0];
                         setState((prevState) => {
                             return ({ 
                                 ...prevState, 
@@ -491,9 +490,8 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                 rateIncreasePer: formatNumber(rateIncreasePercentage),
                                 salaryNextYear: formatNumber(salaryNextYear),
                                 salaryIncreasePer: formatNumber(salaryIncreasePercentage),
-                                sheetComment: (comment && comment.length > 0) ? comment.at(-1).comment : '',
-                                isConfirmed: isConfirmed,
-                                isFinalized: isFinalized
+                                sheetComment: (comments && comments.length > 0) ? comments.at(-1).comment : '',
+                                statusId: statusId
                             });
                         });
                     } else {
@@ -545,7 +543,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         data.append("salaryNextYear", state.salaryNextYear);
         data.append("salaryIncreasePercentage", state.salaryIncreasePer);
         data.append("yearlyClaimNextYear", 0);
-        data.append("comment", state.sheetComment);
+        data.append("comment", state.sheetComment || " ");
         setIsLoading((prevState) => {
             return ({ ...prevState, employeeSheet: true });
         });
@@ -762,11 +760,11 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                     <Button 
                         autoFocus 
                         color="inherit"
-                        disabled={isLoading.employeeSheet || state.isFinalized || state.isConfirmed} 
+                        disabled={isLoading.employeeSheet || (state.statusId!==1 && state.statusId!==5)} 
                         onClick={(e)=>
                             handleSave()
                         }>
-                        {isLoading.employeeSheet ? <CircularProgress size={24} style={{color:"lightgray"}} /> : state.isFinalized || state.isConfirmed ? "Confirmed Or Finalized" : "Save" }
+                        {isLoading.employeeSheet ? <CircularProgress size={24} style={{color:"lightgray"}} /> : (state.statusId!==1 && state.statusId!==5) ? "Sheet not in edit state" : "Save" }
                     </Button>
                 </Toolbar>
             </AppBar>

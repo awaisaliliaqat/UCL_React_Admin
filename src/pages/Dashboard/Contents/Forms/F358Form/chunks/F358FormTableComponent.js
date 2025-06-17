@@ -53,6 +53,51 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 		let updates = {};
 
 		switch (name) {
+
+			case "suggestedRateNextYear": {
+				const suggestedRateNextYearLocal = parseFloatSafe(value);
+				const rateThisYearLocal = parseFloatSafe(rateThisYear);
+				const suggestedRateIncreasePercentageLocal = ((suggestedRateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
+				updates = {
+					suggestedRateNextYear: value,
+					suggestedRateIncreasePercentage: suggestedRateIncreasePercentageLocal,
+				};
+				break;
+			}
+
+			case "suggestedRateIncreasePercentage": {
+				const suggestedRateIncreasePercentageLocal = parseFloatSafe(value);
+				const rateThisYearLocal = parseFloatSafe(rateThisYear);
+				const suggestedRateNextYearLocal = rateThisYearLocal * (1 + suggestedRateIncreasePercentageLocal / 100);
+				updates = {
+					suggestedRateIncreasePercentage: value,
+					suggestedRateNextYear: suggestedRateNextYearLocal,
+				};
+				break;
+			}
+
+			case "suggestedSalaryNextYear": {
+				const suggestedSalaryNextLocal = parseFloatSafe(value);
+				const salaryThisLocal = parseFloatSafe(salaryThisYear);
+				const suggestedSalaryIncPerc = ((suggestedSalaryNextLocal - salaryThisLocal) / (salaryThisLocal || 1)) * 100;
+				updates = {
+					suggestedSalaryNextYear: value,
+					suggestedSalaryIncreasePercentage: suggestedSalaryIncPerc,
+				};
+				break;
+			}
+
+			case "suggestedSalaryIncreasePercentage": {
+				const suggestedSalaryPercLocal = parseFloatSafe(value);
+				const salaryThisLocal = parseFloatSafe(salaryThisYear);
+				const suggestedSalaryNextYearLocal = salaryThisLocal * (1 + suggestedSalaryPercLocal / 100);
+				updates = {
+					suggestedSalaryIncreasePercentage: value,
+					suggestedSalaryNextYear: suggestedSalaryNextYearLocal
+				};
+				break;
+			}
+
 			case "rateThisYear": {
 				const rateThisYearLocal = parseFloatSafe(value);
 				const rateNextYearLocal = parseFloatSafe(rateNextYear);
@@ -230,11 +275,17 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 			<DialogTitle><Box color="primary.main"><b>{state.id+" - "+state.displayName || "Employee Details"}</b></Box></DialogTitle>
 			<DialogContent>
 				<GridMaterial container spacing={2}>
-					<GridMaterial item xs={6}>
-						<TextField type="number" name="suggestedRateNextYear" label="Suggested Rate This Year" value={state.suggestedRateNextYear || ''} onChange={handleChange} fullWidth />
+					<GridMaterial item xs={3}>
+						<TextField type="number" name="suggestedRateNextYear" label="Suggested Rate Next Year" value={state.suggestedRateNextYear || ''} onChange={handleChange} fullWidth />
 					</GridMaterial>
-					<GridMaterial item xs={6}>
-						<TextField type="number" name="suggestedSalaryNextYear" label="Suggested Salary This Year" value={state.suggestedSalaryNextYear || ''} onChange={handleChange} fullWidth />
+					<GridMaterial item xs={3}>
+						<TextField type="number" name="suggestedRateIncreasePercentage" label="Suggested Rate Increase %" value={state.suggestedRateIncreasePercentage || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField type="number" name="suggestedSalaryNextYear" label="Suggested Salary Next Year" value={state.suggestedSalaryNextYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField type="number" name="suggestedSalaryIncreasePercentage" label="Suggested Salary Increase %" value={state.suggestedSalaryIncreasePercentage || ''} onChange={handleChange} fullWidth />
 					</GridMaterial>
 					<GridMaterial item xs={12}>
 						<Box color="white" bgcolor="primary.main" p={1} borderRadius={4}>
@@ -444,7 +495,9 @@ const F357FormTableComponent = (props) => {
 
 	const [tableColumnExtensions] = useState([
 		{ columnName: "suggestedRateNextYear", align: "center", wordWrapEnabled: true, width:110 },
+		{ columnName: "suggestedRateIncreasePercentage", align: "center", wordWrapEnabled: true, width:130 },
 		{ columnName: "suggestedSalaryNextYear", align: "center", wordWrapEnabled: true, width:120 },
+		{ columnName: "suggestedSalaryIncreasePercentage", align: "center", wordWrapEnabled: true, width:130 },
 		{ columnName: "id", align: "left", width: 90 },
 		{ columnName: "displayName", align: "left", wordWrapEnabled: true },
 		{ columnName: "designationsLabel", align: "left", wordWrapEnabled: true },

@@ -229,6 +229,22 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 			<DialogTitle><Box color="primary.main"><b>{state.id+" - "+state.displayName || "Employee Details"}</b></Box></DialogTitle>
 			<DialogContent>
 				<GridMaterial container spacing={2}>
+					{ state.statusId===5 &&
+					<>
+						<GridMaterial item xs={3}>
+							<TextField type="number" name="suggestedRateNextYear" label="Suggested Rate Next Year" value={state.suggestedRateNextYear || ''} onChange={handleChange} fullWidth disabled/>
+						</GridMaterial>
+						<GridMaterial item xs={3}>
+							<TextField type="number" name="suggestedRateIncreasePercentage" label="Suggested Rate Increase %" value={state.suggestedRateIncreasePercentage || ''} onChange={handleChange} fullWidth disabled/>
+						</GridMaterial>
+						<GridMaterial item xs={3}>
+							<TextField type="number" name="suggestedSalaryNextYear" label="Suggested Salary Next Year" value={state.suggestedSalaryNextYear || ''} onChange={handleChange} fullWidth disabled/>
+						</GridMaterial>
+						<GridMaterial item xs={3}>
+							<TextField type="number" name="suggestedSalaryIncreasePercentage" label="Suggested Salary Increase %" value={state.suggestedSalaryIncreasePercentage || ''} onChange={handleChange} fullWidth disabled/>
+						</GridMaterial>
+					</>
+					}
 					<GridMaterial item xs={3}>
 						<TextField name="rateThisYear" label="Rate This Year" value={state.rateThisYear || ''} onChange={handleChange} fullWidth />
 					</GridMaterial>
@@ -274,9 +290,9 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 					<GridMaterial item xs={4}>
 						<TextField name="percentChange" label="Percent Change" value={state.percentChange || ''} onChange={handleChange} disabled fullWidth />
 					</GridMaterial>
-					<GridMaterial item xs={12}>
-						<TextField name="comment" label="Comment" value={state.comment || ''} onChange={handleChange} fullWidth multiline />
-					</GridMaterial>
+					{/* <GridMaterial item xs={12}>
+						<TextField name="comment" label="Comment" value={state.comments && state.comments.length>0  ? state.comments.at(-1) : ''} onChange={handleChange} fullWidth multiline />
+					</GridMaterial> */}
 				</GridMaterial>
 			</DialogContent>
 			<DialogActions>
@@ -423,8 +439,9 @@ const F357FormTableComponent = (props) => {
 		{ columnName: "salaryNextYear", align: "right", wordWrapEnabled: true },
 		{ columnName: "salaryIncreasePercentage", align: "center", wordWrapEnabled: true },
 		{ columnName: "percentChange", align: "center", wordWrapEnabled: true },
-		{ columnName: "comment", align: "left", wordWrapEnabled: true, width: 250 },
-		{ columnName: "chat", align: "left", wordWrapEnabled: true, width: 300 },
+		{ columnName: "suggestedRateNextYear", align: "center", wordWrapEnabled: true, width:110 },
+		{ columnName: "suggestedSalaryNextYear", align: "center", wordWrapEnabled: true, width:120 },
+		{ columnName: "comments", align: "left", wordWrapEnabled: true, width: 300 },
 	]);
 
 	const [groupSummaryItems] = useState([
@@ -464,8 +481,9 @@ const F357FormTableComponent = (props) => {
 		{ columnName: 'yearlyExpenseThisYear', editingEnabled: false },
 		{ columnName: 'yearlyExpenseNextYear', editingEnabled: false },
 		{ columnName: 'percentChange', editingEnabled: false },
-		{ columnName: 'comment', editingEnabled: true },
-		{ columnName: 'chat', editingEnabled: false }
+		{ columnName: 'suggestedRateNextYear', editingEnabled: false },
+		{ columnName: 'suggestedSalaryNextYear', editingEnabled: false },
+		{ columnName: 'comments', editingEnabled: false }
 		// Add more as needed
 	]);
 
@@ -536,11 +554,40 @@ const F357FormTableComponent = (props) => {
 	};
 
 	const EditCell = ({ row, column, children, ...restProps }) => {
-		const allowEdit = row?.isFinalized !== 1 && row?.isConfirmed !== 1;
+		const allowEdit = row?.statusId==null || row?.statusId === 1 || row?.statusId === 5;
 		return (
 			<TableEditColumn.Cell {...restProps}>
 				{allowEdit ? children : null}
 			</TableEditColumn.Cell>
+		);
+	};
+
+	// const HighlightRow = ({ row, ...restProps }) => {
+	// 	const hasSuggestedValues = (parseFloat(row.suggestedRateNextYear) || 0) > 0 || (parseFloat(row.suggestedSalaryNextYear) || 0) > 0;
+	// 	return (
+	// 		<VirtualTable.Row
+	// 			{...restProps}
+	// 			row={row}
+	// 			style={{
+	// 				backgroundColor: hasSuggestedValues ? '#ffb74d' : undefined, // light blue background
+	// 				...restProps.style,
+	// 			}}
+	// 		/>
+	// 	);
+	// };
+
+	const HighlightCell = ({ row, column, ...restProps }) => {
+		const highlight = (parseFloat(row.suggestedRateNextYear) || 0) > 0 || (parseFloat(row.suggestedSalaryNextYear) || 0) > 0;
+		return (
+			<VirtualTable.Cell
+				{...restProps}
+				row={row}
+				column={column}
+				style={{
+					backgroundColor: highlight ? '#ffdeae' : undefined,
+					...restProps.style,
+				}}
+			/>
 		);
 	};
 
@@ -570,10 +617,12 @@ const F357FormTableComponent = (props) => {
 				<VirtualTable
 					noDataRowComponent={NoDataRow}
 					columnExtensions={tableColumnExtensions}
+					//rowComponent={HighlightRow} // ✅ Add this line
+					cellComponent={HighlightCell} // ✅ ensure fixed cells also get colored
 				/>
 				<TableHeaderRow cellComponent={StickyHeaderCell} />
 				{showTableFilter ? <TableFilterRow showFilterSelector /> : null}
-				<TableEditRow />
+				{/* <TableEditRow /> */}
 				<TableEditRow
 					cellComponent={(props) => {
 						if (props.column.name === 'chat') {

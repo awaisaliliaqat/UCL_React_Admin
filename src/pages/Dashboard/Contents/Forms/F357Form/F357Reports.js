@@ -397,17 +397,7 @@ class F357Reports extends Component {
 					open={this.state.isLoginMenu}
 					handleClose={() => this.setState({ isLoginMenu: false })}
 				/>
-				{/* {this.state.isLoading && (
-					<div className={classes.overlay}>
-						<div className={classes.overlayContent}>
-							<CircularProgress
-								style={{ marginBottom: 10, color: "white" }}
-								size={36}
-							/>
-							<span>Loading...</span>
-						</div>
-					</div>
-				)} */}
+				<div style={{display:"flex"}}>
 				<Button
 					variant="contained"
 					color="primary"
@@ -415,7 +405,7 @@ class F357Reports extends Component {
 					disabled={!this.state.tableData.length || (this.state.sheetStatusId!=1 && this.state.sheetStatusId!=5)}
 					onClick={this.handleSendForApproval}
 				>
-					Send For Approval
+					{ this.state?.sheetStatusId!==5 ? " Send For Approval " : "Resend for Approval"}
 				</Button>
 				<Button
 					variant="contained"
@@ -423,10 +413,11 @@ class F357Reports extends Component {
 					className={classes.approveButton}
 					disabled={!this.state.tableData.length || this.state.sheetStatusId!==3}
 					onClick={this.handleConfirmAndApproved}
-					style={{marginLeft: "13em"}}
+					style={{left:"15em"}}
 				>
-					Finilize
+					Execute BOD Approved Sheet
 				</Button>
+				</div>
 				<IconButton
 					onClick={() => window.close()}
 					aria-label="close"

@@ -90,8 +90,8 @@ class F358Form extends Component {
 		const [startYear, endYear] = academicSessionsLabel.split("-");
 		if (!startYear || !endYear) return;
 		this.setState({
-			fromDate: parse(`01-07-${startYear}`, "dd-MM-yyyy", new Date()),
-			toDate: parse(`30-06-${endYear}`, "dd-MM-yyyy", new Date())
+			fromDate: parse(`01-09-${startYear}`, "dd-MM-yyyy", new Date()),
+			toDate: parse(`31-08-${endYear}`, "dd-MM-yyyy", new Date())
 		});
 	};
 
@@ -332,8 +332,10 @@ class F358Form extends Component {
 	handleSave = async(rowData) => {
 		let data =  new FormData();
 		data.append("id", rowData.salaryIncrementRevisionSheetEmployeesId);
-		data.append("finalRateNextYear", rowData.finalRateNextYear || 0);
-		data.append("finalSalaryNextYear", rowData.finalSalaryNextYear || 0);
+		data.append("suggestedRateNextYear", rowData.suggestedRateNextYear || 0);
+		data.append("suggestedRateIncreasePercentage", rowData.suggestedRateIncreasePercentage || 0);
+		data.append("suggestedSalaryNextYear", rowData.suggestedSalaryNextYear || 0);
+		data.append("suggestedSalaryIncreasePercentage", rowData.suggestedSalaryIncreasePercentage || 0);
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C358SalaryIncrementRevisionSheet/Save`;
 		await fetch(url, {
 			method: "POST",
@@ -433,7 +435,9 @@ class F358Form extends Component {
 
 		const columns = [
 			{ name: "suggestedRateNextYear", title: "Suggested Rate Next Year", required: true},
+			{ name: "suggestedRateIncreasePercentage", title: "Suggested Rate Increase %", required: true},
 			{ name: "suggestedSalaryNextYear", title: "Suggested Salary Next Year", required: true},
+			{ name: "suggestedSalaryIncreasePercentage", title: "Suggested Salary Increase %", required: true},
 			{ name: "id", title: "ID" },
 			{ name: "displayName", title: "Name"},
 			{ name: "rolesLabel", title: "Category" },
