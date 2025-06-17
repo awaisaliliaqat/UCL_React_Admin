@@ -525,8 +525,6 @@ class F357Form extends Component {
 
 		const sheetStatusLabel = this.state.sheetStatusData.find( (obj) => obj.id === this.state.sheetStatusId )?.label ?? ". . .";
 
-		console.log(this.state.sheetStatusId);
-
 		const columns = [
 			{ name: "rolesLabel", title: "Category" },
 			{ name: "id", title: "ID" },
