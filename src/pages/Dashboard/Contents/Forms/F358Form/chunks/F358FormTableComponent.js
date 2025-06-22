@@ -28,7 +28,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 		}
 	}, [open, row]);
 
-	const formatNumber = (num) => Number(parseFloat(num).toFixed(2));
+	//const formatNumber = (num) => Number(parseFloat(num).toFixed(2));
+	const formatNumber = (num) => isNaN(num = parseFloat(num)) ? 0 : Math.round((num + Number.EPSILON) * 100) / 100;
 
 	const parseFloatSafe = (val) => isNaN(parseFloat(val)) ? 0 : parseFloat(val);
 
@@ -60,7 +61,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				const suggestedRateIncreasePercentageLocal = ((suggestedRateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
 				updates = {
 					suggestedRateNextYear: value,
-					suggestedRateIncreasePercentage: suggestedRateIncreasePercentageLocal,
+					suggestedRateIncreasePercentage: formatNumber(suggestedRateIncreasePercentageLocal),
 				};
 				break;
 			}
@@ -71,7 +72,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				const suggestedRateNextYearLocal = rateThisYearLocal * (1 + suggestedRateIncreasePercentageLocal / 100);
 				updates = {
 					suggestedRateIncreasePercentage: value,
-					suggestedRateNextYear: suggestedRateNextYearLocal,
+					suggestedRateNextYear: formatNumber(suggestedRateNextYearLocal),
 				};
 				break;
 			}
@@ -82,7 +83,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				const suggestedSalaryIncPerc = ((suggestedSalaryNextLocal - salaryThisLocal) / (salaryThisLocal || 1)) * 100;
 				updates = {
 					suggestedSalaryNextYear: value,
-					suggestedSalaryIncreasePercentage: suggestedSalaryIncPerc,
+					suggestedSalaryIncreasePercentage: formatNumber(suggestedSalaryIncPerc),
 				};
 				break;
 			}
@@ -93,7 +94,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				const suggestedSalaryNextYearLocal = salaryThisLocal * (1 + suggestedSalaryPercLocal / 100);
 				updates = {
 					suggestedSalaryIncreasePercentage: value,
-					suggestedSalaryNextYear: suggestedSalaryNextYearLocal
+					suggestedSalaryNextYear: formatNumber(suggestedSalaryNextYearLocal)
 				};
 				break;
 			}
@@ -500,8 +501,9 @@ const F357FormTableComponent = (props) => {
 		{ columnName: "suggestedSalaryIncreasePercentage", align: "center", wordWrapEnabled: true, width:130 },
 		{ columnName: "id", align: "left", width: 90 },
 		{ columnName: "displayName", align: "left", wordWrapEnabled: true },
+		{ columnName: "entitiesLabel", align: "left", wordWrapEnabled: true, width:150},
 		{ columnName: "designationsLabel", align: "left", wordWrapEnabled: true },
-		{ columnName: "rolesLabel", align: "center", wordWrapEnabled: true },
+		{ columnName: "rolesLabel", align: "left", wordWrapEnabled: true },
 		{ columnName: "jobStatusLabel", align: "center", wordWrapEnabled: true },
 		{ columnName: "weeklyLoadThisYear", align: "center", wordWrapEnabled: true },
 		{ columnName: "weeklyLoadNextYear", align: "center", wordWrapEnabled: true },
@@ -538,6 +540,7 @@ const F357FormTableComponent = (props) => {
 		{ columnName: 'rolesLabel', editingEnabled: false },
 		{ columnName: 'id', editingEnabled: false },
 		{ columnName: 'displayName', editingEnabled: false },
+		{ columnName: "entitiesLabel", editingEnabled: false},
 		{ columnName: 'jobStatusLabel', editingEnabled: false },
 		{ columnName: 'designationsLabel', editingEnabled: false },
 		{ columnName: 'joiningDate', editingEnabled: false },

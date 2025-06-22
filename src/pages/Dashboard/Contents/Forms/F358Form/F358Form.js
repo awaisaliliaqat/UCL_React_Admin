@@ -61,11 +61,15 @@ class F358Form extends Component {
 			expandedGroupsData: [],
 			fromDate: null,
 			toDate: null,
+			rateIncreasePercentageCriteria : "",
+			salaryIncreasePercentageCriteria : "",
+			yearlyClaimWeeksCriteria : "",
 			employeesSalarySheet: [],
 			sheetStatusId: "",
 			totalYearlyExpenseThisYear : 0,
 			totalYearlyExpenseNextYear : 0,
 			totalPercentChange : 0,
+			
 		};
 	}
 
@@ -123,6 +127,7 @@ class F358Form extends Component {
 							const sessionId = array[i].ID;
 							this.setState({ academicSessionId: sessionId });
 							this.setDatesFromAcademicSession(array[i].Label);
+							this.getCriteria(sessionId);
 						}
 					}
 				} else {
@@ -174,6 +179,58 @@ class F358Form extends Component {
 					});
 				} else {
 					console.error(error);
+					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.", "error");
+				}
+			}
+		);
+	};
+
+	getCriteria = async (academicSessionId) => {
+		let data = new FormData();
+		data.append("academicSessionId", academicSessionId);
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C358SalaryIncrementRevisionSheet/CriteriaView`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then((json) => {
+				if (json.CODE === 1) {
+					let array = json.DATA || [];
+					if(array!=null && array.length>0){
+						let obj = array[0];
+						this.setState({
+							rateIncreasePercentageCriteria : obj.rateIncreasePercentage,
+							salaryIncreasePercentageCriteria : obj.salaryIncreasePercentage,
+							yearlyClaimWeeksCriteria : obj.yearlyClaimWeeks
+						});
+					} else {
+						this.setState({
+							rateIncreasePercentageCriteria : 8,
+							salaryIncreasePercentageCriteria : 8,
+							yearlyClaimWeeksCriteria : 30
+						});
+					}
+				} else {
+					this.handleOpenSnackbar(<span>{json.SYSTEM_MESSAGE}<br />{json.USER_MESSAGE}</span>, "error" );
+				}
+			},
+			(error) => {
+				if (error.status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.error("getCriteria Error : ", error);
 					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.", "error");
 				}
 			}
@@ -274,6 +331,7 @@ class F358Form extends Component {
 				});
 				let academicSessionLabel = this.state.academicSessionsData.find((obj)=>obj.ID==value)?.Label || "2024-2025";
 				this.setDatesFromAcademicSession(academicSessionLabel);
+				this.getCriteria(value);
 				break;
 			default:
 				break;
@@ -467,6 +525,7 @@ class F358Form extends Component {
 			{ name: "suggestedSalaryIncreasePercentage", title: "Suggested Salary Increase %", required: true},
 			{ name: "id", title: "ID" },
 			{ name: "displayName", title: "Name"},
+			{ name: "entitiesLabel", title: "Entities"},
 			{ name: "rolesLabel", title: "Category" },
 			{ name: "designationsLabel",	title: "Position"},
 			{ name: "jobStatusLabel",	title: "Employment Status"},
@@ -532,7 +591,7 @@ class F358Form extends Component {
 				<Grid container justifyContent="center" alignItems="center" spacing={2} className={classes.main}>
 					<Grid item xs={12}>
 						<Typography className={classes.title} variant="h5">
-							Employees Salary Increment Revision Sheet For BOD
+							Employees Salary Increment Revision Sheet From BOD
 							<div style={{ display:"inline-block", float:"right", marginTop: -8 }}>
 								<Tooltip title="Table Filter">
 									<IconButton
@@ -547,7 +606,7 @@ class F358Form extends Component {
 						</Typography>
 						<Divider className={classes.divider} />
 					</Grid>
-					<Grid item xs={12} md={4}>
+					<Grid item xs={12} md={3}>
 						<TextField
 							name="academicSessionId"
 							label="Academic Session"
@@ -567,7 +626,7 @@ class F358Form extends Component {
 							))}
 						</TextField>
 					</Grid>
-					<Grid item xs={6} md={3}>
+					<Grid item xs={6} md={2}>
 						<DatePicker
 							autoOk
 							id="fromDate"
@@ -589,7 +648,7 @@ class F358Form extends Component {
 							}
 						/>
 					</Grid>
-					<Grid item xs={6} md={3}>
+					<Grid item xs={6} md={2}>
 						<DatePicker
 							autoOk
 							id="toDate"
@@ -610,6 +669,51 @@ class F358Form extends Component {
 									target: { name: "toDate", value: date },
 								})
 							}
+						/>
+					</Grid>
+					<Grid item xs={4} md={1}>
+						<TextField
+							id="rateIncreasePercentageCriteria"
+							name="rateIncreasePercentageCriteria"
+							label="Rate Inc %"
+							type="number"
+							placeholder=""
+							variant="outlined"
+							fullWidth
+							required
+							value={this.state.rateIncreasePercentageCriteria}
+							onChange={this.onHandleChange}
+							disabled
+						/>
+					</Grid>
+					<Grid item xs={4} md={1}>
+						<TextField
+							id="salaryIncreasePercentageCriteria"
+							name="salaryIncreasePercentageCriteria"
+							label="Salary Inc %"
+							type="number"
+							placeholder=""
+							variant="outlined"
+							fullWidth
+							required
+							value={this.state.salaryIncreasePercentageCriteria}
+							onChange={this.onHandleChange}
+							disabled
+						/>
+					</Grid>
+					<Grid item xs={4} md={1}>
+						<TextField
+							id="yearlyClaimWeeksCriteria"
+							name="yearlyClaimWeeksCriteria"
+							label="Claim Months"
+							type="number"
+							placeholder=""
+							variant="outlined"
+							fullWidth
+							required
+							value={this.state.yearlyClaimWeeksCriteria}
+							onChange={this.onHandleChange}
+							disabled
 						/>
 					</Grid>
 					<Grid item xs={6} md={1}>
