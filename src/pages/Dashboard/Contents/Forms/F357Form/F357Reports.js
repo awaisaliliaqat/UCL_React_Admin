@@ -172,7 +172,10 @@ class F357Reports extends Component {
 			tableData: [],
 			academicSessionId: 0,
 			sheetStatusData : [],
-			sheetStatusId: ""
+			sheetStatusId: "",
+			totalYearlyExpenseThisYear : 0,
+			totalYearlyExpenseNextYear : 0,
+			totalPercentChange : 0,
 		};
 	}
 
@@ -301,6 +304,8 @@ class F357Reports extends Component {
 							this.setState({
 								tableData: data,
 								sheetStatusId: data[0].statusId
+							}, () => {
+								this.handleCalculateTotals();
 							});
 						}
 					} else {
@@ -347,6 +352,9 @@ class F357Reports extends Component {
 			(json) => {
 				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
 				if (CODE === 1) {
+					if(statusId===2){
+						this.handleCriteriaLock();
+					}
 					this.setState({sheetStatusId: statusId});
 					const updatedData = this.state.tableData.map(item => ({ ...item, statusId: statusId }));
 					this.setState({ tableData: updatedData });
@@ -367,12 +375,70 @@ class F357Reports extends Component {
 		);
 	}
 
+	handleCriteriaLock = async() => {
+		let data =  new FormData();
+		data.append("academicSessionId", this.state.academicSessionId);
+		data.append("fromDate", this.state.fromDateLabel);
+		data.append("toDate", this.state.toDateLabel);
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C357SalaryIncrementRevisionSheet/CriteriaLock`;
+		await fetch(url, {
+			method: "POST",
+			body: data,
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					// this.handleOpenSnackbar(<span>{USER_MESSAGE}</span>,"success");
+				} else {
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					
+				} else {
+					console.error("handleCriteriaLock :", error);
+					this.handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+	}
+
 	handleSendForApproval = () => {
 		this.handleSheetStatusUpdate(2);
 	}
 
 	handleConfirmAndApproved = () => {
 		this.handleSheetStatusUpdate(4);
+	}
+
+	currencyFormatter = (value) => typeof value === "number" ? value.toLocaleString("en-US", {maxFractionDigits: 2}) : value;
+
+	handleCalculateTotals = () => {
+		const data = [...this.state.tableData] || [];
+		let totalThisYear = 0;
+		let totalNextYear = 0;
+		data.forEach(employee => {
+			totalThisYear += Number(employee.yearlyExpenseThisYear || 0);
+			totalNextYear += Number(employee.yearlyExpenseNextYear || 0);
+		});
+		const totalPercentChange = totalThisYear === 0 ? 0 : ((totalNextYear - totalThisYear) / totalThisYear) * 100;
+		this.setState({
+			totalYearlyExpenseThisYear: totalThisYear,
+			totalYearlyExpenseNextYear: totalNextYear,
+			totalPercentChange: totalPercentChange.toFixed(2)  // Rounded to 2 decimals
+		});
 	}
 
 	componentDidMount() {
@@ -452,6 +518,16 @@ class F357Reports extends Component {
 							</tr>
 						</thead>
 						<tbody>
+							<tr>
+								<td colSpan={this.state.tableHeaderData.length}>		
+									<Box bgcolor="primary.main" color="primary.contrastText" borderRadius={2} p={1} display="flex" justifyContent="space-between">
+										<span>Summary :</span>
+										<span><small>Total Yearly Expense This Year : {this.currencyFormatter(this.state.totalYearlyExpenseThisYear)}</small></span>
+										<span><small>Total Yearly Expense Next Year : {this.currencyFormatter(this.state.totalYearlyExpenseNextYear)}</small></span>
+										<span><small>Percent Change : {this.currencyFormatter(this.state.totalPercentChange)}%</small></span>
+									</Box>
+								</td>
+							</tr>
 							<tr>
 								<td colSpan={this.state.tableHeaderData.length}>
 									<Paper className={classes.root}>

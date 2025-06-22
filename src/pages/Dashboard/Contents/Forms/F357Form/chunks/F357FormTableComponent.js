@@ -12,6 +12,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useTheme } from '@material-ui/core/styles';
 import F357ChatBox from "./F357ChatBox"
+import { Skeleton } from "@material-ui/lab";
 
 
 const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
@@ -28,7 +29,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 		}
 	}, [open, row]);
 
-	const formatNumber = (num) => Number(parseFloat(num).toFixed(2));
+	const formatNumber = (num) => isNaN(num = parseFloat(num)) ? 0 : Math.round((num + Number.EPSILON) * 100) / 100;
 
 	const parseFloatSafe = (val) => isNaN(parseFloat(val)) ? 0 : parseFloat(val);
 
@@ -58,7 +59,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				const rateIncreasePercentageLocal = ((rateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
 				updates = {
 					rateThisYear: value,
-					rateIncreasePercentage: rateIncreasePercentageLocal,
+					rateIncreasePercentage: formatNumber(rateIncreasePercentageLocal),
 				};
 				break;
 			}
@@ -69,7 +70,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				const rateIncreasePercentageLocal = ((rateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
 				updates = {
 					rateNextYear: value,
-					rateIncreasePercentage: rateIncreasePercentageLocal,
+					rateIncreasePercentage: formatNumber(rateIncreasePercentageLocal),
 				};
 				break;
 			}
@@ -80,7 +81,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				const rateNextYearLocal = rateThisYearLocal * (1 + rateIncreasePercentageLocal / 100);
 				updates = {
 					rateIncreasePercentage: value,
-					rateNextYear: rateNextYearLocal,
+					rateNextYear: formatNumber(rateNextYearLocal),
 				};
 				break;
 			}
@@ -97,8 +98,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 
 				updates = {
 					monthsThisYear: value,
-					yearlySalaryThisYear: yearlySalaryThisLocal,
-					yearlyExpenseThisYear: yearlyExpenseThisLocal,
+					yearlySalaryThisYear: formatNumber(yearlySalaryThisLocal),
+					yearlyExpenseThisYear: formatNumber(yearlyExpenseThisLocal),
 					percentChange: formatNumber(percentChangeLocal),
 				};
 				break;
@@ -116,8 +117,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 
 				updates = {
 					monthsNextYear: value,
-					yearlySalaryNextYear: yearlySalaryNextYearLocal,
-					yearlyExpenseNextYear: yearlyExpenseNextYearLocal,
+					yearlySalaryNextYear: formatNumber(yearlySalaryNextYearLocal),
+					yearlyExpenseNextYear: formatNumber(yearlyExpenseNextYearLocal),
 					percentChange: formatNumber(percentChangeLocal),
 				};
 				break;
@@ -137,9 +138,9 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 
 				updates = {
 					salaryThisYear: value,
-					salaryIncreasePercentage: salaryIncPerc,
-					yearlySalaryThisYear: yearlySalaryThisLocal,
-					yearlyExpenseThisYear: yearlyExpenseThisLocal,
+					salaryIncreasePercentage: formatNumber(salaryIncPerc),
+					yearlySalaryThisYear: formatNumber(yearlySalaryThisLocal),
+					yearlyExpenseThisYear: formatNumber(yearlyExpenseThisLocal),
 					percentChange: formatNumber(percentChangeLocal),
 				};
 				break;
@@ -159,9 +160,9 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 
 				updates = {
 					salaryNextYear: value,
-					salaryIncreasePercentage: salaryIncPerc,
-					yearlySalaryNextYear: yearlySalaryNextLocal,
-					yearlyExpenseNextYear: yearlyExpenseNextLocal,
+					salaryIncreasePercentage: formatNumber(salaryIncPerc),
+					yearlySalaryNextYear: formatNumber(yearlySalaryNextLocal),
+					yearlyExpenseNextYear: formatNumber(yearlyExpenseNextLocal),
 					percentChange: formatNumber(percentChangeLocal),
 				};
 				break;
@@ -181,24 +182,9 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 
 				updates = {
 					salaryIncreasePercentage: value,
-					salaryNextYear: calculatedSalaryNext,
-					yearlySalaryNextYear: calcYearlySalary,
-					yearlyExpenseNextYear: updatedExpense,
-					percentChange: formatNumber(percentChangeLocal),
-				};
-				break;
-			}
-
-			case "yearlyClaimNextYear": {
-				const claimNextLocal = parseFloatSafe(value);
-				const yearlySalaryNextLocal = parseFloatSafe(yearlySalaryNextYear);
-				const yearlyExpenseThisLocal = parseFloatSafe(yearlyExpenseThisYear);
-				const yearlyExpenseNextYearLocal = claimNextLocal + yearlySalaryNextLocal;
-				const percentChangeLocal = ((yearlyExpenseNextYearLocal - yearlyExpenseThisLocal) / (yearlyExpenseThisLocal || 1)) * 100;
-				
-				updates = {
-					yearlyClaimNextYear: value,
-					yearlyExpenseNextYear: yearlyExpenseNextYearLocal,
+					salaryNextYear: formatNumber(calculatedSalaryNext),
+					yearlySalaryNextYear: formatNumber(calcYearlySalary),
+					yearlyExpenseNextYear: formatNumber(updatedExpense),
 					percentChange: formatNumber(percentChangeLocal),
 				};
 				break;
@@ -273,7 +259,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 						<TextField name="yearlyClaimThisYear" label="Yearly Claim This Year" value={state.yearlyClaimThisYear || ''} onChange={handleChange} disabled fullWidth />
 					</GridMaterial>
 					<GridMaterial item xs={6}>
-						<TextField name="yearlyClaimNextYear" label="Yearly Claim Next Year" value={state.yearlyClaimNextYear || ''} onChange={handleChange} fullWidth />
+						<TextField name="yearlyClaimNextYear" label="Yearly Claim Next Year" value={state.yearlyClaimNextYear || ''} onChange={handleChange} disabled fullWidth />
 					</GridMaterial>
 					<GridMaterial item xs={6}>
 						<TextField name="yearlySalaryThisYear" label="Yearly Salary This Year" value={state.yearlySalaryThisYear || ''} onChange={handleChange} disabled fullWidth />
@@ -418,8 +404,9 @@ const F357FormTableComponent = (props) => {
 	const [tableColumnExtensions] = useState([
 		{ columnName: "id", align: "left", width: 90 },
 		{ columnName: "displayName", align: "left", wordWrapEnabled: true },
+		{ columnName: "entitiesLabel", align: "left", wordWrapEnabled: true, width:150},
 		{ columnName: "designationsLabel", align: "left", wordWrapEnabled: true },
-		{ columnName: "rolesLabel", align: "center", wordWrapEnabled: true },
+		{ columnName: "rolesLabel", align: "left", wordWrapEnabled: true },
 		{ columnName: "jobStatusLabel", align: "center", wordWrapEnabled: true },
 		{ columnName: "weeklyLoadThisYear", align: "center", wordWrapEnabled: true },
 		{ columnName: "weeklyLoadNextYear", align: "center", wordWrapEnabled: true },
@@ -458,6 +445,7 @@ const F357FormTableComponent = (props) => {
 		{ columnName: 'rolesLabel', editingEnabled: false },
 		{ columnName: 'id', editingEnabled: false },
 		{ columnName: 'displayName', editingEnabled: false },
+		{ columnName: "entitiesLabel", editingEnabled: false},
 		{ columnName: 'jobStatusLabel', editingEnabled: false },
 		{ columnName: 'designationsLabel', editingEnabled: false },
 		{ columnName: 'joiningDate', editingEnabled: false },
@@ -497,7 +485,12 @@ const F357FormTableComponent = (props) => {
 		<TableRow>
 			<TableCell colSpan={columns.length} style={{ textAlign: "center", padding: "20px" }}>
 				{isLoading ? (
-					<CircularProgress size={36} />
+					// <CircularProgress size={36} />
+					<>
+						<Skeleton />
+						<Skeleton animation={false} />
+						<Skeleton animation="wave" />
+					</>
 				) : (
 					<Box color="primary.light" fontSize="1rem">No Data</Box>
 				)}
