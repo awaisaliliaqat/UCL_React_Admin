@@ -561,7 +561,6 @@ class F358Form extends Component {
 			{ name: "comments", title: "Comments on Salary Determination", 
 				getCellValue: (rowData) => {
 					const stableChat = Array.isArray(rowData.comments) ? rowData.comments : [];
-					console.log(rowData.salaryIncrementRevisionSheetEmployeesId);
 					return (
 						<F358ChatBox
 							salaryIncrementRevisionSheetId={rowData.salaryIncrementRevisionSheetId}
@@ -763,6 +762,8 @@ class F358Form extends Component {
 							columns={columns}
 							rows={this.state.employeesSalarySheet}
 							onCommitChanges={this.handleCommitChanges}
+							rateIncreasePercentageCriteria={this.state.rateIncreasePercentageCriteria}
+							salaryIncreasePercentageCriteria={this.state.salaryIncreasePercentageCriteria}
 						/>
 					</Grid>
 					<CustomizedSnackbar

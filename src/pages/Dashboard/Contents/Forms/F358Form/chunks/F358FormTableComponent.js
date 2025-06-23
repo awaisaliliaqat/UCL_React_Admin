@@ -647,6 +647,27 @@ const F357FormTableComponent = (props) => {
 		);
 	};
 
+	const HighlightCell = ({ row, column, ...restProps }) => {
+		const rateNextYear = parseFloat(row.rateNextYear) || 0;
+		const rateIncreasePercentage = parseFloat(row.rateIncreasePercentage) || 0;
+		const rateIncreasePercentageCriteria = parseFloat(props.rateIncreasePercentageCriteria) || 0;
+		const salaryNextYear = parseFloat(row.salaryNextYear) || 0;
+		const salaryIncreasePercentage = parseFloat(row.salaryIncreasePercentage) || 0;
+		const salaryIncreasePercentageCriteria = parseFloat(props.salaryIncreasePercentageCriteria) || 0;
+		const highlight = (rateNextYear > 0 && rateIncreasePercentage != rateIncreasePercentageCriteria) || (salaryNextYear > 0 && salaryIncreasePercentage != salaryIncreasePercentageCriteria)
+		return (
+			<VirtualTable.Cell
+				{...restProps}
+				row={row}
+				column={column}
+				style={{
+					backgroundColor: highlight ? '#ffdeae' : undefined,
+					...restProps.style,
+				}}
+			/>
+		);
+	};
+
 	return (
 		<Paper>
 			<Grid
@@ -675,10 +696,11 @@ const F357FormTableComponent = (props) => {
 				<VirtualTable
 					noDataRowComponent={NoDataRow}
 					columnExtensions={tableColumnExtensions}
+					cellComponent={HighlightCell} // ✅ ensure fixed cells also get colored
 				/>
 				<TableHeaderRow cellComponent={StickyHeaderCell} />
 				{showTableFilter ? <TableFilterRow showFilterSelector /> : null}
-				<TableEditRow />
+				{/* <TableEditRow /> */}
 				<TableEditRow
 					cellComponent={(props) => {
 						if (props.column.name === 'comments') {
