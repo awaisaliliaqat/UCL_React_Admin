@@ -29,10 +29,8 @@ import EditStudentInformationAction from "./Contents/Decision/EditStudentInforma
 import DefineTeacherFrom from "./Contents/Forms/DefineTeacher/DefineTeacherForm";
 import DefineTeacherReports from "./Contents/Forms/DefineTeacher/DefineTeacherReports";
 import AssignSectionToStudentFrom from "./Contents/Forms/AssignSectionToStudent/AssignSectionToStudentForm";
-import AssignSectionToTeacherForm from "./Contents/Forms/AssignSectionToTeacher/AssignSectionToTeacherForm";
 import StudentCourseSelection from "./Contents/Forms/StudentCourseSelection/StudentCourseSelection";
 import AssignSectionToStudentReport from "./Contents/Forms/AssignSectionToStudent/AssignSectionToStudentReports";
-import AssignSectionToTeacherReport from "./Contents/Forms/AssignSectionToTeacher/AssignSectionToTeacherReports";
 import F06Form from "./Contents/Forms/F06Form";
 import F06Reports from "./Contents/Forms/F06Reports";
 import F81Form from "./Contents/Forms/F81Form";
@@ -54,6 +52,8 @@ import F25Form from "./Contents/Forms/F25Form";
 import F26Form from "./Contents/Forms/F26Form/F26Form";
 import F26Reports from "./Contents/Forms/F26Form/F26Reports";
 import F27Form from "./Contents/Forms/F27Form";
+import F29Form from "./Contents/Forms/F29Form/F29Form";
+import F29Reports from "./Contents/Forms/F29Form/F29Reports";
 import F30Form from "./Contents/Forms/F30Form";
 import F31Form from "./Contents/Forms/F31Form/F31Form";
 import F33Form from "./Contents/Forms/F33Form";
@@ -2254,24 +2254,25 @@ const Dashboard = (props) => {
 			  />
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}
-				name="assign-section-to-teacher"
+				name="F29Form"
 				exact
-				path="/dashboard/assign-section-to-teacher-reports"
-				component={AssignSectionToTeacherReport}
-			  />
-			  <SetRoute
-				setValue={(value) => handleValueChange(value)}
-				name="assign-section-to-teacher"
-				exact
-				path="/dashboard/assign-section-to-teacher/:recordId"
+				path="/dashboard/F29Form"
 				render={(props) => {
 				  return (
-					<AssignSectionToTeacherForm
+					<F29Form
 					  {...props}
 					  isDrawerOpen={isDrawerOpen}
+					  setDrawerOpen={setDrawerOpen}
 					/>
 				  );
 				}}
+			  />
+			  <SetRoute
+				setValue={(value) => handleValueChange(value)}
+				name="F29Form"
+				exact
+				path="/dashboard/F29Reports"
+				component={F29Reports}
 			  />
 			  <SetRoute
 				setValue={(value) => handleValueChange(value)}

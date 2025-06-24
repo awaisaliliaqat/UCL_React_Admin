@@ -72,10 +72,6 @@ class AssignSectionToTeacherForm extends Component {
         }
     }
 
-    componentDidMount() {
-        this.getSessionData();
-    }
-
     handleOpenSnackbar = (msg, severity) => {
         this.setState({
             isOpenSnackbar: true,
@@ -453,7 +449,7 @@ class AssignSectionToTeacherForm extends Component {
 
 
     viewReport = () => {
-        window.location = "#/dashboard/assign-section-to-teacher-reports";
+        window.location = "#/dashboard/F29Reports";
     }
 
     handleClickShowPassword = () => {
@@ -534,6 +530,11 @@ class AssignSectionToTeacherForm extends Component {
         this.setState({
             teachersObjectError
         })
+    }
+
+    componentDidMount() {
+        this.props.setDrawerOpen(false);
+        this.getSessionData();
     }
 
     render() {
