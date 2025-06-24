@@ -65,11 +65,7 @@ class F358Form extends Component {
 			salaryIncreasePercentageCriteria : "",
 			yearlyClaimWeeksCriteria : "",
 			employeesSalarySheet: [],
-			sheetStatusId: "",
-			totalYearlyExpenseThisYear : 0,
-			totalYearlyExpenseNextYear : 0,
-			totalPercentChange : 0,
-			
+			sheetStatusId: ""		
 		};
 	}
 
@@ -269,8 +265,6 @@ class F358Form extends Component {
 						this.setState({
 							sheetStatusId : data[0].statusId || "",
 							employeesSalarySheet: data,
-						}, () => {
-							this.handleCalculateTotals()
 						});
 					}
 				} else {
@@ -314,8 +308,6 @@ class F358Form extends Component {
 			academicSessionsDataLoading: false,
 			employeesSalarySheet: [],
 			sheetStatusId : ""
-		}, () => {
-			this.handleCalculateTotals();
 		});
 	};
 
@@ -383,8 +375,6 @@ class F358Form extends Component {
 		}
 		this.setState({ 
 			employeesSalarySheet: rows 
-		}, () => {
-			this.handleCalculateTotals();
 		});
 	};
 
@@ -488,22 +478,6 @@ class F358Form extends Component {
 	}
 
 	currencyFormatter = (value) => typeof value === "number" ? value.toLocaleString("en-US", {maxFractionDigits: 2}) : value;
-
-	handleCalculateTotals = () => {
-		const data = [...this.state.employeesSalarySheet] || [];
-		let totalThisYear = 0;
-		let totalNextYear = 0;
-		data.forEach(employee => {
-			totalThisYear += Number(employee.yearlyExpenseThisYear || 0);
-			totalNextYear += Number(employee.yearlyExpenseNextYear || 0);
-		});
-		const totalPercentChange = totalThisYear === 0 ? 0 : ((totalNextYear - totalThisYear) / totalThisYear) * 100;
-		this.setState({
-			totalYearlyExpenseThisYear: totalThisYear,
-			totalYearlyExpenseNextYear: totalNextYear,
-			totalPercentChange: totalPercentChange.toFixed(2)  // Rounded to 2 decimals
-		});
-	}
 
 	componentDidMount() {
 		const { recordId } = this.props.match.params;
@@ -746,13 +720,6 @@ class F358Form extends Component {
 						</Button>
 					</Grid>
 					<Grid item xs={12}>
-						<Divider className={classes.divider} />
-						<Box bgcolor="primary.main" color="primary.contrastText" borderRadius={2} p={1} display="flex" justifyContent="space-between">
-							<span>Summary :</span>
-							<span><small>Total Yearly Expense This Year : {this.currencyFormatter(this.state.totalYearlyExpenseThisYear)}</small></span>
-							<span><small>Total Yearly Expense Next Year : {this.currencyFormatter(this.state.totalYearlyExpenseNextYear)}</small></span>
-							<span><small>Percent Change : {this.currencyFormatter(this.state.totalPercentChange)}%</small></span>
-						</Box>
 						<Divider className={classes.divider} />
 					</Grid>
 					<Grid item xs={12} style={{marginBottom: "30px"}}>
