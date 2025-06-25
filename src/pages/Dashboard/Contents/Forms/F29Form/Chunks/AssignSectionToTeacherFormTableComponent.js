@@ -57,6 +57,8 @@ class AssignSectionToTeacherFormTableComponent extends Component {
 
         const { rows, columns, showFilter } = this.props;
 
+        console.log(rows);
+
         return (
             <Paper>
                 <Grid rows={rows} columns={columns}>

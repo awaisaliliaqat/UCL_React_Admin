@@ -950,8 +950,10 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                         <TableCell className={classes.tableHeadCell}>Academic Year</TableCell>
                                         {/* <TableCell className={classes.tableHeadCell}>Section</TableCell> */}
                                         <TableCell className={classes.tableHeadCell}>Course</TableCell>
-                                        <TableCell className={classes.tableHeadCell}>Hours</TableCell>
+                                        <TableCell className={classes.tableHeadCell}>Credit Hours</TableCell>
+                                        <TableCell className={classes.tableHeadCell}>Weekly Work Load</TableCell>
                                         <TableCell className={classes.tableHeadCell}>Claim Hours</TableCell>
+                                        <TableCell className={classes.tableHeadCell}>Approved Claim Hours</TableCell>
                                         <TableCell className={classes.tableHeadCell} style={{width:65, textAlign:"center"}}>Action</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -964,6 +966,8 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                                     {/* <TableCell component="th" scope="row">{obj.label}</TableCell> */}
                                                     <TableCell component="th" scope="row">{obj.courseLabel}</TableCell>
                                                     <TableCell align="left">{obj.creditHour}</TableCell>
+                                                    <TableCell align="left">{obj.weeklyWorkLoad}</TableCell>
+                                                    <TableCell align="left">{obj.claimHours}</TableCell>
                                                     <TableCell align="left">
                                                         <TextField
                                                             name="claimHours"
@@ -971,7 +975,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                                             placeholder=""
                                                             variant="outlined"
                                                             size='small'
-                                                            value={obj.claimHours || ""}
+                                                            value={obj.approvedClaimHours || ""}
                                                             onChange={e=>handleSetClaimHours(e, index)}
                                                             inputProps={{
                                                                 style : {
@@ -996,7 +1000,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                             )
                                         :
                                         <TableRow className={classes.tableRowHover}>
-                                            <TableCell component="th" scope="row" colSpan={4}>
+                                            <TableCell component="th" scope="row" colSpan={6}>
                                                 <Box color="primary.main" align="center">No Data</Box>
                                             </TableCell>
                                         </TableRow>

@@ -27,15 +27,40 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+
 const DecisionActionMenu = props => {
 
     const classes = useStyles();
+
     const { handleClose, onConfirmClick, open, data, onAutoCompleteChange, isLoading } = props;
+
+    const renderEditableField = (rowData, fieldName) => (
+        <TextField
+            type="number"
+            size="small"
+            name={fieldName}
+            value={rowData[fieldName] || ""}
+            onChange={(e) => {
+                const updated = data.mainData.map(item =>
+                    item.id === rowData.id
+                        ? { ...item, [fieldName]: e.target.value }
+                        : item
+                );
+                data.setMainData(updated);
+            }}
+        />
+    );
 
     const columns = [
         { name: "courseLabel", title: "Course Label" },
         { name: "sectionTypeLabel", title: "Class Type" },
         { name: "label", title: "Section" },
+        { name: "weeklyWorkLoad", title: "Weekly Work Load",
+            getCellValue: (rowData) => renderEditableField(rowData, "weeklyWorkLoad")    
+        },
+        { name: "claimHours", title: "Claim Hours",
+             getCellValue: (rowData) => renderEditableField(rowData, "claimHours")
+         },
         //{ name: "degreeProgram", title: "Degree Program" },
     ]
 

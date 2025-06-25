@@ -532,6 +532,10 @@ class AssignSectionToTeacherForm extends Component {
         })
     }
 
+    setMainData = (newData) => {
+        this.setState({ mainData: newData });
+    };
+
     componentDidMount() {
         this.props.setDrawerOpen(false);
         this.getSessionData();
@@ -573,7 +577,18 @@ class AssignSectionToTeacherForm extends Component {
         return (
             <Fragment>
                 <LoginMenu reload={this.state.isReload} open={this.state.isLoginMenu} handleClose={() => this.setState({ isLoginMenu: false })} />
-                <AssignSectionToTeacherFormDialog isLoading={this.state.isLoading} onAutoCompleteChange={this.onAutoCompleteChange} onConfirmClick={() => this.onSaveClick()} open={this.state.isMenuOpen} data={this.state} handleClose={() => this.setState({ isMenuOpen: false })} />
+                <AssignSectionToTeacherFormDialog 
+                    isLoading={this.state.isLoading} 
+                    onAutoCompleteChange={this.onAutoCompleteChange} 
+                    onConfirmClick={() => this.onSaveClick()} 
+                    open={this.state.isMenuOpen} 
+                    // data={this.state} 
+                    data={{ 
+                        ...this.state, 
+                        setMainData: this.setMainData // ✅ This is the fix
+                    }}
+                    handleClose={() => this.setState({ isMenuOpen: false })}
+                />
                 <Grid container component="main" className={classes.root}>
                     <Typography
                         style={{
@@ -719,6 +734,7 @@ class AssignSectionToTeacherForm extends Component {
                     <input type="hidden" name="id" value={this.state.recordId} />
                     <input type="hidden" name="teacherId" value={this.state.teacherId} />
 
+                    {/* 
                     {this.state.mainData.map(item => {
                         if (item.isChecked) {
                             return (
@@ -727,8 +743,17 @@ class AssignSectionToTeacherForm extends Component {
                                 </Fragment>
                             );
                         }
-                    })}
-
+                    })} 
+                    */}
+                    {this.state.mainData
+                        .filter(item => item.isChecked)
+                        .map(item => (
+                            <Fragment key={item.id}>
+                            <input type="hidden" name="sectionId" value={item.id} />
+                            <input type="hidden" name="weeklyWorkLoad" value={parseFloat(item.weeklyWorkLoad) || 0} />
+                            <input type="hidden" name="claimHours" value={parseFloat(item.claimHours) || 0} />
+                            </Fragment>
+                    ))}
                     <input type="submit" style={{ display: 'none' }} id="assignToTeacher" />
                 </form>
                 <ScrollToTop />
