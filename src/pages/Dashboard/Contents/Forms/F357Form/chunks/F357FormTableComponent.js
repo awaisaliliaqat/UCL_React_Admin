@@ -4,7 +4,7 @@ import GridMaterial from '@material-ui/core/Grid';
 import { TextField, Paper, CircularProgress, TableRow, TableCell, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery } from "@material-ui/core";
 import { Plugin, Template, TemplateConnector, TemplatePlaceholder, } from '@devexpress/dx-react-core';
 import { SummaryState, IntegratedSummary, DataTypeProvider, EditingState, IntegratedFiltering, FilteringState } from "@devexpress/dx-react-grid";
-import { Grid, VirtualTable, TableHeaderRow, TableFixedColumns, TableEditRow, TableEditColumn, TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
+import { Grid, VirtualTable, TableHeaderRow, TableFixedColumns, TableEditRow, TableEditColumn, TableFilterRow, TableSummaryRow } from "@devexpress/dx-react-grid-material-ui";
 import { IconButton, Tooltip } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
@@ -13,6 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { useTheme } from '@material-ui/core/styles';
 import F357ChatBox from "./F357ChatBox"
 import { Skeleton } from "@material-ui/lab";
+import F357TopSummaryPanel from './F357TopSummaryPanel';
 
 
 const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
@@ -388,6 +389,8 @@ const StickyHeaderCell = ({
 	);
 };
 
+const formatNumber = (num) => isNaN(num = parseFloat(num)) ? 0 : Math.round((num + Number.EPSILON) * 100) / 100;
+
 const CurrencyFormatter = ({ value }) => {
 	const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
 	return safeValue.toLocaleString("en-US")
@@ -396,6 +399,10 @@ const CurrencyFormatter = ({ value }) => {
 const CurrencyTypeProvider = (props) => (
 	<DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
 );
+
+const messages = {
+  percentChange: 'Percentage',
+};
 
 const getRowId = row => row.id;
 
@@ -437,8 +444,9 @@ const F357FormTableComponent = (props) => {
 	]);
 
 	const [totalSummaryItems] = useState([
-		{ columnName: "netHours", type: "sum" },
-		{ columnName: "ratePerHour", type: "avg" },
+		{ columnName: "yearlyExpenseThisYear", type: "sum" },
+		{ columnName: "yearlyExpenseNextYear", type: "sum" },
+		{ columnName: "percentChange", type: "percentChange" }
 	]);
 
 	const [editingColumnExtensions] = useState([
@@ -584,6 +592,27 @@ const F357FormTableComponent = (props) => {
 		);
 	};
 
+	const summaryCalculator = (type, rows, getValue) => {
+		if (!rows || rows.length === 0) return 0;
+		// Calculate base values for later state update
+		const totalThisYear = rows.reduce((sum, row) => sum + (parseFloat(row.yearlyExpenseThisYear) || 0), 0);
+		const totalNextYear = rows.reduce((sum, row) => sum + (parseFloat(row.yearlyExpenseNextYear) || 0), 0);
+		const percentChange = totalThisYear === 0 ? 0 : ((totalNextYear - totalThisYear) / totalThisYear) * 100;
+
+		const columnName = getValue.name;
+		let result;
+
+		// Calculate percentChange if needed
+		if (type === 'percentChange') {
+			result = formatNumber(percentChange);
+		} else {
+			result = IntegratedSummary.defaultCalculator(type, rows, getValue)
+		}
+		
+		// Default
+		return result;
+	};
+
 	return (
 		<Paper>
 			<Grid
@@ -600,13 +629,16 @@ const F357FormTableComponent = (props) => {
 					totalItems={totalSummaryItems}
 					groupItems={groupSummaryItems}
 				/>
-				<IntegratedSummary />
+				<IntegratedSummary 
+					calculator={summaryCalculator}
+				/>
 				<EditingState
 					editingRowIds={editingRowIds}
 					onEditingRowIdsChange={handleEditingRowIdsChange}
 					columnExtensions={editingColumnExtensions}
 					onCommitChanges={onCommitChanges}
 				/>
+				<F357TopSummaryPanel />
 				<VirtualTable
 					noDataRowComponent={NoDataRow}
 					columnExtensions={tableColumnExtensions}
@@ -614,6 +646,10 @@ const F357FormTableComponent = (props) => {
 					cellComponent={HighlightCell} // ✅ ensure fixed cells also get colored
 				/>
 				<TableHeaderRow cellComponent={StickyHeaderCell} />
+				<TableSummaryRow
+					messages={messages}
+					position="header" // ← Add this line
+				/>
 				{showTableFilter ? <TableFilterRow showFilterSelector /> : null}
 				{/* <TableEditRow /> */}
 				<TableEditRow
