@@ -281,7 +281,7 @@ class F356Form extends Component {
 		let data = new FormData();
 		data.append("academicSessionId", this.state.academicSessionId);
 		data.append("fromDate", format(this.state.fromDate, "dd-MM-yyyy"));
-		data.append("toDate", format(this.state.fromDate, "dd-MM-yyyy"));
+		data.append("toDate", format(this.state.toDate, "dd-MM-yyyy"));
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/EmployeesView`;
 		await fetch(url, {
 			method: "POST",

@@ -408,14 +408,14 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         });
     }
 
-    const handleClaimHoursSave = async(academicsSessionId, courseId, index) => {
+    const handleApprovedClaimHoursSave = async(academicsSessionId, courseId, index) => {
         let data =  new FormData();
-        let claimHours = parseFloat(teacherSectionsData[index]?.claimHours);
-        if(isNaN(claimHours) || claimHours<=0){ handleOpenSnackbar("Claim Hours not valid","error"); return; }
+        let approvedClaimHours = parseFloat(teacherSectionsData[index]?.approvedClaimHours);
+        if(isNaN(approvedClaimHours) || approvedClaimHours<=0){ handleOpenSnackbar("Claim Hours not valid","error"); return; }
         data.append("academicsSessionId", academicsSessionId);
         data.append("courseId", courseId);
         data.append("teacherId", rowData?.id);
-        data.append("claimHours", claimHours);
+        data.append("claimHours", approvedClaimHours);
         const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C356SalaryIncrementRevisionSheet/CoursesTeachersSave`;
 		await fetch(url, {
 			method: "POST",
@@ -590,7 +590,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
         return Number.isInteger(num) ? num : parseFloat(num.toFixed(2));
     };
 
-    const handleSetClaimHours = (e, index) => {
+    const handleSetApprovedClaimHours = (e, index) => {
         const { value } = e.target;
         let regex = new RegExp("^(\\d+(\\.\\d*)?|\\.)$");
         if (value && !regex.test(value)) {
@@ -600,7 +600,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
             const updated = [...prevState];
             updated[index] = {
                 ...updated[index],
-                claimHours: value
+                approvedClaimHours: value
             };
             return updated;
         });
@@ -970,13 +970,13 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                                     <TableCell align="left">{obj.claimHours}</TableCell>
                                                     <TableCell align="left">
                                                         <TextField
-                                                            name="claimHours"
+                                                            name="approvedClaimHours"
                                                             label=""
                                                             placeholder=""
                                                             variant="outlined"
                                                             size='small'
                                                             value={obj.approvedClaimHours || ""}
-                                                            onChange={e=>handleSetClaimHours(e, index)}
+                                                            onChange={e=>handleSetApprovedClaimHours(e, index)}
                                                             inputProps={{
                                                                 style : {
                                                                     padding: "4px 6px"
@@ -990,7 +990,7 @@ export default function FullScreenDialog({ handleOpenSnackbar, openDialog, handl
                                                             <Button
                                                                 size="small"
                                                                 style={{padding:"0px 8px", minWidth:"auto"}}
-                                                                onClick={(e) => handleClaimHoursSave(obj.academicsSessionId, obj.courseId, index) }
+                                                                onClick={(e) => handleApprovedClaimHoursSave(obj.academicsSessionId, obj.courseId, index) }
                                                             >
                                                                 <SaveOutlinedIcon color="primary" />
                                                             </Button>
