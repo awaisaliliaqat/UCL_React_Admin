@@ -110,6 +110,8 @@ import F82Form from "./Contents/Forms/F82Form";
 import F82Reports from "./Contents/Forms/F82Reports";
 import F83Form from "./Contents/Forms/F83Form/F83Form";
 import F83Reports from "./Contents/Forms/F83Form/F83Reports";
+import F84Form from "./Contents/Forms/F84Form/F84Form";
+import F84Reports from "./Contents/Forms/F84Form/F84Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentProgramme from "./Contents/Reports/ChangeStudentProgramme/ChangeStudentProgramme";
 import CovidVaccineCertificateApproval from "./Contents/Reports/CovidVaccineCertificateApproval/CovidVaccineCertificateApproval";
@@ -261,6 +263,10 @@ import F357Form from "./Contents/Forms/F357Form/F357Form";
 import F358Form from "./Contents/Forms/F358Form/F358Form";
 import F359Form from "./Contents/Forms/F359Form/F359Form";
 import F359Reports from "./Contents/Forms/F359Form/F359Reports";
+import F360Form from "./Contents/Forms/F360Form/F360Form";
+import F360Reports from "./Contents/Forms/F360Form/F360Reports";
+import F361Form from "./Contents/Forms/F361Form/F361Form";
+import F361Reports from "./Contents/Forms/F361Form/F361Reports";
 
 const drawerWidth = 283;
 
@@ -1835,6 +1841,36 @@ const Dashboard = (props) => {
 				render={(props) => {
 				  return (
 					<F83Reports
+					  {...props}
+					  isDrawerOpen={isDrawerOpen}
+					  setDrawerOpen={setDrawerOpen}
+					/>
+				  );
+				}}
+			  />
+			  <SetRoute
+				setValue={(value) => handleValueChange(value)}
+				name="F84Form"
+				exact
+				path="/dashboard/F84Form"
+				render={(props) => {
+				  return (
+					<F84Form
+					  {...props}
+					  isDrawerOpen={isDrawerOpen}
+					  setDrawerOpen={setDrawerOpen}
+					/>
+				  );
+				}}
+			  />
+			  <SetRoute
+				setValue={(value) => handleValueChange(value)}
+				name="F84Form"
+				exact
+				path="/dashboard/F84Reports"
+				render={(props) => {
+				  return (
+					<F84Reports
 					  {...props}
 					  isDrawerOpen={isDrawerOpen}
 					  setDrawerOpen={setDrawerOpen}
@@ -3896,6 +3932,66 @@ const Dashboard = (props) => {
 					render={(props) => {
 						return (
 							<F359Reports
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F360Form"
+					exact
+					path="/dashboard/F360Form"
+					render={(props) => {
+						return (
+							<F360Form
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F360Form"
+					exact
+					path="/dashboard/F360Reports"
+					render={(props) => {
+						return (
+							<F360Reports
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F361Form"
+					exact
+					path="/dashboard/F361Form"
+					render={(props) => {
+						return (
+							<F361Form
+								{...props}
+								isDrawerOpen={isDrawerOpen}
+								setDrawerOpen={setDrawerOpen}
+							/>
+						);
+					}}
+				/>
+				<SetRoute
+					setValue={(value) => handleValueChange(value)}
+					name="F361Form"
+					exact
+					path="/dashboard/F361Reports"
+					render={(props) => {
+						return (
+							<F361Reports
 								{...props}
 								isDrawerOpen={isDrawerOpen}
 								setDrawerOpen={setDrawerOpen}
