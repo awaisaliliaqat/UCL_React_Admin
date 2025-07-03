@@ -8,6 +8,8 @@ import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/Cus
 import PropTypes from "prop-types";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import { DatePicker } from "@material-ui/pickers";
+import { startOfDay } from "date-fns";
 
 const styles = () => ({
 	root: {
@@ -34,11 +36,13 @@ class F84Form extends Component {
 
 			isLoading: false,
 			isReload: false,
-			showPass: false,
+
+			fromDate: startOfDay(new Date()),
 
 			employeeData: [],
 			employeeDataLoading: false,
 			employee: null,
+			employeeId: "",
 
 			employeesRolesData: [],
 			employeesRolesDataLoading: false,
@@ -59,11 +63,6 @@ class F84Form extends Component {
 			employeesSubDepartmentsDataLoading: false,
 			employeesSubDepartmentsArray: [],
 			employeesSubDepartmentsArrayError: "",
-
-			employeesDesignationsData: [],
-			employeesDesignationsDataLoading: false,
-			employeesDesignationsArray: [],
-			employeesDesignationsArrayError: "",
 
 			isOpenSnackbar: false,
 			snackbarMessage: "",
@@ -89,59 +88,322 @@ class F84Form extends Component {
 	};
 
 	loadUsers = async () => {
-    this.setState({ employeeDataLoading: true });
-    const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/FormRightsAllocationAllUsersView`;
-    await fetch(url, {
-      method: "POST",
-      headers: new Headers({
-        Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw res;
-        }
-        return res.json();
-      })
-      .then(
-        (json) => {
-          if (json.CODE === 1) {
-            this.setState({ employeeData: json.DATA });
-          } else {
-            this.handleOpenSnackbar(
-              <span>
-                {json.SYSTEM_MESSAGE}
-                <br />
-                {json.USER_MESSAGE}
-              </span>,
-              "error"
-            );
-          }
-          console.log("loadUsers", json);
-        },
-        (error) => {
-          if (error.status == 401) {
-            this.setState({
-              isLoginMenu: true,
-              isReload: true,
-            });
-          } else {
-            console.log(error);
-            this.handleOpenSnackbar(
-              "Failed to fetch ! Please try Again later.",
-              "error"
-            );
-          }
-        }
-      );
-    this.setState({ employeeDataLoading: false });
-  };
+		this.setState({ employeeDataLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C84CommonEmployeesRolesAssignment/EmployeesView`;
+		await fetch(url, {
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then((json) => {
+				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE } = json;
+				if (CODE === 1) {
+					this.setState({ employeeData: DATA });
+				} else {
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}<br/>{SYSTEM_MESSAGE}</span>, "error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.log(error);
+					this.handleOpenSnackbar(
+						"Failed to fetch ! Please try Again later.",
+						"error"
+					);
+				}
+			}
+		);
+		this.setState({ employeeDataLoading: false });
+	};
 
-	loadData = async (index) => {
-		const data = new FormData();
-		data.append("id", index);
+	getEmployeesRolesData = async () => {
+		this.setState({ employeesRolesDataLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C84CommonEmployeesRolesAssignment/RolesTypesView`;
+		await fetch(url, {
+			method: "GET",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE } = json;
+				if (CODE === 1) {
+					this.setState({
+						employeesRolesData: DATA || [],
+					});
+				} else {
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}<br/>{SYSTEM_MESSAGE}</span>, "error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.log(error);
+					this.handleOpenSnackbar("Failed to Get Data ! Please try Again later.",	"error");
+				}
+			}
+		);
+		this.setState({ employeesRolesDataLoading: false });
+	};
+
+	getEmployeesEntitiesData = async (roles) => {
+		let data = new FormData();
+		if (roles != null && roles.length > 0) {
+			roles.forEach( role => {
+				data.append("roleId", role.id);
+			});
+		}
+		this.setState({ employeesEntitiesDataLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C84CommonEmployeesRolesAssignment/EntitiesTypesView`;
+		await fetch(url, {
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+			body: data,
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE } = json;
+				if (CODE === 1) {
+					this.setState({
+						employeesEntitiesData: DATA || [],
+					});
+				} else {
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}<br/>{SYSTEM_MESSAGE}</span>, "error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.log(error);
+					this.handleOpenSnackbar("Failed to Get Data ! Please try Again later.",	"error");
+				}
+			}
+		);
+		this.setState({ employeesEntitiesDataLoading: false });
+	};
+
+	getEmployeesDepartmentsData = async (entities) => {
+		let data = new FormData();
+		if (entities!=null && entities.length>0) {
+			entities.forEach( entity => {
+				data.append("entityId", entity.id);
+			});
+		}
+		this.setState({ employeesDepartmentsDataLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C84CommonEmployeesRolesAssignment/DepartmentsTypesView`;
+		await fetch(url, {
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+			body: data,
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then((json) => {
+				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE } = json;
+				if (CODE === 1) {
+					this.setState({
+						employeesDepartmentsData: DATA || [],
+					});
+				} else {
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}<br/>{SYSTEM_MESSAGE}</span>, "error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.log(error);
+					this.handleOpenSnackbar("Failed to Get Data ! Please try Again later.",	"error");
+				}
+			}
+		);
+		this.setState({ employeesDepartmentsDataLoading: false });
+	};
+
+	getEmployeesSubDepartmentsData = async (entities, departments) => {
+		let data = new FormData();
+		if (entities != null && entities.length > 0) {
+			entities.forEach(entity => {
+				data.append("entityId", entity.id);
+			});
+		}
+		if (departments != null && departments.length > 0) {
+			departments.forEach(department => {
+				data.append("departmentId", department.id);	
+			});
+		}
+		this.setState({ employeesSubDepartmentsDataLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C84CommonEmployeesRolesAssignment/SubDepartmentsTypesView`;
+		await fetch(url, {
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+			body: data,
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then((json) => {
+				const {CODE, DATA, USER_MESSAGE, SYSTEM_MESSAGE } = json;
+				if (CODE === 1) {
+					this.setState({
+						employeesSubDepartmentsData: DATA || [],
+					});
+				} else {
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}<br/>{SYSTEM_MESSAGE}</span>, "error");
+				}
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					console.log(error);
+					this.handleOpenSnackbar("Failed to Get Data ! Please try Again later.",	"error");
+				}
+			}
+		);
+		this.setState({ employeesSubDepartmentsDataLoading: false });
+	};
+
+	isFormValid = () => {
+		
+		let isValid = true;
+
+		let {
+			employeesRolesArrayError,
+			employeesEntitiesArrayError,
+		} = this.state;
+
+		this.setState({
+			employeesRolesArrayError,
+			employeesEntitiesArrayError,
+		});
+
+		return isValid;
+	
+	};
+
+	clickOnFormSubmit = () => {
+		if (this.isFormValid()) {
+			document.getElementById("btn-submit").click();
+		}
+	};
+
+	resetForm = () => {
+
+		this.setState({
+
+			fromDate: startOfDay(new Date()),
+
+			employee: null,
+			employeeId: "",
+			
+			employeesRolesArray: [],
+			employeesRolesArrayError: "",
+
+			employeesEntitiesArray: [],
+			employeesEntitiesArrayError: "",
+			employeesEntitiesData: [],
+			employeesEntitiesDataLoading: false,
+
+			employeesDepartmentsArray: [],
+			employeesDepartmentsArrayError: "",
+			employeesDepartmentsData: [],
+			employeesDepartmentsDataLoading: false,
+
+			employeesSubDepartmentsArray: [],
+			employeesSubDepartmentsArrayError: "",
+			employeesSubDepartmentsData: [],
+			employeesSubDepartmentsDataLoading: false
+		
+		});
+	
+	};
+
+	onFormSubmit = async (e) => {
+		
+		e.preventDefault();
+
+		const data = new FormData(e.target);
+		const roleIdsArray = this.state.employeesRolesArray || [];
+
+		roleIdsArray.forEach(role => {
+			data.append("roleIds", role["id"]);
+		});
+		
+		const entityIdsArray = this.state.employeesEntitiesArray || [];
+		entityIdsArray.forEach(entity => {
+			data.append("entityIds", entity["id"]);
+		});
+
+		const departmentIdsArray = this.state.employeesDepartmentsArray || [];
+		departmentIdsArray.forEach(department => {
+			data.append("departmentIds", department["id"]);
+		});
+
+		const subDepartmentIdsArray = this.state.employeesSubDepartmentsArray || [];
+		subDepartmentIdsArray.forEach(subDepartment => {
+			data.append("subDepartmentIds", subDepartment["id"]);
+		});
+
 		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersViewV2`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C84CommonEmployeesRolesAssignment/Save`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -149,101 +411,45 @@ class F84Form extends Component {
 				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
 			}),
 		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+				if (CODE === 1) {
+					this.handleOpenSnackbar(USER_MESSAGE, "success");
+					this.resetForm();
+				} else {
+					this.handleOpenSnackbar(<span>{USER_MESSAGE}<br/>{SYSTEM_MESSAGE}</span>, "error");
 				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						if (json.DATA) {
-							if (json.DATA.length > 0) {
-								const {
-									employeesRolesArray = [],
-									employeesEntitiesArray = [],
-									employeesDepartmentsArray = [],
-									employeesSubDepartmentsArray = [],
-									employeesDesignationsArray = [],
-								} = json.DATA[0];
-
-								this.getEmployeesEntitiesData(employeesRolesArray);
-								this.getEmployeesDepartmentsData(employeesEntitiesArray);
-								this.getEmployeesSubDepartmentsData(
-									employeesEntitiesArray,
-									employeesDepartmentsArray
-								);
-								this.setState({
-									employeesRolesArray,
-									employeesEntitiesArray,
-									employeesDepartmentsArray,
-									employeesSubDepartmentsArray,
-									employeesDesignationsArray
-								});
-							}
-						}
-					} else {
-						this.handleOpenSnackbar(
-							json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						console.log(error);
-						this.handleOpenSnackbar(
-							"Failed to Load Data ! Please try Again later.",
-							"error"
-						);
-					}
+			},
+			(error) => {
+				const { status } = error;
+				console.log(error);
+				if (status == 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: false,
+					});
+				} else {
+					this.handleOpenSnackbar("Failed to Save ! Please try Again later.", "error" );
 				}
-			);
+			}
+		);
 		this.setState({ isLoading: false });
 	};
 
-	handleDateChange = (date) => {
-		this.setState({ selectedDate: date });
-	};
 	onHandleChange = (e) => {
 		const { name, value } = e.target;
 		const errName = `${name}Error`;
-
-		let regex = "";
 		switch (name) {
 			case "employee":
-				this.setState({
-					employee : value
-				});
-				if(value?.id){
-					this.loadData(value?.id);
-				} else {
-					this.setState({
-					employeesRolesArray: [],
-					employeesRolesArrayError: "",
-
-					employeesEntitiesArray: [],
-					employeesEntitiesArrayError: "",
-
-					employeesDepartmentsArray: [],
-					employeesDepartmentsArrayError: "",
-					employeesDepartmentsData: [],
-					employeesDepartmentsDataLoading: false,
-
-					employeesSubDepartmentsArray: [],
-					employeesSubDepartmentsArrayError: "",
-					employeesSubDepartmentsData: [],
-					employeesSubDepartmentsDataLoading: false,
-				});
-				}
-			break;
+				this.setState({employeeId: value?.id || 0});
+				break;
 			case "employeesRolesArray":
 				this.setState({
 					employeesEntitiesArray: [],
@@ -278,13 +484,10 @@ class F84Form extends Component {
 					employeesSubDepartmentsArray: [],
 					employeesSubDepartmentsArrayError: "",
 				});
-				this.getEmployeesSubDepartmentsData(
-					this.state.employeesEntitiesArray || [],
-					value || []
-				);
+				this.getEmployeesSubDepartmentsData(this.state.employeesEntitiesArray || [], value || []);
 				break;
 			default:
-				break;
+				
 		}
 
 		this.setState({
@@ -293,422 +496,18 @@ class F84Form extends Component {
 		});
 	};
 
-	isFormValid = () => {
-		let isValid = true;
-		let regex = "";
-		let {
-			employeesRolesArrayError,
-			employeesEntitiesArrayError,
-			employeesDesignationsArrayError,
-		} = this.state;
-
-		this.setState({
-			employeesRolesArrayError,
-			employeesEntitiesArrayError,
-			employeesDesignationsArrayError
-		});
-
-		return isValid;
-	};
-
-	clickOnFormSubmit = () => {
-		if (this.isFormValid()) {
-			document.getElementById("btn-submit").click();
-		}
-	};
-
-	resetForm = () => {
-		this.setState({
-			showPass: false,
-
-			employeesRolesArray: [],
-			employeesRolesArrayError: "",
-
-			employeesEntitiesArray: [],
-			employeesEntitiesArrayError: "",
-			employeesEntitiesData: [],
-			employeesEntitiesDataLoading: false,
-			coordinationId: "",
-
-			employeesDepartmentsArray: [],
-			employeesDepartmentsArrayError: "",
-			employeesDepartmentsData: [],
-			employeesDepartmentsDataLoading: false,
-
-			employeesSubDepartmentsArray: [],
-			employeesSubDepartmentsArrayError: "",
-			employeesSubDepartmentsData: [],
-			employeesSubDepartmentsDataLoading: false,
-
-			employeesDesignationsArray: [],
-			employeesDesignationsArrayError: "",
-		});
-	};
-
-	getEmployeesRolesData = async () => {
-		this.setState({ employeesRolesDataLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonEmployeesRolesTypesView`;
-		await fetch(url, {
-			method: "GET",
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.setState({
-							employeesRolesData: json.DATA || [],
-						});
-					} else {
-						this.handleOpenSnackbar(
-							json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						console.log(error);
-						this.handleOpenSnackbar(
-							"Failed to Get Data ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
-		this.setState({ employeesRolesDataLoading: false });
-	};
-
-	getEmployeesDesignationsData = async (
-		entityIds,
-		departmentIds,
-		subDepartmentIds
-	) => {
-		this.setState({ employeesDesignationsDataLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonEmployeesEntitiesDesignationsTypesView`;
-		let data = new FormData();
-		data.append("entityId", entityIds);
-		data.append("departmentId", departmentIds);
-		data.append("subDepartmentId", subDepartmentIds);
-		await fetch(url, {
-			method: "POST",
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-			body: data,
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.setState({
-							employeesDesignationsData: json.DATA || [],
-						});
-					} else {
-						this.handleOpenSnackbar(
-							json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						console.log(error);
-						this.handleOpenSnackbar(
-							"Failed to Get Data ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
-		this.setState({ employeesDesignationsDataLoading: false });
-	};
-
-	getEmployeesEntitiesData = async (roleIds) => {
-		this.setState({ employeesEntitiesDataLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonEmployeesEntitiesTypesView`;
-		let data = new FormData();
-		if (roleIds != null && roleIds.length > 0) {
-			for (let i = 0; i < roleIds.length; i++) {
-				data.append("roleId", roleIds[i].id);
-			}
-		}
-		await fetch(url, {
-			method: "POST",
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-			body: data,
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.setState({
-							employeesEntitiesData: json.DATA || [],
-						});
-					} else {
-						this.handleOpenSnackbar(
-							json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						console.log(error);
-						this.handleOpenSnackbar(
-							"Failed to Get Data ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
-		this.setState({ employeesEntitiesDataLoading: false });
-	};
-
-	getEmployeesDepartmentsData = async (entityIds) => {
-		this.setState({ employeesDepartmentsDataLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonEmployeesEntitiesDepartmentsTypesView`;
-		let data = new FormData();
-		if (entityIds != null && entityIds.length > 0) {
-			for (let i = 0; i < entityIds.length; i++) {
-				data.append("entityId", entityIds[i].id);
-			}
-		}
-		await fetch(url, {
-			method: "POST",
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-			body: data,
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.setState({
-							employeesDepartmentsData: json.DATA || [],
-						});
-					} else {
-						this.handleOpenSnackbar(
-							json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						console.log(error);
-						this.handleOpenSnackbar(
-							"Failed to Get Data ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
-		this.setState({ employeesDepartmentsDataLoading: false });
-	};
-
-	getEmployeesSubDepartmentsData = async (entityIds, departmentIds) => {
-		this.setState({ employeesSubDepartmentsDataLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonEmployeesEntitiesSubDepartmentsTypesView`;
-		let data = new FormData();
-		if (entityIds != null && entityIds.length > 0) {
-			for (let i = 0; i < entityIds.length; i++) {
-				data.append("entityId", entityIds[i].id);
-			}
-		}
-		if (departmentIds != null && departmentIds.length > 0) {
-			for (let i = 0; i < departmentIds.length; i++) {
-				data.append("departmentId", departmentIds[i].id);
-			}
-		}
-		await fetch(url, {
-			method: "POST",
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-			body: data,
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.setState({
-							employeesSubDepartmentsData: json.DATA || [],
-						});
-					} else {
-						this.handleOpenSnackbar(
-							json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						console.log(error);
-						this.handleOpenSnackbar(
-							"Failed to Get Data ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
-		this.setState({ employeesSubDepartmentsDataLoading: false });
-	};
-
-	onFormSubmit = async (e) => {
-		e.preventDefault();
-
-		const data = new FormData(e.target);
-		data.append("isActive", this.state.isActive);
-		const roleIdsArray = this.state.employeesRolesArray || [];
-		for (let i = 0; i < roleIdsArray.length; i++) {
-			data.append("roleIds", roleIdsArray[i]["id"]);
-		}
-
-		const entityIdsArray = this.state.employeesEntitiesArray || [];
-		for (let i = 0; i < entityIdsArray.length; i++) {
-			data.append("entityIds", entityIdsArray[i]["id"]);
-		}
-
-		const departmentIdsArray = this.state.employeesDepartmentsArray || [];
-		for (let i = 0; i < departmentIdsArray.length; i++) {
-			data.append("departmentIds", departmentIdsArray[i]["id"]);
-		}
-
-		const subDepartmentIdsArray = this.state.employeesSubDepartmentsArray || [];
-		for (let i = 0; i < subDepartmentIdsArray.length; i++) {
-			data.append("subDepartmentIds", subDepartmentIdsArray[i]["id"]);
-		}
-		if (this.state.recordId === 0) {
-			const designationIdsArray = this.state.employeesDesignationsArray || [];
-			for (let i = 0; i < designationIdsArray.length; i++) {
-				data.append("designationsIds", designationIdsArray[i]["id"]);
-			}
-		}
-		this.setState({ isLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersSaveV2`;
-		await fetch(url, {
-			method: "POST",
-			body: data,
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.handleOpenSnackbar(json.USER_MESSAGE, "success");
-						if (this.state.recordId == 0) {
-							this.resetForm();
-						} else {
-							setTimeout(() => {
-								window.location.replace("#/dashboard/employee-reports");
-							}, 1000);
-						}
-					} else {
-						this.handleOpenSnackbar(
-							json.USER_MESSAGE + "\n" + json.SYSTEM_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: false,
-						});
-					} else {
-						console.log(error);
-						this.handleOpenSnackbar(
-							"Failed to Save ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
-		this.setState({ isLoading: false });
-	};
-
 	viewReport = () => {
 		window.location = "#/dashboard/F84Reports";
 	};
 
 	componentDidMount() {
+		const {isDrawerOpen=false, setDrawerOpen=()=>{}} = this.props;
+		if(isDrawerOpen){
+			setDrawerOpen(false);
+		}
 		this.loadUsers();
 		this.getEmployeesRolesData();
-		if (this.state.recordId != 0) {
-			//this.loadData(2044);
-		} else {
-			this.getEmployeesDesignationsData([], [], []);
-		}
+		//this.loadData(2044);
 	}
 
 	render() {
@@ -728,7 +527,7 @@ class F84Form extends Component {
 					id="myForm"
 					onSubmit={this.onFormSubmit}
 				>
-					<TextField type="hidden" name="id" value={this.state.recordId} />
+					<TextField type="hidden" name="id" value={this.state.employeeId} />
 					<Grid
 						container
 						component="main"
@@ -746,19 +545,42 @@ class F84Form extends Component {
 								}}
 								variant="h5"
 							>
-								Assign Employee Roles
+								Employees Roles Assignment
 							</Typography>
 							<Divider
 								className={classes.divider}
 							/>
 						</Grid>
-						<Grid item xs={12}>
+						<Grid item xs={6} md={6}>
+							<DatePicker
+								autoOk
+								id="fromDate"
+								name="fromDate"
+								label="From Date"
+								invalidDateMessage = ""
+								placeholder = ""
+								variant="inline"
+								inputVariant="outlined"
+								format="dd-MM-yyyy"
+								fullWidth
+								required
+								value={this.state.fromDate}
+								onChange={(date) =>
+									this.onHandleChange({
+										target: { name: "fromDate", value: date },
+									})
+								}
+							/>
+						</Grid>
+						<Grid item xs={12} md={6}>
 							<Autocomplete
 								id="employee"
-								getOptionLabel={(option) =>
-									typeof option.label === "string" ? option.label : ""
-								}
+								getOptionLabel={(option) => {
+									const {id, label} = option;
+									return (typeof label === "string" ? id+" - "+label : "")
+								}}
 								options={this.state.employeeData}
+								value={this.state.employee}
 								onChange={(event, value) => {
 									this.onHandleChange({
 										target: { name: "employee", value },
@@ -768,8 +590,7 @@ class F84Form extends Component {
 									const inputProps = params.inputProps;
 									return (<TextField 
 										{...params} 
-										label="Employee" 
-										margin="normal" 
+										label="Employee"
 										variant="outlined"
 										inputProps={inputProps}
 										InputProps={{
@@ -1067,89 +888,18 @@ class F84Form extends Component {
 								}}
 							/>
 						</Grid>
-						{/* <Grid item xs={12} md={6}>
-							<Autocomplete
-								multiple
-								limitTags={3}
-								id="employeesDesignationsArray"
-								getOptionLabel={(option) =>
-									typeof option.label === "string" ? option.label : ""
-								}
-								fullWidth
-								aria-autocomplete="none"
-								disableCloseOnSelect
-								disabled={!!this.state.recordId}
-								options={this.state.employeesDesignationsData}
-								loading={this.state.employeesDesignationsDataLoading}
-								value={this.state.employeesDesignationsArray}
-								getOptionSelected={(option, value) => option.id === value.id}
-								renderTags={(tagValue, getTagProps) =>
-									tagValue.map((option, index) => (
-										<Chip
-											key={option}
-											label={option.label}
-											color="primary"
-											variant="outlined"
-											{...getTagProps({ index })}
-											className={`${getTagProps({ index }).className} ${classes.chip}`}
-										/>
-									))
-								}
-								onChange={(e, value) =>
-									this.onHandleChange({
-										target: { name: "employeesDesignationsArray", value },
-									})
-								}
-								renderOption={(option, { selected }) => (
-									<React.Fragment>
-										<Checkbox
-											icon={icon}
-											checkedIcon={checkedIcon}
-											style={{ marginRight: 8 }}
-											color="primary"
-											checked={selected}
-										/>
-										{option.label}
-									</React.Fragment>
-								)}
-								renderInput={(params) => {
-									const inputProps = params.inputProps;
-									return (
-										<TextField
-											{...params}
-											variant="outlined"
-											inputProps={inputProps}
-											label="Designations *"
-											error={!!this.state.employeesDesignationsArrayError}
-											helperText={this.state.employeesDesignationsArrayError}
-											InputProps={{
-												...params.InputProps,
-												endAdornment: (
-													<React.Fragment>
-														{this.state.employeesDesignationsDataLoading ? (
-															<CircularProgress color="inherit" size={20} />
-														) : null}
-														{params.InputProps.endAdornment}
-													</React.Fragment>
-												),
-											}}
-										/>
-									);
-								}}
-							/>
-						</Grid> */}
 					</Grid>
 					<input type="submit" style={{ display: "none" }} id="btn-submit" />
 				</form>
 				<BottomBar
 					leftButtonText="View"
-					leftButtonHide={true}
+					leftButtonHide={false}
 					bottomLeftButtonAction={() => this.viewReport()}
+					disableRightButton={!this.state.employeeId}
 					right_button_text="Save"
-					// bottomRightButtonAction={() => this.clickOnFormSubmit()}
-					bottomRightButtonAction={() => this.handleOpenSnackbar("Feature under development","info")}
+					bottomRightButtonAction={() => this.clickOnFormSubmit()}
 					loading={this.state.isLoading}
-					isDrawerOpen={this.isDrawerOpen}
+					isDrawerOpen={this.props.isDrawerOpen}
 				/>
 				<CustomizedSnackbar
 					isOpen={this.state.isOpenSnackbar}

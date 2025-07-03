@@ -1215,6 +1215,7 @@ class DefineEmployeeForm extends Component {
 	};
 
 	onFormSubmit = async (e) => {
+		
 		e.preventDefault();
 		// const date = new Date();
 		// const day = String(date.getDate()).padStart(2, "0");
@@ -1223,31 +1224,35 @@ class DefineEmployeeForm extends Component {
 		// const formattedDate = `${day}-${month}-${year}`;
 		const data = new FormData(e.target);
 		data.append("isActive", this.state.isActive);
-		const roleIdsArray = this.state.employeesRolesArray || [];
-		for (let i = 0; i < roleIdsArray.length; i++) {
-			data.append("roleIds", roleIdsArray[i]["id"]);
-		}
 
-		const entityIdsArray = this.state.employeesEntitiesArray || [];
-		for (let i = 0; i < entityIdsArray.length; i++) {
-			data.append("entityIds", entityIdsArray[i]["id"]);
-		}
-
-		const departmentIdsArray = this.state.employeesDepartmentsArray || [];
-		for (let i = 0; i < departmentIdsArray.length; i++) {
-			data.append("departmentIds", departmentIdsArray[i]["id"]);
-		}
-
-		const subDepartmentIdsArray = this.state.employeesSubDepartmentsArray || [];
-		for (let i = 0; i < subDepartmentIdsArray.length; i++) {
-			data.append("subDepartmentIds", subDepartmentIdsArray[i]["id"]);
-		}
 		if (this.state.recordId === 0) {
+			// Disabled on Edit Mode
+			const roleIdsArray = this.state.employeesRolesArray || [];
+			for (let i = 0; i < roleIdsArray.length; i++) {
+				data.append("roleIds", roleIdsArray[i]["id"]);
+			}
+
+			const entityIdsArray = this.state.employeesEntitiesArray || [];
+			for (let i = 0; i < entityIdsArray.length; i++) {
+				data.append("entityIds", entityIdsArray[i]["id"]);
+			}
+
+			const departmentIdsArray = this.state.employeesDepartmentsArray || [];
+			for (let i = 0; i < departmentIdsArray.length; i++) {
+				data.append("departmentIds", departmentIdsArray[i]["id"]);
+			}
+
+			const subDepartmentIdsArray = this.state.employeesSubDepartmentsArray || [];
+			for (let i = 0; i < subDepartmentIdsArray.length; i++) {
+				data.append("subDepartmentIds", subDepartmentIdsArray[i]["id"]);
+			}
+		
 			const designationIdsArray = this.state.employeesDesignationsArray || [];
 			for (let i = 0; i < designationIdsArray.length; i++) {
 				data.append("designationsIds", designationIdsArray[i]["id"]);
 			}
 		}
+
 		data.append("reportingToId", this.state.reportingTo);
 		data.append("coordinationId", this.state.coordinationId);
 		data.append("isBankAccount", !this.state.isCheque ? 1 : 0);
