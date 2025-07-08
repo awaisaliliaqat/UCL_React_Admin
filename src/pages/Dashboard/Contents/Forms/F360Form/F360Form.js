@@ -68,7 +68,7 @@ class F360Form extends Component {
 
 	getEmployees = async () => {
 		this.setState({ employeeDataLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C315CommonUsersView`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C360CommonEmployeesPayrollRequests/EmployeesView`;
 		await fetch(url, {
 			method: "POST",
 			headers: new Headers({
