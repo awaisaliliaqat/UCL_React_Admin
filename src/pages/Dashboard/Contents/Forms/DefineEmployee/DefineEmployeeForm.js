@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from "react";
-import { withStyles } from "@material-ui/styles";
+import React, { Component, Fragment, useState } from "react";
+import { withStyles, withTheme } from "@material-ui/styles";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import { TextField, Grid, Divider, Typography, Switch, MenuItem, } from "@material-ui/core";
+import { TextField, Grid, Divider, Typography, Switch, MenuItem, Tab, Box, AppBar, Tabs, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
@@ -13,8 +13,11 @@ import { alphabetExp, numberExp, emailExp, } from "../../../../../utils/regularE
 import PropTypes from "prop-types";
 import DefineEmployeeRolesSection from "./Chunks/DefineEmployeeRolesSection";
 import { DatePicker } from "@material-ui/pickers";
+import EmploymentHistoryForm from "./Chunks/EmploymentHistoryForm";
+import EducationHistoryForm from "./Chunks/EducationHistoryForm";
+import { format } from "date-fns";
 
-const styles = () => ({
+const styles = (theme) => ({
 	root: {
 		paddingBottom: 50,
 		paddingLeft: 20,
@@ -43,7 +46,43 @@ const styles = () => ({
 			backgroundColor: "#2da758d4",
 		},
 	},
+	tabPanalRoot: {
+		backgroundColor: theme.palette.background.paper,
+		width: "auto"
+	},
 });
+
+function TabPanel(props) {
+	const { children, value, index, ...other } = props;
+	return (
+		<div
+			role="tabpanel"
+			hidden={value !== index}
+			id={`full-width-tabpanel-${index}`}
+			aria-labelledby={`full-width-tab-${index}`}
+			{...other}
+		>
+			{/* {value === index && ( */}
+			<Box pt={3}>
+				{children}
+			</Box>
+			{/* )} */}
+		</div>
+	);
+}
+
+TabPanel.propTypes = {
+	children: PropTypes.node,
+	index: PropTypes.any.isRequired,
+	value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+	return {
+		id: `full-width-tab-${index}`, 'aria-controls': `full-width-tabpanel-${index}`
+	};
+}
+
 
 class DefineEmployeeForm extends Component {
 	constructor(props) {
@@ -149,34 +188,17 @@ class DefineEmployeeForm extends Component {
 			isOpenSnackbar: false,
 			snackbarMessage: "",
 			snackbarSeverity: "",
+
+			tabIndex: 0,
+
+			employmentTableData: [],
+			educationTableData: [],
 		};
 	}
 
-	componentDidMount() {
-		this.getEmployeesJobStatusData();
-		this.getShifts();
-		this.getEmployeesRolesData();
-		this.getEmployeesReportingToData();
-		this.getUserInactiveReasonsData();
-		if (this.state.recordId != 0) {
-			this.loadData(this.state.recordId);
-		} else {
-			this.getEmployeesDesignationsData([], [], []);
-		}
-	}
-
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		if (this.props.match.params.recordId != nextProps.match.params.recordId) {
-			if (nextProps.match.params.recordId != 0) {
-				this.loadData(nextProps.match.params.recordId);
-				this.setState({
-					recordId: nextProps.match.params.recordId,
-				});
-			} else {
-				window.location.reload();
-			}
-		}
-	}
+	handleChange = (event, newValue) => {
+		this.setState({ tabIndex: newValue });
+	};
 
 	handleOpenSnackbar = (msg, severity) => {
 		this.setState({
@@ -232,11 +254,6 @@ class DefineEmployeeForm extends Component {
 									leavingDate,
 									address,
 									password,
-									employeesRolesArray = [],
-									employeesEntitiesArray = [],
-									employeesDepartmentsArray = [],
-									employeesSubDepartmentsArray = [],
-									employeesDesignationsArray = [],
 									inactiveReasonId,
 									bankAccountNumber1,
 									bankAccountNumber2,
@@ -248,6 +265,13 @@ class DefineEmployeeForm extends Component {
 									isBankAccount,
 									bankAccount,
 									shiftId,
+									employeesRolesArray = [],
+									employeesEntitiesArray = [],
+									employeesDepartmentsArray = [],
+									employeesSubDepartmentsArray = [],
+									employeesDesignationsArray = [],
+									employmentHistories = [],
+									educationsHistories = [],
 								} = json.DATA[0];
 
 								this.getEmployeesEntitiesData(employeesRolesArray);
@@ -272,11 +296,6 @@ class DefineEmployeeForm extends Component {
 									leavingDate,
 									address,
 									password,
-									employeesRolesArray,
-									employeesEntitiesArray,
-									employeesDepartmentsArray,
-									employeesSubDepartmentsArray,
-									employeesDesignationsArray,
 									inactiveReasonId: inactiveReasonId || "",
 									otherReason,
 									employeeComments,
@@ -287,6 +306,13 @@ class DefineEmployeeForm extends Component {
 									bankAccountNumber1,
 									bankAccountNumber2,
 									shiftId: shiftId,
+									employeesRolesArray,
+									employeesEntitiesArray,
+									employeesDepartmentsArray,
+									employeesSubDepartmentsArray,
+									employeesDesignationsArray,
+									employmentTableData: employmentHistories,
+									educationTableData: educationsHistories
 								});
 							}
 						}
@@ -319,6 +345,7 @@ class DefineEmployeeForm extends Component {
 	handleDateChange = (date) => {
 		this.setState({ selectedDate: date });
 	};
+
 	onHandleChange = (e) => {
 		const { name, value } = e.target;
 		const errName = `${name}Error`;
@@ -414,348 +441,6 @@ class DefineEmployeeForm extends Component {
 		});
 	};
 
-	isFormValid = () => {
-		let isValid = true;
-		let regex = "";
-		let {
-			firstNameError,
-			lastNameError,
-			shiftError,
-			displayNameError,
-			mobileNoError,
-			secondaryMobileNoError,
-			emailError,
-			disciplineError,
-			jobStatusIdError,
-			reportingToError,
-			joiningDateError,
-			shiftActivationDateError,
-			addressError,
-			passwordError,
-			employeesRolesArrayError,
-			employeesEntitiesArrayError,
-			employeesDesignationsArrayError,
-			inactiveReasonIdError,
-			otherReasonError,
-			isCheque,
-			leavingDate,
-			leavingDateError,
-			bankAccountNumber1,
-			bankAccountNumber1Error,
-			// bankAccountNumber2,
-			// bankAccountNumber2Error,
-			shiftId,
-		} = this.state;
-
-		if (!this.state.firstName) {
-			firstNameError = "Please enter first name";
-			isValid = false;
-		} else {
-			firstNameError = "";
-		}
-
-		if (!this.state.lastName) {
-			lastNameError = "Please enter last name";
-			isValid = false;
-		} else {
-			lastNameError = "";
-		}
-
-		if (!this.state.shiftId) {
-			shiftError = "Please Select a Shift";
-			isValid = false;
-		} else {
-			shiftError = "";
-		}
-
-		if (!this.state.displayName) {
-			displayNameError = "Please enter display name";
-			isValid = false;
-		} else {
-			displayNameError = "";
-		}
-
-		if (!this.state.mobileNo) {
-			mobileNoError = "Please enter a valid mobile number e.g 03001234567";
-			isValid = false;
-		} else {
-			if (
-				!this.state.mobileNo.startsWith("03") ||
-				this.state.mobileNo.split("").length !== 11
-			) {
-				mobileNoError = "Please enter a valid mobile number e.g 03001234567";
-				isValid = false;
-			} else {
-				mobileNoError = "";
-			}
-		}
-
-		if (this.state.secondaryMobileNo) {
-			if (
-				!this.state.secondaryMobileNo.startsWith("03") ||
-				this.state.secondaryMobileNo.split("").length !== 11
-			) {
-				secondaryMobileNoError =
-					"Please enter a valid mobile number e.g 03001234567";
-				isValid = false;
-			} else {
-				secondaryMobileNoError = "";
-			}
-		}
-
-		if (!this.state.email) {
-			emailError = "Please enter a valid email e.g name@domain.com";
-			isValid = false;
-		} else {
-			regex = new RegExp(emailExp);
-			if (!regex.test(this.state.email)) {
-				emailError = "Please enter a valid email e.g name@domain.com";
-				isValid = false;
-			} else {
-				emailError = "";
-			}
-		}
-
-		if (this.state.secondaryEmail) {
-			regex = new RegExp(emailExp);
-			if (!regex.test(this.state.secondaryEmail)) {
-				emailError = "Please enter a valid email e.g name@domain.com";
-				isValid = false;
-			} else {
-				emailError = "";
-			}
-		} else {
-			// Nothing
-		}
-
-		if (!this.state.discipline) {
-			disciplineError = "Please enter discipline";
-			isValid = false;
-		} else {
-			disciplineError = "";
-		}
-
-		if (!this.state.jobStatusId) {
-			jobStatusIdError = "Please select the job status";
-			isValid = false;
-		} else {
-			jobStatusIdError = "";
-		}
-
-		if (!this.state.reportingTo) {
-			reportingToError = "Please select the reporting Status";
-			isValid = false;
-		} else {
-			reportingToError = "";
-		}
-
-		if (!this.state.joiningDate) {
-			joiningDateError = "Please select joining date";
-			isValid = false;
-		} else {
-			joiningDateError = "";
-		}
-
-		// if (!this.state.shiftActivationDate) {
-		//   shiftActivationDateError = "Please select Shift Activation date";
-		//   isValid = false;
-		// } else {
-		//   shiftActivationDateError = "";
-		// }
-
-		// if (!this.state.address) {
-		//     addressError = "Please enter present address"
-		//     isValid = false;
-		// } else {
-		//     addressError = "";
-		// }
-
-		if (!this.state.password && this.state.recordId == 0) {
-			passwordError = "Please enter temporary password";
-			isValid = false;
-		} else {
-			passwordError = "";
-		}
-
-		if (!(this.state.employeesRolesArray?.length > 0)) {
-			isValid = false;
-			employeesRolesArrayError = "Please select roles";
-		} else {
-			employeesRolesArrayError = "";
-		}
-
-		if (!(this.state.employeesEntitiesArray?.length > 0)) {
-			isValid = false;
-			employeesEntitiesArrayError = "Please select entities";
-		} else {
-			employeesEntitiesArrayError = "";
-		}
-		
-		if(this.state.recordId==0){
-			if (!(this.state.employeesDesignationsArray?.length > 0)) {
-				isValid = false;
-				employeesDesignationsArrayError = "Please select designations";
-			} else {
-				employeesDesignationsArrayError = "";
-			}
-		}
-
-		if (this.state.isActive == 0) {
-			if (!this.state.inactiveReasonId) {
-				isValid = false;
-				inactiveReasonIdError = "Please select inactive reason";
-			} else {
-				inactiveReasonIdError = "";
-				if (this.state.inactiveReasonId == 1 && !this.state.otherReason) {
-					isValid = false;
-					leavingDateError = "Please select leaving date";
-					otherReasonError = "Please enter other reason";
-				} else {
-					otherReasonError = "";
-					leavingDateError = "";
-				}
-			}
-		}
-
-		if (this.state.isCheque == 0) {
-			if (!this.state.bankAccountNumber1) {
-				isValid = false;
-				bankAccountNumber1Error = "Please add Account number 1";
-			} else {
-				bankAccountNumber1Error = "";
-				// if (this.state.inactiveReasonId == 1 && !this.state.otherReason) {
-				//   isValid = false;
-				//   otherReasonError = "Please enter other reason";
-				// } else {
-				//   otherReasonError = "";
-				// }
-			}
-		}
-
-		// if (this.state.isCheque == 0) {
-		//   if (!this.state.bankAccountNumber2) {
-		//     isValid = false;
-		//     bankAccountNumber2Error = "Please add Account number 2";
-		//   } else {
-		//     bankAccountNumber2Error = "";
-		// if (this.state.inactiveReasonId == 1 && !this.state.otherReason) {
-		//   isValid = false;
-		//   otherReasonError = "Please enter other reason";
-		// } else {
-		//   otherReasonError = "";
-		// }
-		// }
-		// }
-		console.info(isValid);
-		this.setState({
-			firstNameError,
-			lastNameError,
-			displayNameError,
-			mobileNoError,
-			secondaryMobileNoError,
-			emailError,
-			disciplineError,
-			jobStatusIdError,
-			joiningDateError,
-			addressError,
-			passwordError,
-			employeesRolesArrayError,
-			employeesEntitiesArrayError,
-			employeesDesignationsArrayError,
-			inactiveReasonIdError,
-			otherReasonError,
-			leavingDateError,
-			shiftError,
-			reportingToError,
-			shiftActivationDateError,
-		});
-
-		return isValid;
-	};
-
-	clickOnFormSubmit = () => {
-		if (this.isFormValid()) {
-			document.getElementById("btn-submit").click();
-		}
-	};
-
-	resetForm = () => {
-		this.setState({
-			showPass: false,
-
-			firstName: "",
-			firstNameError: "",
-			lastName: "",
-			lastNameError: "",
-			displayName: "",
-			displayNameError: "",
-			mobileNo: "",
-			mobileNoError: "",
-			secondaryMobileNo: "",
-			secondaryMobileNoError: "",
-			email: "",
-			emailError: "",
-			secondaryEmail: "",
-			secondaryEmailError: "",
-			discipline: "",
-			disciplineError: "",
-			jobStatusId: "",
-			jobStatusIdError: "",
-			reportingTo: "",
-			reportingToError: "",
-			joiningDate: null,
-			joiningDateError: "",
-
-			shiftActivationDateError: "",
-			shiftActivationDate: null,
-			leavingDate: null,
-			leavingDateError: "",
-			address: "",
-			addressError: "",
-			password: "",
-			passwordError: "",
-
-			allActiveShifts: [],
-			shiftId: "",
-
-			isActive: 1,
-			isActiveError: "",
-
-			isCheque: 1,
-			isChequeError: "",
-
-			inactiveReasonId: "",
-			inactiveReasonIdError: "",
-
-			otherReason: "",
-			otherReasonError: "",
-
-			employeeComments: "",
-			employeeCommentsError: "",
-
-			employeesRolesArray: [],
-			employeesRolesArrayError: "",
-
-			employeesEntitiesArray: [],
-			employeesEntitiesArrayError: "",
-			employeesEntitiesData: [],
-			employeesEntitiesDataLoading: false,
-			coordinationId: "",
-
-			employeesDepartmentsArray: [],
-			employeesDepartmentsArrayError: "",
-			employeesDepartmentsData: [],
-			employeesDepartmentsDataLoading: false,
-
-			employeesSubDepartmentsArray: [],
-			employeesSubDepartmentsArrayError: "",
-			employeesSubDepartmentsData: [],
-			employeesSubDepartmentsDataLoading: false,
-
-			employeesDesignationsArray: [],
-			employeesDesignationsArrayError: "",
-		});
-	};
 	getShifts = async () => {
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/payroll/C335CommonEmployeeShiftScheduleAllActive`;
@@ -1214,8 +899,361 @@ class DefineEmployeeForm extends Component {
 		this.setState({ employeesSubDepartmentsDataLoading: false });
 	};
 
+	resetForm = () => {
+		this.setState({
+			showPass: false,
+
+			firstName: "",
+			firstNameError: "",
+			lastName: "",
+			lastNameError: "",
+			displayName: "",
+			displayNameError: "",
+			mobileNo: "",
+			mobileNoError: "",
+			secondaryMobileNo: "",
+			secondaryMobileNoError: "",
+			email: "",
+			emailError: "",
+			secondaryEmail: "",
+			secondaryEmailError: "",
+			discipline: "",
+			disciplineError: "",
+			jobStatusId: "",
+			jobStatusIdError: "",
+			reportingTo: "",
+			reportingToError: "",
+			joiningDate: null,
+			joiningDateError: "",
+
+			shiftActivationDateError: "",
+			shiftActivationDate: null,
+			leavingDate: null,
+			leavingDateError: "",
+			address: "",
+			addressError: "",
+			password: "",
+			passwordError: "",
+
+			allActiveShifts: [],
+			shiftId: "",
+
+			isActive: 1,
+			isActiveError: "",
+
+			isCheque: 1,
+			isChequeError: "",
+
+			inactiveReasonId: "",
+			inactiveReasonIdError: "",
+
+			otherReason: "",
+			otherReasonError: "",
+
+			employeeComments: "",
+			employeeCommentsError: "",
+
+			employeesRolesArray: [],
+			employeesRolesArrayError: "",
+
+			employeesEntitiesArray: [],
+			employeesEntitiesArrayError: "",
+			employeesEntitiesData: [],
+			employeesEntitiesDataLoading: false,
+			coordinationId: "",
+
+			employeesDepartmentsArray: [],
+			employeesDepartmentsArrayError: "",
+			employeesDepartmentsData: [],
+			employeesDepartmentsDataLoading: false,
+
+			employeesSubDepartmentsArray: [],
+			employeesSubDepartmentsArrayError: "",
+			employeesSubDepartmentsData: [],
+			employeesSubDepartmentsDataLoading: false,
+
+			employeesDesignationsArray: [],
+			employeesDesignationsArrayError: "",
+
+			employmentTableData: [],
+			educationTableData: [],
+		});
+	};
+
+	clickOnFormSubmit = () => {
+		if (this.isFormValid()) {
+			document.getElementById("btn-submit").click();
+		}
+	};
+
+	isFormValid = () => {
+		let isValid = true;
+		let regex = "";
+		let {
+			firstNameError,
+			lastNameError,
+			shiftError,
+			displayNameError,
+			mobileNoError,
+			secondaryMobileNoError,
+			emailError,
+			disciplineError,
+			jobStatusIdError,
+			reportingToError,
+			joiningDateError,
+			shiftActivationDateError,
+			addressError,
+			passwordError,
+			employeesRolesArrayError,
+			employeesEntitiesArrayError,
+			employeesDesignationsArrayError,
+			inactiveReasonIdError,
+			otherReasonError,
+			isCheque,
+			leavingDate,
+			leavingDateError,
+			bankAccountNumber1,
+			bankAccountNumber1Error,
+			// bankAccountNumber2,
+			// bankAccountNumber2Error,
+			shiftId,
+		} = this.state;
+
+		if (!this.state.firstName) {
+			firstNameError = "Please enter first name";
+			isValid = false;
+		} else {
+			firstNameError = "";
+		}
+
+		if (!this.state.lastName) {
+			lastNameError = "Please enter last name";
+			isValid = false;
+		} else {
+			lastNameError = "";
+		}
+
+		if (!this.state.shiftId) {
+			shiftError = "Please Select a Shift";
+			isValid = false;
+		} else {
+			shiftError = "";
+		}
+
+		if (!this.state.displayName) {
+			displayNameError = "Please enter display name";
+			isValid = false;
+		} else {
+			displayNameError = "";
+		}
+
+		if (!this.state.mobileNo) {
+			mobileNoError = "Please enter a valid mobile number e.g 03001234567";
+			isValid = false;
+		} else {
+			if (
+				!this.state.mobileNo.startsWith("03") ||
+				this.state.mobileNo.split("").length !== 11
+			) {
+				mobileNoError = "Please enter a valid mobile number e.g 03001234567";
+				isValid = false;
+			} else {
+				mobileNoError = "";
+			}
+		}
+
+		if (this.state.secondaryMobileNo) {
+			if (
+				!this.state.secondaryMobileNo.startsWith("03") ||
+				this.state.secondaryMobileNo.split("").length !== 11
+			) {
+				secondaryMobileNoError =
+					"Please enter a valid mobile number e.g 03001234567";
+				isValid = false;
+			} else {
+				secondaryMobileNoError = "";
+			}
+		}
+
+		if (!this.state.email) {
+			emailError = "Please enter a valid email e.g name@domain.com";
+			isValid = false;
+		} else {
+			regex = new RegExp(emailExp);
+			if (!regex.test(this.state.email)) {
+				emailError = "Please enter a valid email e.g name@domain.com";
+				isValid = false;
+			} else {
+				emailError = "";
+			}
+		}
+
+		if (this.state.secondaryEmail) {
+			regex = new RegExp(emailExp);
+			if (!regex.test(this.state.secondaryEmail)) {
+				emailError = "Please enter a valid email e.g name@domain.com";
+				isValid = false;
+			} else {
+				emailError = "";
+			}
+		} else {
+			// Nothing
+		}
+
+		if (!this.state.discipline) {
+			disciplineError = "Please enter discipline";
+			isValid = false;
+		} else {
+			disciplineError = "";
+		}
+
+		if (!this.state.jobStatusId) {
+			jobStatusIdError = "Please select the job status";
+			isValid = false;
+		} else {
+			jobStatusIdError = "";
+		}
+
+		if (!this.state.reportingTo) {
+			reportingToError = "Please select the reporting Status";
+			isValid = false;
+		} else {
+			reportingToError = "";
+		}
+
+		if (!this.state.joiningDate) {
+			joiningDateError = "Please select joining date";
+			isValid = false;
+		} else {
+			joiningDateError = "";
+		}
+
+		// if (!this.state.shiftActivationDate) {
+		//   shiftActivationDateError = "Please select Shift Activation date";
+		//   isValid = false;
+		// } else {
+		//   shiftActivationDateError = "";
+		// }
+
+		// if (!this.state.address) {
+		//     addressError = "Please enter present address"
+		//     isValid = false;
+		// } else {
+		//     addressError = "";
+		// }
+
+		if (!this.state.password && this.state.recordId == 0) {
+			passwordError = "Please enter temporary password";
+			isValid = false;
+		} else {
+			passwordError = "";
+		}
+
+		if (this.state.recordId == 0) {
+
+			if (!(this.state.employeesRolesArray?.length > 0)) {
+				isValid = false;
+				employeesRolesArrayError = "Please select roles";
+			} else {
+				employeesRolesArrayError = "";
+			}
+
+			if (!(this.state.employeesEntitiesArray?.length > 0)) {
+				isValid = false;
+				employeesEntitiesArrayError = "Please select entities";
+			} else {
+				employeesEntitiesArrayError = "";
+			}
+
+
+			if (!(this.state.employeesDesignationsArray?.length > 0)) {
+				isValid = false;
+				employeesDesignationsArrayError = "Please select designations";
+			} else {
+				employeesDesignationsArrayError = "";
+			}
+
+		}
+
+		if (this.state.isActive == 0) {
+			if (!this.state.inactiveReasonId) {
+				isValid = false;
+				inactiveReasonIdError = "Please select inactive reason";
+			} else {
+				inactiveReasonIdError = "";
+				if (this.state.inactiveReasonId == 1 && !this.state.otherReason) {
+					isValid = false;
+					leavingDateError = "Please select leaving date";
+					otherReasonError = "Please enter other reason";
+				} else {
+					otherReasonError = "";
+					leavingDateError = "";
+				}
+			}
+		}
+
+		if (this.state.isCheque == 0) {
+			if (!this.state.bankAccountNumber1) {
+				isValid = false;
+				bankAccountNumber1Error = "Please add Account number 1";
+			} else {
+				bankAccountNumber1Error = "";
+				// if (this.state.inactiveReasonId == 1 && !this.state.otherReason) {
+				//   isValid = false;
+				//   otherReasonError = "Please enter other reason";
+				// } else {
+				//   otherReasonError = "";
+				// }
+			}
+		}
+
+		// if (this.state.isCheque == 0) {
+		//   if (!this.state.bankAccountNumber2) {
+		//     isValid = false;
+		//     bankAccountNumber2Error = "Please add Account number 2";
+		//   } else {
+		//     bankAccountNumber2Error = "";
+		// if (this.state.inactiveReasonId == 1 && !this.state.otherReason) {
+		//   isValid = false;
+		//   otherReasonError = "Please enter other reason";
+		// } else {
+		//   otherReasonError = "";
+		// }
+		// }
+		// }
+
+		if (!isValid) {
+			this.handleOpenSnackbar("Action Required: Review all forms to ensure no required information is missing.", "error")
+		}
+
+		this.setState({
+			firstNameError,
+			lastNameError,
+			displayNameError,
+			mobileNoError,
+			secondaryMobileNoError,
+			emailError,
+			disciplineError,
+			jobStatusIdError,
+			joiningDateError,
+			addressError,
+			passwordError,
+			employeesRolesArrayError,
+			employeesEntitiesArrayError,
+			employeesDesignationsArrayError,
+			inactiveReasonIdError,
+			otherReasonError,
+			leavingDateError,
+			shiftError,
+			reportingToError,
+			shiftActivationDateError,
+		});
+
+		return isValid;
+	};
+
 	onFormSubmit = async (e) => {
-		
+
 		e.preventDefault();
 		// const date = new Date();
 		// const day = String(date.getDate()).padStart(2, "0");
@@ -1246,7 +1284,7 @@ class DefineEmployeeForm extends Component {
 			for (let i = 0; i < subDepartmentIdsArray.length; i++) {
 				data.append("subDepartmentIds", subDepartmentIdsArray[i]["id"]);
 			}
-		
+
 			const designationIdsArray = this.state.employeesDesignationsArray || [];
 			for (let i = 0; i < designationIdsArray.length; i++) {
 				data.append("designationsIds", designationIdsArray[i]["id"]);
@@ -1265,6 +1303,26 @@ class DefineEmployeeForm extends Component {
 		// data.append("leavingDate", null);
 		// data.append("bankAccountNumber1", this.state.bankAccountNumber1);
 		// data.append("bankAccountNumber2", this.state.bankAccountNumber2);
+
+		this.state.employmentTableData.forEach((item) => {
+			data.append("jobTitle", item.jobTitle || " ");
+			data.append("jobType", item.jobType || " ");
+			data.append("jobFromDate", item.fromDate ? format(item.fromDate, "dd-MM-yyyy") : "01-01-1970");
+			data.append("jobToDate", item.toDate ? format(item.toDate, "dd-MM-yyyy") : "31-12-9999");
+			data.append("jobIsCurrent", item.isCurrent ? "1" : "0");
+			data.append("jobDescription", item.description || " ");
+		});
+
+		this.state.educationTableData.forEach((item) => {
+			data.append("eduInstitution", item.institution || " ");
+			data.append("eduQualification", item.qualification || " ");
+			data.append("eduFieldOfStudy", item.fieldOfStudy || " ");
+			data.append("eduEducationLevel", item.educationLevel || " ");
+			data.append("eduFromDate", item.fromDate ? format(item.fromDate, "dd-MM-yyyy") : "01-01-1970");
+			data.append("eduToDate", item.toDate ? format(item.toDate, "dd-MM-yyyy") : "31-12-9999");
+			data.append("eduResult", item.result || " ");
+		});
+
 		this.setState({ isLoading: true });
 		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersSaveV2`;
 		await fetch(url, {
@@ -1332,8 +1390,35 @@ class DefineEmployeeForm extends Component {
 		event.preventDefault();
 	};
 
+	componentDidMount() {
+		this.getEmployeesJobStatusData();
+		this.getShifts();
+		this.getEmployeesRolesData();
+		this.getEmployeesReportingToData();
+		this.getUserInactiveReasonsData();
+		if (this.state.recordId != 0) {
+			this.loadData(this.state.recordId);
+		} else {
+			this.getEmployeesDesignationsData([], [], []);
+		}
+	}
+
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		if (this.props.match.params.recordId != nextProps.match.params.recordId) {
+			if (nextProps.match.params.recordId != 0) {
+				this.loadData(nextProps.match.params.recordId);
+				this.setState({
+					recordId: nextProps.match.params.recordId,
+				});
+			} else {
+				window.location.reload();
+			}
+		}
+	}
+
 	render() {
-		const { classes } = this.props;
+
+		const { classes, theme } = this.props;
 
 		return (
 			<Fragment>
@@ -1342,22 +1427,17 @@ class DefineEmployeeForm extends Component {
 					open={this.state.isLoginMenu}
 					handleClose={() => this.setState({ isLoginMenu: false })}
 				/>
-				<form
-					noValidate
-					autoComplete="off"
-					id="myForm"
-					onSubmit={this.onFormSubmit}
+
+				<Grid
+					container
+					component="main"
+					className={classes.root}
 				>
-					<TextField type="hidden" name="id" value={this.state.recordId} />
-					<Grid container component="main" className={classes.root}>
+					<Grid item xs={12}>
 						<Typography
 							style={{
 								color: "#1d5f98",
-								fontWeight: 600,
-								borderBottom: "1px solid #d2d2d2",
-								width: "98%",
-								marginBottom: 25,
-								fontSize: 20,
+								fontWeight: 600
 							}}
 							variant="h5"
 						>
@@ -1369,592 +1449,622 @@ class DefineEmployeeForm extends Component {
 								opacity: "0.3",
 							}}
 						/>
-						<Grid
-							container
-							spacing={2}
-							style={{
-								marginLeft: 5,
-								marginRight: 15,
-							}}
-						>
-							<Grid item xs={4}>
-								<TextField
-									id="firstName"
-									name="firstName"
-									label="First Name"
-									required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.firstName}
-									error={!!this.state.firstNameError}
-									helperText={this.state.firstNameError}
-								/>
-							</Grid>
-							<Grid item xs={4}>
-								<TextField
-									id="lastName"
-									name="lastName"
-									label="Last Name"
-									required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.lastName}
-									error={!!this.state.lastNameError}
-									helperText={this.state.lastNameError}
-								/>
-							</Grid>
-							<Grid item xs={4}>
-								<TextField
-									id="displayName"
-									name="displayName"
-									label="Display Name"
-									required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.displayName}
-									error={!!this.state.displayNameError}
-									helperText={this.state.displayNameError}
-								/>
-							</Grid>
-							<Grid item xs={4}>
-								<TextField
-									id="mobileNo"
-									name="mobileNo"
-									label="Primary Mobile Number"
-									required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.mobileNo}
-									helperText={this.state.mobileNoError}
-									error={!!this.state.mobileNoError}
-									inputProps={{
-										maxLength: 11,
-									}}
-								/>
-							</Grid>
-							<Grid item xs={4}>
-								<TextField
-									id="secondaryMobileNo"
-									name="secondaryMobileNo"
-									label="Secondary Mobile Number"
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.secondaryMobileNo}
-									helperText={this.state.secondaryMobileNoError}
-									error={!!this.state.secondaryMobileNoError}
-									inputProps={{
-										maxLength: 11,
-									}}
-								/>
-							</Grid>
-							<Grid item xs={4}>
-								<TextField
-									id="email"
-									name="email"
-									label="Primary Email"
-									required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.email}
-									helperText={this.state.emailError}
-									error={!!this.state.emailError}
-								/>
-							</Grid>
-							<Grid item xs={4}>
-								<TextField
-									id="secondaryEmail"
-									name="secondaryEmail"
-									label="Secondary Email"
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.secondaryEmail}
-									helperText={this.state.secondaryEmailError}
-									error={!!this.state.secondaryEmailError}
-								/>
-							</Grid>
-							<Grid item xs={4}>
-								<TextField
-									id="discipline"
-									name="discipline"
-									label="Discipline"
-									required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.discipline}
-									helperText={this.state.disciplineError}
-									error={!!this.state.disciplineError}
-								/>
-							</Grid>
-							<Grid item xs={4}>
-								<TextField
-									id="jobStatusId"
-									name="jobStatusId"
-									label="Job Status"
-									required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.jobStatusId}
-									helperText={this.state.jobStatusIdError}
-									error={!!this.state.jobStatusIdError}
-									select
+						<div className={classes.tabPanalRoot}>
+							<AppBar position="static" color="default">
+								<Tabs
+									value={this.state.tabIndex}
+									onChange={this.handleChange}
+									indicatorColor="primary"
+									textColor="primary"
+									variant="fullWidth"
+									aria-label="full width tabs"
 								>
-									{this.state.jobStatusIdData.map((item) => {
-										return (
-											<MenuItem key={item.ID} value={item.ID}>
-												{item.Label}
-											</MenuItem>
-										);
-									})}
-								</TextField>
-							</Grid>
-							<Grid item xs={12} md={4}>
-								<DatePicker
-									autoOk
-									id="joiningDate"
-									name="joiningDate"
-									label="Joining Date"
-									invalidDateMessage=""
-									placeholder=""
-									variant="inline"
-									inputVariant="outlined"
-									format="dd-MM-yyyy"
-									fullWidth
-									required
-									value={this.state.joiningDate}
-									onChange={(date) =>
-										this.onHandleChange({
-											target: { name: "joiningDate", value: date },
-										})
-									}
-									error={!!this.state.joiningDateError}
-									helperText={this.state.joiningDateError}
-								/>
-							</Grid>
+									<Tab label="Basic *" {...a11yProps(0)} />
+									<Tab label="Employment History" {...a11yProps(1)} />
+									<Tab label="Education History" {...a11yProps(2)} />
+								</Tabs>
+							</AppBar>
+							<TabPanel value={this.state.tabIndex} index={0} dir={theme.direction}>
+								<form
+									noValidate
+									autoComplete="off"
+									id="myForm"
+									onSubmit={this.onFormSubmit}
+								>
+									<TextField type="hidden" name="id" value={this.state.recordId} />
+									<Grid container spacing={2}>
+										<Grid item xs={4}>
+											<TextField
+												id="firstName"
+												name="firstName"
+												label="First Name"
+												required
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.firstName}
+												error={!!this.state.firstNameError}
+												helperText={this.state.firstNameError}
+											/>
+										</Grid>
+										<Grid item xs={4}>
+											<TextField
+												id="lastName"
+												name="lastName"
+												label="Last Name"
+												required
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.lastName}
+												error={!!this.state.lastNameError}
+												helperText={this.state.lastNameError}
+											/>
+										</Grid>
+										<Grid item xs={4}>
+											<TextField
+												id="displayName"
+												name="displayName"
+												label="Display Name"
+												required
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.displayName}
+												error={!!this.state.displayNameError}
+												helperText={this.state.displayNameError}
+											/>
+										</Grid>
+										<Grid item xs={4}>
+											<TextField
+												id="mobileNo"
+												name="mobileNo"
+												label="Primary Mobile Number"
+												required
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.mobileNo}
+												helperText={this.state.mobileNoError}
+												error={!!this.state.mobileNoError}
+												inputProps={{
+													maxLength: 11,
+												}}
+											/>
+										</Grid>
+										<Grid item xs={4}>
+											<TextField
+												id="secondaryMobileNo"
+												name="secondaryMobileNo"
+												label="Secondary Mobile Number"
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.secondaryMobileNo}
+												helperText={this.state.secondaryMobileNoError}
+												error={!!this.state.secondaryMobileNoError}
+												inputProps={{
+													maxLength: 11,
+												}}
+											/>
+										</Grid>
+										<Grid item xs={4}>
+											<TextField
+												id="email"
+												name="email"
+												label="Primary Email"
+												required
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.email}
+												helperText={this.state.emailError}
+												error={!!this.state.emailError}
+											/>
+										</Grid>
+										<Grid item xs={4}>
+											<TextField
+												id="secondaryEmail"
+												name="secondaryEmail"
+												label="Secondary Email"
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.secondaryEmail}
+												helperText={this.state.secondaryEmailError}
+												error={!!this.state.secondaryEmailError}
+											/>
+										</Grid>
+										<Grid item xs={4}>
+											<TextField
+												id="discipline"
+												name="discipline"
+												label="Discipline"
+												required
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.discipline}
+												helperText={this.state.disciplineError}
+												error={!!this.state.disciplineError}
+											/>
+										</Grid>
+										<Grid item xs={4}>
+											<TextField
+												id="jobStatusId"
+												name="jobStatusId"
+												label="Job Status"
+												required
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.jobStatusId}
+												helperText={this.state.jobStatusIdError}
+												error={!!this.state.jobStatusIdError}
+												select
+											>
+												{this.state.jobStatusIdData.map((item) => {
+													return (
+														<MenuItem key={item.ID} value={item.ID}>
+															{item.Label}
+														</MenuItem>
+													);
+												})}
+											</TextField>
+										</Grid>
+										<Grid item xs={12} md={4}>
+											<DatePicker
+												autoOk
+												id="joiningDate"
+												name="joiningDate"
+												label="Joining Date"
+												invalidDateMessage=""
+												placeholder=""
+												variant="inline"
+												inputVariant="outlined"
+												format="dd-MM-yyyy"
+												fullWidth
+												required
+												value={this.state.joiningDate}
+												onChange={(date) =>
+													this.onHandleChange({
+														target: { name: "joiningDate", value: date },
+													})
+												}
+												error={!!this.state.joiningDateError}
+												helperText={this.state.joiningDateError}
+											/>
+										</Grid>
+										{/* <Grid item xs={4}>
+																	<TextField
+																			id="address"
+																			name="address"
+																			label="Present Address"
+																			required
+																			fullWidth
+																			variant="outlined"
+																			onChange={this.onHandleChange}
+																			value={this.state.address}
+																			helperText={this.state.addressError}
+																			error={this.state.addressError}
+																	/>
+															</Grid> */}
+										{(!this.state.recordId || this.state.recordId == 0) && (
+											<Grid item xs={4}>
+												<TextField
+													id="password"
+													name="password"
+													label="Temporary Password"
+													required
+													fullWidth
+													variant="outlined"
+													type={this.state.showPass ? "text" : "password"}
+													onChange={this.onHandleChange}
+													value={this.state.password}
+													helperText={this.state.passwordError}
+													error={!!this.state.passwordError}
+													InputProps={{
+														endAdornment: (
+															<InputAdornment position="end">
+																<IconButton
+																	aria-label="toggle password visibility"
+																	onClick={() => this.handleClickShowPassword()}
+																	onMouseDown={this.handleMouseDownPassword}
+																>
+																	{this.state.showPass ? (
+																		<Visibility />
+																	) : (
+																		<VisibilityOff />
+																	)}
+																</IconButton>
+															</InputAdornment>
+														),
+													}}
+												/>
+											</Grid>
+										)}
 
-							{/* <Grid item xs={4}>
-																<TextField
-																		id="address"
-																		name="address"
-																		label="Present Address"
-																		required
-																		fullWidth
-																		variant="outlined"
-																		onChange={this.onHandleChange}
-																		value={this.state.address}
-																		helperText={this.state.addressError}
-																		error={this.state.addressError}
-																/>
-														</Grid> */}
-							{(!this.state.recordId || this.state.recordId == 0) && (
-								<Grid item xs={4}>
-									<TextField
-										id="password"
-										name="password"
-										label="Temporary Password"
-										required
-										fullWidth
-										variant="outlined"
-										type={this.state.showPass ? "text" : "password"}
-										onChange={this.onHandleChange}
-										value={this.state.password}
-										helperText={this.state.passwordError}
-										error={!!this.state.passwordError}
-										InputProps={{
-											endAdornment: (
-												<InputAdornment position="end">
-													<IconButton
-														aria-label="toggle password visibility"
-														onClick={() => this.handleClickShowPassword()}
-														onMouseDown={this.handleMouseDownPassword}
+										<Grid item xs={4}>
+											{/* <TextField
+												id="reportingTo"
+												name="reportingTo"
+												label="Primary Reporting To"
+												required
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.reportingTo}
+												helperText={this.state.reportingToError}
+												error={this.state.reportingToError}
+												select
+												>
+													{this.state.reportingStatusData.map((item) => {
+														return (
+															<MenuItem key={item.id} value={item.id}>
+																{item.label}
+															</MenuItem>
+														);
+													})}
+												</TextField> */}
+											<Autocomplete
+												id="reportingTo"
+												name="reportingTo"
+												options={this.state.reportingStatusData}
+												getOptionLabel={(option) => option.label}
+												value={
+													this.state.reportingStatusData.find(
+														(item) => item.id === this.state.reportingTo
+													) || null
+												}
+												onChange={(event, newValue) => {
+													this.setState({ reportingTo: newValue ? newValue.id : "" });
+												}}
+												renderInput={(params) => (
+													<TextField
+														style={{
+															marginTop: "0px",
+															marginBottom: "0px",
+														}}
+														{...params}
+														label="Primary Reporting To"
+														margin="normal"
+														variant="outlined"
+														helperText={this.state.reportingToError}
+														error={!!this.state.reportingToError}
+													/>
+												)}
+											/>
+										</Grid>
+										<Grid item xs={4}>
+											{/* <TextField
+														id="coordinationId"
+														name="coordinationId"
+														label="Coordination"
+														// required
+														fullWidth
+														variant="outlined"
+														onChange={this.onHandleChange}
+														value={this.state.coordinationId}
+														// helperText={this.state.reportingToError}
+														// error={this.state.reportingToError}
+														select
 													>
-														{this.state.showPass ? (
-															<Visibility />
-														) : (
-															<VisibilityOff />
-														)}
-													</IconButton>
-												</InputAdornment>
-											),
-										}}
-									/>
-								</Grid>
-							)}
+														<MenuItem key={""} value={null}>
+															{"None"}
+														</MenuItem>
+														{this.state.reportingStatusData.map((item) => {
+															return (
+																<MenuItem key={item.id} value={item.id}>
+																	{item.label}
+																</MenuItem>
+															);
+														})}
+													</TextField> */}
+											<Autocomplete
+												id="coordinationId"
+												name="coordinationId"
+												options={this.state.reportingStatusData}
+												getOptionLabel={(option) => option.label}
+												value={
+													this.state.coordinationId !== null
+														? this.state.reportingStatusData.find(
+															(item) => item.id === this.state.coordinationId
+														) || null
+														: null
+												}
+												onChange={(event, newValue) => {
+													this.setState({
+														coordinationId: newValue ? newValue.id : "",
+													});
+												}}
+												renderInput={(params) => (
+													<TextField
+														{...params}
+														style={{
+															marginTop: "0px",
+															marginBottom: "0px",
+														}}
+														label="Coordination With"
+														margin="normal"
+														variant="outlined"
+														fullWidth
+													/>
+												)}
+											/>
+										</Grid>
 
-							<Grid item xs={4}>
-								{/* <TextField
-									id="reportingTo"
-									name="reportingTo"
-									label="Primary Reporting To"
-									required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.reportingTo}
-									helperText={this.state.reportingToError}
-									error={this.state.reportingToError}
-									select
-								>
-									{this.state.reportingStatusData.map((item) => {
-										return (
-											<MenuItem key={item.id} value={item.id}>
-												{item.label}
-											</MenuItem>
-										);
-									})}
-								</TextField> */}
-								<Autocomplete
-									id="reportingTo"
-									name="reportingTo"
-									options={this.state.reportingStatusData}
-									getOptionLabel={(option) => option.label}
-									value={
-										this.state.reportingStatusData.find(
-											(item) => item.id === this.state.reportingTo
-										) || null
-									}
-									onChange={(event, newValue) => {
-										this.setState({ reportingTo: newValue ? newValue.id : "" });
-									}}
-									renderInput={(params) => (
-										<TextField
-											style={{
-												marginTop: "0px",
-												marginBottom: "0px",
-											}}
-											{...params}
-											label="Primary Reporting To"
-											margin="normal"
-											variant="outlined"
-											helperText={this.state.reportingToError}
-											error={!!this.state.reportingToError}
-										/>
-									)}
-								/>
-							</Grid>
-							<Grid item xs={4}>
-								{/* <TextField
-									id="coordinationId"
-									name="coordinationId"
-									label="Coordination"
-									// required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.coordinationId}
-									// helperText={this.state.reportingToError}
-									// error={this.state.reportingToError}
-									select
-								>
-									<MenuItem key={""} value={null}>
-										{"None"}
-									</MenuItem>
-									{this.state.reportingStatusData.map((item) => {
-										return (
-											<MenuItem key={item.id} value={item.id}>
-												{item.label}
-											</MenuItem>
-										);
-									})}
-								</TextField> */}
-								<Autocomplete
-									id="coordinationId"
-									name="coordinationId"
-									options={[
-										{ id: 0, label: "None" },
-										...this.state.reportingStatusData,
-									]}
-									getOptionLabel={(option) => option.label}
-									value={
-										this.state.coordinationId !== null
-											? this.state.reportingStatusData.find(
-												(item) => item.id === this.state.coordinationId
-											) || { id: null, label: "None" }
-											: { id: 0, label: "None" }
-									}
-									onChange={(event, newValue) => {
-										this.setState({
-											coordinationId: newValue ? newValue.id : 0,
-										});
-									}}
-									renderInput={(params) => (
-										<TextField
-											{...params}
-											style={{
-												marginTop: "0px",
-												marginBottom: "0px",
-											}}
-											label="Coordination With"
-											margin="normal"
-											variant="outlined"
-											fullWidth
-										/>
-									)}
-								/>
-							</Grid>
-
-							<Grid item xs={4}>
-								<TextField
-									id="shiftId"
-									name="shiftId"
-									label="Shift"
-									required
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.shiftId}
-									helperText={this.state.shiftError}
-									error={!!this.state.shiftError}
-									disabled={this?.state?.recordId !== 0}
-									select
-								>
-									{this?.state?.allActiveShifts?.map((item) => {
-										return (
-											<MenuItem key={item.id} value={item.id}>
-												{item.label}
-											</MenuItem>
-										);
-									})}
-								</TextField>
-							</Grid>
-							{/* <Grid item xs={12} md={4}>
-								<DatePicker
-									autoOk
-									id="shiftActivationDate"
-									name="shiftActivationDate"
-									label="Shift Activation Date"
-									invalidDateMessage=""
-									placeholder=""
-									variant="inline"
-									inputVariant="outlined"
-									format="dd-MM-yyyy"
-									fullWidth
-									required
-									value={this.state.shiftActivationDate}
-									onChange={(date) =>
-										this.onHandleChange({
-											target: { name: "shiftActivationDate", value: date },
-										})
-									}
-									error={!!this.state.shiftActivationDateError}
-									helperText={this.state.shiftActivationDateError}
-								/>
-							</Grid> */}
-							{/* <Grid item xs={4}>
-								<KeyboardTimePicker
-									id="selectedDate"
-									name="selectedDate"
-									label="Select Time"
-									required
-									fullWidth
-									style={{
-										marginTop: "0px",
-									}}
-									variant="outlined"
-									margin="normal"
-									value={this.state.selectedDate}
-									onChange={this.handleDateChange}
-									KeyboardButtonProps={{
-										"aria-label": "change time",
-									}}
-									InputProps={{
-										variant: "outlined",
-									}}
-									inputVariant="outlined"
-								/>
-							</Grid> */}
-							<Grid item xs={12}>
-								<Grid container justifyContent="flex-start" alignItems="center"	spacing={1}>
-									<Grid item xs={4}>
-										<Typography component="span">
-											Inactive
-										</Typography>
-										<Switch
-											classes={{
-												track: classes.switch_track,
-												switchBase: classes.switch_base,
-												colorPrimary: classes.switch_primary,
-											}}
-											id="isActive"
-											color="primary"
-											checked={this.state.isActive == 1}
-											onChange={(e, checked) =>
-												this.onHandleChange({
-													target: {
-														name: "isActive",
-														value: checked ? 1 : 0,
-													},
-												})
-											}
-										/>
-										<Typography component="span">
-											Active
-										</Typography>
-									</Grid>
-									{!this.state.isActive && (
-									<>
-									<Grid item xs={4}>
-										<TextField
-											id="inactiveReasonId"
-											name="inactiveReasonId"
-											label="Inactive Reason"
-											required
-											fullWidth
-											variant="outlined"
-											onChange={this.onHandleChange}
-											value={this.state.inactiveReasonId}
-											helperText={this.state.inactiveReasonIdError}
-											error={!!this.state.inactiveReasonIdError}
-											select
-										>
-											{this.state.inactiveReasonsData.map((item) => {
-												return (
-													<MenuItem key={item.id} value={item.id}>
-														{item.label}
-													</MenuItem>
-												);
-											})}
-										</TextField>
-									</Grid>
-									{this.state.inactiveReasonId == 1 && (
-										<>
-											<Grid item xs={12} md={4}>
+										<Grid item xs={4}>
+											<TextField
+												id="shiftId"
+												name="shiftId"
+												label="Shift"
+												required
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.shiftId}
+												helperText={this.state.shiftError}
+												error={!!this.state.shiftError}
+												disabled={this?.state?.recordId !== 0}
+												select
+											>
+												{this?.state?.allActiveShifts?.map((item) => {
+													return (
+														<MenuItem key={item.id} value={item.id}>
+															{item.label}
+														</MenuItem>
+													);
+												})}
+											</TextField>
+										</Grid>
+										{/* <Grid item xs={12} md={4}>
 												<DatePicker
 													autoOk
-													id="leavingDate"
-													name="leavingDate"
-													label="Leaving Date"
+													id="shiftActivationDate"
+													name="shiftActivationDate"
+													label="Shift Activation Date"
 													invalidDateMessage=""
-													disabled={!this.state.joiningDate}
-													minDate={this.state.joiningDate}
 													placeholder=""
 													variant="inline"
 													inputVariant="outlined"
 													format="dd-MM-yyyy"
 													fullWidth
 													required
-													value={this.state.leavingDate}
+													value={this.state.shiftActivationDate}
 													onChange={(date) =>
 														this.onHandleChange({
-															target: { name: "leavingDate", value: date },
+															target: { name: "shiftActivationDate", value: date },
 														})
 													}
-													error={!!this.state.leavingDateError}
-													helperText={this.state.leavingDateError}
+													error={!!this.state.shiftActivationDateError}
+													helperText={this.state.shiftActivationDateError}
 												/>
-											</Grid>
-											<Grid item xs={12}>
-												<TextField
-													multiline
-													minRows={3}
-													id="otherReason"
-													name="otherReason"
-													label="Other Reason"
+											</Grid> */}
+										{/* <Grid item xs={4}>
+												<KeyboardTimePicker
+													id="selectedDate"
+													name="selectedDate"
+													label="Select Time"
 													required
 													fullWidth
+													style={{
+														marginTop: "0px",
+													}}
 													variant="outlined"
-													onChange={this.onHandleChange}
-													value={this.state.otherReason}
-													helperText={this.state.otherReasonError}
-													error={!!this.state.otherReasonError}
+													margin="normal"
+													value={this.state.selectedDate}
+													onChange={this.handleDateChange}
+													KeyboardButtonProps={{
+														"aria-label": "change time",
+													}}
+													InputProps={{
+														variant: "outlined",
+													}}
+													inputVariant="outlined"
 												/>
+											</Grid> */}
+										<Grid item xs={12}>
+											<Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
+												<Grid item xs={4}>
+													<Typography component="span">
+														Inactive
+													</Typography>
+													<Switch
+														classes={{
+															track: classes.switch_track,
+															switchBase: classes.switch_base,
+															colorPrimary: classes.switch_primary,
+														}}
+														id="isActive"
+														color="primary"
+														checked={this.state.isActive == 1}
+														onChange={(e, checked) =>
+															this.onHandleChange({
+																target: {
+																	name: "isActive",
+																	value: checked ? 1 : 0,
+																},
+															})
+														}
+													/>
+													<Typography component="span">
+														Active
+													</Typography>
+												</Grid>
+												{!this.state.isActive && (
+													<>
+														<Grid item xs={4}>
+															<TextField
+																id="inactiveReasonId"
+																name="inactiveReasonId"
+																label="Inactive Reason"
+																required
+																fullWidth
+																variant="outlined"
+																onChange={this.onHandleChange}
+																value={this.state.inactiveReasonId}
+																helperText={this.state.inactiveReasonIdError}
+																error={!!this.state.inactiveReasonIdError}
+																select
+															>
+																{this.state.inactiveReasonsData.map((item) => {
+																	return (
+																		<MenuItem key={item.id} value={item.id}>
+																			{item.label}
+																		</MenuItem>
+																	);
+																})}
+															</TextField>
+														</Grid>
+														{this.state.inactiveReasonId == 1 && (
+															<>
+																<Grid item xs={12} md={4}>
+																	<DatePicker
+																		autoOk
+																		id="leavingDate"
+																		name="leavingDate"
+																		label="Leaving Date"
+																		invalidDateMessage=""
+																		disabled={!this.state.joiningDate}
+																		minDate={this.state.joiningDate}
+																		placeholder=""
+																		variant="inline"
+																		inputVariant="outlined"
+																		format="dd-MM-yyyy"
+																		fullWidth
+																		required
+																		value={this.state.leavingDate}
+																		onChange={(date) =>
+																			this.onHandleChange({
+																				target: { name: "leavingDate", value: date },
+																			})
+																		}
+																		error={!!this.state.leavingDateError}
+																		helperText={this.state.leavingDateError}
+																	/>
+																</Grid>
+																<Grid item xs={12}>
+																	<TextField
+																		multiline
+																		minRows={3}
+																		id="otherReason"
+																		name="otherReason"
+																		label="Other Reason"
+																		required
+																		fullWidth
+																		variant="outlined"
+																		onChange={this.onHandleChange}
+																		value={this.state.otherReason}
+																		helperText={this.state.otherReasonError}
+																		error={!!this.state.otherReasonError}
+																	/>
+																</Grid>
+															</>
+														)}
+													</>
+												)}
 											</Grid>
-										</>
-										)}
-									</>
-									)}
-								</Grid>
-							</Grid>
-							<Grid item xs={12}>
-								<Grid container	spacing={2}>
-									<Grid item xs={4}>
-										<Typography component="span">Bank Account</Typography>
-										<Switch
-											classes={{
-												track: classes.switch_track,
-												switchBase: classes.switch_base,
-												colorPrimary: classes.switch_primary,
-											}}
-											id="isCheque"
-											color="primary"
-											checked={this.state.isCheque == 1}
-											onChange={(e, checked) =>
-												this.onHandleChange({
-													target: {
-														name: "isCheque",
-														value: checked ? 1 : 0,
-													},
-												})
-											}
+										</Grid>
+										<Grid item xs={12}>
+											<Grid container spacing={2}>
+												<Grid item xs={4}>
+													<Typography component="span">Bank Account</Typography>
+													<Switch
+														classes={{
+															track: classes.switch_track,
+															switchBase: classes.switch_base,
+															colorPrimary: classes.switch_primary,
+														}}
+														id="isCheque"
+														color="primary"
+														checked={this.state.isCheque == 1}
+														onChange={(e, checked) =>
+															this.onHandleChange({
+																target: {
+																	name: "isCheque",
+																	value: checked ? 1 : 0,
+																},
+															})
+														}
+													/>
+													<Typography component="span">Cheque</Typography>
+												</Grid>
+												{!this.state.isCheque && (
+													<>
+														<Grid item xs={4}>
+															<TextField
+																id="bankAccountNumber1"
+																name="bankAccountNumber1"
+																label="SCB Account Number"
+																required
+																type="number"
+																fullWidth
+																variant="outlined"
+																onChange={this.onHandleChange}
+																value={this.state.bankAccountNumber1}
+																helperText={this.state.bankAccountNumber1Error}
+																error={!!this.state.bankAccountNumber1Error}
+															/>
+														</Grid>
+														<Grid item xs={4}>
+															<TextField
+																id="bankAccountNumber2"
+																name="bankAccountNumber2"
+																label="Faysal Bank Account Number"
+																type="number"
+																fullWidth
+																variant="outlined"
+																onChange={this.onHandleChange}
+																value={this.state.bankAccountNumber2 || ""}
+																helperText={this.state.bankAccountNumber2Error}
+																error={!!this.state.bankAccountNumber2Error}
+															/>
+														</Grid>
+													</>
+												)}
+											</Grid>
+										</Grid>
+										<Grid item xs={12}>
+											<TextField
+												multiline
+												minRows={3}
+												id="employeeComments"
+												name="employeeComments"
+												label="Employee Comments"
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.employeeComments}
+												helperText={this.state.employeeCommentsError}
+												error={!!this.state.employeeCommentsError}
+											/>
+										</Grid>
+										<DefineEmployeeRolesSection
+											state={this.state}
+											onHandleChange={(e) => this.onHandleChange(e)}
 										/>
-										<Typography component="span">Cheque</Typography>
 									</Grid>
-									{!this.state.isCheque && (
-										<>
-										<Grid item xs={4}>
-											<TextField
-												id="bankAccountNumber1"
-												name="bankAccountNumber1"
-												label="SCB Account Number"
-												required
-												type="number"
-												fullWidth
-												variant="outlined"
-												onChange={this.onHandleChange}
-												value={this.state.bankAccountNumber1}
-												helperText={this.state.bankAccountNumber1Error}
-												error={!!this.state.bankAccountNumber1Error}
-											/>
-										</Grid>
-										<Grid item xs={4}>
-											<TextField
-												id="bankAccountNumber2"
-												name="bankAccountNumber2"
-												label="Faysal Bank Account Number"
-												type="number"
-												fullWidth
-												variant="outlined"
-												onChange={this.onHandleChange}
-												value={this.state.bankAccountNumber2 || ""}
-												helperText={this.state.bankAccountNumber2Error}
-												error={!!this.state.bankAccountNumber2Error}
-											/>
-										</Grid>
-										</>
-									)}
-								</Grid>
-							</Grid>
-							<Grid item xs={12}>
-								<TextField
-									multiline
-									minRows={3}
-									id="employeeComments"
-									name="employeeComments"
-									label="Employee Comments"
-									fullWidth
-									variant="outlined"
-									onChange={this.onHandleChange}
-									value={this.state.employeeComments}
-									helperText={this.state.employeeCommentsError}
-									error={!!this.state.employeeCommentsError}
+									<input type="submit" style={{ display: "none" }} id="btn-submit" />
+								</form>
+							</TabPanel>
+							<TabPanel value={this.state.tabIndex} index={1} dir={theme.direction}>
+								<EmploymentHistoryForm
+									employmentTableData={this.state.employmentTableData}
+									setEmploymentTableData={(data) => this.setState({ employmentTableData: data })}
+									handleOpenSnackbar={this.handleOpenSnackbar}
 								/>
-							</Grid>
-							<DefineEmployeeRolesSection
-								state={this.state}
-								onHandleChange={(e) => this.onHandleChange(e)}
-							/>
-						</Grid>
+							</TabPanel>
+							<TabPanel value={this.state.tabIndex} index={2} dir={theme.direction}>
+								<EducationHistoryForm
+									educationTableData={this.state.educationTableData}
+									setEducationTableData={(data) => this.setState({ educationTableData: data })}
+									handleOpenSnackbar={this.handleOpenSnackbar}
+								/>
+							</TabPanel>
+						</div>
 					</Grid>
-					<input type="submit" style={{ display: "none" }} id="btn-submit" />
-				</form>
+				</Grid>
+
 				<BottomBar
 					leftButtonText="View"
 					leftButtonHide={false}
@@ -1990,4 +2100,4 @@ DefineEmployeeForm.defaultProps = {
 	},
 };
 
-export default withStyles(styles)(DefineEmployeeForm);
+export default withTheme(withStyles(styles)(DefineEmployeeForm));
