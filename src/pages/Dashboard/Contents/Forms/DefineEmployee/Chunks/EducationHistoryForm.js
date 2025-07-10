@@ -52,9 +52,9 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
 
     const handleSave = () => {
 
-        const { institution, qualification, fieldOfStudy, educationLevel, fromDate } = educationForm;
+        const { institution, qualification, fieldOfStudy, educationLevel, fromDate, toDate } = educationForm;
 
-        if (!institution || !qualification || !fieldOfStudy || !educationLevel || !fromDate) {
+        if (!institution || !qualification || !fromDate || !toDate) {
             handleOpenSnackbar("Please fill all required fields.", "error");
             return;
         }
@@ -118,7 +118,6 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
                 <TextField
                     name="fieldOfStudy"
                     label="Field of Study / Major"
-                    required
                     fullWidth
                     variant="outlined"
                     value={educationForm.fieldOfStudy}
@@ -129,7 +128,6 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
                 <TextField
                     name="educationLevel"
                     label="Education Level"
-                    required
                     fullWidth
                     variant="outlined"
                     select
@@ -171,6 +169,7 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
                     format="dd-MM-yyyy"
                     views={["year", "month", "date"]}
                     fullWidth
+                    required
                     value={educationForm.toDate}
                     onChange={(date) => handleDateChange("toDate", date)}
                 />

@@ -31,6 +31,7 @@ const StyledTableRow = withStyles((theme) => ({
 const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, handleOpenSnackbar }) => {
 	
 	const [employmentForm, setEmploymentForm] = useState({
+		organization: "",
 		jobTitle: "",
 		jobType: "",
 		fromDate: null,
@@ -61,9 +62,9 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 
 	const handleSave = () => {
 
-		const { jobTitle, jobType, fromDate, toDate } = employmentForm;
+		const { organization, jobTitle, jobType, fromDate, toDate } = employmentForm;
 
-		if (!jobTitle || !jobType || !fromDate || (!employmentForm.isCurrent && !toDate)) {
+		if (!organization || !jobTitle || !jobType || !fromDate || (!employmentForm.isCurrent && !toDate)) {
 			handleOpenSnackbar("Please fill all required fields.", "error");
 			return;
 		}
@@ -78,6 +79,7 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 		}
 
 		setEmploymentForm({
+			organization: "",
 			jobTitle: "",
 			jobType: "",
 			fromDate: null,
@@ -101,7 +103,18 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 
 	return (
 		<Grid container spacing={2}>
-			<Grid item xs={12} md={6} lg={4}>
+			<Grid item xs={12} md={4} xl={2}>
+				<TextField
+					name="organization"
+					label="Organization"
+					required
+					fullWidth
+					variant="outlined"
+					value={employmentForm.organization}
+					onChange={handleChange}
+				/>
+			</Grid>
+			<Grid item xs={12} md={4} xl={2}>
 				<TextField
 					name="jobTitle"
 					label="Job Title"
@@ -112,8 +125,7 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 					onChange={handleChange}
 				/>
 			</Grid>
-
-			<Grid item xs={12} md={6} lg={2}>
+			<Grid item xs={12} md={4} xl={2}>
 				<TextField
 					name="jobType"
 					label="Employment Type"
@@ -133,7 +145,7 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 					<MenuItem value="Other">Other</MenuItem>
 				</TextField>
 			</Grid>
-			<Grid item xs={12} md={5} lg={2}>
+			<Grid item xs={12} md={4} xl={2}>
 				<DatePicker
 					autoOk
 					name="fromDate"
@@ -146,7 +158,7 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 					onChange={(date) => handleDateChange("fromDate", date)}
 				/>
 			</Grid>
-			<Grid item xs={12} md={5} lg={2}>
+			<Grid item xs={12} md={4} xl={2}>
 				<DatePicker
 					autoOk
 					name="toDate"
@@ -159,7 +171,7 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 					onChange={(date) => handleDateChange("toDate", date)}
 				/>
 			</Grid>
-			<Grid item xs={1}>
+			<Grid item xs={6} md={2} xl={1}>
 				<Box
 					display="flex"
 					justifyContent="center"
@@ -183,7 +195,7 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 					/>
 				</Box>
 			</Grid>
-			<Grid item xs={12} md={2} lg={1}>
+			<Grid item xs={12} md={2} xl={1}>
 				<Button
 					color="primary"
 					variant="outlined"
@@ -212,6 +224,7 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 					<Table size="small">
 						<TableHead>
 							<StyledTableRow>
+								<StyledTableCell>Organization</StyledTableCell>
 								<StyledTableCell>Job Title</StyledTableCell>
 								<StyledTableCell>Employment Type</StyledTableCell>
 								<StyledTableCell>From Date</StyledTableCell>
@@ -222,10 +235,11 @@ const EmploymentHistoryForm = ({ employmentTableData, setEmploymentTableData, ha
 						</TableHead>
 						<TableBody>
 							{employmentTableData.length===0 && 
-								<StyledTableRow><StyledTableCell colSpan={7} align="center">No Data</StyledTableCell></StyledTableRow>
+								<StyledTableRow><StyledTableCell colSpan={8} align="center">No Data</StyledTableCell></StyledTableRow>
 							}
 							{employmentTableData.map((edu, idx) => (
 								<StyledTableRow key={idx}>
+									<StyledTableCell>{edu.organization}</StyledTableCell>
 									<StyledTableCell>{edu.jobTitle}</StyledTableCell>
 									<StyledTableCell>{edu.jobType}</StyledTableCell>
 									<StyledTableCell>{edu.fromDate ? format(edu.fromDate, "dd-MM-yyyy") : ""}</StyledTableCell>

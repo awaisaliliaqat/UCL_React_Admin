@@ -1305,6 +1305,7 @@ class DefineEmployeeForm extends Component {
 		// data.append("bankAccountNumber2", this.state.bankAccountNumber2);
 
 		this.state.employmentTableData.forEach((item) => {
+			data.append("jobOrganization", item.organization || " ");
 			data.append("jobTitle", item.jobTitle || " ");
 			data.append("jobType", item.jobType || " ");
 			data.append("jobFromDate", item.fromDate ? format(item.fromDate, "dd-MM-yyyy") : "01-01-1970");
