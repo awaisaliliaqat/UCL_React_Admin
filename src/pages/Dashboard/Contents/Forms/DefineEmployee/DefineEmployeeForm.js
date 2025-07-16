@@ -1,21 +1,134 @@
-import React, { Component, Fragment, useState } from "react";
-import { withStyles, withTheme } from "@material-ui/styles";
-import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import { TextField, Grid, Divider, Typography, Switch, MenuItem, Tab, Box, AppBar, Tabs, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@material-ui/core";
+import React, { Component, Fragment, useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { withStyles, withTheme, makeStyles } from "@material-ui/styles";
+import { TextField, Grid, Divider, Typography, Switch, MenuItem, Tab, Box, AppBar, Tabs, IconButton, InputAdornment } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import IconButton from "@material-ui/core/IconButton";
-import BottomBar from "../../../../../components/BottomBar/BottomBar";
+import { DatePicker } from "@material-ui/pickers";
+import { useDropzone } from "react-dropzone";
+
+import { format } from "date-fns";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import { alphabetExp, numberExp, emailExp, } from "../../../../../utils/regularExpression";
-import PropTypes from "prop-types";
+import BottomBar from "../../../../../components/BottomBar/BottomBar";
+
 import DefineEmployeeRolesSection from "./Chunks/DefineEmployeeRolesSection";
-import { DatePicker } from "@material-ui/pickers";
 import EmploymentHistoryForm from "./Chunks/EmploymentHistoryForm";
 import EducationHistoryForm from "./Chunks/EducationHistoryForm";
-import { format } from "date-fns";
+
+const useStyles = makeStyles((theme) => ({
+	fileBox: {
+		padding: theme.spacing(1),
+		cursor: "pointer",
+		overflow: "hidden",
+		textOverflow: "ellipsis",
+		// Multiline ellipsis
+		display: "-webkit-box",
+		WebkitBoxOrient: "vertical",
+		WebkitLineClamp: 2,
+		// Ensure word breaks properly
+		wordBreak: "break-word",
+		whiteSpace: "normal",
+		// Box size control
+		maxWidth: "100%",
+		minHeight: 38,
+		// Border styling
+		border: `1px solid ${theme.palette.primary.contrastText}`,
+		alignContent: "center",
+		// Hover effects
+		"&:hover": {
+			backgroundColor: theme.palette.action.hover,
+			color: theme.palette.primary.main,
+			border: `1px solid ${theme.palette.primary.main}`,
+		},
+	},
+}));
+
+function MyDropzone({ files, onChange, onReject, disabled }) {
+	
+	const classes = useStyles();
+
+	const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB in bytes
+
+	const { acceptedFiles, fileRejections, getRootProps, getInputProps } = useDropzone({
+		accept:  [
+			"image/*"
+		],
+		noClick: false,
+		multiple: false,
+		validator: (file) => {
+			const forbiddenExtensions = [".exe", ".msi", ".sh", ".bat", ".cmd", ".scr"];
+			const fileName = file.name.toLowerCase();
+			// Check forbidden extensions
+			for (const ext of forbiddenExtensions) {
+				if (fileName.endsWith(ext)) {
+				return {
+					code: "forbidden-file-type",
+					message: "Executable files are not allowed.",
+				};
+				}
+			}
+			// Check file size
+			if (file.size > MAX_FILE_SIZE) {
+				return {
+					code: "file-too-large",
+					message: "File size exceeds maximum limit of 2 MB.",
+				};
+			}
+			return null;
+		},
+	});
+
+	useEffect(() => {
+		if (fileRejections.length > 0 && onReject) {
+			const messages = fileRejections.map(({ file, errors }) => `${file.name} - ${errors.map(e => e.message).join(", ")}`).join("\n");
+			// Call parent's handleOpenSnackbar function with message and severity
+			onReject(messages, "error");
+		}
+	}, [fileRejections, onReject]);
+
+	const MAX_FILENAME_LENGTH = 40; // Adjust as needed
+
+	const fileList = acceptedFiles.map((file, index) => {
+		const size = file.size > 0 ? (file.size / 1000).toFixed(2) : file.size;
+		const shortName = file.path.length > MAX_FILENAME_LENGTH ? file.path.slice(0, MAX_FILENAME_LENGTH) + "..." : file.path;
+		return (
+			<span key={index}>
+				{/* {file.path} - {size} Kb */}
+				{shortName} - {size} Kb
+				<input type="hidden" name="profileImageFileName" value={file.path} />
+			</span>
+		);
+	});
+
+	const msg =	fileList.length > 0 && files.length > 0	? fileList : <span>Please click here to select a Profile Image</span>;
+
+	return (
+		<div
+			style={{ textAlign: "center" }}
+			{...getRootProps({
+				className: "dropzone",
+				onChange,
+			})}
+		>
+			<Box
+				bgcolor="primary.main"
+				color="primary.contrastText"
+				className={classes.fileBox}
+				borderRadius={4}
+			>
+				<input
+					name="profileImageFile"
+					disabled={disabled}
+					{...getInputProps()}
+				/>
+				{msg}
+			</Box>
+		</div>
+	);
+}
 
 const styles = (theme) => ({
 	root: {
@@ -50,6 +163,17 @@ const styles = (theme) => ({
 		backgroundColor: theme.palette.background.paper,
 		width: "auto"
 	},
+	sectionTitle: {
+		color: "#1d5f98",
+		fontWeight: 600,
+		fontSize: 20
+	},
+	divider: {
+		backgroundColor: "rgb(58, 127, 187)",
+		opacity: "0.3",
+		width: "100%"
+	}
+						
 });
 
 function TabPanel(props) {
@@ -99,6 +223,14 @@ class DefineEmployeeForm extends Component {
 			lastNameError: "",
 			displayName: "",
 			displayNameError: "",
+
+			files:[
+				{
+    				"path": "feeds_logo.png"
+				}
+			],
+			filesError:"",
+
 			mobileNo: "",
 			mobileNoError: "",
 			secondaryMobileNo: "",
@@ -118,6 +250,12 @@ class DefineEmployeeForm extends Component {
 			addressError: "",
 			password: "",
 			passwordError: "",
+
+			bloodGroup: "",
+			bloodGroupError: "",
+
+			address:"",
+			addressError:"",
 
 			joiningDate: null,
 			joiningDateError: "",
@@ -156,6 +294,12 @@ class DefineEmployeeForm extends Component {
 
 			employeeComments: "",
 			employeeCommentsError: "",
+
+			emergencyContactName: "",
+			emergencyContactNameError: "",
+
+			emergencyContactNumber: "",
+			emergencyContactNumberError: "",
 
 			jobStatusIdData: [],
 			reportingStatusData: [],
@@ -265,6 +409,9 @@ class DefineEmployeeForm extends Component {
 									isBankAccount,
 									bankAccount,
 									shiftId,
+									bloodGroup="",
+									emergencyContactName="",
+									emergencyContactNumber="",
 									employeesRolesArray = [],
 									employeesEntitiesArray = [],
 									employeesDepartmentsArray = [],
@@ -306,6 +453,9 @@ class DefineEmployeeForm extends Component {
 									bankAccountNumber1,
 									bankAccountNumber2,
 									shiftId: shiftId,
+									bloodGroup,
+									emergencyContactName,
+									emergencyContactNumber,
 									employeesRolesArray,
 									employeesEntitiesArray,
 									employeesDepartmentsArray,
@@ -344,6 +494,14 @@ class DefineEmployeeForm extends Component {
 
 	handleDateChange = (date) => {
 		this.setState({ selectedDate: date });
+	};
+
+	handleFileChange = (event) => {
+		const { files = [] } = event.target;
+		console.log(files);
+		if (files.length > 0) {
+			this.setState({ files, filesError: "" });
+		}
 	};
 
 	onHandleChange = (e) => {
@@ -1317,7 +1475,7 @@ class DefineEmployeeForm extends Component {
 		this.state.educationTableData.forEach((item) => {
 			data.append("eduInstitution", item.institution || " ");
 			data.append("eduQualification", item.qualification || " ");
-			data.append("eduFieldOfStudy", item.fieldOfStudy || " ");
+			data.append("eduYearsOfQualification", item.yearsOfQualification || 0);
 			data.append("eduEducationLevel", item.educationLevel || " ");
 			data.append("eduFromDate", item.fromDate ? format(item.fromDate, "dd-MM-yyyy") : "01-01-1970");
 			data.append("eduToDate", item.toDate ? format(item.toDate, "dd-MM-yyyy") : "31-12-9999");
@@ -1445,10 +1603,7 @@ class DefineEmployeeForm extends Component {
 							Define Employee
 						</Typography>
 						<Divider
-							style={{
-								backgroundColor: "rgb(58, 127, 187)",
-								opacity: "0.3",
-							}}
+							className={classes.divider}
 						/>
 						<div className={classes.tabPanalRoot}>
 							<AppBar position="static" color="default">
@@ -1474,7 +1629,7 @@ class DefineEmployeeForm extends Component {
 								>
 									<TextField type="hidden" name="id" value={this.state.recordId} />
 									<Grid container spacing={2}>
-										<Grid item xs={4}>
+										<Grid item xs={12} md={6} lg={3} >
 											<TextField
 												id="firstName"
 												name="firstName"
@@ -1488,7 +1643,7 @@ class DefineEmployeeForm extends Component {
 												helperText={this.state.firstNameError}
 											/>
 										</Grid>
-										<Grid item xs={4}>
+										<Grid item xs={12} md={6} lg={3}>
 											<TextField
 												id="lastName"
 												name="lastName"
@@ -1502,7 +1657,7 @@ class DefineEmployeeForm extends Component {
 												helperText={this.state.lastNameError}
 											/>
 										</Grid>
-										<Grid item xs={4}>
+										<Grid item xs={12} md={6} lg={3}>
 											<TextField
 												id="displayName"
 												name="displayName"
@@ -1516,7 +1671,24 @@ class DefineEmployeeForm extends Component {
 												helperText={this.state.displayNameError}
 											/>
 										</Grid>
-										<Grid item xs={4}>
+										<Grid item xs={12} md={6} lg={3}>
+											<MyDropzone
+												files={this.state.files}
+												onChange={this.handleFileChange}
+												onReject={this.handleOpenSnackbar} // pass the function
+												disabled={false}
+											/>
+											<Box
+												display="flex"
+												flexGrow="1"
+												justifyContent="center"
+												alignItems="center"
+												color="error.main"
+											>
+												{this.state.filesError}
+											</Box>
+										</Grid>
+										<Grid item xs={12} md={6} lg={3}>
 											<TextField
 												id="mobileNo"
 												name="mobileNo"
@@ -1533,7 +1705,7 @@ class DefineEmployeeForm extends Component {
 												}}
 											/>
 										</Grid>
-										<Grid item xs={4}>
+										<Grid item xs={12} md={6} lg={3}>
 											<TextField
 												id="secondaryMobileNo"
 												name="secondaryMobileNo"
@@ -1549,7 +1721,7 @@ class DefineEmployeeForm extends Component {
 												}}
 											/>
 										</Grid>
-										<Grid item xs={4}>
+										<Grid item xs={12} md={6} lg={3}>
 											<TextField
 												id="email"
 												name="email"
@@ -1563,7 +1735,7 @@ class DefineEmployeeForm extends Component {
 												error={!!this.state.emailError}
 											/>
 										</Grid>
-										<Grid item xs={4}>
+										<Grid item xs={12} md={6} lg={3}>
 											<TextField
 												id="secondaryEmail"
 												name="secondaryEmail"
@@ -1636,20 +1808,6 @@ class DefineEmployeeForm extends Component {
 												helperText={this.state.joiningDateError}
 											/>
 										</Grid>
-										{/* <Grid item xs={4}>
-																	<TextField
-																			id="address"
-																			name="address"
-																			label="Present Address"
-																			required
-																			fullWidth
-																			variant="outlined"
-																			onChange={this.onHandleChange}
-																			value={this.state.address}
-																			helperText={this.state.addressError}
-																			error={this.state.addressError}
-																	/>
-															</Grid> */}
 										{(!this.state.recordId || this.state.recordId == 0) && (
 											<Grid item xs={4}>
 												<TextField
@@ -1684,29 +1842,45 @@ class DefineEmployeeForm extends Component {
 												/>
 											</Grid>
 										)}
-
 										<Grid item xs={4}>
-											{/* <TextField
-												id="reportingTo"
-												name="reportingTo"
-												label="Primary Reporting To"
+											<TextField
+												id="bloodGroup"
+												name="bloodGroup"
+												label="Blood Group"
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.bloodGroup}
+												helperText={this.state.bloodGroupError}
+												error={!!this.state.bloodGroupError}
+												select
+											>
+												<MenuItem value=""><em>none</em></MenuItem>
+												<MenuItem value="A+">A+</MenuItem>
+												<MenuItem value="A-">A-</MenuItem>
+												<MenuItem value="B+">B+</MenuItem>
+												<MenuItem value="B-">B-</MenuItem>
+												<MenuItem value="AB+">AB+</MenuItem>
+												<MenuItem value="AB-">AB-</MenuItem>
+												<MenuItem value="O+">O+</MenuItem>
+												<MenuItem value="O-">O-</MenuItem>
+											</TextField>
+										</Grid>
+										<Grid item xs={12}>
+											<TextField
+												id="address"
+												name="address"
+												label="Present Address"
 												required
 												fullWidth
 												variant="outlined"
 												onChange={this.onHandleChange}
-												value={this.state.reportingTo}
-												helperText={this.state.reportingToError}
-												error={this.state.reportingToError}
-												select
-												>
-													{this.state.reportingStatusData.map((item) => {
-														return (
-															<MenuItem key={item.id} value={item.id}>
-																{item.label}
-															</MenuItem>
-														);
-													})}
-												</TextField> */}
+												value={this.state.address}
+												helperText={this.state.addressError}
+												error={!!this.state.addressError}
+											/>
+										</Grid>
+										<Grid item xs={4}>
 											<Autocomplete
 												id="reportingTo"
 												name="reportingTo"
@@ -1737,30 +1911,6 @@ class DefineEmployeeForm extends Component {
 											/>
 										</Grid>
 										<Grid item xs={4}>
-											{/* <TextField
-														id="coordinationId"
-														name="coordinationId"
-														label="Coordination"
-														// required
-														fullWidth
-														variant="outlined"
-														onChange={this.onHandleChange}
-														value={this.state.coordinationId}
-														// helperText={this.state.reportingToError}
-														// error={this.state.reportingToError}
-														select
-													>
-														<MenuItem key={""} value={null}>
-															{"None"}
-														</MenuItem>
-														{this.state.reportingStatusData.map((item) => {
-															return (
-																<MenuItem key={item.id} value={item.id}>
-																	{item.label}
-																</MenuItem>
-															);
-														})}
-													</TextField> */}
 											<Autocomplete
 												id="coordinationId"
 												name="coordinationId"
@@ -1818,52 +1968,6 @@ class DefineEmployeeForm extends Component {
 												})}
 											</TextField>
 										</Grid>
-										{/* <Grid item xs={12} md={4}>
-												<DatePicker
-													autoOk
-													id="shiftActivationDate"
-													name="shiftActivationDate"
-													label="Shift Activation Date"
-													invalidDateMessage=""
-													placeholder=""
-													variant="inline"
-													inputVariant="outlined"
-													format="dd-MM-yyyy"
-													fullWidth
-													required
-													value={this.state.shiftActivationDate}
-													onChange={(date) =>
-														this.onHandleChange({
-															target: { name: "shiftActivationDate", value: date },
-														})
-													}
-													error={!!this.state.shiftActivationDateError}
-													helperText={this.state.shiftActivationDateError}
-												/>
-											</Grid> */}
-										{/* <Grid item xs={4}>
-												<KeyboardTimePicker
-													id="selectedDate"
-													name="selectedDate"
-													label="Select Time"
-													required
-													fullWidth
-													style={{
-														marginTop: "0px",
-													}}
-													variant="outlined"
-													margin="normal"
-													value={this.state.selectedDate}
-													onChange={this.handleDateChange}
-													KeyboardButtonProps={{
-														"aria-label": "change time",
-													}}
-													InputProps={{
-														variant: "outlined",
-													}}
-													inputVariant="outlined"
-												/>
-											</Grid> */}
 										<Grid item xs={12}>
 											<Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
 												<Grid item xs={4}>
@@ -2040,6 +2144,43 @@ class DefineEmployeeForm extends Component {
 												error={!!this.state.employeeCommentsError}
 											/>
 										</Grid>
+										<Grid item xs={12}>
+											<Typography variant="h5" className={classes.sectionTitle}>
+												Emergency Contact
+											</Typography>
+											<Divider
+												className={classes.divider}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={6}>
+											<TextField
+												id="emergencyContactName"
+												name="emergencyContactName"
+												label="Name"
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.emergencyContactName}
+												helperText={this.state.emergencyContactNameError}
+												error={!!this.state.emergencyContactNameError}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={6}>
+											<TextField
+												id="emergencyContactNumber"
+												name="emergencyContactNumber"
+												label="Number"
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.emergencyContactNumber}
+												helperText={this.state.emergencyContactNumberError}
+												error={!!this.state.emergencyContactNumberError}
+												inputProps={{
+													maxLength: 11,
+												}}
+											/>
+										</Grid>
 										<DefineEmployeeRolesSection
 											state={this.state}
 											onHandleChange={(e) => this.onHandleChange(e)}
@@ -2065,7 +2206,6 @@ class DefineEmployeeForm extends Component {
 						</div>
 					</Grid>
 				</Grid>
-
 				<BottomBar
 					leftButtonText="View"
 					leftButtonHide={false}

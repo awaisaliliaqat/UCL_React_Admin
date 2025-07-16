@@ -5,10 +5,9 @@ import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow } from "@devex
 import PropTypes from "prop-types";
 import { Skeleton } from "@material-ui/lab";
 
-class DefineEmployeeReportsTableComponent extends Component {
+class R86ReportsTableComponent extends Component {
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			columns: [],
 			rows: [],
@@ -47,7 +46,7 @@ class DefineEmployeeReportsTableComponent extends Component {
 				{ columnName: "bloodGroup", wordWrapEnabled: true },
 				{ columnName: "emergencyContactName", wordWrapEnabled: true },
 				{ columnName: "emergencyContactNumber", wordWrapEnabled: true },
-				{ columnName: "action", width: 120 },
+				{ columnName: "action", width: 100, align:"center" },
 			],
 			resizingMode: "widget",
 			defaultFilters: [],
@@ -136,18 +135,18 @@ class DefineEmployeeReportsTableComponent extends Component {
 	}
 }
 
-DefineEmployeeReportsTableComponent.propTypes = {
+R86ReportsTableComponent.propTypes = {
 	columns: PropTypes.array,
 	rows: PropTypes.array,
 	showFilter: PropTypes.bool,
 	isLoading: PropTypes.bool, // Add PropTypes for isLoading
 };
 
-DefineEmployeeReportsTableComponent.defaultProps = {
+R86ReportsTableComponent.defaultProps = {
 	columns: [],
 	rows: [],
 	showFilter: false,
 	isLoading: false, // Set default prop for isLoading
 };
 
-export default DefineEmployeeReportsTableComponent;
+export default R86ReportsTableComponent;

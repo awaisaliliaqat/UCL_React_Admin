@@ -114,6 +114,7 @@ import F84Form from "./Contents/Forms/F84Form/F84Form";
 import F84Reports from "./Contents/Forms/F84Form/F84Reports";
 import F85Form from "./Contents/Forms/F85Form/F85Form";
 import F85Reports from "./Contents/Forms/F85Form/F85Reports";
+import R86Reports from "./Contents/Reports/R86Reports/R86Reports";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentProgramme from "./Contents/Reports/ChangeStudentProgramme/ChangeStudentProgramme";
 import CovidVaccineCertificateApproval from "./Contents/Reports/CovidVaccineCertificateApproval/CovidVaccineCertificateApproval";
@@ -1904,6 +1905,21 @@ const Dashboard = (props) => {
 								render={(props) => {
 									return (
 										<F85Reports
+											{...props}
+											isDrawerOpen={isDrawerOpen}
+											setDrawerOpen={setDrawerOpen}
+										/>
+									);
+								}}
+							/>
+							<SetRoute
+								setValue={(value) => handleValueChange(value)}
+								name="R86Reports"
+								exact
+								path="/dashboard/R86Reports"
+								render={(props) => {
+									return (
+										<R86Reports
 											{...props}
 											isDrawerOpen={isDrawerOpen}
 											setDrawerOpen={setDrawerOpen}

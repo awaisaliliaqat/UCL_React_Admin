@@ -32,7 +32,7 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
     const [educationForm, setEducationForm] = useState({
         institution: "",
         qualification: "",
-        fieldOfStudy: "",
+        yearsOfQualification: "",
         educationLevel: "",
         fromDate: null,
         toDate: null,
@@ -52,9 +52,9 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
 
     const handleSave = () => {
 
-        const { institution, qualification, fieldOfStudy, educationLevel, fromDate, toDate } = educationForm;
+        const { institution, qualification, yearsOfQualification } = educationForm;
 
-        if (!institution || !qualification || !fromDate || !toDate) {
+        if (!institution || !qualification || !yearsOfQualification) {
             handleOpenSnackbar("Please fill all required fields.", "error");
             return;
         }
@@ -71,7 +71,7 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
         setEducationForm({
             institution: "",
             qualification: "",
-            fieldOfStudy: "",
+            yearsOfQualification: "",
             educationLevel: "",
             fromDate: null,
             toDate: null,
@@ -116,11 +116,12 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
             </Grid>
             <Grid item xs={12} md={6} lg={3}>
                 <TextField
-                    name="fieldOfStudy"
-                    label="Field of Study / Major"
+                    name="yearsOfQualification"
+                    label="Years of Qualification"
                     fullWidth
+                    required
                     variant="outlined"
-                    value={educationForm.fieldOfStudy}
+                    value={educationForm.yearsOfQualification}
                     onChange={handleChange}
                 />
             </Grid>
@@ -144,37 +145,34 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
                     <MenuItem value="Other">Other</MenuItem>
                 </TextField>
             </Grid>
-
             <Grid item xs={12} md={3}>
                 <DatePicker
                     autoOk
+                    clearable
                     name="fromDate"
                     label="Start Date"
                     inputVariant="outlined"
                     format="dd-MM-yyyy"
                     views={["year", "month", "date"]}
                     fullWidth
-                    required
                     value={educationForm.fromDate}
                     onChange={(date) => handleDateChange("fromDate", date)}
                 />
             </Grid>
-
             <Grid item xs={12} md={3}>
                 <DatePicker
                     autoOk
+                    clearable
                     name="toDate"
                     label="End Date / Graduation Date"
                     inputVariant="outlined"
                     format="dd-MM-yyyy"
                     views={["year", "month", "date"]}
                     fullWidth
-                    required
                     value={educationForm.toDate}
                     onChange={(date) => handleDateChange("toDate", date)}
                 />
             </Grid>
-
             <Grid item xs={12} md={3}>
                 <TextField
                     name="result"
@@ -220,7 +218,7 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
                                 <StyledTableRow key={idx}>
                                     <StyledTableCell>{edu.institution}</StyledTableCell>
                                     <StyledTableCell>{edu.qualification}</StyledTableCell>
-                                    <StyledTableCell>{edu.fieldOfStudy}</StyledTableCell>
+                                    <StyledTableCell>{edu.yearsOfQualification}</StyledTableCell>
                                     <StyledTableCell>{edu.educationLevel}</StyledTableCell>
                                     <StyledTableCell>{edu.fromDate ? format(edu.fromDate, "dd-MM-yyyy") : ""}</StyledTableCell>
                                     <StyledTableCell>{edu.toDate ? format(edu.toDate, "dd-MM-yyyy") : ""}</StyledTableCell>

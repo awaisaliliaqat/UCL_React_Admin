@@ -81,7 +81,7 @@ function MyDropzone({ files, onChange, onReject, disabled }) {
 		);
 	});
 
-	const msg =	fileList.length > 0 && files.length > 0	? fileList : <span>Please click here to select and upload a file</span>;
+	const msg =	fileList.length > 0 && files.length > 0	? fileList : <span>Please click here to select a document</span>;
 	//console.log({...getRootProps({className: "dropzone", onChange})})
 	//console.log({...getInputProps()})
 	return (

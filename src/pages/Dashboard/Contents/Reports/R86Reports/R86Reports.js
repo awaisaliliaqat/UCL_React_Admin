@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from "react";
-import { Box, Divider, Grid, IconButton, Tooltip, withStyles } from "@material-ui/core";
+import { Box, Button, Divider, Grid, IconButton, Tooltip, withStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import FilterIcon from "mdi-material-ui/FilterOutline";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import BallotOutlinedIcon from '@material-ui/icons/BallotOutlined';
+import R86ReportsTableComponent from "./Chunks/R86ReportsTableComponent";
+import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
-import EditDeleteTableComponent from "../../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
-import DefineEmployeeReportsTableComponent from "./Chunks/DefineEmployeeReportsTableComponent";
 
 const styles = (theme) => ({
 	root: {
@@ -21,7 +20,7 @@ const styles = (theme) => ({
 	}
 });
 
-class DefineEmployeeReports extends Component {
+class R86Reports extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -54,115 +53,44 @@ class DefineEmployeeReports extends Component {
 	};
 
 	getData = async () => {
-		this.setState({
-			isLoading: true,
-		});
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersViewV2`;
+		this.setState({ isLoading: true });
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C86EmployeeProfile/EmployeesView`;
 		await fetch(url, {
 			method: "GET",
 			headers: new Headers({
 				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
 			}),
 		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						for (let i = 0; i < json.DATA.length; i++) {
-							const id = json.DATA[i].id;
-							json.DATA[i].action = (
-								<EditDeleteTableComponent
-									recordId={id}
-									deleteRecord={this.DeleteData}
-									editRecord={() =>
-										window.location.replace(
-											`#/dashboard/define-employees/${id}`
-										)
-									}
-								/>
-							);
-						}
-						this.setState({
-							admissionData: json.DATA || [],
-						});
-					} else {
-						this.handleOpenSnackbar(
-							json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status === 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						this.handleOpenSnackbar(
-							"Failed to fetch, Please try again later.",
-							"error"
-						);
-						console.log(error);
-					}
-				}
-			);
-		this.setState({
-			isLoading: false,
-		});
-	};
-
-	DeleteData = async (event) => {
-		event.preventDefault();
-		const data = new FormData(event.target);
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersDeleteV2`;
-		await fetch(url, {
-			method: "POST",
-			body: data,
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
 		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
+		.then((json) => {
+				const { CODE, DATA=[], SYSTEM_MESSAGE, USER_MESSAGE} =  json;
+				if (CODE === 1) {
+					this.setState({
+						admissionData: DATA || [],
+					});
+				} else {
+					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE} <br/> {USER_MESSAGE}</span>, "error" );
 				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.handleOpenSnackbar("Deleted", "success");
-						this.getData();
-					} else {
-						this.handleOpenSnackbar(
-							json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status === 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: false,
-						});
-					} else {
-						this.handleOpenSnackbar(
-							"Failed to fetch, Please try again later.",
-							"error"
-						);
-						console.log(error);
-					}
+			},
+			(error) => {
+				const { status } = error;
+				if (status === 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: true,
+					});
+				} else {
+					this.handleOpenSnackbar("Failed to fetch, Please try again later.", "error");
+					console.log(error);
 				}
-			);
+			}
+		);
+		this.setState({ isLoading: false });
 	};
 
 	onHandleChange = (e) => {
@@ -185,7 +113,17 @@ class DefineEmployeeReports extends Component {
 		const { classes } = this.props;
 
 		const columns = [
-			{ name: "action", title: "Action" },
+			{ name: "action", title: "Action",
+				getCellValue : (row) => (
+					<Button
+						color="primary"
+						style={{minWidth:42}}
+						onClick={()=>window.open( `#/EmployeeProfile/${row.id}`, "_blank" )}
+					>
+						<Tooltip title="View Profile"><BallotOutlinedIcon /></Tooltip>
+					</Button>
+				)
+			},
 			{ name: "id", title: "ID" },
 			{ name: "displayName", title: "Name" },
 			{ name: "mobileNo", title: "Mobile No" },
@@ -199,14 +137,17 @@ class DefineEmployeeReports extends Component {
 			{ name: "bloodGroup", title: "Blood Group" },
 			{ name: "statusLabel", title: "Status" },
 			// { name: "isBankAccount", title: "Bank Status" },
-			{ name: "bankAccount", title: "Bank Account",
+			{
+				name: "bankAccount", title: "Bank Account",
 				getCellValue: (rowData) => <Fragment>{rowData.bankAccount ? "Bank Account" : "Cheque"} </Fragment>
 			},
-			{ name: "bankAccountNumber1", title: "SCB Account",
+			{
+				name: "bankAccountNumber1", title: "SCB Account",
 				getCellValue: (rowData) => <Fragment>{rowData.bankAccountNumber1}</Fragment>
 			},
-			{ name: "bankAccountNumber2", title: "Faysal Bank Account",
-				getCellValue: (rowData) => <Fragment>{rowData.bankAccountNumber2}</Fragment> 
+			{
+				name: "bankAccountNumber2", title: "Faysal Bank Account",
+				getCellValue: (rowData) => <Fragment>{rowData.bankAccountNumber2}</Fragment>
 			},
 			{ name: "leavingDateLabel", title: "Leaving Date" },
 			{ name: "rolesLabel", title: "Roles" },
@@ -227,8 +168,8 @@ class DefineEmployeeReports extends Component {
 					open={this.state.isLoginMenu}
 					handleClose={() => this.setState({ isLoginMenu: false })}
 				/>
-				<Grid 
-					container 
+				<Grid
+					container
 					spacing={2}
 					justifyContent="center"
 					alignItems="center"
@@ -243,23 +184,13 @@ class DefineEmployeeReports extends Component {
 							}}
 							variant="h5"
 						>
-							<Tooltip title="Back">
-								<IconButton
-									onClick={() =>
-										window.location.replace("#/dashboard/define-employees/0")
-									}
-								>
-									<ArrowBackIcon fontSize="small" color="primary" />
-								</IconButton>
-							</Tooltip>
-							Employee Reports
+							Employee Profile
 							<Box component="span" style={{ float: "right" }}>
 								<Tooltip title="Table Filter">
 									<IconButton
-										style={{ marginLeft: "-10px" }}
 										onClick={() => this.handleToggleTableFilter()}
 									>
-										<FilterIcon fontSize="default" color="primary" />
+										<FilterIcon color="primary" />
 									</IconButton>
 								</Tooltip>
 							</Box>
@@ -269,15 +200,15 @@ class DefineEmployeeReports extends Component {
 						/>
 					</Grid>
 					<Grid item xs={12}>
-						<DefineEmployeeReportsTableComponent
+						<R86ReportsTableComponent
 							rows={this.state.admissionData}
 							columns={columns}
 							showFilter={this.state.showTableFilter}
 							isLoading={this.state.isLoading}
 						/>
 					</Grid>
-				 </Grid>
-				 <CustomizedSnackbar
+				</Grid>
+				<CustomizedSnackbar
 					isOpen={this.state.isOpenSnackbar}
 					isLoading={this.state.isLoading}
 					message={this.state.snackbarMessage}
@@ -289,4 +220,4 @@ class DefineEmployeeReports extends Component {
 	}
 }
 
-export default withStyles(styles)(DefineEmployeeReports);
+export default withStyles(styles)(R86Reports);

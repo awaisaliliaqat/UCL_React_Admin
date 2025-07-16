@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React, { Fragment } from "react";
-import { Grid, Typography, TextField, Checkbox, Chip } from "@material-ui/core";
+import { Grid, Typography, TextField, Checkbox, Chip, Divider } from "@material-ui/core";
 import { withStyles } from "@material-ui/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
@@ -15,15 +15,17 @@ const styles = () => ({
 	sectionTitle: {
 		color: "#1d5f98",
 		fontWeight: 600,
-		borderBottom: "1px solid #d2d2d2",
-		marginBottom: 10,
-		marginTop: 10,
-		fontSize: 20,
-		marginLeft: "-10px",
+		fontSize: 20
 	},
+	divider: {
+		backgroundColor: "rgb(58, 127, 187)",
+		opacity: "0.3",
+		width: "100%"
+	}
 });
 
 const DefineEmployeeRolesSection = (props) => {
+	
 	const { classes } = props;
 
 	return (
@@ -32,8 +34,11 @@ const DefineEmployeeRolesSection = (props) => {
 				<Typography variant="h5" className={classes.sectionTitle}>
 					Define Employee Roles
 				</Typography>
+				<Divider 
+					className={classes.divider}
+				/>
 			</Grid>
-			<Grid item xs={6}>
+			<Grid item xs={12} sm={6}>
 				<Autocomplete
 					multiple
 					id="employeesRolesArray"
@@ -91,7 +96,7 @@ const DefineEmployeeRolesSection = (props) => {
 					}}
 				/>
 			</Grid>
-			<Grid item xs={6}>
+			<Grid item xs={12} sm={6}>
 				<Autocomplete
 					multiple
 					id="employeesEntitiesArray"
@@ -150,7 +155,7 @@ const DefineEmployeeRolesSection = (props) => {
 					}}
 				/>
 			</Grid>
-			<Grid item xs={6}>
+			<Grid item xs={12} sm={6}>
 				<Autocomplete
 					multiple
 					limitTags={3}
@@ -209,7 +214,7 @@ const DefineEmployeeRolesSection = (props) => {
 					}}
 				/>
 			</Grid>
-			<Grid item xs={6}>
+			<Grid item xs={12} sm={6}>
 				<Autocomplete
 					multiple
 					limitTags={3}
@@ -269,7 +274,7 @@ const DefineEmployeeRolesSection = (props) => {
 				/>
 			</Grid>
 
-			<Grid item xs={6}>
+			<Grid item xs={12} sm={6}>
 				<Autocomplete
 					multiple
 					limitTags={3}
