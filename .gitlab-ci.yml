@@ -1,1 +1,26 @@
--e "stages:\n  - build\n  - test\n  - deploy" 
+stages:
+  - build
+  - test
+  - deploy
+
+build-job:
+  stage: build
+  tags:
+    - shell
+  script:
+    - echo "🏗️ Building the project..."
+
+test-job:
+  stage: test
+  tags:
+    - shell
+  script:
+    - echo "🧪 Running tests..."
+    - echo "Tests passed!"
+
+deploy-job:
+  stage: deploy
+  tags:
+    - shell
+  script:
+    - echo "🚀 Deploying the application..."
