@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import GridMaterial from '@material-ui/core/Grid';
 import { TextField, Paper, CircularProgress, TableRow, TableCell, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery } from "@material-ui/core";
@@ -34,7 +34,10 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 
 	const parseFloatSafe = (val) => isNaN(parseFloat(val)) ? 0 : parseFloat(val);
 
+	const regex = new RegExp(/^\d*\.?\d*$/);
+
 	const handleChange = (e) => {
+
 		const { name, value } = e.target;
 
 		const {
@@ -55,6 +58,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 
 		switch (name) {
 			case "rateThisYear": {
+				if (value && !regex.test(value)) return;
 				const rateThisYearLocal = parseFloatSafe(value);
 				const rateNextYearLocal = parseFloatSafe(rateNextYear);
 				const rateIncreasePercentageLocal = ((rateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
@@ -64,8 +68,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				};
 				break;
 			}
-
 			case "rateNextYear": {
+				if (value && !regex.test(value)) return;
 				const rateNextYearLocal = parseFloatSafe(value);
 				const rateThisYearLocal = parseFloatSafe(rateThisYear);
 				const rateIncreasePercentageLocal = ((rateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
@@ -75,8 +79,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				};
 				break;
 			}
-
 			case "rateIncreasePercentage": {
+				if (value && !regex.test(value)) return;
 				const rateIncreasePercentageLocal = parseFloatSafe(value);
 				const rateThisYearLocal = parseFloatSafe(rateThisYear);
 				const rateNextYearLocal = rateThisYearLocal * (1 + rateIncreasePercentageLocal / 100);
@@ -86,8 +90,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				};
 				break;
 			}
-
 			case "monthsThisYear": {
+				if (value && !regex.test(value)) return;
 				const monthsThisLocal = parseFloatSafe(value);
 				const salaryThisLocal = parseFloatSafe(salaryThisYear);
 				const yearlyClaimThisLocal = parseFloatSafe(yearlyClaimThisYear);
@@ -105,8 +109,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				};
 				break;
 			}
-
 			case "monthsNextYear": {
+				if (value && !regex.test(value)) return;
 				const monthsNextYearLocal = parseFloatSafe(value);
 				const salaryNextYearLocal = parseFloatSafe(salaryNextYear);
 				const yearlyClaimNextYearLocal = parseFloatSafe(yearlyClaimNextYear);
@@ -124,8 +128,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				};
 				break;
 			}
-
 			case "salaryThisYear": {
+				if (value && !regex.test(value)) return;
 				const salaryThisLocal = parseFloatSafe(value);
 				const salaryNextLocal = parseFloatSafe(salaryNextYear);
 				const monthsThisLocal = parseFloatSafe(monthsThisYear);
@@ -146,8 +150,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				};
 				break;
 			}
-
 			case "salaryNextYear": {
+				if (value && !regex.test(value)) return;
 				const salaryNextLocal = parseFloatSafe(value);
 				const salaryThisLocal = parseFloatSafe(salaryThisYear);
 				const monthsNextLocal = parseFloatSafe(monthsNextYear);
@@ -168,8 +172,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				};
 				break;
 			}
-
 			case "salaryIncreasePercentage": {
+				if (value && !regex.test(value)) return;
 				const salaryPercLocal = parseFloatSafe(value);
 				const salaryThisLocal = parseFloatSafe(salaryThisYear);
 				const monthsNextLocal = parseFloatSafe(monthsNextYear);
@@ -190,7 +194,6 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				};
 				break;
 			}
-
 			default:
 				updates = { [name]: value };
 		}
@@ -233,7 +236,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 					</>
 					}
 					<GridMaterial item xs={3}>
-						<TextField name="rateThisYear" label="Rate This Year" value={state.rateThisYear || ''} onChange={handleChange} fullWidth />
+						<TextField type="number" name="rateThisYear" label="Rate This Year" value={state.rateThisYear || ''} onChange={handleChange} fullWidth />
 					</GridMaterial>
 					<GridMaterial item xs={3}>
 						<TextField name="rateNextYear" label="Rate Next Year" value={state.rateNextYear || ''} onChange={handleChange} fullWidth />
@@ -315,18 +318,34 @@ const PopupEditing = React.memo(({ popupComponent: Popup, onCommitChanges }) => 
 						const rowIds = isNew ? [0] : editingRowIds;
 						const change = isNew ? updatedRow : { [rowId]: updatedRow };
 
+						const fieldsToParse = [
+							'rateThisYear',
+							'rateNextYear',
+							'rateIncreasePercentage',
+							'salaryNextYear',
+							'salaryIncreasePercentage',
+							'monthsThisYear',
+							'monthsNextYear'
+						];
+
+						const parsedRow = { ...updatedRow };
+						fieldsToParse.forEach((field) => {
+							const val = updatedRow[field];
+							parsedRow[field] = val === '' || val == null ? 0 : parseFloat(val);
+						});
+
 						if (isNew) {
-							changeAddedRow({ rowId, change });
+							changeAddedRow({ rowId, change: parsedRow });
 							commitAddedRows({ rowIds });
 							if (typeof onCommitChanges === "function") {
-								onCommitChanges({ added: [updatedRow] });
+								onCommitChanges({ added: [parsedRow] });
 							}
 						} else {
-							changeRow({ rowId, change });
+							changeRow({ rowId, change: parsedRow });
 							commitChangedRows({ rowIds });
 							stopEditRows({ rowIds });
 							if (typeof onCommitChanges === "function") {
-								onCommitChanges({ changed: { [rowId]: updatedRow } });
+								onCommitChanges({ changed: { [rowId]: parsedRow  } });
 							}
 						}
 					};
@@ -430,6 +449,7 @@ const F357FormTableComponent = (props) => {
 		{ columnName: "rateThisYear", align: "right", wordWrapEnabled: true },
 		{ columnName: "rateNextYear", align: "right", wordWrapEnabled: true },
 		{ columnName: "rateIncreasePercentage", align: "center", wordWrapEnabled: true },
+		{ columnName: "salaryThisYear", align: "right", wordWrapEnabled: true },
 		{ columnName: "salaryNextYear", align: "right", wordWrapEnabled: true },
 		{ columnName: "salaryIncreasePercentage", align: "center", wordWrapEnabled: true },
 		{ columnName: "percentChange", align: "center", wordWrapEnabled: true },
@@ -487,18 +507,30 @@ const F357FormTableComponent = (props) => {
 
 	const { isLoading, showTableFilter, rows, columns, onCommitChanges } = props;
 
-	const [currencyColumns] = useState(["rateThisYear", "salaryThisYear", "rateNextYear", "salaryNextYear", "yearlySalaryThisYear", "yearlySalaryNextYear", "yearlyExpenseThisYear", "yearlyExpenseNextYear"]);
+	const [currencyColumns] = useState([
+		"rateThisYear", 
+		"salaryThisYear", 
+		"rateNextYear", 
+		"salaryNextYear", 
+		"yearlySalaryThisYear", 
+		"yearlySalaryNextYear", 
+		"yearlyExpenseThisYear", 
+		"yearlyExpenseNextYear"
+	]);
 
 	const NoDataRow = () => (
 		<TableRow>
 			<TableCell colSpan={columns.length} style={{ textAlign: "center", padding: "20px" }}>
 				{isLoading ? (
 					// <CircularProgress size={36} />
-					<>
-						<Skeleton />
-						<Skeleton animation={false} />
-						<Skeleton animation="wave" />
-					</>
+					Array(5).fill(0).map((_,i) =>
+						<Fragment key={`f-`+i}>
+							<Skeleton />
+							<Skeleton animation={false} />
+							<Skeleton animation="wave" />
+							<br/>
+						</Fragment>
+					)
 				) : (
 					<Box color="primary.light" fontSize="1rem">No Data</Box>
 				)}

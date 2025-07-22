@@ -34,6 +34,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 
 	const parseFloatSafe = (val) => isNaN(parseFloat(val)) ? 0 : parseFloat(val);
 
+	const regex = new RegExp(/^\d*\.?\d*$/);
+
 	const handleChange = (e) => {
 
 		const { name, value } = e.target;
@@ -57,6 +59,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 		switch (name) {
 
 			case "suggestedRateNextYear": {
+				if (value && !regex.test(value)) return;
 				const suggestedRateNextYearLocal = parseFloatSafe(value);
 				const rateThisYearLocal = parseFloatSafe(rateThisYear);
 				const suggestedRateIncreasePercentageLocal = ((suggestedRateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
@@ -66,8 +69,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "suggestedRateIncreasePercentage": {
+				if (value && !regex.test(value)) return;
 				const suggestedRateIncreasePercentageLocal = parseFloatSafe(value);
 				const rateThisYearLocal = parseFloatSafe(rateThisYear);
 				const suggestedRateNextYearLocal = rateThisYearLocal * (1 + suggestedRateIncreasePercentageLocal / 100);
@@ -77,8 +80,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "suggestedSalaryNextYear": {
+				if (value && !regex.test(value)) return;
 				const suggestedSalaryNextLocal = parseFloatSafe(value);
 				const salaryThisLocal = parseFloatSafe(salaryThisYear);
 				const suggestedSalaryIncPerc = ((suggestedSalaryNextLocal - salaryThisLocal) / (salaryThisLocal || 1)) * 100;
@@ -88,8 +91,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "suggestedSalaryIncreasePercentage": {
+				if (value && !regex.test(value)) return;
 				const suggestedSalaryPercLocal = parseFloatSafe(value);
 				const salaryThisLocal = parseFloatSafe(salaryThisYear);
 				const suggestedSalaryNextYearLocal = salaryThisLocal * (1 + suggestedSalaryPercLocal / 100);
@@ -99,8 +102,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "rateThisYear": {
+				if (value && !regex.test(value)) return;
 				const rateThisYearLocal = parseFloatSafe(value);
 				const rateNextYearLocal = parseFloatSafe(rateNextYear);
 				const rateIncreasePercentageLocal = ((rateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
@@ -110,8 +113,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "rateNextYear": {
+				if (value && !regex.test(value)) return;
 				const rateNextYearLocal = parseFloatSafe(value);
 				const rateThisYearLocal = parseFloatSafe(rateThisYear);
 				const rateIncreasePercentageLocal = ((rateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
@@ -121,8 +124,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "rateIncreasePercentage": {
+				if (value && !regex.test(value)) return;
 				const rateIncreasePercentageLocal = parseFloatSafe(value);
 				const rateThisYearLocal = parseFloatSafe(rateThisYear);
 				const rateNextYearLocal = rateThisYearLocal * (1 + rateIncreasePercentageLocal / 100);
@@ -132,8 +135,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "monthsThisYear": {
+				if (value && !regex.test(value)) return;
 				const monthsThisLocal = parseFloatSafe(value);
 				const salaryThisLocal = parseFloatSafe(salaryThisYear);
 				const yearlyClaimThisLocal = parseFloatSafe(yearlyClaimThisYear);
@@ -151,8 +154,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "monthsNextYear": {
+				if (value && !regex.test(value)) return;
 				const monthsNextYearLocal = parseFloatSafe(value);
 				const salaryNextYearLocal = parseFloatSafe(salaryNextYear);
 				const yearlyClaimNextYearLocal = parseFloatSafe(yearlyClaimNextYear);
@@ -170,8 +173,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "salaryThisYear": {
+				if (value && !regex.test(value)) return;
 				const salaryThisLocal = parseFloatSafe(value);
 				const salaryNextLocal = parseFloatSafe(salaryNextYear);
 				const monthsThisLocal = parseFloatSafe(monthsThisYear);
@@ -192,8 +195,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "salaryNextYear": {
+				if (value && !regex.test(value)) return;
 				const salaryNextLocal = parseFloatSafe(value);
 				const salaryThisLocal = parseFloatSafe(salaryThisYear);
 				const monthsNextLocal = parseFloatSafe(monthsNextYear);
@@ -214,8 +217,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "salaryIncreasePercentage": {
+				if (value && !regex.test(value)) return;
 				const salaryPercLocal = parseFloatSafe(value);
 				const salaryThisLocal = parseFloatSafe(salaryThisYear);
 				const monthsNextLocal = parseFloatSafe(monthsNextYear);
@@ -236,8 +239,8 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
 				};
 				break;
 			}
-
 			case "yearlyClaimNextYear": {
+				if (value && !regex.test(value)) return;
 				const claimNextLocal = parseFloatSafe(value);
 				const yearlySalaryNextLocal = parseFloatSafe(yearlySalaryNextYear);
 				const yearlyExpenseThisLocal = parseFloatSafe(yearlyExpenseThisYear);
@@ -408,18 +411,39 @@ const PopupEditing = React.memo(({ popupComponent: Popup, onCommitChanges }) => 
 						const rowIds = isNew ? [0] : editingRowIds;
 						const change = isNew ? updatedRow : { [rowId]: updatedRow };
 
+						// 🎯 Fields you want to sanitize before commit
+						const fieldsToParse = [
+							'rateNextYear',
+							'rateIncreasePercentage',
+							'suggestedRateNextYear',
+							'suggestedRateIncreasePercentage',
+							'salaryNextYear',
+							'salaryIncreasePercentage',
+							'suggestedSalaryNextYear',
+							'suggestedSalaryIncreasePercentage',
+							'monthsThisYear',
+							'monthsNextYear',
+							'yearlyClaimNextYear',
+						];
+
+						const parsedRow = { ...updatedRow };
+						fieldsToParse.forEach((field) => {
+							const val = updatedRow[field];
+							parsedRow[field] = val === '' || val == null ? 0 : parseFloat(val);
+						});
+
 						if (isNew) {
-							changeAddedRow({ rowId, change });
+							changeAddedRow({ rowId, change: parsedRow });
 							commitAddedRows({ rowIds });
 							if (typeof onCommitChanges === "function") {
-								onCommitChanges({ added: [updatedRow] });
+								onCommitChanges({ added: [parsedRow] });
 							}
 						} else {
-							changeRow({ rowId, change });
+							changeRow({ rowId, change: parsedRow });
 							commitChangedRows({ rowIds });
 							stopEditRows({ rowIds });
 							if (typeof onCommitChanges === "function") {
-								onCommitChanges({ changed: { [rowId]: updatedRow } });
+								onCommitChanges({ changed: { [rowId]: parsedRow } });
 							}
 						}
 					};
@@ -499,7 +523,7 @@ const messages = {
 
 const getRowId = row => row.id;
 
-const F357FormTableComponent = (props) => {
+const F358FormTableComponent = (props) => {
 
 	const [tableColumnExtensions] = useState([
 		{ columnName: "suggestedRateNextYear", align: "center", wordWrapEnabled: true, width:110 },
@@ -584,7 +608,26 @@ const F357FormTableComponent = (props) => {
 
 	const { isLoading, showTableFilter, rows, columns, onCommitChanges } = props;
 
-	const [currencyColumns] = useState(["rateThisYear", "salaryThisYear", "rateNextYear", "salaryNextYear", "yearlySalaryThisYear", "yearlySalaryNextYear", "yearlyExpenseThisYear", "yearlyExpenseNextYear"]);
+	const [currencyColumns] = useState([
+
+		'rateIncreasePercentage',
+		'suggestedRateNextYear',
+		'suggestedRateIncreasePercentage',
+		'salaryIncreasePercentage',
+		'suggestedSalaryNextYear',
+		'suggestedSalaryIncreasePercentage',
+		'monthsThisYear',
+		'monthsNextYear',
+		'yearlyClaimNextYear',
+		"rateThisYear", 
+		"salaryThisYear", 
+		"rateNextYear", 
+		"salaryNextYear", 
+		"yearlySalaryThisYear", 
+		"yearlySalaryNextYear", 
+		"yearlyExpenseThisYear", 
+		"yearlyExpenseNextYear"
+	]);
 
 	const NoDataRow = () => (
 		<TableRow>
@@ -776,18 +819,18 @@ const F357FormTableComponent = (props) => {
 	);
 };
 
-F357FormTableComponent.propTypes = {
+F358FormTableComponent.propTypes = {
 	data: PropTypes.object,
 	columns: PropTypes.array,
 	expandedGroups: PropTypes.array,
 	showFilter: PropTypes.bool,
 };
 
-F357FormTableComponent.defaultProps = {
+F358FormTableComponent.defaultProps = {
 	data: {},
 	columns: [],
 	expandedGroups: [],
 	showFilter: false,
 };
 
-export default F357FormTableComponent;
+export default F358FormTableComponent;

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {Paper, Box, CircularProgress, TableRow, TableCell} from "@material-ui/core"; // Import loader component
 import { FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
-import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow } from "@devexpress/dx-react-grid-material-ui";
+import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow, ColumnChooser, TableColumnVisibility, Toolbar } from "@devexpress/dx-react-grid-material-ui";
 import PropTypes from "prop-types";
 import { Skeleton } from "@material-ui/lab";
 
@@ -21,7 +21,7 @@ class R86ReportsTableComponent extends Component {
 				"lessThan",
 				"lessThanOrEqual",
 			],
-			pageSizes: [5, 10, 15, 20],
+			pageSizes: [10, 25, 50, 100],
 			defaultSorting: [],
 			sortingStateColumnExtensions: [
 				{ columnName: "action", sortingEnabled: false },
@@ -108,7 +108,7 @@ class R86ReportsTableComponent extends Component {
 							defaultSorting={defaultSorting}
 							columnExtensions={sortingStateColumnExtensions}
 						/>
-						<PagingState defaultCurrentPage={0} defaultPageSize={5} />
+						<PagingState defaultCurrentPage={0} defaultPageSize={pageSizes[0]} />
 						<IntegratedFiltering />
 						<IntegratedSorting />
 						<IntegratedPaging />
@@ -127,6 +127,11 @@ class R86ReportsTableComponent extends Component {
 								)
 							}
 						/>
+						<TableColumnVisibility
+							defaultHiddenColumnNames={[]}
+						/>
+						<Toolbar />
+						<ColumnChooser />
 						{showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
 						<PagingPanel pageSizes={pageSizes} />
 					</Grid>
