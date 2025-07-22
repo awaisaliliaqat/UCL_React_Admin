@@ -19,17 +19,20 @@ build-job:
     - shell
   script:
     - echo "🔧 Installing dependencies..."
-    - npm install
+#   - npm install
     - echo "🏗️ Building project..."
-    - CI=false npm run build
+#    - CI=false npm run build
 
 deploy-job:
   stage: deploy
  # only:
  #   - m_umar_changes
   script:
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - echo "🔧 Setting up SSH config using /opt/ucl.pem"
+    - mkdir -p ~/.ssh
+    - cp /opt/ucl.pem ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan 3.125.186.59 >> ~/.ssh/known_hosts
-    - rsync -avz build/ centos@3.125.186.59:/opt/tomcat/webapps/ucl-admin/
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+    - echo "🚀 Deploying to remote server..."
+    - rsync -avz --delete ./build/ centos@3.125.186.59:/opt/tomcat/webapps/ucl-admin/
     - echo "✅ Deployed to /opt/tomcat/webapps/ucl-admin"
