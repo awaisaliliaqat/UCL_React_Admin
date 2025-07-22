@@ -418,7 +418,7 @@ class DefineEmployeeForm extends Component {
 									employeesSubDepartmentsArray = [],
 									employeesDesignationsArray = [],
 									employmentHistories = [],
-									educationsHistories = [],
+									educationHistories = [],
 								} = json.DATA[0];
 
 								this.getEmployeesEntitiesData(employeesRolesArray);
@@ -462,7 +462,7 @@ class DefineEmployeeForm extends Component {
 									employeesSubDepartmentsArray,
 									employeesDesignationsArray,
 									employmentTableData: employmentHistories,
-									educationTableData: educationsHistories
+									educationTableData: educationHistories
 								});
 							}
 						}
