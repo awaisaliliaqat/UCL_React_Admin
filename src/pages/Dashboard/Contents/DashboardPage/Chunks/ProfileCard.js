@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Card, Avatar, Typography, Button, Box, CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import BorderColorIcon from '@material-ui/icons/BorderColor';
+import ContactsOutlinedIcon from '@material-ui/icons/ContactsOutlined';
 import EventIcon from '@material-ui/icons/Event';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { useHistory } from "react-router-dom";
@@ -167,10 +168,11 @@ const ProfileCard = (props) => {
 					variant="contained" 
 					color="primary" 
 					className={classes.button} 
-					startIcon={ isLoading ? <CircularProgress className={classes.circularProgress} size={20} /> : <BorderColorIcon /> }
+					startIcon={ isLoading ? <CircularProgress className={classes.circularProgress} size={20} /> : <ContactsOutlinedIcon /> }
 					disabled={isLoading}
+					onClick={()=> history.push("/dashboard/EmployeeProfile") }
 				>
-					Edit Profile
+					View Profile 
 				</Button>
 				<Button 
 					variant="outlined" 
