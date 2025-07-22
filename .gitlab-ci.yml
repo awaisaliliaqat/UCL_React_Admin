@@ -25,8 +25,8 @@ build-job:
 
 deploy-job:
   stage: deploy
-  only:
-    - m_umar_changes
+ # only:
+ #   - m_umar_changes
   script:
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
