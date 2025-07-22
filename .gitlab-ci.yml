@@ -3,31 +3,36 @@ stages:
   - deploy
 
 variables:
-  APP_DIR: "build"
-  DEPLOY_USER: "centos"
-  DEPLOY_SERVER: "3.125.186.59"
-  DEPLOY_PATH: "/opt/tomcat/webapps/ucl-admin"
-  SSH_PRIVATE_KEY: "/opt/ucl.pem"
+  REACT_APP_ENV: production
+  NODE_ENV: production
 
-build-react:
+before_script:
+  - echo "🔧 Installing dependencies..."
+  - apt-get update -yqq && apt-get install -yqq openssh-client rsync curl
+  - curl -sL https://deb.nodesource.com/setup_18.x | bash -
+  - apt-get install -y nodejs
+  - node -v && npm -v
+
+build-job:
   stage: build
-  tags:
-    - shell
   script:
-    - echo "Installing dependencies..."
+    - echo "🏗️ Building the React app..."
     - npm install
-    - echo "Building React app..."
     - npm run build
   artifacts:
     paths:
-      - $APP_DIR
+      - build/
+    expire_in: 1 hour
 
-deploy-to-server:
+deploy-job:
   stage: deploy
-  tags:
-    - shell
-  script:
-    - echo "Deploying to $DEPLOY_SERVER..."
-    - rsync -avz -e "ssh -o StrictHostKeyChecking=no" $APP_DIR/ $DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/
   only:
     - m_umar_changes
+  script:
+    - echo "🚀 Starting deploy to remote server..."
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan 3.125.186.59 >> ~/.ssh/known_hosts
+    - rsync -avz build/ centos@3.125.186.59:/opt/tomcat/webapps/ucl-admin/
+    - echo "✅ Deployed to /opt/tomcat/webapps/ucl-admin"
