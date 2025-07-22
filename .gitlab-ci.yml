@@ -1,26 +1,32 @@
 stages:
   - build
-  - test
   - deploy
 
-build-job:
+variables:
+  APP_DIR: "build"
+  DEPLOY_USER: "centos"
+  DEPLOY_SERVER: "3.125.186.59"
+  DEPLOY_PATH: "/opt/tomcat/webapps/ucl-admin"
+
+build-react:
   stage: build
   tags:
     - shell
   script:
-    - echo "🏗️ Building the project..."
+    - echo "Installing dependencies..."
+    - npm install
+    - echo "Building React app..."
+    - npm run build
+  artifacts:
+    paths:
+      - $APP_DIR
 
-test-job:
-  stage: test
-  tags:
-    - shell
-  script:
-    - echo "🧪 Running tests..."
-    - echo "Tests passed!"
-
-deploy-job:
+deploy-to-server:
   stage: deploy
   tags:
     - shell
   script:
-    - echo "🚀 Deploying the application..."
+    - echo "Deploying to $DEPLOY_SERVER..."
+    - rsync -avz -e "ssh -o StrictHostKeyChecking=no" $APP_DIR/ $DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/
+  only:
+    - m_umar_changes
