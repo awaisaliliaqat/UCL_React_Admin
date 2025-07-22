@@ -1,0 +1,36 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  REACT_APP_ENV: production
+  NODE_ENV: production
+
+before_script:
+  - echo "🔧 Installing dependencies..."
+  - apt-get update -yqq && apt-get install -yqq openssh-client rsync curl
+  - curl -sL https://deb.nodesource.com/setup_18.x | bash -
+  - apt-get install -y nodejs
+  - node -v && npm -v
+
+build-job:
+  stage: build
+  script:
+    - echo "🏗️ Building the React app..."
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - build/
+    expire_in: 1 hour
+
+deploy-job:
+  stage: deploy
+  only:
+    - m_umar_changes
+  script:
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan 3.125.186.59 >> ~/.ssh/known_hosts
+    - rsync -avz build/ centos@3.125.186.59:/opt/tomcat/webapps/ucl-admin/
+    - echo "✅ Deployed to /opt/tomcat/webapps/ucl-admin"
