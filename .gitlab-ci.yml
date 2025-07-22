@@ -19,7 +19,7 @@ build-job:
     - shell
   script:
     - echo "🔧 Installing dependencies..."
-#   - npm install
+    - npm install
     - echo "🏗️ Building project..."
     - CI=false npm run build
 
