@@ -1,0 +1,32 @@
+import React from "react";
+import AppRoutes from "./routes/AppRoutes";
+import { createTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/styles";
+import DateFnsUtils from "@date-io/date-fns";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "rgb(23, 74, 132)", //"#174A84",
+    },
+    secondary: {
+      //main: '#b43329',
+      main: "rgb(255, 64, 64)", //"#ff4040",
+    },
+  },
+  typography: {
+    fontFamily: ["lato"].join(","),
+  },
+});
+const App = () => {
+  return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <ThemeProvider theme={theme}>
+        <AppRoutes />
+      </ThemeProvider>
+    </MuiPickersUtilsProvider>
+  );
+};
+
+export default App;

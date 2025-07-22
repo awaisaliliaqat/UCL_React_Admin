@@ -1,0 +1,836 @@
+import React, { useState, useEffect, createRef } from "react";
+import PropTypes from "prop-types";
+import GridMaterial from '@material-ui/core/Grid';
+import { TextField, Paper, CircularProgress, TableRow, TableCell, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, Chip, Avatar, InputLabel, Typography } from "@material-ui/core";
+import { Plugin, Template, TemplateConnector, TemplatePlaceholder, } from '@devexpress/dx-react-core';
+import { SummaryState, IntegratedSummary, DataTypeProvider, EditingState, IntegratedFiltering, FilteringState } from "@devexpress/dx-react-grid";
+import { Grid, VirtualTable, TableHeaderRow, TableFixedColumns, TableEditRow, TableEditColumn, TableFilterRow, TableSummaryRow } from "@devexpress/dx-react-grid-material-ui";
+import { IconButton, Tooltip } from "@material-ui/core";
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
+import CancelIcon from '@material-ui/icons/Cancel';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { useTheme } from '@material-ui/core/styles';
+import F358ChatBox from "./F358ChatBox";
+import TopSummaryPanel from './TopSummaryPanel';
+
+
+const Popup = ({ row, onApplyChanges, onCancelChanges, open }) => {
+
+	const [state, setState] = useState({ ...row });
+
+	const theme = useTheme();
+
+  	const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+	useEffect(() => {
+		if (open) {
+			setState({ ...row });
+		}
+	}, [open, row]);
+
+	//const formatNumber = (num) => Number(parseFloat(num).toFixed(2));
+	const formatNumber = (num) => isNaN(num = parseFloat(num)) ? 0 : Math.round((num + Number.EPSILON) * 100) / 100;
+
+	const parseFloatSafe = (val) => isNaN(parseFloat(val)) ? 0 : parseFloat(val);
+
+	const regex = new RegExp(/^\d*\.?\d*$/);
+
+	const handleChange = (e) => {
+
+		const { name, value } = e.target;
+
+		const {
+			rateThisYear,
+			rateNextYear,
+			salaryThisYear,
+			salaryNextYear,
+			monthsThisYear,
+			monthsNextYear,
+			yearlyClaimThisYear,
+			yearlyClaimNextYear,
+			yearlyExpenseThisYear,
+			yearlyExpenseNextYear,
+			yearlySalaryNextYear
+		} = state;
+
+		let updates = {};
+
+		switch (name) {
+
+			case "suggestedRateNextYear": {
+				if (value && !regex.test(value)) return;
+				const suggestedRateNextYearLocal = parseFloatSafe(value);
+				const rateThisYearLocal = parseFloatSafe(rateThisYear);
+				const suggestedRateIncreasePercentageLocal = ((suggestedRateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
+				updates = {
+					suggestedRateNextYear: value,
+					suggestedRateIncreasePercentage: formatNumber(suggestedRateIncreasePercentageLocal),
+				};
+				break;
+			}
+			case "suggestedRateIncreasePercentage": {
+				if (value && !regex.test(value)) return;
+				const suggestedRateIncreasePercentageLocal = parseFloatSafe(value);
+				const rateThisYearLocal = parseFloatSafe(rateThisYear);
+				const suggestedRateNextYearLocal = rateThisYearLocal * (1 + suggestedRateIncreasePercentageLocal / 100);
+				updates = {
+					suggestedRateIncreasePercentage: value,
+					suggestedRateNextYear: formatNumber(suggestedRateNextYearLocal),
+				};
+				break;
+			}
+			case "suggestedSalaryNextYear": {
+				if (value && !regex.test(value)) return;
+				const suggestedSalaryNextLocal = parseFloatSafe(value);
+				const salaryThisLocal = parseFloatSafe(salaryThisYear);
+				const suggestedSalaryIncPerc = ((suggestedSalaryNextLocal - salaryThisLocal) / (salaryThisLocal || 1)) * 100;
+				updates = {
+					suggestedSalaryNextYear: value,
+					suggestedSalaryIncreasePercentage: formatNumber(suggestedSalaryIncPerc),
+				};
+				break;
+			}
+			case "suggestedSalaryIncreasePercentage": {
+				if (value && !regex.test(value)) return;
+				const suggestedSalaryPercLocal = parseFloatSafe(value);
+				const salaryThisLocal = parseFloatSafe(salaryThisYear);
+				const suggestedSalaryNextYearLocal = salaryThisLocal * (1 + suggestedSalaryPercLocal / 100);
+				updates = {
+					suggestedSalaryIncreasePercentage: value,
+					suggestedSalaryNextYear: formatNumber(suggestedSalaryNextYearLocal)
+				};
+				break;
+			}
+			case "rateThisYear": {
+				if (value && !regex.test(value)) return;
+				const rateThisYearLocal = parseFloatSafe(value);
+				const rateNextYearLocal = parseFloatSafe(rateNextYear);
+				const rateIncreasePercentageLocal = ((rateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
+				updates = {
+					rateThisYear: value,
+					rateIncreasePercentage: rateIncreasePercentageLocal,
+				};
+				break;
+			}
+			case "rateNextYear": {
+				if (value && !regex.test(value)) return;
+				const rateNextYearLocal = parseFloatSafe(value);
+				const rateThisYearLocal = parseFloatSafe(rateThisYear);
+				const rateIncreasePercentageLocal = ((rateNextYearLocal - rateThisYearLocal) / (rateThisYearLocal || 1)) * 100;
+				updates = {
+					rateNextYear: value,
+					rateIncreasePercentage: rateIncreasePercentageLocal,
+				};
+				break;
+			}
+			case "rateIncreasePercentage": {
+				if (value && !regex.test(value)) return;
+				const rateIncreasePercentageLocal = parseFloatSafe(value);
+				const rateThisYearLocal = parseFloatSafe(rateThisYear);
+				const rateNextYearLocal = rateThisYearLocal * (1 + rateIncreasePercentageLocal / 100);
+				updates = {
+					rateIncreasePercentage: value,
+					rateNextYear: rateNextYearLocal,
+				};
+				break;
+			}
+			case "monthsThisYear": {
+				if (value && !regex.test(value)) return;
+				const monthsThisLocal = parseFloatSafe(value);
+				const salaryThisLocal = parseFloatSafe(salaryThisYear);
+				const yearlyClaimThisLocal = parseFloatSafe(yearlyClaimThisYear);
+				const yearlyExpenseNextLocal = parseFloatSafe(yearlyExpenseNextYear);
+
+				const yearlySalaryThisLocal = salaryThisLocal * monthsThisLocal;
+				const yearlyExpenseThisLocal = yearlyClaimThisLocal + yearlySalaryThisLocal;
+				const percentChangeLocal = ((yearlyExpenseNextLocal - yearlyExpenseThisLocal) / (yearlyExpenseThisLocal || 1)) * 100;
+
+				updates = {
+					monthsThisYear: value,
+					yearlySalaryThisYear: yearlySalaryThisLocal,
+					yearlyExpenseThisYear: yearlyExpenseThisLocal,
+					percentChange: formatNumber(percentChangeLocal),
+				};
+				break;
+			}
+			case "monthsNextYear": {
+				if (value && !regex.test(value)) return;
+				const monthsNextYearLocal = parseFloatSafe(value);
+				const salaryNextYearLocal = parseFloatSafe(salaryNextYear);
+				const yearlyClaimNextYearLocal = parseFloatSafe(yearlyClaimNextYear);
+				const yearlyExpenseThisYearLocal = parseFloatSafe(yearlyExpenseThisYear);
+
+				const yearlySalaryNextYearLocal = salaryNextYearLocal * monthsNextYearLocal;
+				const yearlyExpenseNextYearLocal = yearlyClaimNextYearLocal + yearlySalaryNextYearLocal;
+				const percentChangeLocal = ((yearlyExpenseNextYearLocal - yearlyExpenseThisYearLocal) / (yearlyExpenseThisYearLocal || 1)) * 100;
+
+				updates = {
+					monthsNextYear: value,
+					yearlySalaryNextYear: yearlySalaryNextYearLocal,
+					yearlyExpenseNextYear: yearlyExpenseNextYearLocal,
+					percentChange: formatNumber(percentChangeLocal),
+				};
+				break;
+			}
+			case "salaryThisYear": {
+				if (value && !regex.test(value)) return;
+				const salaryThisLocal = parseFloatSafe(value);
+				const salaryNextLocal = parseFloatSafe(salaryNextYear);
+				const monthsThisLocal = parseFloatSafe(monthsThisYear);
+				const yearlyClaimThisLocal = parseFloatSafe(yearlyClaimThisYear);
+				const yearlyExpenseNextLocal = parseFloatSafe(yearlyExpenseNextYear);
+
+				const salaryIncPerc = ((salaryNextLocal - salaryThisLocal) / (salaryThisLocal || 1)) * 100;
+				const yearlySalaryThisLocal = salaryThisLocal * monthsThisLocal;
+				const yearlyExpenseThisLocal = yearlyClaimThisLocal + yearlySalaryThisLocal;
+				const percentChangeLocal = ((yearlyExpenseNextLocal - yearlyExpenseThisLocal) / (yearlyExpenseThisLocal || 1)) * 100;
+
+				updates = {
+					salaryThisYear: value,
+					salaryIncreasePercentage: salaryIncPerc,
+					yearlySalaryThisYear: yearlySalaryThisLocal,
+					yearlyExpenseThisYear: yearlyExpenseThisLocal,
+					percentChange: formatNumber(percentChangeLocal),
+				};
+				break;
+			}
+			case "salaryNextYear": {
+				if (value && !regex.test(value)) return;
+				const salaryNextLocal = parseFloatSafe(value);
+				const salaryThisLocal = parseFloatSafe(salaryThisYear);
+				const monthsNextLocal = parseFloatSafe(monthsNextYear);
+				const yearlyClaimNextLocal = parseFloatSafe(yearlyClaimNextYear);
+				const yearlyExpenseThisLocal = parseFloatSafe(yearlyExpenseThisYear);
+
+				const salaryIncPerc = ((salaryNextLocal - salaryThisLocal) / (salaryThisLocal || 1)) * 100;
+				const yearlySalaryNextLocal = salaryNextLocal * monthsNextLocal;
+				const yearlyExpenseNextLocal = yearlyClaimNextLocal + yearlySalaryNextLocal;
+				const percentChangeLocal = ((yearlyExpenseNextLocal - yearlyExpenseThisLocal) / (yearlyExpenseThisLocal || 1)) * 100;
+
+				updates = {
+					salaryNextYear: value,
+					salaryIncreasePercentage: salaryIncPerc,
+					yearlySalaryNextYear: yearlySalaryNextLocal,
+					yearlyExpenseNextYear: yearlyExpenseNextLocal,
+					percentChange: formatNumber(percentChangeLocal),
+				};
+				break;
+			}
+			case "salaryIncreasePercentage": {
+				if (value && !regex.test(value)) return;
+				const salaryPercLocal = parseFloatSafe(value);
+				const salaryThisLocal = parseFloatSafe(salaryThisYear);
+				const monthsNextLocal = parseFloatSafe(monthsNextYear);
+				const yearlyClaimNextLocal = parseFloatSafe(yearlyClaimNextYear);
+				const yearlyExpenseThisLocal = parseFloatSafe(yearlyExpenseThisYear);
+
+				const calculatedSalaryNext = salaryThisLocal * (1 + salaryPercLocal / 100);
+				const calcYearlySalary = calculatedSalaryNext * monthsNextLocal;
+				const updatedExpense = yearlyClaimNextLocal + calcYearlySalary;
+				const percentChangeLocal = ((updatedExpense - yearlyExpenseThisLocal) / (yearlyExpenseThisLocal || 1)) * 100;
+
+				updates = {
+					salaryIncreasePercentage: value,
+					salaryNextYear: calculatedSalaryNext,
+					yearlySalaryNextYear: calcYearlySalary,
+					yearlyExpenseNextYear: updatedExpense,
+					percentChange: formatNumber(percentChangeLocal),
+				};
+				break;
+			}
+			case "yearlyClaimNextYear": {
+				if (value && !regex.test(value)) return;
+				const claimNextLocal = parseFloatSafe(value);
+				const yearlySalaryNextLocal = parseFloatSafe(yearlySalaryNextYear);
+				const yearlyExpenseThisLocal = parseFloatSafe(yearlyExpenseThisYear);
+				const yearlyExpenseNextYearLocal = claimNextLocal + yearlySalaryNextLocal;
+				const percentChangeLocal = ((yearlyExpenseNextYearLocal - yearlyExpenseThisLocal) / (yearlyExpenseThisLocal || 1)) * 100;
+				
+				updates = {
+					yearlyClaimNextYear: value,
+					yearlyExpenseNextYear: yearlyExpenseNextYearLocal,
+					percentChange: formatNumber(percentChangeLocal),
+				};
+				break;
+			}
+
+			default:
+				updates = { [name]: value };
+		}
+
+		setState((prev) => ({
+			...prev,
+			...updates,
+		}));
+	};
+
+	
+	const handleApply = () => {
+		onApplyChanges(state);
+	};
+
+	return (
+		<Dialog 
+			open={open} 
+			fullScreen={fullScreen} 
+			maxWidth="md" 
+			onClose={onCancelChanges}
+		>
+			<DialogTitle><Box color="primary.main"><b>{state.id+" - "+state.displayName || "Employee Details"}</b></Box></DialogTitle>
+			<DialogContent>
+				<GridMaterial container spacing={2}>
+					<GridMaterial item xs={3}>
+						<TextField type="number" name="suggestedRateNextYear" label="Suggested Rate Next Year" value={state.suggestedRateNextYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField type="number" name="suggestedRateIncreasePercentage" label="Suggested Rate Increase %" value={state.suggestedRateIncreasePercentage || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField type="number" name="suggestedSalaryNextYear" label="Suggested Salary Next Year" value={state.suggestedSalaryNextYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField type="number" name="suggestedSalaryIncreasePercentage" label="Suggested Salary Increase %" value={state.suggestedSalaryIncreasePercentage || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={12}>
+						<Box color="white" bgcolor="primary.main" p={1} borderRadius={4}>
+							Calculactions<br/><small><small>(User can calculate suggested rate or salary)</small></small>
+						</Box>
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField name="rateThisYear" label="Rate This Year" value={state.rateThisYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField name="rateNextYear" label="Rate Next Year" value={state.rateNextYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField name="rateIncreasePercentage" label="Rate Increase %" value={state.rateIncreasePercentage || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField name="monthsThisYear" label="Months This Year" value={state.monthsThisYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField name="salaryThisYear" label="Salary This Year" value={state.salaryThisYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField name="salaryNextYear" label="Salary Next Year" value={state.salaryNextYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField name="salaryIncreasePercentage" label="Salary Increase %" value={state.salaryIncreasePercentage || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
+						<TextField name="monthsNextYear" label="Months Next Year" value={state.monthsNextYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={6}>
+						<TextField name="yearlyClaimThisYear" label="Yearly Claim This Year" value={state.yearlyClaimThisYear || ''} onChange={handleChange} disabled fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={6}>
+						<TextField name="yearlyClaimNextYear" label="Yearly Claim Next Year" value={state.yearlyClaimNextYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={6}>
+						<TextField name="yearlySalaryThisYear" label="Yearly Salary This Year" value={state.yearlySalaryThisYear || ''} onChange={handleChange} disabled fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={6}>
+						<TextField name="yearlySalaryNextYear" label="Yearly Salary Next Year" value={state.yearlySalaryNextYear || ''} onChange={handleChange} disabled fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={4}>
+						<TextField name="yearlyExpenseThisYear" label="Yearly Expense This Year" value={state.yearlyExpenseThisYear || ''} onChange={handleChange} disabled fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={4}>
+						<TextField name="yearlyExpenseNextYear" label="Yearly Expense Next Year" value={state.yearlyExpenseNextYear || ''} onChange={handleChange} disabled fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={4}>
+						<TextField name="percentChange" label="Percent Change" value={state.percentChange || ''} onChange={handleChange} disabled fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={12}>
+						{/* <TextField name="comment" label="Comment" value={state.comment || ''} onChange={handleChange} fullWidth multiline /> */}
+						{/* <Box display="flex" flexWrap="wrap" gap={8} mb={1} style={{ maxWidth: "100%" }} >
+							<Typography variant="caption" style={{color:"#00000061"}}>Comments</Typography>
+							{(state.comments || []).length !== 0 && (
+								(state.comments || []).map((obj, index) => (
+									<Chip
+										key={`comment-${index}`}
+										label={
+											<Box
+												component="span"
+												sx={{
+													display: 'block',
+													whiteSpace: 'normal',
+													wordBreak: 'break-word',
+													padding: '2px 0px',
+													textAlign: 'justify',
+													marginLeft:-5,
+													color: "#00000061"
+												}}
+											>
+												{obj.comment}
+											</Box>
+										}
+										color="default"
+										variant="outlined"
+										avatar={<Tooltip title={obj.createdByLabel}><Avatar style={{margin:"4px 0px 4px 4px", backgroundColor: "#00000030"}}>{obj.createdByLabel?.charAt(0).toUpperCase()}</Avatar></Tooltip>}
+										style={{ borderRadius: 8, width: "100%", whiteSpace: "normal", height: "auto", margin: "2px 0px", justifyContent:"flex-start" }}
+									/>
+								))
+							)}
+						</Box> 
+						*/}
+					</GridMaterial>
+				</GridMaterial>
+			</DialogContent>
+			<DialogActions>
+				<Button onClick={onCancelChanges} color="secondary">Cancel</Button>
+				<Button onClick={handleApply} color="primary">Save</Button>
+			</DialogActions>
+		</Dialog>
+	);
+};
+
+
+const PopupEditing = React.memo(({ popupComponent: Popup, onCommitChanges }) => (
+	<Plugin>
+		<Template name="popupEditing">
+			<TemplateConnector>
+				{(
+					{ rows, getRowId, addedRows, editingRowIds, createRowChange, rowChanges },
+					{ changeRow, changeAddedRow, commitChangedRows, commitAddedRows, stopEditRows, cancelAddedRows, cancelChangedRows }
+				) => {
+					const isNew = addedRows.length > 0;
+					let editedRow;
+					let rowId;
+					if (isNew) {
+						rowId = 0;
+						editedRow = addedRows[rowId];
+					} else {
+						[rowId] = editingRowIds;
+						const targetRow = rows.find(row => getRowId(row) === rowId);
+						editedRow = { ...targetRow, ...rowChanges[rowId] };
+					}
+
+					const applyChanges = (updatedRow) => {
+						const rowIds = isNew ? [0] : editingRowIds;
+						const change = isNew ? updatedRow : { [rowId]: updatedRow };
+
+						// 🎯 Fields you want to sanitize before commit
+						const fieldsToParse = [
+							'rateNextYear',
+							'rateIncreasePercentage',
+							'suggestedRateNextYear',
+							'suggestedRateIncreasePercentage',
+							'salaryNextYear',
+							'salaryIncreasePercentage',
+							'suggestedSalaryNextYear',
+							'suggestedSalaryIncreasePercentage',
+							'monthsThisYear',
+							'monthsNextYear',
+							'yearlyClaimNextYear',
+						];
+
+						const parsedRow = { ...updatedRow };
+						fieldsToParse.forEach((field) => {
+							const val = updatedRow[field];
+							parsedRow[field] = val === '' || val == null ? 0 : parseFloat(val);
+						});
+
+						if (isNew) {
+							changeAddedRow({ rowId, change: parsedRow });
+							commitAddedRows({ rowIds });
+							if (typeof onCommitChanges === "function") {
+								onCommitChanges({ added: [parsedRow] });
+							}
+						} else {
+							changeRow({ rowId, change: parsedRow });
+							commitChangedRows({ rowIds });
+							stopEditRows({ rowIds });
+							if (typeof onCommitChanges === "function") {
+								onCommitChanges({ changed: { [rowId]: parsedRow } });
+							}
+						}
+					};
+
+					const cancelChanges = () => {
+						const rowIds = isNew ? [0] : editingRowIds;
+						if (isNew) cancelAddedRows({ rowIds });
+						else {
+							stopEditRows({ rowIds });
+							cancelChangedRows({ rowIds });
+						}
+					};
+
+					const open = editingRowIds.length > 0 || isNew;
+
+					return (
+						<Popup
+							open={open}
+							row={editedRow}
+							onApplyChanges={applyChanges}
+							onCancelChanges={cancelChanges}
+						/>
+					);
+				}}
+			</TemplateConnector>
+		</Template>
+		<Template name="root">
+			<TemplatePlaceholder />
+			<TemplatePlaceholder name="popupEditing" />
+		</Template>
+	</Plugin>
+));
+
+
+// Sticky header logic
+const StickyHeaderCell = ({
+	style,
+	getCellWidth,
+	onWidthDraft,
+	onWidthDraftCancel,
+	onWidthDraftStart,
+	onWidthDraftUpdate,
+	onWidthChange,
+	resizingEnabled,
+	draggingEnabled,
+	...restProps
+}) => {
+	return (
+		<VirtualTable.Cell
+			{...restProps}
+			style={{
+				...style,
+				// top: 0,
+				// zIndex: 10,
+				// position: "sticky",
+				// background: "#fff",
+				// borderBottom: "1px solid #ccc",
+			}}
+		/>
+	);
+};
+
+const formatNumber = (num) => isNaN(num = parseFloat(num)) ? 0 : Math.round((num + Number.EPSILON) * 100) / 100;
+
+const CurrencyFormatter = ({ value }) => {
+	const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
+	return safeValue.toLocaleString("en-US")
+};
+
+const CurrencyTypeProvider = (props) => (
+	<DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
+);
+
+const messages = {
+  percentChange: 'Percentage',
+};
+
+const getRowId = row => row.id;
+
+const F358FormTableComponent = (props) => {
+
+	const [tableColumnExtensions] = useState([
+		{ columnName: "suggestedRateNextYear", align: "center", wordWrapEnabled: true, width:110 },
+		{ columnName: "suggestedRateIncreasePercentage", align: "center", wordWrapEnabled: true, width:130 },
+		{ columnName: "suggestedSalaryNextYear", align: "center", wordWrapEnabled: true, width:120 },
+		{ columnName: "suggestedSalaryIncreasePercentage", align: "center", wordWrapEnabled: true, width:130 },
+		{ columnName: "id", align: "left", width: 90 },
+		{ columnName: "displayName", align: "left", wordWrapEnabled: true },
+		{ columnName: "entitiesLabel", align: "left", wordWrapEnabled: true, width:150},
+		{ columnName: "designationsLabel", align: "left", wordWrapEnabled: true },
+		{ columnName: "rolesLabel", align: "left", wordWrapEnabled: true },
+		{ columnName: "jobStatusLabel", align: "center", wordWrapEnabled: true },
+		{ columnName: "weeklyLoadThisYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "weeklyLoadNextYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "weeklyClaimHoursThisYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "weeklyClaimHoursNextYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "monthsThisYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "monthsNextYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "yearlyClaimThisYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "yearlyClaimNextYear", align: "center", wordWrapEnabled: true },
+		{ columnName: "yearlySalaryThisYear", align: "right", wordWrapEnabled: true },
+		{ columnName: "yearlySalaryNextYear", align: "right", wordWrapEnabled: true },
+		{ columnName: "yearlyExpenseThisYear", align: "right", wordWrapEnabled: true },
+		{ columnName: "yearlyExpenseNextYear", align: "right", wordWrapEnabled: true },
+		{ columnName: "rateThisYear", align: "right", wordWrapEnabled: true },
+		{ columnName: "rateNextYear", align: "right", wordWrapEnabled: true },
+		{ columnName: "rateIncreasePercentage", align: "center", wordWrapEnabled: true },
+		{ columnName: "salaryNextYear", align: "right", wordWrapEnabled: true },
+		{ columnName: "salaryIncreasePercentage", align: "center", wordWrapEnabled: true },
+		{ columnName: "percentChange", align: "center", wordWrapEnabled: true },
+		{ columnName: "comments", align: "left", wordWrapEnabled: true, width: 300 }
+	]);
+
+	const [groupSummaryItems] = useState([
+		{ columnName: "netHours", type: "sum" },
+		{ columnName: "ratePerHour", type: "avg" },
+	]);
+
+	const [totalSummaryItems] = useState([
+		{ columnName: "yearlyExpenseThisYear", type: "sum" },
+		{ columnName: "yearlyExpenseNextYear", type: "sum" },
+		{ columnName: "percentChange", type: "percentChange" }
+	]);
+
+	const [editingColumnExtensions] = useState([
+		{ columnName: 'rolesLabel', editingEnabled: false },
+		{ columnName: 'id', editingEnabled: false },
+		{ columnName: 'displayName', editingEnabled: false },
+		{ columnName: "entitiesLabel", editingEnabled: false},
+		{ columnName: 'jobStatusLabel', editingEnabled: false },
+		{ columnName: 'designationsLabel', editingEnabled: false },
+		{ columnName: 'joiningDate', editingEnabled: false },
+		{ columnName: 'leavingDate', editingEnabled: false },
+		{ columnName: 'weeklyLoadThisYear', editingEnabled: false },
+		{ columnName: 'weeklyLoadNextYear', editingEnabled: false },
+		{ columnName: "weeklyClaimHoursThisYear", editingEnabled: false },
+		{ columnName: "weeklyClaimHoursNextYear", editingEnabled: false },
+		{ columnName: 'rateThisYear', editingEnabled: false },
+		{ columnName: 'rateNextYear', editingEnabled: true },
+		{ columnName: 'rateIncreasePercentage', editingEnabled: true },
+		{ columnName: 'monthsThisYear', editingEnabled: true },
+		{ columnName: 'monthsNextYear', editingEnabled: true },
+		{ columnName: 'salaryThisYear', editingEnabled: false },
+		{ columnName: 'salaryNextYear', editingEnabled: true },
+		{ columnName: 'salaryIncreasePercentage', editingEnabled: true },
+		{ columnName: 'yearlyClaimThisYear', editingEnabled: false },
+		{ columnName: 'yearlyClaimNextYear', editingEnabled: true },
+		{ columnName: 'yearlySalaryThisYear', editingEnabled: false },
+		{ columnName: 'yearlySalaryNextYear', editingEnabled: false },
+		{ columnName: 'yearlyExpenseThisYear', editingEnabled: false },
+		{ columnName: 'yearlyExpenseNextYear', editingEnabled: false },
+		{ columnName: 'percentChange', editingEnabled: false },
+		{ columnName: 'comments', editingEnabled: false },
+		// Add more as needed
+	]);
+
+	const [filterColumnExtensions] = useState([
+		{ columnName: 'comments', filteringEnabled: false },
+	]);
+
+	const [leftFixedColumns] = useState([TableEditColumn.COLUMN_TYPE, "id", "displayName"]);
+
+	const { isLoading, showTableFilter, rows, columns, onCommitChanges } = props;
+
+	const [currencyColumns] = useState([
+
+		'rateIncreasePercentage',
+		'suggestedRateNextYear',
+		'suggestedRateIncreasePercentage',
+		'salaryIncreasePercentage',
+		'suggestedSalaryNextYear',
+		'suggestedSalaryIncreasePercentage',
+		'monthsThisYear',
+		'monthsNextYear',
+		'yearlyClaimNextYear',
+		"rateThisYear", 
+		"salaryThisYear", 
+		"rateNextYear", 
+		"salaryNextYear", 
+		"yearlySalaryThisYear", 
+		"yearlySalaryNextYear", 
+		"yearlyExpenseThisYear", 
+		"yearlyExpenseNextYear"
+	]);
+
+	const NoDataRow = () => (
+		<TableRow>
+			<TableCell colSpan={columns.length} style={{ textAlign: "center", padding: "20px" }}>
+				{isLoading ? (
+					<CircularProgress size={36} />
+				) : (
+					<Box color="primary.light" fontSize="1rem">No Data</Box>
+				)}
+			</TableCell>
+		</TableRow>
+	);
+
+	const [editingRowIds, setEditingRowIds] = useState([]);
+
+	const handleEditingRowIdsChange = (rowIds) => {
+		const allowedIds = rowIds.filter(id => {
+			const row = rows.find(row => row.id === id);
+			return row?.isFinalized !== 1 && row?.isConfirmed!==1;
+		});
+		setEditingRowIds(allowedIds);
+	};
+
+	const EditCommandComponent = ({ id, onExecute }) => {
+		const theme = useTheme();
+		let icon = null;
+		let tooltip = '';
+		let style = {};
+		switch (id) {
+			case 'edit':
+				icon = <EditIcon />;
+				tooltip = 'Edit';
+				style = { color: theme.palette.warning.main, minWidth: 40, padding: 4 }; // 🟠 warning color
+				break;
+			case 'delete':
+				icon = <DeleteIcon />;
+				tooltip = 'Delete';
+				style = { color: theme.palette.error.main, minWidth: 40, padding: 4 }; // 🔴 error color
+				break;
+			case 'commit':
+				icon = <SaveIcon />;
+				tooltip = 'Save';
+				style = { color: theme.palette.success ? theme.palette.success.main : theme.palette.primary.main, minWidth: 40, padding: 4 }; // ✅ success (fallback to primary)
+				break;
+			case 'cancel':
+				icon = <CancelIcon />;
+				tooltip = 'Cancel';
+				style = { color: theme.palette.error.main, minWidth: 40, padding: 4 };
+				break;
+			default:
+				return null;
+		}
+		return (
+			<Tooltip title={tooltip}>
+				<Button onClick={onExecute} style={style}>
+					{icon}
+				</Button>
+			</Tooltip>
+		);
+	};
+
+	const EditCell = ({ row, column, children, ...restProps }) => {
+		const allowEdit = row?.statusId === 2;
+		return (
+			<TableEditColumn.Cell {...restProps}>
+				{allowEdit ? children : null}
+			</TableEditColumn.Cell>
+		);
+	};
+
+	const HighlightCell = ({ row, column, ...restProps }) => {
+		const rateNextYear = parseFloat(row.rateNextYear) || 0;
+		const rateIncreasePercentage = parseFloat(row.rateIncreasePercentage) || 0;
+		const rateIncreasePercentageCriteria = parseFloat(props.rateIncreasePercentageCriteria) || 0;
+		const salaryNextYear = parseFloat(row.salaryNextYear) || 0;
+		const salaryIncreasePercentage = parseFloat(row.salaryIncreasePercentage) || 0;
+		const salaryIncreasePercentageCriteria = parseFloat(props.salaryIncreasePercentageCriteria) || 0;
+		const highlight = (rateNextYear > 0 && rateIncreasePercentage != rateIncreasePercentageCriteria) || (salaryNextYear > 0 && salaryIncreasePercentage != salaryIncreasePercentageCriteria)
+		return (
+			<VirtualTable.Cell
+				{...restProps}
+				row={row}
+				column={column}
+				style={{
+					backgroundColor: highlight ? '#ffdeae' : undefined,
+					...restProps.style,
+				}}
+			/>
+		);
+	};
+
+	const summaryCalculator = (type, rows, getValue) => {
+		if (!rows || rows.length === 0) return 0;
+		// Calculate base values for later state update
+		const totalThisYear = rows.reduce((sum, row) => sum + (parseFloat(row.yearlyExpenseThisYear) || 0), 0);
+		const totalNextYear = rows.reduce((sum, row) => sum + (parseFloat(row.yearlyExpenseNextYear) || 0), 0);
+		const percentChange = totalThisYear === 0 ? 0 : ((totalNextYear - totalThisYear) / totalThisYear) * 100;
+
+		const columnName = getValue.name;
+  		let result;
+
+		// Calculate percentChange if needed
+		if (type === 'percentChange') {
+			result = formatNumber(percentChange);
+		} else {
+			result = IntegratedSummary.defaultCalculator(type, rows, getValue)
+		}
+		
+		// Default
+		return result;
+	};
+
+	return (
+		<Paper>
+			<Grid
+				rows={isLoading ? [] : rows}
+				columns={columns}
+				getRowId={getRowId}
+			>
+				<FilteringState 
+					columnExtensions={filterColumnExtensions} 
+				/>
+				<IntegratedFiltering />
+				<CurrencyTypeProvider
+					for={currencyColumns}
+				/>
+				<SummaryState
+					totalItems={totalSummaryItems}
+					groupItems={groupSummaryItems}
+				/>
+				<IntegratedSummary 
+					calculator={summaryCalculator}
+				/>
+				<EditingState
+					editingRowIds={editingRowIds}
+					onEditingRowIdsChange={handleEditingRowIdsChange}
+					columnExtensions={editingColumnExtensions}
+					onCommitChanges={onCommitChanges}
+				/>
+    			<TopSummaryPanel />
+				<VirtualTable
+					noDataRowComponent={NoDataRow}
+					columnExtensions={tableColumnExtensions}
+					cellComponent={HighlightCell} // ✅ ensure fixed cells also get colored
+				/>
+				<TableHeaderRow cellComponent={StickyHeaderCell} />
+				<TableSummaryRow
+					messages={messages}
+					position="header" // ← Add this line
+				/>
+				{showTableFilter ? <TableFilterRow showFilterSelector /> : null}
+				{/* <TableEditRow /> */}
+				<TableEditRow
+					cellComponent={(props) => {
+						if (props.column.name === 'comments') {
+							const rowId = props.row.id;
+							const value = Array.isArray(props.row.comments) ? props.row.comments : [];
+							const handleChatChange = (newChatList) => {
+								props.onValueChange({ ...props.row, comments: newChatList });
+							};
+							return (
+								<TableCell style={{ padding: 8 }}>
+								<F358ChatBox
+									id={rowId}
+									value={value}
+									onChange={handleChatChange}
+								/>
+								</TableCell>
+							);
+						}
+						return <TableEditRow.Cell {...props} />;
+					}}
+				/>
+				<PopupEditing
+					popupComponent={Popup}
+					onCommitChanges={onCommitChanges}
+				/>
+				<TableEditColumn
+					showEditCommand
+					width={120}
+					commandComponent={EditCommandComponent}
+					cellComponent={EditCell}
+				/>
+				<TableFixedColumns
+					leftColumns={leftFixedColumns}
+				/>
+			</Grid>
+		</Paper>
+	);
+};
+
+F358FormTableComponent.propTypes = {
+	data: PropTypes.object,
+	columns: PropTypes.array,
+	expandedGroups: PropTypes.array,
+	showFilter: PropTypes.bool,
+};
+
+F358FormTableComponent.defaultProps = {
+	data: {},
+	columns: [],
+	expandedGroups: [],
+	showFilter: false,
+};
+
+export default F358FormTableComponent;
