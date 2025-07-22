@@ -15,14 +15,13 @@ before_script:
 
 build-job:
   stage: build
+  tags:
+    - shell
   script:
-    - echo "🏗️ Building the React app..."
+    - echo "🔧 Installing dependencies..."
     - npm install
+    - echo "🏗️ Building project..."
     - npm run build
-  artifacts:
-    paths:
-      - build/
-    expire_in: 1 hour
 
 deploy-job:
   stage: deploy
