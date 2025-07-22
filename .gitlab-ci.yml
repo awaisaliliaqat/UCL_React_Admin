@@ -29,8 +29,6 @@ deploy-job:
   only:
     - m_umar_changes
   script:
-    - echo "🚀 Starting deploy to remote server..."
-    - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan 3.125.186.59 >> ~/.ssh/known_hosts
