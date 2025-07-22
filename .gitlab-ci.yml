@@ -21,7 +21,7 @@ build-job:
     - echo "🔧 Installing dependencies..."
 #   - npm install
     - echo "🏗️ Building project..."
-#    - CI=false npm run build
+    - CI=false npm run build
 
 deploy-job:
   stage: deploy
