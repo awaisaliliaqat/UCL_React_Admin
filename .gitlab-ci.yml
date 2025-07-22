@@ -7,6 +7,7 @@ variables:
   DEPLOY_USER: "centos"
   DEPLOY_SERVER: "3.125.186.59"
   DEPLOY_PATH: "/opt/tomcat/webapps/ucl-admin"
+  SSH_PRIVATE_KEY: "/opt/ucl.pem"
 
 build-react:
   stage: build
