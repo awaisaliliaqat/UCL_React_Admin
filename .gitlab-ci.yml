@@ -6,12 +6,12 @@ variables:
   REACT_APP_ENV: production
   NODE_ENV: production
 
-before_script:
-  - echo "🔧 Installing dependencies..."
-  - apt-get update -yqq && apt-get install -yqq openssh-client rsync curl
-  - curl -sL https://deb.nodesource.com/setup_18.x | bash -
-  - apt-get install -y nodejs
-  - node -v && npm -v
+#before_script:
+#  - echo "🔧 Installing dependencies..."
+#  - apt-get update -yqq && apt-get install -yqq openssh-client rsync curl
+#  - curl -sL https://deb.nodesource.com/setup_18.x | bash -
+#  - apt-get install -y nodejs
+#  - node -v && npm -v
 
 build-job:
   stage: build
