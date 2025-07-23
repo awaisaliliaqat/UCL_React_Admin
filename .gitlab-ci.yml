@@ -1,0 +1,31 @@
+stages:
+  - build-deploy
+
+variables:
+  REACT_APP_ENV: production
+  NODE_ENV: production
+
+#before_script:
+#  - echo "🔧 Installing dependencies..."
+#  - apt-get update -yqq && apt-get install -yqq openssh-client rsync curl
+#  - curl -sL https://deb.nodesource.com/setup_18.x | bash -
+#  - apt-get install -y nodejs
+#  - node -v && npm -v
+
+build_deploy_job:
+  stage: build-deploy
+  tags:
+    - shell
+  script:
+    - echo "🔧 Installing dependencies..."
+    - npm install
+    - echo "🏗️ Building project......"
+    - CI=false npm run build
+    - echo "🔧 Setting up SSH config using /opt/ucl.pem"
+    - mkdir -p ~/.ssh
+    - cp /opt/ucl.pem ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+    - echo "🚀 Deploying to remote server..."
+    - rsync -avz -e "ssh -i /opt/ucl.pem" --rsync-path="sudo rsync" build/ centos@3.125.186.59:/opt/tomcat/webapps/ucl-admin/
+    - echo "✅ Deployed to /opt/tomcat/webapps/ucl-admin"

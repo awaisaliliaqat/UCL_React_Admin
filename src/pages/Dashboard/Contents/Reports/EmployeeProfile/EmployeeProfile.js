@@ -9,7 +9,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import {Collapse, Divider, Grid, Table, Typography, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, LinearProgress, Box, Card, CardActionArea, CardMedia, CardContent} from '@material-ui/core';
+import {Collapse, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, LinearProgress, Box, Card, CardActionArea, CardMedia} from '@material-ui/core';
 import classnames from 'classnames';
 import { format } from 'date-fns';
 import ProfilePlaceholder from "../../../../../assets/Images/ProfilePlaceholder.png";
