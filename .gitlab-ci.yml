@@ -18,7 +18,6 @@ build-job:
   tags:
     - shell
   script:
-    - cd /home/code/UCL_React_Admin/
     - echo "🔧 Installing dependencies..."
     - npm install
     - echo "🏗️ Building project......"
@@ -35,5 +34,5 @@ deploy-job:
     - chmod 600 ~/.ssh/id_rsa
     - echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
     - echo "🚀 Deploying to remote server..."
-    - rsync -avz -e "ssh -i /opt/ucl.pem" --rsync-path="sudo rsync" /home/code/UCL_React_Admin/build/ centos@3.125.186.59:/opt/tomcat/webapps/ucl-admin/
+    - rsync -avz -e "ssh -i /opt/ucl.pem" --rsync-path="sudo rsync" ./build/ centos@3.125.186.59:/opt/tomcat/webapps/ucl-admin/
     - echo "✅ Deployed to /opt/tomcat/webapps/ucl-admin"
