@@ -20,9 +20,9 @@ build-job:
   script:
     - cd /home/code/UCL_React_Admin/
     - echo "🔧 Installing dependencies..."
-    - npm install
+    - sudo npm install
     - echo "🏗️ Building project..."
-    - CI=false npm run build
+    - sudo CI=false npm run build
 
 deploy-job:
   stage: deploy
