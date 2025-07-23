@@ -162,7 +162,7 @@ class EmployeeProfile extends Component {
             documentsData : [],
             isDocumentsLoading: false,
             downloadingFileId: 0,
-            expanded: [true, false, false, false, false, false]
+            expanded: [true, false, false, false, false]
         };
     }
 
@@ -312,49 +312,6 @@ class EmployeeProfile extends Component {
             
         });
     };
-
-    getComments = async (employeeId) => {
-        const data = new FormData();
-        data.append("employeeId", employeeId);
-		this.setState({ isCommentsLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonEmployeeCommentsView`;
-		await fetch(url, {
-			method: "POST",
-            body: data,
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-		})
-		.then((res) => {
-			if (!res.ok) {
-				throw res;
-			}
-			return res.json();
-		})
-		.then((json) => {
-				const { CODE, DATA=[], SYSTEM_MESSAGE, USER_MESSAGE} =  json;
-				if (CODE === 1) {
-                    let data = DATA || [];
-                    this.setState({ commentsData : data });
-				} else {
-					this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE} <br/> {USER_MESSAGE}</span>, "error" );
-				}
-			},
-			(error) => {
-				const { status } = error;
-				if (status === 401) {
-					this.setState({
-						isLoginMenu: true,
-						isReload: true,
-					});
-				} else {
-					this.handleOpenSnackbar("Failed to fetch, Please try again later.", "error");
-					console.log(error);
-				}
-			}
-		);
-		this.setState({ isCommentsLoading: false });
-	};
 
     getRoles = async (employeeId) => {
         const data = new FormData();
@@ -517,7 +474,6 @@ class EmployeeProfile extends Component {
         if (id > 0) {
             this.setState({isParmExist: true});
             this.getData(id);
-            this.getComments(id);
             this.getRoles(id);
             this.getDocuments(id);
         } else {
@@ -938,10 +894,10 @@ class EmployeeProfile extends Component {
                                 borderTopRightRadius:5
                             }}
                         >
-                            <Box component="span" fontSize={"1.2em"}>Comments</Box>
+                            <Box component="span" fontSize={"1.2em"}>Document Center</Box>
                             <Box>
                                 { 
-                                this.state.isCommentsLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
+                                this.state.isDocumentsLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
                                 :
                                 <IconButton
                                     size='small'
@@ -956,63 +912,6 @@ class EmployeeProfile extends Component {
                             </Box>
                         </Box>
                         <Collapse in={this.state.expanded[4]} timeout="auto" unmountOnExit>
-                            <Grid container spacing={2} justifyContent='center' alignItems='center'>
-                                <Grid item xs={12}>
-                                    <TableContainer component={Paper} style={{marginTop:8}}>
-                                        <Table size="small">
-                                            <TableHead>
-                                                <StyledTableRow>
-                                                    <StyledTableCell width={150}>Date</StyledTableCell>
-                                                    <StyledTableCell>Comments</StyledTableCell>
-                                                </StyledTableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {(commentsData || []).length === 0 &&
-                                                    <StyledTableRow><StyledTableCell colSpan={2} align="center">No Data</StyledTableCell></StyledTableRow>
-                                                }
-                                                {(commentsData || []).map((obj, index)=>
-                                                    <StyledTableRow key={"commentData-"+index}>
-                                                        <StyledTableCell component="th" scope="row" align='center'>{obj.commentDateDisplay}</StyledTableCell>
-                                                        <StyledTableCell align="left">{obj.comment}</StyledTableCell>
-                                                    </StyledTableRow>
-                                                )}
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
-                                </Grid>
-                            </Grid>
-                        </Collapse>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box 
-                            bgcolor="primary.main" 
-                            color="primary.contrastText" 
-                            display="flex" 
-                            justifyContent="space-between" 
-                            p={0.5} 
-                            style={{
-                                borderTopLeftRadius:5, 
-                                borderTopRightRadius:5
-                            }}
-                        >
-                            <Box component="span" fontSize={"1.2em"}>Document Center</Box>
-                            <Box>
-                                { 
-                                this.state.isDocumentsLoading ? <CircularProgress style={{color:'white', marginTop:4, marginRight:8}} size={18} /> 
-                                :
-                                <IconButton
-                                    size='small'
-                                    className={classnames(classes.expand, {[classes.expandOpen]:this.state.expanded[5]})}
-                                    onClick={()=>this.handleExpandClick(5)}
-                                    aria-expanded={this.state.expanded[5]}
-                                    aria-label="Show more"
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                }
-                            </Box>
-                        </Box>
-                        <Collapse in={this.state.expanded[5]} timeout="auto" unmountOnExit>
                             <Grid container spacing={2} justifyContent='center' alignItems='center'>
                                 <Grid item xs={12}>
                                     <TableContainer component={Paper} style={{marginTop:8}}>
