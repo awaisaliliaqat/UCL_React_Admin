@@ -162,7 +162,7 @@ class EmployeeProfile extends Component {
             documentsData : [],
             isDocumentsLoading: false,
             downloadingFileId: 0,
-            expanded: [true, false, false, false, false]
+            expanded: [true, false, false, false, false, ]
         };
     }
 
