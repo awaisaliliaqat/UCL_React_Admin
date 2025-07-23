@@ -18,6 +18,7 @@ build-job:
   tags:
     - shell
   script:
+    - cd /home/code/UCL_React_Admin/
     - echo "🔧 Installing dependencies..."
     - npm install
     - echo "🏗️ Building project..."
