@@ -1,6 +1,5 @@
 stages:
-  - build
-  - deploy
+  - build-deploy
 
 variables:
   REACT_APP_ENV: production
@@ -13,8 +12,8 @@ variables:
 #  - apt-get install -y nodejs
 #  - node -v && npm -v
 
-build-job:
-  stage: build
+build_deploy_job:
+  stage: build-deploy
   tags:
     - shell
   script:
@@ -22,12 +21,6 @@ build-job:
     - npm install
     - echo "🏗️ Building project......"
     - CI=false npm run build
-
-deploy-job:
-  stage: deploy
- # only:
- #   - m_umar_changes
-  script:
     - echo "🔧 Setting up SSH config using /opt/ucl.pem"
     - mkdir -p ~/.ssh
     - cp /opt/ucl.pem ~/.ssh/id_rsa
