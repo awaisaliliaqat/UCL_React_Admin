@@ -1,9 +1,10 @@
 import React, { Component, Fragment } from "react";
-import { Box, Button, Divider, Grid, IconButton, Tooltip, withStyles } from "@material-ui/core";
+import { Box, Button, CircularProgress, Divider, Grid, IconButton, Tooltip, withStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import FilterIcon from "mdi-material-ui/FilterOutline";
 import BallotOutlinedIcon from '@material-ui/icons/BallotOutlined';
 import R86ReportsTableComponent from "./Chunks/R86ReportsTableComponent";
+import ExcelIcon from '../../../../../assets/Images/excel.png';
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 
@@ -25,6 +26,7 @@ class R86Reports extends Component {
 		super(props);
 		this.state = {
 			isLoading: false,
+			isFileDownloading: false,
 			showTableFilter: false,
 			admissionData: [],
 			isLoginMenu: false,
@@ -33,6 +35,7 @@ class R86Reports extends Component {
 			snackbarMessage: "",
 			snackbarSeverity: "",
 		};
+		this.tableRef = React.createRef();
 	}
 
 	handleOpenSnackbar = (msg, severity) => {
@@ -103,6 +106,12 @@ class R86Reports extends Component {
 	handleToggleTableFilter = () => {
 		this.setState({ showTableFilter: !this.state.showTableFilter });
 	};
+
+	handleDownloadExcel = async () => {
+		this.setState({isFileDownloading: true});
+		await this.tableRef.current.exportToExcel();
+		this.setState({isFileDownloading: false});
+	}
 
 	componentDidMount() {
 		this.getData();
@@ -186,6 +195,15 @@ class R86Reports extends Component {
 						>
 							Employee Profile
 							<Box component="span" style={{ float: "right" }}>
+								<Tooltip title="Download Excel">
+									<IconButton
+										onClick={() => this.handleDownloadExcel()}
+										disabled={this.state.isFileDownloading}
+									>
+										{this.state.isFileDownloading ? <CircularProgress size={18} /> : <img alt="" src={ExcelIcon} style={{ height: 24 }} />}
+									</IconButton>
+									
+								</Tooltip>
 								<Tooltip title="Table Filter">
 									<IconButton
 										onClick={() => this.handleToggleTableFilter()}
@@ -201,6 +219,7 @@ class R86Reports extends Component {
 					</Grid>
 					<Grid item xs={12}>
 						<R86ReportsTableComponent
+							ref={this.tableRef}
 							rows={this.state.admissionData}
 							columns={columns}
 							showFilter={this.state.showTableFilter}

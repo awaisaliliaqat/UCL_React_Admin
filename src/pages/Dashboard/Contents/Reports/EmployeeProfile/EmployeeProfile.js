@@ -162,7 +162,7 @@ class EmployeeProfile extends Component {
             documentsData : [],
             isDocumentsLoading: false,
             downloadingFileId: 0,
-            expanded: [true, false, false, false, false, ]
+            expanded: [true, false, false, false, false]
         };
     }
 
@@ -200,7 +200,6 @@ class EmployeeProfile extends Component {
                         const id = parseInt(DATA[0]) || 0;
                         if(id > 0){
                             this.getData(id);
-                            this.getComments(id);
                             this.getRoles(id);
                             this.getDocuments(id);
                         }

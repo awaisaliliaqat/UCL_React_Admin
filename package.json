@@ -21,6 +21,8 @@
     "@testing-library/user-event": "^7.2.1",
     "date-fns": "^2.13.0",
     "dateformat": "^3.0.3",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "highcharts": "^8.1.1",
     "highcharts-react-official": "^3.0.0",
     "jspdf": "^1.5.3",
