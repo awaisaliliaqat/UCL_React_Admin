@@ -5,6 +5,8 @@ import StudentProfileFilter from "./Chunks/StudentProfileFilter";
 import TablePanel from "../../../../../components/ControlledTable/RerenderTable/TablePanel";
 import Button from "@material-ui/core/Button";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
+import { Box } from "@material-ui/core";
+import FileRepositoryPopup from "./Chunks/FileRepositoryPopup";
 
 class EditStudentInformation extends Component {
   constructor(props) {
@@ -27,7 +29,23 @@ class EditStudentInformation extends Component {
       programmeIdMenuItems: [],
       programmeId: "",
       programmeIdError: "",
+      isFileRepositoryOpen : false,
+      selectedStudentData: {}
     };
+  }
+
+  handleOpenFileRepository = (data) => {
+    this.setState({
+      selectedStudentData: data,
+      isFileRepositoryOpen: true
+    });
+  }
+
+  handleCloseFileRepository = () => {
+    this.setState({
+      isFileRepositoryOpen: false,
+      selectedStudentData: {},
+    });
   }
 
   componentDidMount() {
@@ -369,26 +387,29 @@ class EditStudentInformation extends Component {
         sortable: false,
         customStyleHeader: { width: "20%" },
       },
-      {
-        name: "Action",
-        renderer: (rowData) => {
+      { name: "Action", renderer: (rowData) => {
           console.log(rowData);
           return (
-            <Button
-              style={{
-                fontSize: 12,
-                textTransform: "capitalize",
-              }}
-              variant="outlined"
-              onClick={() =>
-                window.open(
-                  `#/view-student-profile/${rowData.studentId}`,
-                  "_blank"
-                )
-              }
-            >
-              View Profile
-            </Button>
+            <Box display="flex" justifyContent="space-between">
+              <Button
+                style={{ fontSize: 12, textTransform: "capitalize", }}
+                variant="outlined"
+                onClick={() =>
+                  window.open( `#/view-student-profile/${rowData.studentId}`, "_blank" )
+                }
+              >
+                View Profile
+              </Button>
+              <Button
+                style={{ fontSize: 12, textTransform: "capitalize", }}
+                variant="outlined"
+                onClick={() =>
+                  this.handleOpenFileRepository(rowData)
+                }
+              >
+                File Repository
+              </Button>
+            </Box>
           );
         },
         sortable: false,
@@ -403,17 +424,8 @@ class EditStudentInformation extends Component {
           open={this.state.isLoginMenu}
           handleClose={() => this.setState({ isLoginMenu: false })}
         />
-        <div
-          style={{
-            padding: 20,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
+        <div style={{ padding: 20, }} >
+          <div style={{ display: "flex", justifyContent: "space-between", }} >
             <Typography
               style={{
                 color: "#1d5f98",
@@ -465,6 +477,12 @@ class EditStudentInformation extends Component {
               letterSpacing: "1.8px",
             }}
           ></div>
+          <FileRepositoryPopup 
+            open={this.state.isFileRepositoryOpen} 
+            handleClickOpen={this.handleOpenFileRepository}
+            handleClose={this.handleCloseFileRepository}
+            row={this.state.selectedStudentData}
+          />
           <TablePanel
             isShowIndexColumn
             data={this.state.admissionData}
