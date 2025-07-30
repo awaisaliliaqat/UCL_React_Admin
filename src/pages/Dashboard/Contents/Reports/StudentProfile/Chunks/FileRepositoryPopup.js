@@ -582,7 +582,7 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                                         </TableHead>
                                         <TableBody>
                                             {(assignments?.list || []).length === 0 &&
-                                                <StyledTableRow><StyledTableCell colSpan={5} align="center">No Data</StyledTableCell></StyledTableRow>
+                                                <StyledTableRow><StyledTableCell colSpan={7} align="center">No Data</StyledTableCell></StyledTableRow>
                                             }
                                             {(assignments?.list || [])
                                             .filter(doc => doc.submittedAssignmentUrl)
