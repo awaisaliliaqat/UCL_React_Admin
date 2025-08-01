@@ -70,7 +70,7 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
     const classes = useStyles();
 
     const [studentData, setStudentData] = useState({});
-    const [expanded, setExpanded] = useState([false, false, false, false, false]);
+    const [expanded, setExpanded] = useState([true, true, true, false, false]);
     const [downloadingFileName, setDownloadingFileName] = useState(null);
     const [covidVaccineCertificate, setCovidVaccineCertificate] = useState({isLoading: false, list:[]});
     const [admissionsProspectApplicationDocument, setAdmissionsProspectApplicationDocument] = useState({isLoading: false, list:[]});
@@ -270,7 +270,7 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
             getCovidVaccineCertificate(studentId);
             getAdmissionsProspectApplicationDocuments(studentId);
             getGradeBookReportsList(studentId);
-            getAssignmentsList(studentId);
+            //getAssignmentsList(studentId);
         } else {
             setDownloadingFileName(null);
             setCovidVaccineCertificate({isLoading: false, list: []});
@@ -309,7 +309,7 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                         }}
                         variant="h5"
                     >
-                        File Repository
+                        Document Repository
                     </Typography>
                     <Divider
                         className={classes.divider}
@@ -387,6 +387,7 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                         </Grid>
                     </Collapse>
                 </Grid>
+                {(covidVaccineCertificate?.list || []).length > 0 && (
                 <Grid item xs={12}>
                     <Box
                         bgcolor="primary.main"
@@ -460,6 +461,7 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                         </Grid>
                     </Collapse>
                 </Grid>
+                )}
                 <Grid item xs={12}>
                     <Box
                         bgcolor="primary.main"
@@ -535,6 +537,7 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                         </Grid>
                     </Collapse>
                 </Grid>
+                {/* 
                 <Grid item xs={12}>
                     <Box
                         bgcolor="primary.main"
@@ -634,7 +637,8 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                             </Grid>
                         </Grid>
                     </Collapse>
-                </Grid>
+                </Grid> 
+                */}
             </Grid>
         </Dialog>
     );

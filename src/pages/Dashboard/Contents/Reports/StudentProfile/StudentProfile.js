@@ -387,10 +387,11 @@ class EditStudentInformation extends Component {
         sortable: false,
         customStyleHeader: { width: "20%" },
       },
-      { name: "Action", renderer: (rowData) => {
+      { name: "Action", 
+        renderer: (rowData) => {
           console.log(rowData);
           return (
-            <Box display="flex" justifyContent="space-between">
+            <Box display="flex" justifyContent="space-between" flexDirection="column" gridGap={4}>
               <Button
                 style={{ fontSize: 12, textTransform: "capitalize", }}
                 variant="outlined"
@@ -407,13 +408,13 @@ class EditStudentInformation extends Component {
                   this.handleOpenFileRepository(rowData)
                 }
               >
-                File Repository
+                Document Repository
               </Button>
             </Box>
           );
         },
         sortable: false,
-        customStyleHeader: { width: "21%" },
+        customStyleHeader: { width: "150px" }
       },
     ];
 

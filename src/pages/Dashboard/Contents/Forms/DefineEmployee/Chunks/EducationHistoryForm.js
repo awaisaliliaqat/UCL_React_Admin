@@ -202,7 +202,7 @@ const EducationHistoryForm = ({ educationTableData, setEducationTableData, handl
                             <StyledTableRow>
                                 <StyledTableCell>Institution</StyledTableCell>
                                 <StyledTableCell>Qualification</StyledTableCell>
-                                <StyledTableCell>Field of Study</StyledTableCell>
+                                <StyledTableCell>Years of Qualification</StyledTableCell>
                                 <StyledTableCell>Level</StyledTableCell>
                                 <StyledTableCell>Start</StyledTableCell>
                                 <StyledTableCell>End</StyledTableCell>
