@@ -188,6 +188,7 @@ class DefineEmployeeReports extends Component {
 			{ name: "action", title: "Action" },
 			{ name: "id", title: "ID" },
 			{ name: "displayName", title: "Name" },
+			{ name: "cnicNumber", title: "CNIC#" },
 			{ name: "mobileNo", title: "Mobile No" },
 			{ name: "email", title: "Email" },
 			{ name: "jobStatusLabel", title: "Job Status" },

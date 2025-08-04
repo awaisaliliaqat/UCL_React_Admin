@@ -591,12 +591,20 @@ class EmployeeProfile extends Component {
                                                         <Box className={classes.boxValue} ml={1} style={{ flex: 1, textAlign: `${data.lastName ? 'left' : 'center'}` }}> {data.lastName || "-"} </Box>
                                                     </Box>
                                                 </Grid>
-                                                <Grid item xs={4} sm={2} md={2}>
+                                                <Grid item xs={4} sm={3} md={2}>
                                                     <Box className={classes.boxLabel}>Display Name</Box>
                                                 </Grid>
-                                                <Grid item xs={8} sm={4} md={4}>
+                                                <Grid item xs={8} sm={3} md={4}>
                                                     <Box className={classes.boxValue} style={{ textAlign: `${data.displayName ? 'left' : 'center'}` }}> {data.displayName || "-"} </Box>
                                                 </Grid>
+                                                <Grid item xs={4} sm={2} md={2}>
+                                                 <Box className={classes.boxLabel}>CNIC#</Box>
+                                                 </Grid>
+                                                  <Grid item xs={8} sm={4} md={4}>
+                                                   <Box className={classes.boxValue} style={{textAlign: `${data.cnicNumber ? 'left' : 'center'}` }}>
+                                                     {data.cnicNumber || "-"}
+                                                      </Box>
+                                                         </Grid>
                                                 <Grid item xs={4} sm={3} md={2}>
                                                     <Box className={classes.boxLabel}>Primary Email</Box>
                                                 </Grid>
@@ -621,26 +629,28 @@ class EmployeeProfile extends Component {
                                                 <Grid item xs={8} sm={3} md={4}>
                                                     <Box className={classes.boxValue} style={{ textAlign: `${data.joiningDateLabel ? 'left' : 'center'}` }}>  {data.joiningDateLabel || "--/--/----"} </Box>
                                                 </Grid>
-                                                <Grid item xs={4} sm={2} md={2}>
+                                                <Grid item xs={4} sm={3} md={2}>
                                                     <Box className={classes.boxLabel}>Shift</Box>
                                                 </Grid>
                                                 <Grid item xs={8} sm={3} md={4}>
                                                     <Box className={classes.boxValue} style={{ textAlign: `${data.shiftLabel ? 'left' : 'center'}` }}>   {data.shiftLabel || "-"} </Box>
                                                 </Grid>
-                                                <Grid item xs={4} sm={3} md={2}>
+                                               
+                                                
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                 <Grid item xs={4} sm={2} md={2}>
                                                     <Box className={classes.boxLabel}>Coordination With</Box>
                                                 </Grid>
                                                 <Grid item xs={8} sm={4} md={4}>
                                                     <Box className={classes.boxValue} style={{ textAlign: `${data.coordinationLabel ? 'left' : 'center'}` }}>   {data.coordinationLabel || "-"} </Box>
                                                 </Grid>
-                                            </Grid>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
                                 <Grid item xs={4} sm={2}>
                                     <Box className={classes.boxLabel}>Discipline</Box>
                                 </Grid>
-                                <Grid item xs={8} sm={4}>
+                                <Grid item xs={8} sm={4} md={4}>
                                     <Box className={classes.boxValue} style={{textAlign: `${data.discipline ? 'left' : 'center'}` }}>   {data.discipline || "-"} </Box>
                                 </Grid>
                                 <Grid item xs={4} sm={2}>
@@ -656,14 +666,15 @@ class EmployeeProfile extends Component {
                                 <Grid item xs={4} sm={3} md={2}>
                                     <Box className={classes.boxLabel}>Primary Reporting To</Box>
                                 </Grid>
-                                <Grid item xs={8} sm={4} md={4}>
+                                <Grid item xs={8} sm={3} md={4}>
                                     <Box className={classes.boxValue} style={{textAlign: `${data.reportingToLabel ? 'left' : 'center'}` }}>   {data.reportingToLabel || "-"} </Box>
                                 </Grid>
-                                <Grid item xs={4} sm={2}>
-                                    <Box className={classes.boxLabel}>Blood Group</Box>
+                            
+                                  <Grid item xs={4} sm={3} md={2}>
+                                    <Box className={classes.boxLabel}>Emergency Contact# </Box>
                                 </Grid>
                                 <Grid item xs={8} sm={3} md={4}>
-                                    <Box className={classes.boxValue} style={{textAlign: `${data.bloodGroup ? 'left' : 'center'}` }}>   {data.bloodGroup || "-"} </Box>
+                                    <Box className={classes.boxValue} style={{textAlign: `${data.emergencyContactNumber ? 'left' : 'center'}` }}>   {data.emergencyContactNumber || "-"} </Box>
                                 </Grid>
                                 <Grid item xs={4} sm={3} md={2}>
                                     <Box className={classes.boxLabel}>Emergency Contact Name</Box>
@@ -671,16 +682,16 @@ class EmployeeProfile extends Component {
                                 <Grid item xs={8} sm={3} md={4}>
                                     <Box className={classes.boxValue} style={{textAlign: `${data.emergencyContactName ? 'left' : 'center'}` }}>   {data.emergencyContactName || "-"} </Box>
                                 </Grid>
-                                <Grid item xs={4} sm={3} md={2}>
-                                    <Box className={classes.boxLabel}>Emergency Contact# </Box>
+                            <Grid item xs={4} sm={2}>
+                                    <Box className={classes.boxLabel}>Blood Group</Box>
                                 </Grid>
-                                <Grid item xs={8} sm={3} md={4}>
-                                    <Box className={classes.boxValue} style={{textAlign: `${data.emergencyContactNumber ? 'left' : 'center'}` }}>   {data.emergencyContactNumber || "-"} </Box>
+                                <Grid item xs={8} sm={1} md={1}>
+                                    <Box className={classes.boxValue} style={{textAlign: `${data.bloodGroup ? 'left' : 'center'}` }}>   {data.bloodGroup || "-"} </Box>
                                 </Grid>
-                                <Grid item xs={4} sm={2}>
+                                <Grid item xs={4} sm={2} md={1}>
                                     <Box className={classes.boxLabel}>Address</Box>
                                 </Grid>
-                                <Grid item xs={8} sm={10}>
+                                <Grid item xs={8} sm={7} md={8}>
                                     <Box className={classes.boxValue} style={{textAlign: `${data.address ? 'left' : 'center'}` }}>   {data.address || "-"} </Box>
                                 </Grid>
                             </Grid>

@@ -30,6 +30,7 @@ class DefineEmployeeReportsTableComponent extends Component {
 			tableColumnExtensions: [
 				{ columnName: "id", width: 80 },
 				{ columnName: "displayName", wordWrapEnabled: true },
+				{ columnName: "cnicNumber", width: 125 },
 				{ columnName: "mobileNo", wordWrapEnabled: true, width: 110 },
 				{ columnName: "email", wordWrapEnabled: true },
 				{ columnName: "jobStatusLabel", wordWrapEnabled: true, width: 80 },
