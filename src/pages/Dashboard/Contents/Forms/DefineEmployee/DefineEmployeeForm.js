@@ -250,91 +250,68 @@ class DefineEmployeeForm extends Component {
 			addressError: "",
 			password: "",
 			passwordError: "",
-
 			bloodGroup: "",
 			bloodGroupError: "",
-
+			cnicNumber : "",
+			cnicNumberError: "",
 			address:"",
 			addressError:"",
-
 			joiningDate: null,
 			joiningDateError: "",
-
 			shiftActivationDateError: "",
 			shiftActivationDate: null,
-
 			selectedDate: new Date("2014-08-18T21:11:54"),
-
 			leavingDate: null,
 			leavingDateError: "",
-
 			isActive: 1,
 			isActiveError: "",
-
 			shiftId: "",
 			allActiveShifts: [],
 			shiftError: "",
-
 			isCheque: 1,
 			isChequeError: "",
-
 			inactiveReasonsData: [],
 			inactiveReasonsDataLoading: [],
-
 			inactiveReasonId: "",
 			inactiveReasonIdError: "",
-
 			bankAccountNumber1: "",
 			bankAccountNumber1Error: "",
 			bankAccountNumber2: "",
 			bankAccountNumber2Error: "",
-
 			otherReason: "",
 			otherReasonError: "",
-
 			employeeComments: "",
 			employeeCommentsError: "",
-
 			emergencyContactName: "",
 			emergencyContactNameError: "",
-
 			emergencyContactNumber: "",
 			emergencyContactNumberError: "",
-
 			jobStatusIdData: [],
 			reportingStatusData: [],
-
 			employeesRolesData: [],
 			employeesRolesDataLoading: false,
 			employeesRolesArray: [],
 			employeesRolesArrayError: "",
-
 			employeesEntitiesData: [],
 			employeesEntitiesDataLoading: false,
 			employeesEntitiesArray: [],
 			employeesEntitiesArrayError: "",
-
 			employeesDepartmentsData: [],
 			employeesDepartmentsDataLoading: false,
 			employeesDepartmentsArray: [],
 			employeesDepartmentsArrayError: "",
-
 			employeesSubDepartmentsData: [],
 			employeesSubDepartmentsDataLoading: false,
 			employeesSubDepartmentsArray: [],
 			employeesSubDepartmentsArrayError: "",
-
 			employeesDesignationsData: [],
 			employeesDesignationsDataLoading: false,
 			employeesDesignationsArray: [],
 			employeesDesignationsArrayError: "",
-
 			isOpenSnackbar: false,
 			snackbarMessage: "",
 			snackbarSeverity: "",
-
 			tabIndex: 0,
-
 			employmentTableData: [],
 			educationTableData: [],
 		};
@@ -412,6 +389,7 @@ class DefineEmployeeForm extends Component {
 									bloodGroup="",
 									emergencyContactName="",
 									emergencyContactNumber="",
+									cnicNumber="",
 									employeesRolesArray = [],
 									employeesEntitiesArray = [],
 									employeesDepartmentsArray = [],
@@ -428,7 +406,6 @@ class DefineEmployeeForm extends Component {
 									employeesDepartmentsArray
 								);
 
-								console.log();
 								this.setState({
 									firstName,
 									lastName,
@@ -456,6 +433,7 @@ class DefineEmployeeForm extends Component {
 									bloodGroup,
 									emergencyContactName,
 									emergencyContactNumber,
+									cnicNumber,
 									employeesRolesArray,
 									employeesEntitiesArray,
 									employeesDepartmentsArray,
@@ -520,6 +498,12 @@ class DefineEmployeeForm extends Component {
 				break;
 			case "mobileNo":
 			case "secondaryMobileNo":
+				regex = new RegExp(numberExp);
+				if (value && !regex.test(value)) {
+					return;
+				}
+				break;
+			case "cnicNumber":
 				regex = new RegExp(numberExp);
 				if (value && !regex.test(value)) {
 					return;
@@ -1135,6 +1119,7 @@ class DefineEmployeeForm extends Component {
 
 			employmentTableData: [],
 			educationTableData: [],
+			cnicNumber: ""
 		});
 	};
 
@@ -1865,6 +1850,22 @@ class DefineEmployeeForm extends Component {
 												<MenuItem value="O+">O+</MenuItem>
 												<MenuItem value="O-">O-</MenuItem>
 											</TextField>
+										</Grid>
+										<Grid item xs={4}>
+											<TextField
+												id="cnicNumber"
+												name="cnicNumber"
+												label="CNIC#"
+												fullWidth
+												variant="outlined"
+												onChange={this.onHandleChange}
+												value={this.state.cnicNumber}
+												helperText={this.state.cnicNumberError}
+												error={!!this.state.cnicNumberError}
+												inputProps={{
+													maxLength: 13
+												}}
+											/>
 										</Grid>
 										<Grid item xs={12}>
 											<TextField
