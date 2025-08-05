@@ -1,7 +1,7 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { withStyles, withTheme, makeStyles } from "@material-ui/styles";
-import { TextField, Grid, Divider, Typography, Switch, MenuItem, Tab, Box, AppBar, Tabs, IconButton, InputAdornment } from "@material-ui/core";
+import { TextField, Grid, Divider, Typography, Switch, MenuItem, Tab, Box, AppBar, Tabs, IconButton, InputAdornment, Radio, FormControlLabel } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
@@ -274,6 +274,7 @@ class DefineEmployeeForm extends Component {
 			inactiveReasonsDataLoading: [],
 			inactiveReasonId: "",
 			inactiveReasonIdError: "",
+			bankAccount: "",
 			bankAccountNumber1: "",
 			bankAccountNumber1Error: "",
 			bankAccountNumber2: "",
@@ -384,7 +385,6 @@ class DefineEmployeeForm extends Component {
 									reportingToId,
 									coordinationId,
 									isBankAccount,
-									bankAccount,
 									shiftId,
 									bloodGroup="",
 									emergencyContactName="",
@@ -405,6 +405,13 @@ class DefineEmployeeForm extends Component {
 									employeesEntitiesArray,
 									employeesDepartmentsArray
 								);
+
+								let bankAccount = "";
+								if(bankAccountNumber1){
+									bankAccount = "scb";
+								} else if(bankAccountNumber2){
+									bankAccount = "fbl";
+								}
 
 								this.setState({
 									firstName,
@@ -427,6 +434,7 @@ class DefineEmployeeForm extends Component {
 									reportingTo: reportingToId,
 									coordinationId,
 									isCheque: isBankAccount === 0 ? 1 : 0,
+									bankAccount,
 									bankAccountNumber1,
 									bankAccountNumber2,
 									shiftId: shiftId,
@@ -557,7 +565,7 @@ class DefineEmployeeForm extends Component {
 					leavingDate: null,
 					leavingDateError: "",
 				});
-
+			case "bankAccount":
 			case "isCheque":
 				this.setState({
 					bankAccountNumber1: "",
@@ -1336,7 +1344,7 @@ class DefineEmployeeForm extends Component {
 		}
 
 		if (this.state.isCheque == 0) {
-			if (!this.state.bankAccountNumber1) {
+			if (!this.state.bankAccountNumber1 && !this.state.bankAccountNumber2) {
 				isValid = false;
 				bankAccountNumber1Error = "Please add Account number 1";
 			} else {
@@ -1350,20 +1358,6 @@ class DefineEmployeeForm extends Component {
 			}
 		}
 
-		// if (this.state.isCheque == 0) {
-		//   if (!this.state.bankAccountNumber2) {
-		//     isValid = false;
-		//     bankAccountNumber2Error = "Please add Account number 2";
-		//   } else {
-		//     bankAccountNumber2Error = "";
-		// if (this.state.inactiveReasonId == 1 && !this.state.otherReason) {
-		//   isValid = false;
-		//   otherReasonError = "Please enter other reason";
-		// } else {
-		//   otherReasonError = "";
-		// }
-		// }
-		// }
 
 		if (!isValid) {
 			this.handleOpenSnackbar("Action Required: Review all forms to ensure no required information is missing.", "error")
@@ -2073,7 +2067,7 @@ class DefineEmployeeForm extends Component {
 										</Grid>
 										<Grid item xs={12}>
 											<Grid container spacing={2}>
-												<Grid item xs={4}>
+												<Grid item xs={3}>
 													<Typography component="span">Bank Account</Typography>
 													<Switch
 														classes={{
@@ -2095,39 +2089,69 @@ class DefineEmployeeForm extends Component {
 													/>
 													<Typography component="span">Cheque</Typography>
 												</Grid>
+												<Grid item xs={9}>
 												{!this.state.isCheque && (
 													<>
-														<Grid item xs={4}>
-															<TextField
-																id="bankAccountNumber1"
-																name="bankAccountNumber1"
-																label="SCB Account Number"
-																required
-																type="number"
-																fullWidth
-																variant="outlined"
-																onChange={this.onHandleChange}
-																value={this.state.bankAccountNumber1}
-																helperText={this.state.bankAccountNumber1Error}
-																error={!!this.state.bankAccountNumber1Error}
-															/>
-														</Grid>
-														<Grid item xs={4}>
-															<TextField
-																id="bankAccountNumber2"
-																name="bankAccountNumber2"
-																label="Faysal Bank Account Number"
-																type="number"
-																fullWidth
-																variant="outlined"
-																onChange={this.onHandleChange}
-																value={this.state.bankAccountNumber2 || ""}
-																helperText={this.state.bankAccountNumber2Error}
-																error={!!this.state.bankAccountNumber2Error}
-															/>
+														<Grid container justifyContent="center" alignItems="center">
+															<Grid item xs={2}>
+																<FormControlLabel
+																	name="bankAccount"
+																	value="scb"
+																	control={<Radio color="primary" />}
+																	label="SCB"
+																	labelPlacement="top"
+																	onChange={this.onHandleChange}
+																	checked={this.state.bankAccount==="scb"}
+																	style={{float:"right"}}
+																/>
+															</Grid>
+															<Grid item xs={4}>
+																<TextField
+																	id="bankAccountNumber1"
+																	name="bankAccountNumber1"
+																	label="SCB Account Number"
+																	required
+																	type="number"
+																	fullWidth
+																	variant="outlined"
+																	disabled={this.state.bankAccount!="scb"}
+																	onChange={this.onHandleChange}
+																	value={this.state.bankAccountNumber1}
+																	helperText={this.state.bankAccountNumber1Error}
+																	error={!!this.state.bankAccountNumber1Error}
+																/>
+															</Grid>
+															<Grid item xs={2}>
+																<FormControlLabel
+																	name="bankAccount"
+																	value="fbl"
+																	control={<Radio color="primary" />}
+																	label="FBL"
+																	labelPlacement="top"
+																	onChange={this.onHandleChange}
+																	checked={this.state.bankAccount==="fbl"}
+																	style={{float:"right"}}
+																/>
+															</Grid>
+															<Grid item xs={4}>
+																<TextField
+																	id="bankAccountNumber2"
+																	name="bankAccountNumber2"
+																	label="Faysal Bank Account Number"
+																	type="number"
+																	fullWidth
+																	variant="outlined"
+																	disabled={this.state.bankAccount!="fbl"}
+																	onChange={this.onHandleChange}
+																	value={this.state.bankAccountNumber2 || ""}
+																	helperText={this.state.bankAccountNumber2Error}
+																	error={!!this.state.bankAccountNumber2Error}
+																/>
+															</Grid>	
 														</Grid>
 													</>
 												)}
+												</Grid>
 											</Grid>
 										</Grid>
 										<Grid item xs={12}>
