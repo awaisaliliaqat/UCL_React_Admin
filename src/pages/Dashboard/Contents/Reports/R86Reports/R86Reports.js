@@ -148,7 +148,7 @@ class R86Reports extends Component {
 			{ name: "statusLabel", title: "Status" },
 			// { name: "isBankAccount", title: "Bank Status" },
 			{ name: "bankAccount", title: "Payment Type",
-				getCellValue: (rowData) => <Fragment>{rowData.isBankAccount ? "Bank Account" : "Cheque"} </Fragment>
+				getCellValue: (rowData) => <Fragment>{rowData.isBankAccount ? "Bank Transfer" : "Cheque"} </Fragment>
 			},
 			{ name: "bankAccountNumber1", title: "SCB Account",
 				getCellValue: (rowData) => <Fragment>{rowData.bankAccountNumber1}</Fragment>
