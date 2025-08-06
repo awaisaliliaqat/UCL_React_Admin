@@ -147,16 +147,13 @@ class R86Reports extends Component {
 			{ name: "bloodGroup", title: "Blood Group" },
 			{ name: "statusLabel", title: "Status" },
 			// { name: "isBankAccount", title: "Bank Status" },
-			{
-				name: "bankAccount", title: "Bank Account",
-				getCellValue: (rowData) => <Fragment>{rowData.bankAccount ? "Bank Account" : "Cheque"} </Fragment>
+			{ name: "bankAccount", title: "Payment Type",
+				getCellValue: (rowData) => <Fragment>{rowData.isBankAccount ? "Bank Account" : "Cheque"} </Fragment>
 			},
-			{
-				name: "bankAccountNumber1", title: "SCB Account",
+			{ name: "bankAccountNumber1", title: "SCB Account",
 				getCellValue: (rowData) => <Fragment>{rowData.bankAccountNumber1}</Fragment>
 			},
-			{
-				name: "bankAccountNumber2", title: "Faysal Bank Account",
+			{ name: "bankAccountNumber2", title: "Faysal Bank Account",
 				getCellValue: (rowData) => <Fragment>{rowData.bankAccountNumber2}</Fragment>
 			},
 			{ name: "leavingDateLabel", title: "Leaving Date" },

@@ -200,8 +200,8 @@ class DefineEmployeeReports extends Component {
 			{ name: "bloodGroup", title: "Blood Group" },
 			{ name: "statusLabel", title: "Status" },
 			// { name: "isBankAccount", title: "Bank Status" },
-			{ name: "bankAccount", title: "Bank Account",
-				getCellValue: (rowData) => <Fragment>{rowData.bankAccount ? "Bank Account" : "Cheque"} </Fragment>
+			{ name: "bankAccount", title: "Payment Type",
+				getCellValue: (rowData) => <Fragment>{rowData.isBankAccount ? "Bank Account" : "Cheque"} </Fragment>
 			},
 			{ name: "bankAccountNumber1", title: "SCB Account",
 				getCellValue: (rowData) => <Fragment>{rowData.bankAccountNumber1}</Fragment>

@@ -240,7 +240,7 @@ class R86ReportsTableComponent extends Component {
 					/>
 					<Toolbar />
 					<ColumnChooser />
-					{showFilter && <TableFilterRow showFilterSelector={false} />}
+					{showFilter && <TableFilterRow showFilterSelector={true} />}
 					<PagingPanel pageSizes={pageSizes} />
 				</Grid>
 			</Paper>
