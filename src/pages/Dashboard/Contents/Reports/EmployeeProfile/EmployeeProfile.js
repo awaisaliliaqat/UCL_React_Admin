@@ -568,7 +568,7 @@ class EmployeeProfile extends Component {
                                                             //height="130"
                                                             height="170"
                                                             image={this.state.imageUrl}
-                                                            title="Contemplative Reptile"
+                                                            title={data.displayName}
                                                         />
                                                         {/* 
                                                         <CardContent style={{padding: "4px 8px 0px 8px"}}>
