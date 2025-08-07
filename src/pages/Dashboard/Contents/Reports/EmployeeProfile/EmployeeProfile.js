@@ -248,7 +248,7 @@ class EmployeeProfile extends Component {
                         let data = DATA[0] || {};
                         this.setState({ data });
                         if(!!data.profileImage){
-                            this.getFile(data.id, data.profileImage)
+                            this.getFile(data.profileImageUrl)
                         }
                     }
 				} else {
@@ -271,8 +271,9 @@ class EmployeeProfile extends Component {
 		this.setState({ isLoading: false });
 	};
 
-   getFile = (userId, fileName) => {
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonUsersDocumentsFileView?userId=${encodeURIComponent(userId)}&fileName=${encodeURIComponent(fileName)}`;
+   getFile = (fileName) => {
+        // const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonUsersDocumentsFileView?userId=${encodeURIComponent(userId)}&fileName=${encodeURIComponent(fileName)}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonFileViewByFullPath?filePathWithName=${encodeURIComponent(fileName)}`;
         fetch(url, {
             method: "GET",
             headers: {

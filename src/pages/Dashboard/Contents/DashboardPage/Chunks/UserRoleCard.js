@@ -101,7 +101,7 @@ const UserRoleCard = (props) => {
 
 	const filteredFeatureList = featureList.reduce((acc, feature) => {
 		//acc.push(...(feature.items?.filter(option => option.id === 323 || option.id === 324 || option.id === 337 || option.id === 354) || []));
-		acc.push(...(feature.items?.filter(option => option.id === 324 || option.id === 337 || option.id === 354) || []));
+		acc.push(...(feature.items?.filter(option => option.id === 324 || option.id === 337 || option.id === 354 || option.id === 361) || []));
 		return acc;
 	}, []);
 
@@ -416,6 +416,54 @@ const UserRoleCard = (props) => {
 		setIsLoading((prevState) => ({...prevState,	[`pendingApprovals`]: false}));
 	};
 
+	const getPayrollRequestCount = async () => {
+		setIsLoading((prevState) => ({ ...prevState, [`pendingApprovals`]: true }));
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonEmployeeDashboard/CountPendingPayrollRequests`;
+		await fetch(url, {
+			method: "POST",
+			headers: new Headers({
+				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+			}),
+		})
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				const {CODE, DATA, SYSTEM_MESSAGE, USER_MESSAGE} = json;
+				if (CODE === 1) {
+					let data = DATA || [];
+					let dataLength = data.length;
+					if(dataLength>0){
+						setPendingApprovalCounter((prevState)=> prevState + data[0].count );
+						setApprovalFeaturesList((prevList) =>
+							prevList.map((feature) =>
+							  feature.id === 361 ? { ...feature, count: data[0].count } : feature
+							)
+						);
+					}
+				} else {
+					handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>,"error");
+				}
+				//console.log("getPayrollRequestCount", json);
+			},
+			(error) => {
+				const { status } = error;
+				if (status == 401) {
+					handleLoginMenuReload(true);
+					handleLoginMenu(true);
+				} else {
+					console.log(error);
+					handleOpenSnackbar("Failed to fetch ! Please try Again later.","error");
+				}
+			}
+		);
+		setIsLoading((prevState) => ({...prevState,	[`pendingApprovals`]: false}));
+	};
+
 	useEffect(() => {
 		getEmployeeAttendance();
 		getNotificationsForWebCount();
@@ -434,6 +482,10 @@ const UserRoleCard = (props) => {
 		let isHourlySheetsForHeadCountExecute = filteredFeatureList?.some((data) => data.id===323);
 		if(isHourlySheetsForHeadCountExecute){
 			getHourlySheetsForHeadCount();
+		}
+		let isPayrollRequestCountExecute = filteredFeatureList?.some((data) => data.id===361);
+		if(isPayrollRequestCountExecute){
+			getPayrollRequestCount();
 		}
 	}, [filteredFeatureList.length]);
 	
