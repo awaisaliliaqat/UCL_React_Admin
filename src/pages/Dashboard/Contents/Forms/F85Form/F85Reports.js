@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { Divider, Grid, IconButton, Tooltip, Typography } from "@material-ui/core";
+import { Box, Divider, Grid, IconButton, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/styles";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
 import FilterIcon from "mdi-material-ui/FilterOutline";
@@ -10,6 +10,7 @@ import F85ReportsTableComponent from "./Chunks/F85ReportsTableComponent";
 import { format } from "date-fns";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { CircularProgress } from "@material-ui/core";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const styles = () => ({
 	root: {
@@ -83,17 +84,6 @@ class F85Reports extends Component {
 						for (let i = 0; i < json.DATA.length; i++) {
 							const id = json.DATA[i].id;
 							expandedGroupsData.push(json.DATA[i].userLabel);
-							json.DATA[i].action = (
-								<EditDeleteTableComponent
-									recordId={id}
-									deleteRecord={this.DeleteData}
-									editRecord={() =>
-										window.location.replace(
-											`#/dashboard/define-employees/${id}`
-										)
-									}
-								/>
-							);
 						}
 						this.setState({
 							admissionData: json.DATA || [],
@@ -127,10 +117,10 @@ class F85Reports extends Component {
 		});
 	};
 
-	DeleteData = async (event) => {
-		event.preventDefault();
+	handleDelete = async (event) => {
+		event.preventDefault()
 		const data = new FormData(event.target);
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersDeleteV2`;
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C85CommonUsersDocuments/Delete`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -138,40 +128,33 @@ class F85Reports extends Component {
 				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
 			}),
 		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
+		.then((res) => {
+			if (!res.ok) {
+				throw res;
+			}
+			return res.json();
+		})
+		.then(
+			(json) => {
+				if (json.CODE === 1) {
+					this.handleOpenSnackbar("Deleted", "success");
+					this.getData();
+				} else {
+					this.handleOpenSnackbar( json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE, "error" );
 				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.handleOpenSnackbar("Deleted", "success");
-						this.getData();
-					} else {
-						this.handleOpenSnackbar(
-							json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-							"error"
-						);
-					}
-					console.log(json);
-				},
-				(error) => {
-					if (error.status === 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: false,
-						});
-					} else {
-						this.handleOpenSnackbar(
-							"Failed to fetch, Please try again later.",
-							"error"
-						);
-						console.log(error);
-					}
+			},
+			(error) => {
+				if (error.status === 401) {
+					this.setState({
+						isLoginMenu: true,
+						isReload: false,
+					});
+				} else {
+					this.handleOpenSnackbar( "Failed to fetch, Please try again later.", "error" );
+					console.log(error);
 				}
-			);
+			}
+		);
 	};
 
 	downloadFile = (userId, fileName, rowId) => {
@@ -276,19 +259,31 @@ class F85Reports extends Component {
 			{ name: "uploadedOn", title: "Uploaded On",
 				getCellValue: (row) => row.uploadedOn ? format(row.uploadedOn, "dd-MM-yyyy hh:mm a") : ""
 			},
-			{ name: "downloadLink", title: "Download",
+			{ name: "action", title: "Action",
 				getCellValue : (row) => (
 					<Fragment>
 					{this.state.downloadingFileId === row.id ? (
 						<CircularProgress size={24} color="primary" />
 					) : (
-						<IconButton
-							color="primary"
-							onClick={() => this.downloadFile(row.userId, row.documentName, row.id)}
-							aria-label="download"
-						>
-						<CloudDownloadIcon />
-						</IconButton>
+						<Fragment>
+							<Box display="flex" alignItems="center">
+								<Tooltip title="Download">
+									<IconButton
+										color="primary"
+										onClick={() => this.downloadFile(row.userId, row.documentName, row.id)}
+										aria-label="download"
+									>
+										<CloudDownloadIcon />
+									</IconButton>
+								</Tooltip>
+								<EditDeleteTableComponent
+									recordId={row.id}
+									deleteRecord={this.handleDelete}
+									hideEditAction={true}
+									editRecord={() => window.location.replace(`#/dashboard/F85Reports`)}
+								/>
+							</Box>
+						</Fragment>
 					)}
 					</Fragment>
 				)
