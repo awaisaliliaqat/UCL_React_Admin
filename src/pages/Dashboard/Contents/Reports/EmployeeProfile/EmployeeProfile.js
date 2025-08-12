@@ -37,7 +37,8 @@ const styles = (theme) => ({
     },
     boxValue: {
         border : "1px solid black",
-        padding : `${theme.spacing(0.6)}px ${theme.spacing(0)}px ${theme.spacing(0.6)}px ${theme.spacing(0.6)}px`
+        padding : `${theme.spacing(0.6)}px ${theme.spacing(0)}px ${theme.spacing(0.6)}px ${theme.spacing(0.6)}px`,
+        minHeight: 20
     },
     closeButton: {
         position: 'fixed',
@@ -566,7 +567,7 @@ class EmployeeProfile extends Component {
                                                             component="img"
                                                             alt="No Profile Image"
                                                             //height="130"
-                                                            height="170"
+                                                            height="220"
                                                             image={this.state.imageUrl}
                                                             title={data.displayName}
                                                         />
@@ -636,23 +637,22 @@ class EmployeeProfile extends Component {
                                                 <Grid item xs={8} sm={3} md={4}>
                                                     <Box className={classes.boxValue} style={{ textAlign: `${data.shiftLabel ? 'left' : 'center'}` }}>   {data.shiftLabel || "-"} </Box>
                                                 </Grid>
-                                               
+                                                <Grid item xs={4} sm={3} md={2}>
+                                                    <Box className={classes.boxLabel}>Coordination With</Box>
+                                                </Grid>
+                                                <Grid item xs={8} sm={3} md={4}>
+                                                    <Box className={classes.boxValue} style={{ textAlign: `${data.coordinationLabel ? 'left' : 'center'}` }}>   {data.coordinationLabel || "-"} </Box>
+                                                </Grid>
+                                                <Grid item xs={4} sm={3} md={2}>
+                                                    <Box className={classes.boxLabel}>Discipline</Box>
+                                                </Grid>
+                                                <Grid item xs={8} sm={3} md={4}>
+                                                    <Box className={classes.boxValue} style={{textAlign: `${data.discipline ? 'left' : 'center'}` }}>   {data.discipline || "-"} </Box>
+                                                </Grid>
                                                 
                                             </Grid>
                                         </Grid>
                                     </Grid>
-                                </Grid>
-                                 <Grid item xs={4} sm={2} md={2}>
-                                                    <Box className={classes.boxLabel}>Coordination With</Box>
-                                                </Grid>
-                                                <Grid item xs={8} sm={4} md={4}>
-                                                    <Box className={classes.boxValue} style={{ textAlign: `${data.coordinationLabel ? 'left' : 'center'}` }}>   {data.coordinationLabel || "-"} </Box>
-                                                </Grid>
-                                <Grid item xs={4} sm={2}>
-                                    <Box className={classes.boxLabel}>Discipline</Box>
-                                </Grid>
-                                <Grid item xs={8} sm={4} md={4}>
-                                    <Box className={classes.boxValue} style={{textAlign: `${data.discipline ? 'left' : 'center'}` }}>   {data.discipline || "-"} </Box>
                                 </Grid>
                                 <Grid item xs={4} sm={2}>
                                     <Box className={classes.boxLabel}>Bank Account</Box>
