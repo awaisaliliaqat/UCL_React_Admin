@@ -43,11 +43,15 @@ const useStyles = makeStyles(() => ({
     button: {
         textTransform: 'capitalize',
         backgroundColor: '#174A84',
-        fontSize: 14
+        fontSize: 16  ,
+        paddingTop: 6,
+        paddingLeft: 20,  
+        paddingRight: 20,
+
     }
 }));
 
-const AddmissionDecisionFilter = props => {
+const StudentProfileFilter = props => {
     const classes = useStyles();
     const { values, onHandleChange, getDataByStatus, onClearFilters, isLoading, onHandleChangeAS, onHandleChangePG, onHandleChangeProgramme  } = props;
 
@@ -178,13 +182,19 @@ const AddmissionDecisionFilter = props => {
                 </div>
                 <div className={classes.actions}>
                     <Button
-                        variant="contained"
-                        color="primary"
-                        className={classes.button}
-                        // disabled={isLoading}
-                        disabled={values.isLoading || (!values.programmeId && !values.studentId && !values.studentName )}
-                        onClick={() => getDataByStatus()}
-                    > {isLoading ? <CircularProgress style={{ color: 'white' }} size={24} /> : "Search"}</Button>
+                         variant="contained"
+  color="primary"
+  className={classes.button}
+  disabled={values.isLoading || (!values.programmeId && !values.studentId && !values.studentName)}
+  onClick={() => getDataByStatus()}
+>
+  {values.isLoading ? (
+    <CircularProgress style={{ color: 'white' }} size={24} />
+  ) : (
+    "Search"
+  )}
+</Button>
+
                     <Button
                         variant="contained"
                         color="primary"
@@ -205,7 +215,7 @@ const AddmissionDecisionFilter = props => {
     );
 }
 
-AddmissionDecisionFilter.defaultProps = {
+StudentProfileFilter.defaultProps = {
     onHandleChange: fn => fn,
     getDataByStatus: fn => fn,
     values: {},
@@ -221,7 +231,7 @@ AddmissionDecisionFilter.defaultProps = {
 
 };
 
-AddmissionDecisionFilter.propTypes = {
+StudentProfileFilter.propTypes = {
     onHandleChange: PropTypes.func,
     onHandleChangeAS: PropTypes.func,
     onHandleChangePG: PropTypes.func,
@@ -233,4 +243,4 @@ AddmissionDecisionFilter.propTypes = {
     isLoading: PropTypes.bool,
 };
 
-export default AddmissionDecisionFilter;
+export default StudentProfileFilter;

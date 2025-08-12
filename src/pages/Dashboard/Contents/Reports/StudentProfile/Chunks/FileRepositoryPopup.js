@@ -154,40 +154,51 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
     };
 
     const getGradeBookReportsList = async (studentId) => {
-        let data = new FormData();
-        data.append("studentId", studentId);
-        setGradeBookReports( pre => ({...pre, isLoading: true}));
+    console.log("[DEBUG] Fetching grade books for:", studentId); // Debug log
+    let data = new FormData();
+    data.append("studentId", studentId);
+    setGradeBookReports(prev => ({...prev, isLoading: true, error: null}));
+
+    try {
         let url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonStudentDocumentsView/ApprovedGradeBookReportsListView`;
-        await fetch(url, {
+        const response = await fetch(url, {
             method: "POST",
             body: data,
             headers: new Headers({
                 Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
             }),
-        })
-        .then((res) => {
-            if (!res.ok) {
-                throw res;
-            }
-            return res.json();
-        })
-        .then(
-            (result) => {
-                if (result.CODE === 1) {
-                    let data = result.DATA || [];
-                    setGradeBookReports( pre => ({...pre, list: data}));
-                } else {
-                    alert(result.SYSTEM_MESSAGE + "\n" + result.USER_MESSAGE)
-                }
-            },
-            (error) => {
-                alert("Operation Failed, Please try again later");
-                console.log(error);
-            }
-        );
-        setGradeBookReports( pre => ({...pre, isLoading: false}));
-    };
+        });
 
+        if (!response.ok) throw response;
+        const result = await response.json();
+        
+        console.log("[DEBUG] Grade books response:", result); // Debug log
+        
+        if (result.CODE === 1) {
+            const gradeBooks = result.DATA || [];
+            console.log("[DEBUG] Processed grade books:", gradeBooks); // Debug processed data
+            setGradeBookReports(prev => ({
+                ...prev, 
+                list: gradeBooks,
+                isLoading: false
+            }));
+        } else {
+            console.error("API Error:", result.SYSTEM_MESSAGE, result.USER_MESSAGE);
+            setGradeBookReports(prev => ({
+                ...prev,
+                isLoading: false,
+                error: result.USER_MESSAGE
+            }));
+        }
+    } catch (error) {
+        console.error("Failed to fetch grade book reports:", error);
+        setGradeBookReports(prev => ({
+            ...prev,
+            isLoading: false,
+            error: "Failed to load grade book reports"
+        }));
+    }
+};
     const getAssignmentsList = async (studentId) => {
         let data = new FormData();
         data.append("studentId", studentId);
@@ -463,80 +474,94 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                 </Grid>
                 )}
                 <Grid item xs={12}>
-                    <Box
-                        bgcolor="primary.main"
-                        color="primary.contrastText"
-                        display="flex"
-                        justifyContent="space-between"
-                        p={0.5}
-                        style={{
-                            borderTopLeftRadius: 5,
-                            borderTopRightRadius: 5
-                        }}
-                    >
-                        <Box component="span" fontSize={"1.2em"}>GradeBook Reports</Box>
-                        <Box>
-                            {
-                                gradeBookReports?.isLoading ? <CircularProgress style={{ color: 'white', marginTop: 4, marginRight: 8 }} size={18} />
-                                    :
-                                    <IconButton
-                                        size='small'
-                                        className={classnames(classes.expand, { [classes.expandOpen]: expanded[2] })}
-                                        onClick={() => handleExpandClick(2)}
-                                        aria-expanded={expanded[2]}
-                                        aria-label="Show more"
-                                    >
-                                        <ExpandMoreIcon />
-                                    </IconButton>
-                            }
-                        </Box>
-                    </Box>
-                    <Collapse in={expanded[2]} timeout="auto" unmountOnExit>
-                        <Grid container spacing={2} justifyContent='center' alignItems='center'>
-                            <Grid item xs={12}>
-                                <TableContainer component={Paper} style={{ marginTop: 8 }}>
-                                    <Table size="small">
-                                        <TableHead>
-                                            <StyledTableRow>
-                                                <StyledTableCell>Academics Session</StyledTableCell>
-                                                <StyledTableCell>Term</StyledTableCell>
-                                                <StyledTableCell>Programme</StyledTableCell>
-                                                <StyledTableCell>Approved On</StyledTableCell>
-                                                <StyledTableCell align='center' style={{width:50}}>Action</StyledTableCell>
-                                            </StyledTableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {(gradeBookReports?.list || []).length === 0 &&
-                                                <StyledTableRow><StyledTableCell colSpan={5} align="center">No Data</StyledTableCell></StyledTableRow>
-                                            }
-                                            {(gradeBookReports?.list || []).map((doc, idx) => (
-                                                <StyledTableRow key={idx}>
-                                                    <StyledTableCell>{doc.academicsSessionLabel}</StyledTableCell>
-                                                    <StyledTableCell>{doc.sessionTermLabel}</StyledTableCell>
-                                                    <StyledTableCell>{doc.programmeLabel}</StyledTableCell>
-                                                    <StyledTableCell>{doc.approvedOn}</StyledTableCell>
-                                                    <StyledTableCell align='center'>
-                                                        <Tooltip title="Open">
-                                                            <IconButton 
-                                                                style={{padding:6}}
-                                                                component={RouterLink}
-                                                                to={`/R301StudentProgressApprovedReport/${doc.id}`}
-                                                                target="_blank"
-                                                                // onClick={() =>  window.open(`#/R301StudentProgressApprovedReport/${doc.id}`, "_blank") }
-                                                            >
-                                                                <OpenInBrowserOutlinedIcon color='primary' />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                    </StyledTableCell>
-                                                </StyledTableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Grid>
-                        </Grid>
-                    </Collapse>
-                </Grid>
+    <Box
+        bgcolor="primary.main"
+        color="primary.contrastText"
+        display="flex"
+        justifyContent="space-between"
+        p={0.5}
+        style={{
+            borderTopLeftRadius: 5,
+            borderTopRightRadius: 5
+        }}
+    >
+        <Box component="span" fontSize={"1.2em"}>GradeBook Reports</Box>
+        <Box>
+            {gradeBookReports?.isLoading ? (
+                <CircularProgress style={{ color: 'white', marginTop: 4, marginRight: 8 }} size={18} />
+            ) : (
+                <IconButton
+                    size='small'
+                    className={classnames(classes.expand, { [classes.expandOpen]: expanded[2] })}
+                    onClick={() => handleExpandClick(2)}
+                    aria-expanded={expanded[2]}
+                    aria-label="Show more"
+                >
+                    <ExpandMoreIcon />
+                </IconButton>
+            )}
+        </Box>
+    </Box>
+    <Collapse in={expanded[2]} timeout="auto" unmountOnExit>
+        {gradeBookReports.isLoading ? (
+            <Box p={2} textAlign="center">
+                <CircularProgress />
+            </Box>
+        ) : gradeBookReports.error ? (
+            <Box p={2} textAlign="center" color="error.main">
+                {gradeBookReports.error}
+            </Box>
+        ) : (
+            <TableContainer component={Paper} style={{ marginTop: 8 }}>
+                <Table size="small">
+                    <TableHead>
+                        <StyledTableRow>
+                            <StyledTableCell>Academics Session</StyledTableCell>
+                            <StyledTableCell>Term</StyledTableCell>
+                            <StyledTableCell>Programme</StyledTableCell>
+                            <StyledTableCell>Approved On</StyledTableCell>
+                            <StyledTableCell align='center' style={{width:50}}>Action</StyledTableCell>
+                        </StyledTableRow>
+                    </TableHead>
+                    <TableBody>
+                        {gradeBookReports.list?.length > 0 ? (
+                            gradeBookReports.list.map((doc, idx) => (
+                                <StyledTableRow key={idx}>
+                                    <StyledTableCell>{doc.academicsSessionLabel || 'N/A'}</StyledTableCell>
+                                    <StyledTableCell>{doc.sessionTermLabel || 'N/A'}</StyledTableCell>
+                                    <StyledTableCell>{doc.programmeLabel || 'N/A'}</StyledTableCell>
+                                    <StyledTableCell>{doc.approvedOn || 'N/A'}</StyledTableCell>
+                                    <StyledTableCell align='center'>
+                                        {doc.id ? (
+                                            <Tooltip title="Open">
+                                                <IconButton 
+                                                    style={{padding:6}}
+                                                    component={RouterLink}
+                                                    to={`/R301StudentProgressApprovedReport/${doc.id}`}
+                                                    target="_blank"
+                                                >
+                                                    <OpenInBrowserOutlinedIcon color='primary' />
+                                                </IconButton>
+                                            </Tooltip>
+                                        ) : (
+                                            <Typography variant="caption">No link</Typography>
+                                        )}
+                                    </StyledTableCell>
+                                </StyledTableRow>
+                            ))
+                        ) : (
+                            <StyledTableRow>
+                                <StyledTableCell colSpan={5} align="center">
+                                    No grade book reports available
+                                </StyledTableCell>
+                            </StyledTableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        )}
+    </Collapse>
+</Grid>
                 {/* 
                 <Grid item xs={12}>
                     <Box

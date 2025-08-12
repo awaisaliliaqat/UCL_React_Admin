@@ -8,11 +8,12 @@ import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {Collapse, Divider, Grid, Table, Typography, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, LinearProgress} from '@material-ui/core';
+import {Collapse, Divider, Grid, Table, Typography, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, LinearProgress, Box, Card, CardActionArea, CardMedia, CardContent} from '@material-ui/core';
 // import StudentProgressReport from '../../../../Dashboard/Contents/Reports/StudentProfile/Chunks/StudentProgressReport';
 // import StudentProgressReport from './Chunks/StudentProgressReport';
 import StudentProgressSingleSessionReport from './Chunks/StudentProgressSingleSessionReport';
 import classnames from 'classnames';
+import ProfilePlaceholder from "../../../../../assets/Images/ProfilePlaceholder.png";
 
 const styles = (theme) => ({
     closeButton: {
@@ -83,15 +84,10 @@ const styles = (theme) => ({
         marginLeft: '38%',
         justifyContent: 'space-between'
     },
-    tagTitleDoubleColumnContainer: {
-        display: 'flex',
-        marginTop: "1em",
-        //marginLeft: '20%',
-        justifyContent: 'space-evenly'
-    },
     tagTitle: {
+        display: "flex",
         padding: 6,
-        marginBottom: 10,
+        margin: 10,
         width: '100%',
         textAlign: 'center',
         fontSize: 'larger',
@@ -739,7 +735,8 @@ class DisplayAdmissionApplications extends Component {
             yearEndStatus: [],
             achivementDetail: [],
             isTrue: false,
-            expanded: [false,false,false,false,false,false,false,false]
+            expanded: [false,false,false,false,false,false,false,false],
+            imageUrl : ProfilePlaceholder,
         }
     }
 
@@ -820,6 +817,9 @@ class DisplayAdmissionApplications extends Component {
                 this.setState({uolAllAchived: uolAllAchived});
                 let yearEndStatus = json.DATA[0].yearEndStatus || [];
                 this.setState({yearEndStatus: yearEndStatus});
+                if(!!json.DATA[0]?.imageName){
+                    this.getFile(json.DATA[0]?.imageName)
+                }
                 if (json.DATA) {
                     if (json.DATA.length > 0) {
                         this.setState({
@@ -827,75 +827,6 @@ class DisplayAdmissionApplications extends Component {
                         });
                     }
                 }
-                //Start
-                // let tableHeaderData = [];
-                // let attendanceRecordCol = ["Del", "Att", "%Att", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(attendanceRecordCol);
-                // let assignmentGraders = ["1", "2", "3", "4", "5", "6", "7", "8", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(assignmentGraders);
-                // let seminarGrades = ["1", "2", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(seminarGrades);
-                // let subjectiveEvalGradesCol = ["1", "2","3", "4", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(subjectiveEvalGradesCol);
-                // let examMarksCol = ["1", "2", "Credits"];
-                // tableHeaderData = tableHeaderData.concat(examMarksCol);
-                // let creditsCol = ["Poss", "Ach", "%Age"];
-                // tableHeaderData = tableHeaderData.concat(creditsCol);
-                // this.setState({tableHeaderData: tableHeaderData});
-
-                // let tableData = [];
-                // let data = json.DATA[0].studentProgressReport || [];
-                // let dataLength = data.length;
-                // if(dataLength){
-                //   this.setState({
-                //     studentLabel: data[0].studentLabel,
-                //     programmeLabel: data[0].programmeLabel,
-                //     academicSessionLabel: data[0].academicsSessionLabel,
-                //     // uptoDate: this.getDateInString(),
-                //     totalPOS: data[0].totalPOS,
-                //     totalAchieved: data[0].totalAchieved,
-                //     totalPercentage: data[0].totalPercentage,
-                //     resultClassification:  data[0].resultClassification,
-                //   });
-                //   let coursesData = data[0].studentCoursesData || [];
-                //   let coursesDataLength = coursesData.length;
-                //   if(coursesDataLength){
-                //     for(let i=0; i<coursesDataLength; i++){
-                //       let tableDataRow = [];
-                //       tableDataRow.push(coursesData[i].courseLabel);  // col-1
-                //       let attendance = coursesData[i].attendance[0];
-                //       tableDataRow.push(attendance.deliveredLectures);  // col-2
-                //       tableDataRow.push(attendance.attendenedlectures);  // col-3
-                //       tableDataRow.push(attendance.attandancePercentage);  // col-4
-                //       tableDataRow.push(attendance.attandanceCredit);  // col-5
-                //       let assignment = coursesData[i].assignment;
-                //       assignment.map((data, index) =>
-                //         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.credit) // col-6 => col-14
-                //       );
-                //       let seminarEvaluation = coursesData[i].seminarEvaluation;
-                //       seminarEvaluation.map((data, index) =>
-                //         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-15 => col-17
-                //       );
-                //       let subjectiveEvaluation = coursesData[i].subjectiveEvaluation;
-                //       subjectiveEvaluation.map((data, index) =>
-                //         data.grade ? tableDataRow.push(data.grade) : tableDataRow.push(data.totalCredits) // col-18 => col-22
-                //       );
-                //       let examsEvaluation = coursesData[i].examsEvaluation;
-                //       examsEvaluation.map((data, index) =>
-                //         data.marks ? tableDataRow.push(data.marks) : tableDataRow.push(data.totalCredits) // col-23 => col-25
-                //       );
-                //       let credits = coursesData[i].credits[0];
-                //       tableDataRow.push(credits.poss); // col-26
-                //       tableDataRow.push(credits.achieved); // col-27
-                //       tableDataRow.push(credits.totalCredits); // col-28
-                //       let transcriptGrade = coursesData[i].internalGrade[0].grade;
-                //       tableDataRow.push(transcriptGrade); // col-29
-                //       tableData[i] = tableDataRow; 
-                //     }
-                //   }
-                //   this.setState({tableData: tableData});
-                // }          
-                //End
             } else {
                 alert(json.USER_MESSAGE + '\n' + json.SYSTEM_MESSAGE)
             }
@@ -917,6 +848,47 @@ class DisplayAdmissionApplications extends Component {
 
     }
 
+    getFile = (fileName) => {
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonFileViewByFullPath?filePathWithName=${encodeURIComponent(fileName)}`;
+        fetch(url, {
+            method: "GET",
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+            }
+        })
+        .then((res) => {
+            if (res.ok) {
+                return res.blob();
+            } else if (res.status === 401) {
+                throw new Error("Unauthorized");
+            } else if (res.status === 404) {
+                this.handleOpenSnackbar("File not found.", "error");
+                throw new Error("File not found");
+            } else {
+                this.handleOpenSnackbar("Operation failed. Please try again later.", "error");
+                throw new Error(`Download failed with status ${res.status}`);
+            }
+        })
+        .then((blob) => {
+            if (!blob) return; // Skip if aborted or errored
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                this.setState({ imageUrl: reader.result });
+            };
+            reader.readAsDataURL(blob);
+        })
+        .catch((error) => {
+            if (error.name === "AbortError") {
+                this.handleOpenSnackbar("Download cancelled.", "warning");
+            } else {
+                console.error("Download error:", error);
+            }
+        })
+        .finally(() => {
+            
+        });
+    };
+
     handleExpandClick = (index) => {
         let expanded = [...this.state.expanded];
         expanded[index] = !expanded[index];
@@ -933,19 +905,9 @@ class DisplayAdmissionApplications extends Component {
         const { classes } = this.props;
         const { data } = this.state;
         const { studentProgressReport } = data;
-        const { allCategoriesYearWise = [],enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], yearEndStatus=[], studentStatusSummary=[]} = data;
+        const { allCategoriesYearWise = [], enrolledCourses = [], enrolledSections = [], assignmentsSubmitted=[], gradedDiscussionsBoard=[], studentAttendance=[], uolEnrollmentMarks=[], uolAllAchived=[], yearEndStatus=[], studentStatusSummary=[]} = data;
         return (
             <Fragment>
-                {/* 
-                {this.state.isLoading &&
-                    <div className={classes.overlay}>
-                        <div className={classes.overlayContent}>
-                            <CircularProgress style={{ marginBottom: 10, color: 'white' }} size={36} />
-                            <span>Loading...</span>
-                        </div>
-                    </div>
-                } 
-                */}
                 <div 
                     style={{
                         margin:"10px 10px 0px 10px"
@@ -954,6 +916,7 @@ class DisplayAdmissionApplications extends Component {
                     <IconButton onClick={() => window.close()} aria-label="close" className={classes.closeButton}>
                         <CloseIcon color="secondary"/>
                     </IconButton>
+                    
                     <div className={classes.headerContainer}>
                         <img alt="" src={Logo} width={100} />
                         <div className={classes.titleContainer}>
@@ -961,30 +924,30 @@ class DisplayAdmissionApplications extends Component {
                             <span className={classes.subTitle}>(a project of UCL pvt Ltd)</span>
                         </div>
                     </div>
-                    <div className={classes.tagTitleDoubleColumnContainer}>
-                        <div className={classes.flexColumn} style={this.state.isLoading ? { width:"14em"} : null}>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>{data.degreeLabel || "N/A"}</span> }</span>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Joining Date: {data.joiningDate || "--/--/----" }</span> }</span>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>{data.isActive==1? "Active": "Deactive"}</span> }</span>
-                        </div>
-                        <div className={classes.flexColumn} style={this.state.isLoading ? { width:"14em"} : null}>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Uol #: {data.uolNumber || "N/A"}</span> }</span>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Last Attended Date: {data.lastAttendedDate || "--/--/----" }</span> }</span>
-                            {data.isActive==0 && data.statusChangeReason!==""?
-                                <span className={classes.tagTitle}>Reason: { data.statusChangeReason}</span>
-                                :
-                                ""
-                            }
-                        </div>
-                        <div className={classes.flexColumn} style={this.state.isLoading ? { width:"14em"} : null}>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Nucleus ID: {data.studentId || "N/A"}</span> }</span>
-                            <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{height:24}} /> : <span>Exit Date: {data.exitDate || "--/--/----"} </span> }</span>
-                            {data.isActive==0 && data.statusChangeDate!==""?
-                                <span className={classes.tagTitle}>Deactived On: {data.statusChangeDate}</span>
-                                :
-                                ""
-                            }
-                        </div>
+                    
+                    <Grid container justifyContent='center' alignContent='center'>
+                        <Grid item xs={12} sm={3}>
+                            <br/>
+                            <br/>
+                            <Box display="flex" color="#FFF" bgcolor="#2f57a5" p={1} m={1}>{this.state.isLoading ? <LinearProgress style={{height:24, width:"100%"}} /> : <span>{data.degreeLabel || "N/A"}</span> }</Box>
+                            <Box display="flex" color="#FFF" bgcolor="#2f57a5" p={1} m={1}>{this.state.isLoading ? <LinearProgress style={{height:24, width:"100%"}} /> : <span>Joining Date: {data.joiningDate || "--/--/----" }</span> }</Box>
+                            <Box display="flex" color="#FFF" bgcolor="#2f57a5" p={1} m={1}>{this.state.isLoading ? <LinearProgress style={{height:24, width:"100%"}} /> : <span>{data.isActive==1? "Active": "Deactive"}</span> }</Box>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <br/>
+                            <br/>
+                            <Box display="flex" color="#FFF" bgcolor="#2f57a5" p={1} m={1}>{this.state.isLoading ? <LinearProgress style={{height:24, width:"100%"}} /> : <span>Uol #: {data.uolNumber || "N/A"}</span> }</Box>
+                            <Box display="flex" color="#FFF" bgcolor="#2f57a5" p={1} m={1}>{this.state.isLoading ? <LinearProgress style={{height:24, width:"100%"}} /> : <span>Last Attended Date: {data.lastAttendedDate || "--/--/----" }</span> }</Box>
+                            {data.isActive==0 && data.statusChangeReason!==""? <Box display="flex" color="#FFF" bgcolor="#2f57a5" p={1} m={1}>Reason: { data.statusChangeReason}</Box> : ""}
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                            <br/>
+                            <br/>
+                            <Box display="flex" color="#FFF" bgcolor="#2f57a5" p={1} m={1}>{this.state.isLoading ? <LinearProgress style={{height:24, width:"100%"}} /> : <span>Nucleus ID: {data.studentId || "N/A"}</span> }</Box>
+                            <Box display="flex" color="#FFF" bgcolor="#2f57a5" p={1} m={1}>{this.state.isLoading ? <LinearProgress style={{height:24, width:"100%"}} /> : <span>Exit Date: {data.exitDate || "--/--/----"} </span> }</Box>
+                            {data.isActive==0 && data.statusChangeDate!==""? <Box display="flex" color="#FFF" bgcolor="#2f57a5" p={1} m={1}>Deactived On: {data.statusChangeDate}</Box> : "" }
+                        </Grid>
+                        {/* 
                         <div style={{
                             display: "flex",
                             flexDirection: "column"
@@ -994,9 +957,30 @@ class DisplayAdmissionApplications extends Component {
                         }}>
                         </div>    
                         <span className={classes.tagTitle}>{this.state.isLoading ? <LinearProgress style={{ height: 24}} /> : <span>{data.displayName || "N/A"}</span> }</span>
-                        </div>
-                        
-                    </div>
+                        </div> 
+                        */}
+                        <Grid item xs={12} sm>
+                            <Box display="flex" justifyContent="flex-end" alignItems="center" >
+                                <Card style={{ minWidth: 170 }}>
+                                    <CardActionArea>
+                                        <CardMedia
+                                            component="img"
+                                            alt="No Profile Image"
+                                            //height="130"
+                                            height="170"
+                                            image={this.state.imageUrl}
+                                            title={data.displayName}
+                                        />
+                                        <CardContent style={{padding: "4px 8px 0px 8px"}}>
+                                            <Typography gutterBottom variant="h6" component="h2" align='center'>
+                                                {this.state.isLoading ? <LinearProgress style={{ height: 24}} /> : <span>{data?.displayName || "N/A"}</span> }
+                                            </Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Box>
+                        </Grid>
+                    </Grid>
                     <div className={classes.flexColumn}>
                         <div className={classes.collapseSectionHeader}>
                             <span style={{
@@ -1086,9 +1070,9 @@ class DisplayAdmissionApplications extends Component {
                                 </IconButton>
                                 }
                             </span>
-                        </div>
-                        <Collapse in={this.state.expanded[7]} timeout="auto" unmountOnExit>
-                        <div style={{margin:"1em"}}>
+                         </div>
+                         <Collapse in={this.state.expanded[7]} timeout="auto" unmountOnExit>
+                         <div style={{margin:"1em"}}>
                             {allCategoriesYearWise.map( (data, index) =>
                             <Fragment key={"allCategoriesYearWise"+index}>
                             {/* <div>{data.achivementDetailTitle+" "+data.sessionLabel}</div> */}
@@ -1127,8 +1111,8 @@ class DisplayAdmissionApplications extends Component {
                               <br/>
                               </Fragment>
                             )}
-                        </div>
-                        </Collapse>
+                         </div>
+                         </Collapse>
                         <Fragment>
                           <div>
                           {allCategoriesYearWise.map( (data, index) =>
@@ -1140,8 +1124,8 @@ class DisplayAdmissionApplications extends Component {
                             />
                             )}
                            </div>     
-                        </Fragment>
-                        <div className={classes.collapseSectionHeader}>
+                       </Fragment>
+                         <div className={classes.collapseSectionHeader}>
                             <span style={{
                                 fontSize: 'larger'
                             }}>
@@ -1166,9 +1150,9 @@ class DisplayAdmissionApplications extends Component {
                                 </IconButton>
                                 }
                             </span>
-                        </div>
-                        <Collapse in={this.state.expanded[0]} timeout="auto" unmountOnExit>
-                        <div className={classes.fieldValuesContainer}>
+                         </div>
+                          <Collapse in={this.state.expanded[0]} timeout="auto" unmountOnExit>
+                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1192,9 +1176,9 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.sessionLabel || "-"}
                             </div>
-                        </div>
-                        {/* 
-                        <div className={classes.fieldValuesContainer}>
+                         </div>
+                         {/* 
+                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1218,9 +1202,9 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.exitDate || "-"}
                             </div>
-                        </div>    
-                        */}
-                        <div className={classes.fieldValuesContainer} >
+                         </div>    
+                         */}
+                           <div className={classes.fieldValuesContainer} >
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1261,8 +1245,8 @@ class DisplayAdmissionApplications extends Component {
                             }}>
                                 {data.displayName || "-"}
                             </div>
-                        </div>
-                        <div className={classes.fieldValuesContainer}>
+                         </div>
+                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1286,9 +1270,9 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.genderLabel || "-"}
                             </div>
-                        </div>
+                         </div>
 
-                        <div className={classes.fieldValuesContainer}>
+                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1312,9 +1296,9 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.studentIdentityNo || "-"}
                             </div>
-                        </div>
+                         </div>
 
-                        <div className={classes.fieldValuesContainer}>
+                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1338,8 +1322,8 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.email || "-"}
                             </div>
-                        </div>
-                        <div className={classes.fieldValuesContainer}>
+                          </div>
+                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1375,8 +1359,8 @@ class DisplayAdmissionApplications extends Component {
                             }} className={classes.value}>
                                 {data.maritalStatusLabel || "-"}
                             </div> */}
-                        </div>
-                        <div className={classes.fieldValuesContainer}>
+                         </div>
+                         <div className={classes.fieldValuesContainer}>
                             <div className={classes.valuesContainer} style={{
                                 width: '20%',
                                 textAlign: 'center'
@@ -1395,13 +1379,13 @@ class DisplayAdmissionApplications extends Component {
                                 >
                                     <span className={classes.tagValue}>{data.isAnyMedicalCondition === 1 ? 'Yes' : 'No'}</span>
                                 </div>
-                        {data.isAnyMedicalCondition === 1 && (<Fragment>
+                         {data.isAnyMedicalCondition === 1 && (<Fragment>
                             <div className={classes.valuesContainer}>
                                 <span style={{
                                     fontSize: 'larger'
                                 }}>
                                     Emergency Contact Details
-                        </span>
+                         </span>
                             </div>
 
                             <div className={classes.fieldValuesContainer}>
@@ -2289,7 +2273,7 @@ class DisplayAdmissionApplications extends Component {
                             <YearEndStatus 
                                 key={"sessionAchievementsData"+index}
                                 classes={classes}
-                                data={data}
+                                data={data} 
                                 isOpen={ index==0 ? true : false}
                             />
                             )}
