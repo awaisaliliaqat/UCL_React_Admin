@@ -373,7 +373,7 @@ class StudentProfile extends Component {
       { name: "bloodGroupLabel", title: "Blood Group"},
       { name: "maritalStatusLabel", title: "Marital Status"},
       { name: "medicalCondition", title: "Medical Condition", getCellValue: (row) => (row.isAnyMedicalCondition === 1 ? "Yes" : "No") },
-      { name: "medicalCondition", title: "Medical Condition Details"},
+      { name: "medicalConditionDetails", title: "Medical Condition Details"},
       { name: "emergencyContactPersonName", title: "Emergency Contact Name"},
       { name: "emergencyContactRelationshipLabel", title: "Emergency Contact Relationship"},
       { name: "emergencyContactNumber", title: "Emergency Contact Number"},
