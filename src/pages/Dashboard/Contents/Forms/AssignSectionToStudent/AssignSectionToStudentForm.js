@@ -808,7 +808,7 @@ class AssignSectionToStudentForm extends Component {
                             <TextField
                                 id="assigneTutorialSectionId"
                                 name="assigneTutorialSectionId"
-                                label="Assigne Tutorial Section"
+                                label="Assigne (Tutorial / Practical) Section"
                                 required
                                 fullWidth
                                 variant="outlined"
