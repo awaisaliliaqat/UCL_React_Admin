@@ -346,7 +346,7 @@ class StudentProgressReport extends Component {
                 size="small"
                 className={classes.table}
                 aria-label="customized table"
-                size="small"
+                //size="small"
               >
                 <TableHead>
                   <TableRow>
