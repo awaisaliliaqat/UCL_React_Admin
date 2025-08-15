@@ -7,6 +7,9 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import EditDeleteTableComponent from "../../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
 import F84ReportsTableComponent from "./Chunks/F84ReportsTableComponent";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { format } from "date-fns";
 
 const styles = () => ({
 	root: {
@@ -74,26 +77,38 @@ class F84Reports extends Component {
 			.then(
 				(json) => {
 					if (json.CODE === 1) {
-						let expandedGroupsData = [];
-						for (let i = 0; i < json.DATA.length; i++) {
-							const id = json.DATA[i].id;
-             				expandedGroupsData.push(json.DATA[i].userLabel);
-							json.DATA[i].action = (
-								<EditDeleteTableComponent
-									recordId={id}
-									deleteRecord={this.DeleteData}
-									editRecord={() =>
-										window.location.replace(
-											`#/dashboard/define-employees/${id}`
-										)
-									}
-								/>
+						const rows = Array.isArray(json.DATA) ? json.DATA : [];
+						const expandedGroupsData = rows.map(r => r.userLabel);
+						rows.forEach((r, i) => {
+							const { userId, fromDate } = r;
+							r.action = (
+								// <EditDeleteTableComponent
+								// 	recordId={fromDate}
+								// 	deleteRecord={this.DeleteData}
+								// 	editRecord={() =>
+								// 		window.location.replace(`#/dashboard/F84Form/${userId}/${fromDate}`)
+								// 	}
+								// />
+								<Fragment key={"edit-delete-"+i}>
+									<Tooltip title="Edit">
+										<IconButton
+											onClick={() => window.location.replace(`#/dashboard/F84Form/${userId}/${fromDate ? fromDate : 0}`)}
+										>
+											<EditIcon style={{color:"#ff9800"}} fontSize="small" />
+										</IconButton>
+									</Tooltip>
+									<Tooltip title="Delete">
+										<IconButton
+											onClick={() => this.deleteData(userId, fromDate)}	
+										>
+											<DeleteIcon fontSize="small" color="error" />
+										</IconButton>
+									</Tooltip>
+								</Fragment>
+								
 							);
-						}
-						this.setState({
-							admissionData: json.DATA || [],
-							expandedGroupsData
 						});
+						this.setState({ admissionData: rows, expandedGroupsData });
 					} else {
 						this.handleOpenSnackbar(
 							json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
@@ -122,10 +137,13 @@ class F84Reports extends Component {
 		});
 	};
 
-	DeleteData = async (event) => {
-		event.preventDefault();
-		const data = new FormData(event.target);
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C23CommonUsersDeleteV2`;
+	deleteData = async (userId, fromDate) => {
+		const data = new FormData();
+		data.append("userId", userId);
+		if (fromDate) {
+			data.append("fromDate", format(new Date(parseInt(fromDate, 10)), "dd-MM-yyyy"));
+ 		}
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C84CommonEmployeesRolesAssignment/DeleteByUserIdAndFromDate`;
 		await fetch(url, {
 			method: "POST",
 			body: data,
@@ -139,18 +157,19 @@ class F84Reports extends Component {
 				}
 				return res.json();
 			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.handleOpenSnackbar("Deleted", "success");
-						this.getData();
-					} else {
-						this.handleOpenSnackbar(
-							json.SYSTEM_MESSAGE + "\n" + json.USER_MESSAGE,
-							"error"
+			.then((json) => {
+					const {CODE, USER_MESSAGE, SYSTEM_MESSAGE} = json;
+					if (CODE === 1) {
+						const admissionData = this.state.admissionData || [];
+						const updated = admissionData.filter(
+   							obj => !(Number(obj.userId) === Number(userId) && String(obj.fromDate) === String(fromDate))
 						);
+						this.setState({ admissionData: updated });
+						this.handleOpenSnackbar(USER_MESSAGE, "success");
+						//this.getData();
+					} else {
+						this.handleOpenSnackbar(<span>{SYSTEM_MESSAGE}<br/>{USER_MESSAGE}</span>, "error");
 					}
-					console.log(json);
 				},
 				(error) => {
 					if (error.status === 401) {
@@ -211,12 +230,13 @@ class F84Reports extends Component {
 				getCellValue : (rowData) => {
 					return (rowData.departments || []).map((obj, index) => ( obj.label+'\n' ))
 				}
-			 },
+			},
 			{ name: "subDepartments", title: "Sub Departments",
 				getCellValue : (rowData) => {
 					return (rowData.subDepartments || []).map((obj, index) => ( obj.label+'\n' ))
 				}
-			 }
+			},
+			{ name: "action", title: "Action"}
 		];
 
 		return (
@@ -247,7 +267,7 @@ class F84Reports extends Component {
 							<Tooltip title="Back">
 								<IconButton
 									onClick={() =>
-										window.location.replace("#/dashboard/F84Form")
+										window.location.replace("#/dashboard/F84Form/0/0")
 									}
 								>
 									<ArrowBackIcon fontSize="small" color="primary" />

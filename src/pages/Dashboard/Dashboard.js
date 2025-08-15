@@ -1857,7 +1857,7 @@ const Dashboard = (props) => {
 								setValue={(value) => handleValueChange(value)}
 								name="F84Form"
 								exact
-								path="/dashboard/F84Form"
+								path="/dashboard/F84Form/:userId/:fromDate"
 								render={(props) => {
 									return (
 										<F84Form
