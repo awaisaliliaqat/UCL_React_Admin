@@ -82,12 +82,14 @@ class DefineEmployeeReportsTableComponent extends Component {
 		const NoDataRow = () => (
 			<TableRow>
 				<TableCell colSpan={columns.length} style={{ textAlign: "center", padding: "20px" }}>
-					{isLoading ? (
-						<>
+					{isLoading ? 
+						Array(5).fill(0).map((_,index) =>
+						<React.Fragment key={"fill-"+index}>
 							<Skeleton />
 							<Skeleton animation={false} />
 							<Skeleton animation="wave" />
-						</>
+							<br/>
+						</React.Fragment>
 					) : (
 						<Box color="primary.light" fontSize="1rem">No Data</Box>
 					)}

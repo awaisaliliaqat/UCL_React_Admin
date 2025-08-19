@@ -115,6 +115,8 @@ import F84Reports from "./Contents/Forms/F84Form/F84Reports";
 import F85Form from "./Contents/Forms/F85Form/F85Form";
 import F85Reports from "./Contents/Forms/F85Form/F85Reports";
 import R86Reports from "./Contents/Reports/R86Reports/R86Reports";
+import F87Form from "./Contents/Forms/F87Form/F87Form";
+import F87Reports from "./Contents/Forms/F87Form/F87Reports";
 import EmployeeProfile from "./Contents/Reports/EmployeeProfile/EmployeeProfile";
 import StudentProfile from "./Contents/Reports/StudentProfile/StudentProfile";
 import ChangeStudentProgramme from "./Contents/Reports/ChangeStudentProgramme/ChangeStudentProgramme";
@@ -1936,6 +1938,36 @@ const Dashboard = (props) => {
 								render={(props) => {
 									return (
 										<EmployeeProfile
+											{...props}
+											isDrawerOpen={isDrawerOpen}
+											setDrawerOpen={setDrawerOpen}
+										/>
+									);
+								}}
+							/>
+							<SetRoute
+								setValue={(value) => handleValueChange(value)}
+								name="F87Form"
+								exact
+								path="/dashboard/F87Form"
+								render={(props) => {
+									return (
+										<F87Form
+											{...props}
+											isDrawerOpen={isDrawerOpen}
+											setDrawerOpen={setDrawerOpen}
+										/>
+									);
+								}}
+							/>
+							<SetRoute
+								setValue={(value) => handleValueChange(value)}
+								name="F87Form"
+								exact
+								path="/dashboard/F87Reports"
+								render={(props) => {
+									return (
+										<F87Reports
 											{...props}
 											isDrawerOpen={isDrawerOpen}
 											setDrawerOpen={setDrawerOpen}
