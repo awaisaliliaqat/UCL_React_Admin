@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Paper, Box, CircularProgress, TableRow, TableCell, Button } from "@material-ui/core"; // Import loader component
 import { FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
-import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow, ColumnChooser, TableColumnVisibility, Toolbar } from "@devexpress/dx-react-grid-material-ui";
+import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow, ColumnChooser, TableColumnVisibility, Toolbar, VirtualTable } from "@devexpress/dx-react-grid-material-ui";
 import PropTypes from "prop-types";
 import { Skeleton } from "@material-ui/lab";
 import ExcelJS from "exceljs";
@@ -59,8 +59,13 @@ class R86ReportsTableComponent extends Component {
 			filteringStateColumnExtensions: [
 				{ columnName: "action", filteringEnabled: false },
 			],
+			tableHeight: Math.max(240, Math.round(window.innerHeight * 0.7)),
 		};
 	}
+
+	updateTableHeight = () => {
+		this.setState({ tableHeight: Math.max(240, Math.round(window.innerHeight * 0.7)) });
+	};
 
 	exportToExcel = async () => {
 		const { rows, columns } = this.props;
@@ -154,6 +159,16 @@ class R86ReportsTableComponent extends Component {
 		saveAs(blob, `Employee_Profile_${dateStr}.xlsx`);
 	};
 
+	componentDidMount() {
+		// if you already have componentDidMount, just add these lines in it
+		window.addEventListener("resize", this.updateTableHeight);
+		this.updateTableHeight(); // ensure correct on first render
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener("resize", this.updateTableHeight);
+	}
+
 	render() {
 		
 		const cellComponent = ({ cellProps, ...restProps }) => {
@@ -215,8 +230,9 @@ class R86ReportsTableComponent extends Component {
 					<PagingState defaultCurrentPage={0} defaultPageSize={pageSizes[0]} />
 					<IntegratedFiltering />
 					<IntegratedSorting />
-					<IntegratedPaging />
-					<Table
+					{/* <IntegratedPaging /> */}
+					<VirtualTable
+						height={this.state.tableHeight}
 						noDataRowComponent={NoDataRow}
 						cellComponent={cellComponent}
 						columnExtensions={tableColumnExtensions}
@@ -241,7 +257,7 @@ class R86ReportsTableComponent extends Component {
 					<Toolbar />
 					<ColumnChooser />
 					{showFilter && <TableFilterRow showFilterSelector={true} />}
-					<PagingPanel pageSizes={pageSizes} />
+					{/* <PagingPanel pageSizes={pageSizes} /> */}
 				</Grid>
 			</Paper>
 		);
