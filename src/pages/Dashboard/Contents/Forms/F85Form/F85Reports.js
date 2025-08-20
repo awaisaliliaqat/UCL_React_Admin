@@ -11,6 +11,8 @@ import { format } from "date-fns";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { CircularProgress } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
+import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
+import F85ReportsFilePreviewComponent from "./Chunks/F85ReportsFilePreviewComponent";
 
 const styles = () => ({
 	root: {
@@ -39,7 +41,11 @@ class F85Reports extends Component {
 			snackbarSeverity: "",
 			expandedGroupsData: [],
 			downloadingFileId : null,
-			abortController : null
+			abortController : null,
+			viewerOpen: false,
+			viewerUrl: null,
+			viewerType: "",
+			viewerFileName: ""
 		};
 	}
 
@@ -223,6 +229,101 @@ class F85Reports extends Component {
 		}, 100); // 100ms delay to allow state clearing
 	};
 
+	getMimeFromFilename = (name = "") => {
+		const ext = (name.split(".").pop() || "").toLowerCase();
+		switch (ext) {
+			case "pdf":
+				return "application/pdf";
+
+			case "png":
+				return "image/png";
+			case "jpg":
+			case "jpeg":
+				return "image/jpeg";
+			case "gif":
+				return "image/gif";
+			case "webp":
+				return "image/webp";
+			case "svg":
+				return "image/svg+xml";
+
+			case "txt":
+				return "text/plain";
+			case "csv":
+				return "text/csv";
+
+			// Word
+			case "doc":
+				return "application/msword";
+			case "docx":
+				return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+			case "dot":
+				return "application/msword";
+			case "dotx":
+				return "application/vnd.openxmlformats-officedocument.wordprocessingml.template";
+
+			// Excel
+			case "xls":
+			case "xlt": // legacy template
+				return "application/vnd.ms-excel";
+			case "xlsx":
+				return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+			case "xlsm":
+				return "application/vnd.ms-excel.sheet.macroEnabled.12";
+			case "xlsb":
+				return "application/vnd.ms-excel.sheet.binary.macroEnabled.12";
+			case "xltx":
+				return "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
+			case "xltm":
+				return "application/vnd.ms-excel.template.macroEnabled.12";
+
+			default:
+				return "application/octet-stream";
+		}
+	};
+
+	previewInApp = (userId, fileName, rowId) => {
+		if (this.state.abortController && typeof this.state.abortController.abort === "function") {
+			this.state.abortController.abort();
+		}
+		const controller = new AbortController();
+		const signal = controller.signal;
+		this.setState({ downloadingFileId: rowId, abortController: controller });
+
+		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonUsersDocumentsFileView?userId=${encodeURIComponent(userId)}&fileName=${encodeURIComponent(fileName)}`;
+
+		fetch(url, {
+			method: "GET",
+			headers: { Authorization: "Bearer " + localStorage.getItem("uclAdminToken") },
+			signal
+		})
+			.then(res => {
+				if (!res.ok) {
+					if (res.status === 401) this.setState({ isLoginMenu: true, isReload: false });
+					if (res.status === 404) this.handleOpenSnackbar("File not found.", "error");
+					throw new Error(`HTTP ${res.status}`);
+				}
+				const ct = res.headers.get("Content-Type") || this.getMimeFromFilename(fileName);
+				return res.arrayBuffer().then(buf => new Blob([buf], { type: ct }));
+			})
+			.then(blob => {
+				const blobUrl = URL.createObjectURL(blob);
+				this.setState({
+					viewerOpen: true,
+					viewerUrl: blobUrl,
+					viewerType: blob.type || this.getMimeFromFilename(fileName),
+					viewerFileName: fileName
+				});
+			})
+			.catch(err => {
+				if (err.name === "AbortError") this.handleOpenSnackbar("Operation cancelled.", "warning");
+				else this.handleOpenSnackbar("Failed to open file.", "error");
+				console.error(err);
+			})
+			.finally(() => this.setState({ downloadingFileId: null, abortController: null }));
+	};
+
+
 	onHandleChange = (e) => {
 		const { name, value } = e.target;
 		this.setState({
@@ -267,6 +368,15 @@ class F85Reports extends Component {
 					) : (
 						<Fragment>
 							<Box display="flex" alignItems="center">
+								<Tooltip title="Preview">
+									<IconButton
+										color="primary"
+										onClick={() => this.previewInApp(row.userId, row.documentName, row.id)}
+										aria-label="open"
+									>
+										<OpenInBrowserIcon />
+									</IconButton>
+								</Tooltip>
 								<Tooltip title="Download">
 									<IconButton
 										color="primary"
@@ -353,6 +463,79 @@ class F85Reports extends Component {
 					message={this.state.snackbarMessage}
 					severity={this.state.snackbarSeverity}
 					handleCloseSnackbar={() => this.handleCloseSnackbar()}
+				/>
+				{/* 				
+				{this.state.viewerOpen && (
+					<div
+						style={{
+							position: "fixed", inset: 0, background: "#0009", zIndex: 9999,
+							display: "flex", alignItems: "center", justifyContent: "center"
+						}}
+						onClick={() => {
+							if (this.state.viewerUrl) URL.revokeObjectURL(this.state.viewerUrl);
+							this.setState({ viewerOpen: false, viewerUrl: null, viewerType: "", viewerFileName: "" });
+						}}
+					>
+						<div
+							style={{ position: "relative", width: "90vw", height: "90vh", background: "#fff", boxShadow: "0 10px 30px rgba(0,0,0,.3)" }}
+							onClick={e => e.stopPropagation()}
+						>
+							<div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderBottom: "1px solid #eee" }}>
+								<Typography variant="subtitle1" style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+									{this.state.viewerFileName}
+								</Typography>
+								<IconButton
+									size="small"
+									onClick={() => {
+										const a = document.createElement("a");
+										a.href = this.state.viewerUrl;
+										a.download = this.state.viewerFileName || "file";
+										a.click();
+									}}
+								>
+									<CloudDownloadIcon />
+								</IconButton>
+								<IconButton
+									size="small"
+									onClick={() => {
+										if (this.state.viewerUrl) URL.revokeObjectURL(this.state.viewerUrl);
+										this.setState({ viewerOpen: false, viewerUrl: null, viewerType: "", viewerFileName: "" });
+									}}
+								>
+									<ArrowBackIcon />
+								</IconButton>
+							</div>
+
+							<div style={{ position: "absolute", inset: "48px 0 0 0" }}>
+								{this.state.viewerType === "application/pdf" ? (
+									<object data={this.state.viewerUrl} type="application/pdf" style={{ width: "100%", height: "100%", border: 0 }}>
+										<iframe src={this.state.viewerUrl} title="preview" style={{ width: "100%", height: "100%", border: 0 }} />
+									</object>
+								) : this.state.viewerType.startsWith("image/") ? (
+									<img src={this.state.viewerUrl} alt={this.state.viewerFileName} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+								) : (
+									<iframe src={this.state.viewerUrl} title="preview" style={{ width: "100%", height: "100%", border: 0 }} />
+								)}
+							</div>
+						</div>
+					</div>
+				)} 
+				*/}
+				<F85ReportsFilePreviewComponent
+					open={this.state.viewerOpen}
+					url={this.state.viewerUrl}
+					type={this.state.viewerType}
+					name={this.state.viewerFileName}
+					onDownload={() => {
+						const a = document.createElement("a");
+						a.href = this.state.viewerUrl;
+						a.download = this.state.viewerFileName || "file";
+						a.click();
+					}}
+					onClose={() => {
+						if (this.state.viewerUrl) URL.revokeObjectURL(this.state.viewerUrl);
+						this.setState({ viewerOpen: false, viewerUrl: null, viewerType: "", viewerFileName: "" });
+					}}
 				/>
 			</Fragment>
 		);

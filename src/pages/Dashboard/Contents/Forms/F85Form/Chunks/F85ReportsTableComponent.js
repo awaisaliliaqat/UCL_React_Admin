@@ -7,7 +7,6 @@ import { Grid, PagingPanel, VirtualTable, TableFilterRow, TableHeaderRow, TableG
 class F85ReportsTableComponent extends Component {
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			columns: [],
 			rows: [],
@@ -31,11 +30,13 @@ class F85ReportsTableComponent extends Component {
 				{ columnName: "id", width: 80 },
 				{ columnName: "userId", width: 80 },
 				{ columnName: "userLabel", wordWrapEnabled: true },
+				{ columnName: "documentName", wordWrapEnabled: true },
+				{ columnName: "fileName", wordWrapEnabled: true },
 				{ columnName: "description", wordWrapEnabled: true },
 				{ columnName: "uploadedByLabel", width: 125 },
 				{ columnName: "uploadedOn", width: 125, align:"center", wordWrapEnabled: true },
 				{ columnName: "downloadLink", width: 100, align:"center" },
-				{ columnName: "action", width: 110, align:"center" },
+				{ columnName: "action", width: 160, align:"center" },
 			],
 			resizingMode: "widget",
 			defaultFilters: [],
@@ -123,7 +124,7 @@ class F85ReportsTableComponent extends Component {
 					<TableGroupRow 
 						showColumnsWhenGrouped
 					/>
-					{showFilter ? <TableFilterRow showFilterSelector={false} /> : ""}
+					{showFilter ? <TableFilterRow showFilterSelector={true} /> : ""}
 					{/* <PagingPanel pageSizes={pageSizes} /> */}
 				</Grid>
 			</Paper>
