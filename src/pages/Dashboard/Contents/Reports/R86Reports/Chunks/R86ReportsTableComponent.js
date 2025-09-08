@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Paper, Box, CircularProgress, TableRow, TableCell, Button } from "@material-ui/core"; // Import loader component
 import { FilteringState, IntegratedFiltering, IntegratedPaging, IntegratedSorting, PagingState, SortingState, } from "@devexpress/dx-react-grid";
-import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow, ColumnChooser, TableColumnVisibility, Toolbar, VirtualTable } from "@devexpress/dx-react-grid-material-ui";
+import { Grid, PagingPanel, Table, TableFilterRow, TableHeaderRow, ColumnChooser, TableColumnVisibility, Toolbar, VirtualTable, TableFixedColumns, TableSelection } from "@devexpress/dx-react-grid-material-ui";
 import PropTypes from "prop-types";
 import { Skeleton } from "@material-ui/lab";
 import ExcelJS from "exceljs";
@@ -32,8 +32,9 @@ class R86ReportsTableComponent extends Component {
 				{ columnName: "action", sortingEnabled: false },
 			],
 			tableColumnExtensions: [
+				{ columnName: "action", width: 100, align: "center" },
 				{ columnName: "id", width: 80 },
-				{ columnName: "displayName", wordWrapEnabled: true },
+				{ columnName: "displayName", with:220, wordWrapEnabled: true },
 				{ columnName: "cnicNumber", width: 125 },
 				{ columnName: "mobileNo", wordWrapEnabled: true, width: 110 },
 				{ columnName: "email", wordWrapEnabled: true },
@@ -51,8 +52,7 @@ class R86ReportsTableComponent extends Component {
 				{ columnName: "address", wordWrapEnabled: true, width: 200 },
 				{ columnName: "bloodGroup", wordWrapEnabled: true },
 				{ columnName: "emergencyContactName", wordWrapEnabled: true },
-				{ columnName: "emergencyContactNumber", wordWrapEnabled: true },
-				{ columnName: "action", width: 100, align: "center" },
+				{ columnName: "emergencyContactNumber", wordWrapEnabled: true }	
 			],
 			resizingMode: "widget",
 			defaultFilters: [],
@@ -234,7 +234,7 @@ class R86ReportsTableComponent extends Component {
 					<VirtualTable
 						height={this.state.tableHeight}
 						noDataRowComponent={NoDataRow}
-						cellComponent={cellComponent}
+						//cellComponent={cellComponent}
 						columnExtensions={tableColumnExtensions}
 					/>
 					<TableHeaderRow
@@ -257,6 +257,9 @@ class R86ReportsTableComponent extends Component {
 					<Toolbar />
 					<ColumnChooser />
 					{showFilter && <TableFilterRow showFilterSelector={true} />}
+					<TableFixedColumns
+          				leftColumns={[TableSelection.COLUMN_TYPE, "action", "id", "displayName"]}
+        			/>
 					{/* <PagingPanel pageSizes={pageSizes} /> */}
 				</Grid>
 			</Paper>

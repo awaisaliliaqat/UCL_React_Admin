@@ -1,13 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <React.Fragment>
     <App />
-  </React.Fragment>,
-  document.getElementById('root')
+  </React.Fragment>
 );
 
 // If you want your app to work offline and load faster, you can change

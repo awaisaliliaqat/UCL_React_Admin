@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { useHistory } from 'react-dom';
 import { withStyles, ThemeProvider } from '@material-ui/styles';
 import LoginMenu from '../../../../components/LoginMenu/LoginMenu';
 import { numberFreeExp } from '../../../../utils/regularExpression';

@@ -9,14 +9,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import clsx from 'clsx';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import {Collapse, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, LinearProgress, Box, Card, CardActionArea, CardMedia,Tooltip} from '@material-ui/core';
+import {Collapse, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, LinearProgress, Box, Card, CardActionArea, CardMedia} from '@material-ui/core';
 import classnames from 'classnames';
 import { format } from 'date-fns';
 import ProfilePlaceholder from "../../../../../assets/Images/ProfilePlaceholder.png";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import LoginMenu from "../../../../../components/LoginMenu/LoginMenu";
-import OpenInBrowserIcon from "@material-ui/icons/OpenInBrowser";
-import EmployeeProfileFilePreviewComponent from "./EmployeeProfileFilePreviewComponent";
 
 const styles = (theme) => ({
     root : {
@@ -165,14 +163,7 @@ class EmployeeProfile extends Component {
             documentsData : [],
             isDocumentsLoading: false,
             downloadingFileId: 0,
-            expanded: [true, false, false, false, false],
-            viewerOpen: false,
-            viewerUrl: null,
-            viewerType: "",
-            viewerFileName: "",
-            abortController: null
-
-
+            expanded: [true, false, false, false, false]
         };
     }
 
@@ -472,84 +463,6 @@ class EmployeeProfile extends Component {
 			});
 		}, 100); // 100ms delay to allow state clearing
 	};
-
-    getMimeFromFilename = (name = "") => {
-  const ext = (name.split(".").pop() || "").toLowerCase();
-  switch (ext) {
-    case "pdf": return "application/pdf";
-    case "png": return "image/png";
-    case "jpg":
-    case "jpeg": return "image/jpeg";
-    case "gif": return "image/gif";
-    case "webp": return "image/webp";
-    case "svg": return "image/svg+xml";
-    case "txt": return "text/plain";
-    case "csv": return "text/csv";
-    case "doc": return "application/msword";
-    case "docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    case "xls":
-    case "xlt": return "application/vnd.ms-excel";
-    case "xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    case "xlsm": return "application/vnd.ms-excel.sheet.macroEnabled.12";
-    case "xlsb": return "application/vnd.ms-excel.sheet.binary.macroEnabled.12";
-    case "xltx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
-    case "xltm": return "application/vnd.ms-excel.template.macroEnabled.12";
-    default: return "application/octet-stream";
-  }
-};
-
-sniffMime = (buf, fileName) => {
-  const b = new Uint8Array(buf);
-  const startsWith = (...sig) => sig.every((v, i) => b[i] === v);
-
-  if (b.length >= 8 && startsWith(0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)) return "image/png";
-  if (b.length >= 3 && startsWith(0xFF, 0xD8, 0xFF)) return "image/jpeg";
-  if (b.length >= 6 && (startsWith(0x47, 0x49, 0x46, 0x38, 0x37, 0x61) || startsWith(0x47, 0x49, 0x46, 0x38, 0x39, 0x61))) return "image/gif";
-  if (b.length >= 4 && startsWith(0x25, 0x50, 0x44, 0x46)) return "application/pdf";
-  return this.getMimeFromFilename(fileName);
-};
-
-previewInApp = (userId, fileName, rowId) => {
-  if (this.state.abortController?.abort) this.state.abortController.abort();
-
-  const controller = new AbortController();
-  const signal = controller.signal;
-  this.setState({ downloadingFileId: rowId, abortController: controller });
-
-  const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonUsersDocumentsFileView?userId=${encodeURIComponent(userId)}&fileName=${encodeURIComponent(fileName)}`;
-
-  fetch(url, {
-    method: "GET",
-    headers: { Authorization: "Bearer " + localStorage.getItem("uclAdminToken") },
-    signal
-  })
-    .then(res => {
-      if (!res.ok) {
-        if (res.status === 401) this.setState({ isLoginMenu: true, isReload: false });
-        if (res.status === 404) this.handleOpenSnackbar("File not found.", "error");
-        throw new Error(`HTTP ${res.status}`);
-      }
-      return res.arrayBuffer();
-    })
-    .then(buf => {
-      const mime = this.sniffMime(buf, fileName);
-      const blob = new Blob([buf], { type: mime });
-      const blobUrl = URL.createObjectURL(blob);
-      this.setState({
-        viewerOpen: true,
-        viewerUrl: blobUrl,
-        viewerType: mime,
-        viewerFileName: fileName
-      });
-    })
-    .catch(err => {
-      if (err.name === "AbortError") this.handleOpenSnackbar("Operation cancelled.", "warning");
-      else this.handleOpenSnackbar("Failed to open file.", "error");
-      console.error(err);
-    })
-    .finally(() => this.setState({ downloadingFileId: null, abortController: null }));
-};
-
 
     handleExpandClick = (index) => {
         let expanded = [...this.state.expanded];
@@ -1022,7 +935,7 @@ previewInApp = (userId, fileName, rowId) => {
                                                     <StyledTableCell>Label</StyledTableCell>
                                                     <StyledTableCell>Description</StyledTableCell>
                                                     <StyledTableCell align='center'>Uploaded On</StyledTableCell>
-                                                    <StyledTableCell width={65} align='center'>Action</StyledTableCell>
+                                                    <StyledTableCell width={65} align='center'>Download</StyledTableCell>
                                                 </StyledTableRow>
                                             </TableHead>
                                             <TableBody>
@@ -1039,33 +952,19 @@ previewInApp = (userId, fileName, rowId) => {
                                                         <StyledTableCell align="center">{obj.uploadedOn ? format(obj.uploadedOn, "dd-MM-yyyy hh:mm a") : ""}</StyledTableCell>
                                                         <StyledTableCell align="center">
                                                             <Fragment>
-                                                                {this.state.downloadingFileId === obj.id ? (
+                                                            {this.state.downloadingFileId === obj.id ? (
                                                                 <CircularProgress size={24} color="primary" />
-                                                                ) : (
-                                                                <Box display="flex" alignItems="center" justifyContent="center">
-                                                                    <Tooltip title="Preview">
-                                                                    <IconButton
-                                                                        color="primary"
-                                                                        onClick={() => this.previewInApp(obj.userId, obj.documentName, obj.id)}
-                                                                        aria-label="open"
-                                                                    >
-                                                                        <OpenInBrowserIcon />
-                                                                    </IconButton>
-                                                                    </Tooltip>
-                                                                    <Tooltip title="Download">
-                                                                    <IconButton
-                                                                        color="primary"
-                                                                        onClick={() => this.downloadFile(obj.userId, obj.documentName, obj.id)}
-                                                                        aria-label="download"
-                                                                    >
-                                                                        <CloudDownloadIcon />
-                                                                    </IconButton>
-                                                                    </Tooltip>
-                                                                </Box>
-                                                                )}
+                                                            ) : (
+                                                                <IconButton
+                                                                    color="primary"
+                                                                    onClick={() => this.downloadFile(obj.userId, obj.documentName, obj.id)}
+                                                                    aria-label="download"
+                                                                >
+                                                                <CloudDownloadIcon />
+                                                                </IconButton>
+                                                            )}
                                                             </Fragment>
-                                                            </StyledTableCell>
-
+                                                        </StyledTableCell>
                                                     </StyledTableRow>
                                                 )}
                                             </TableBody>
@@ -1082,22 +981,6 @@ previewInApp = (userId, fileName, rowId) => {
                     severity={this.state.snackbarSeverity}
                     handleCloseSnackbar={() => this.handleCloseSnackbar()}
                 />
-                  <EmployeeProfileFilePreviewComponent
-                    open={this.state.viewerOpen}
-                    url={this.state.viewerUrl}
-                    type={this.state.viewerType}
-                    name={this.state.viewerFileName}
-                    onDownload={() => {
-                        const a = document.createElement("a");
-                        a.href = this.state.viewerUrl;
-                        a.download = this.state.viewerFileName || "file";
-                        a.click();
-                    }}
-                    onClose={() => {
-                        if (this.state.viewerUrl) URL.revokeObjectURL(this.state.viewerUrl);
-                        this.setState({ viewerOpen: false, viewerUrl: null, viewerType: "", viewerFileName: "" });
-                    }}
-                    />
             </Fragment >
         );
     }

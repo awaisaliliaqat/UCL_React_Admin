@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
 import { Button } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
-import { useParams } from "react-router-dom/cjs/react-router-dom";
+import { useParams } from "react-router-dom";
 import { CheckAll } from "mdi-material-ui";
 import { Tooltip, IconButton } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";

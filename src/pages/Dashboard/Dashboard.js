@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment, useState, Suspense, useEffect, createRef } from "react";
 import clsx from "clsx";
-import { HashRouter as Router, Switch, Route, Link, Redirect, } from "react-router-dom";
+import { HashRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import Drawer from "@material-ui/core/Drawer";
 import Toolbar from "@material-ui/core/Toolbar";
 import MenuList from "@material-ui/core/MenuList";

@@ -15,7 +15,7 @@ import {
 import F332EmployeeTaxCertificateReportTableComponent from "./chunks/F332EmployeeTaxCertificateReportTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
 import F331EmployeeMonthlySallaryChallanView from "./F332EmployeeTaxCertificateView";
-import { Link } from "react-router-dom/cjs/react-router-dom";
+import { Link } from "react-router-dom";
 import { BorderRadius } from "mdi-material-ui";
 
 const styles = () => ({

@@ -33,10 +33,14 @@ function MyDropzone({ files, onChange, onReject, disabled }) {
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 			"application/vnd.ms-excel",
 			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			"application/vnd.ms-powerpoint",
-			"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+			// "application/vnd.ms-powerpoint",
+			// "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 			"text/plain",
-			"image/*"
+			"image/*",
+			"audio/mpeg", // mp3 MIME
+      		".mp3",        // mp3 extension
+			"video/mp4", // MIME type
+			".mp4"       // extension
 		],
 		noClick: false,
 		multiple: false,

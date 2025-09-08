@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import F333ConsolitdatedSheetsForSalaryHistoryTableComponent from "./chunks/F333ConsolitdatedSheetsForSalaryHistoryTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link } from "react-router-dom";
 
 const styles = () => ({
   mainContainer: {

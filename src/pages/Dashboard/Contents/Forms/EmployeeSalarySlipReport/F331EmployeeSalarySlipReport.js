@@ -15,7 +15,7 @@ import {
 import F331EmployeeSalarySlipReportTableComponent from "./chunks/F331EmployeeSalarySlipReportTableComponent";
 import { IsEmpty } from "../../../../../utils/helper";
 import F331EmployeeMonthlySallaryChallanView from "./F331EmployeeMonthlySallaryChallanView";
-import { Link } from "react-router-dom/cjs/react-router-dom";
+import { Link } from "react-router-dom";
 
 const styles = () => ({
   mainContainer: {

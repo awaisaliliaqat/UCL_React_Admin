@@ -7,7 +7,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/CustomizedSnackbar";
 import EditDeleteTableComponent from "../../../../../components/EditDeleteTableRecord/EditDeleteTableComponent";
 import R328EmployeesLoanApprovalReviewTableComponent from "./Chunks/R328EmployeesLoanApprovalViewTableComponent";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link } from "react-router-dom";
 import { BorderRadius } from "mdi-material-ui";
 import EditIcon from "@material-ui/icons/Edit";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";

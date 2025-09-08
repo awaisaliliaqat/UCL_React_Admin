@@ -8,7 +8,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import ReactToPrint from "react-to-print";
 import { Button } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
-import { useParams } from "react-router-dom/cjs/react-router-dom";
+import { useParams } from "react-router-dom";
 const F331EmployeeMonthlySallaryChallanView = (props) => {
   const { data, feeCard } = props;
   const [challanData, setChallanData] = useState({});
