@@ -8,7 +8,6 @@ import { CloudDownload } from 'mdi-material-ui';
 import OpenInBrowserOutlinedIcon from '@material-ui/icons/OpenInBrowserOutlined';
 import { saveAs } from "file-saver";
 import { Link as RouterLink } from 'react-router-dom';
-import DocumentPreviewDialog from "./DocumentPreviewDialog"; // adjust path
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -77,47 +76,6 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
     const [admissionsProspectApplicationDocument, setAdmissionsProspectApplicationDocument] = useState({isLoading: false, list:[]});
     const [gradeBookReports, setGradeBookReports] = useState({isLoading: false, list:[]});
     const [assignments, setAssignments] = useState({isLoading: false, list:[]});
-
-    const [viewerOpen, setViewerOpen] = useState(false);
-    const [viewerUrl, setViewerUrl] = useState(null);
-    const [viewerType, setViewerType] = useState("");
-    const [viewerName, setViewerName] = useState("");
-    const [abortController, setAbortController] = useState(null);
-
-    const getMimeFromFilename = (name = "") => {
-        const ext = (name.split(".").pop() || "").toLowerCase();
-        switch (ext) {
-            case "pdf": return "application/pdf";
-            case "png": return "image/png";
-            case "jpg":
-            case "jpeg": return "image/jpeg";
-            case "gif": return "image/gif";
-            case "webp": return "image/webp";
-            case "svg": return "image/svg+xml";
-            case "txt": return "text/plain";
-            case "csv": return "text/csv";
-            case "doc": return "application/msword";
-            case "docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-            case "xls":
-            case "xlt": return "application/vnd.ms-excel";
-            case "xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            case "xlsm": return "application/vnd.ms-excel.sheet.macroEnabled.12";
-            case "xlsb": return "application/vnd.ms-excel.sheet.binary.macroEnabled.12";
-            case "xltx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
-            case "xltm": return "application/vnd.ms-excel.template.macroEnabled.12";
-            default: return "application/octet-stream";
-        }
-    };
-
-    const sniffMime = (buf, fileName) => {
-        const b = new Uint8Array(buf);
-        const startsWith = (...sig) => sig.every((v, i) => b[i] === v);
-        if (b.length >= 8 && startsWith(0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)) return "image/png";
-        if (b.length >= 3 && startsWith(0xFF, 0xD8, 0xFF)) return "image/jpeg";
-        if (b.length >= 6 && (startsWith(0x47, 0x49, 0x46, 0x38, 0x37, 0x61) || startsWith(0x47, 0x49, 0x46, 0x38, 0x39, 0x61))) return "image/gif";
-        if (b.length >= 4 && startsWith(0x25, 0x50, 0x44, 0x46)) return "application/pdf";
-        return getMimeFromFilename(fileName);
-    };
 
     const handleExpandClick = (index) => {
         const newExpanded = [...expanded];
@@ -196,51 +154,40 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
     };
 
     const getGradeBookReportsList = async (studentId) => {
-    console.log("[DEBUG] Fetching grade books for:", studentId); // Debug log
-    let data = new FormData();
-    data.append("studentId", studentId);
-    setGradeBookReports(prev => ({...prev, isLoading: true, error: null}));
-
-    try {
+        let data = new FormData();
+        data.append("studentId", studentId);
+        setGradeBookReports( pre => ({...pre, isLoading: true}));
         let url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/academics/C48CommonStudentDocumentsView/ApprovedGradeBookReportsListView`;
-        const response = await fetch(url, {
+        await fetch(url, {
             method: "POST",
             body: data,
             headers: new Headers({
                 Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
             }),
-        });
+        })
+        .then((res) => {
+            if (!res.ok) {
+                throw res;
+            }
+            return res.json();
+        })
+        .then(
+            (result) => {
+                if (result.CODE === 1) {
+                    let data = result.DATA || [];
+                    setGradeBookReports( pre => ({...pre, list: data}));
+                } else {
+                    alert(result.SYSTEM_MESSAGE + "\n" + result.USER_MESSAGE)
+                }
+            },
+            (error) => {
+                alert("Operation Failed, Please try again later");
+                console.log(error);
+            }
+        );
+        setGradeBookReports( pre => ({...pre, isLoading: false}));
+    };
 
-        if (!response.ok) throw response;
-        const result = await response.json();
-        
-        console.log("[DEBUG] Grade books response:", result); // Debug log
-        
-        if (result.CODE === 1) {
-            const gradeBooks = result.DATA || [];
-            console.log("[DEBUG] Processed grade books:", gradeBooks); // Debug processed data
-            setGradeBookReports(prev => ({
-                ...prev, 
-                list: gradeBooks,
-                isLoading: false
-            }));
-        } else {
-            console.error("API Error:", result.SYSTEM_MESSAGE, result.USER_MESSAGE);
-            setGradeBookReports(prev => ({
-                ...prev,
-                isLoading: false,
-                error: result.USER_MESSAGE
-            }));
-        }
-    } catch (error) {
-        console.error("Failed to fetch grade book reports:", error);
-        setGradeBookReports(prev => ({
-            ...prev,
-            isLoading: false,
-            error: "Failed to load grade book reports"
-        }));
-    }
-};
     const getAssignmentsList = async (studentId) => {
         let data = new FormData();
         data.append("studentId", studentId);
@@ -276,112 +223,45 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
         setAssignments( pre => ({...pre, isLoading: false}));
     };
 
-    // const downloadFile = (fileName) => {
-    //     const data = new FormData();
-    //     data.append("fileName", fileName);
-    //     setDownloadingFileName(fileName);
-    //     const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
-    //     fetch(url, {
-    //         method: "GET",
-    //         headers: new Headers({
-    //            Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-    //         }),
-    //     })
-    //     .then((res) => {
-    //         if (res.ok) {
-    //             return res.blob();
-    //         } else if (res.status === 401) {
-    //             throw new Error("Unauthorized");
-    //         } else if (res.status === 404) {
-    //             this.handleOpenSnackbar("File not found.", "error");
-    //             throw new Error("File not found");
-    //         } else {
-    //             this.handleOpenSnackbar("Operation failed. Please try again later.", "error");
-    //             throw new Error(`Download failed with status ${res.status}`);
-    //         }
-    //     })
-    //     .then((blob) => {
-    //         if (!blob) return; // Skip if aborted or errored
-    //         saveAs(blob, fileName);
-    //     })
-    //     .catch((error) => {
-    //         if (error.name === "AbortError") {
-    //             this.handleOpenSnackbar("Download cancelled.", "warning");
-    //         } else {
-    //             console.error("Download error:", error);
-    //         }
-    //     })
-    //     .finally(() => {
-    //         setDownloadingFileName(null);
-    //     });
-    // };
-
     const downloadFile = (fileName) => {
+        const data = new FormData();
+        data.append("fileName", fileName);
         setDownloadingFileName(fileName);
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
+        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME }/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
         fetch(url, {
             method: "GET",
-            headers: { Authorization: "Bearer " + localStorage.getItem("uclAdminToken") },
+            headers: new Headers({
+               Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
+            }),
         })
-            .then(res => {
-                if (res.ok) return res.blob();
-                if (res.status === 401) { alert("Unauthorized"); throw new Error("Unauthorized"); }
-                if (res.status === 404) { alert("File not found."); throw new Error("File not found"); }
-                alert("Operation failed. Please try again later.");
+        .then((res) => {
+            if (res.ok) {
+                return res.blob();
+            } else if (res.status === 401) {
+                throw new Error("Unauthorized");
+            } else if (res.status === 404) {
+                this.handleOpenSnackbar("File not found.", "error");
+                throw new Error("File not found");
+            } else {
+                this.handleOpenSnackbar("Operation failed. Please try again later.", "error");
                 throw new Error(`Download failed with status ${res.status}`);
-            })
-            .then(blob => blob && saveAs(blob, fileName))
-            .catch(err => console.error("Download error:", err))
-            .finally(() => setDownloadingFileName(null));
-    };
-
-    const previewInApp = (fileName) => {
-        // Cancel prior fetch
-        if (abortController?.abort) abortController.abort();
-
-        const controller = new AbortController();
-        const signal = controller.signal;
-        setAbortController(controller);
-        setDownloadingFileName(fileName);
-
-        const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/CommonViewFile?fileName=${encodeURIComponent(fileName)}`;
-
-        fetch(url, {
-            method: "GET",
-            headers: { Authorization: "Bearer " + localStorage.getItem("uclAdminToken") },
-            signal
+            }
         })
-            .then(res => {
-                if (!res.ok) {
-                    if (res.status === 401) alert("Unauthorized");
-                    else if (res.status === 404) alert("File not found.");
-                    else alert("Operation failed. Please try again later.");
-                    throw new Error(`HTTP ${res.status}`);
-                }
-                return res.arrayBuffer();
-            })
-            .then(buf => {
-                const mime = sniffMime(buf, fileName);
-                const blob = new Blob([buf], { type: mime });
-                const blobUrl = URL.createObjectURL(blob);
-                setViewerUrl(blobUrl);
-                setViewerType(mime);
-                setViewerName(fileName);
-                setViewerOpen(true);
-            })
-            .catch(err => {
-                if (err.name === "AbortError") {
-                    // optional: toast "Operation cancelled."
-                } else {
-                    console.error(err);
-                }
-            })
-            .finally(() => {
-                setDownloadingFileName(null);
-                setAbortController(null);
-            });
+        .then((blob) => {
+            if (!blob) return; // Skip if aborted or errored
+            saveAs(blob, fileName);
+        })
+        .catch((error) => {
+            if (error.name === "AbortError") {
+                this.handleOpenSnackbar("Download cancelled.", "warning");
+            } else {
+                console.error("Download error:", error);
+            }
+        })
+        .finally(() => {
+            setDownloadingFileName(null);
+        });
     };
-
 
     useEffect(() => {
         if (open && row?.studentId) {
@@ -474,7 +354,7 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                                                 <StyledTableCell>Label</StyledTableCell>
                                                 <StyledTableCell>File Name</StyledTableCell>
                                                 <StyledTableCell>Uploaded On</StyledTableCell>
-                                                <StyledTableCell align='center' style={{width:100}}>Action</StyledTableCell>
+                                                <StyledTableCell align='center' style={{width:50}}>Action</StyledTableCell>
                                             </StyledTableRow>
                                         </TableHead>
                                         <TableBody>
@@ -491,19 +371,11 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                                                             <CircularProgress size={18} />
                                                         ) 
                                                         :
-                                                        (
-                                                        <>
-                                                        <Tooltip title="Preview">
-                                                            <IconButton style={{ padding: 6 }} onClick={() => previewInApp(doc.fileName)}>
-                                                                <OpenInBrowserOutlinedIcon color="primary" />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                        <Tooltip title="Download">
+                                                        (<Tooltip title="Download">
                                                             <IconButton style={{ padding: 6 }} onClick={() => downloadFile(doc.fileName)}>
                                                                 <CloudDownload color='primary' />
                                                             </IconButton>
-                                                        </Tooltip>
-                                                        </>
+                                                            </Tooltip>
                                                         )}
                                                     </StyledTableCell>
                                                 </StyledTableRow>
@@ -574,20 +446,11 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                                                             <CircularProgress size={18} />
                                                         ) 
                                                         :
-                                                        (
-                                                        <>
-                                                            <Tooltip title="Download">
-                                                                <IconButton style={{padding:6}} onClick={() => downloadFile(doc.fileName)}>
-                                                                    <CloudDownload color='primary' />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                            <Tooltip title="Preview">
-                                                                <IconButton style={{ padding: 6 }} onClick={() => previewInApp(doc.fileName)}>
-                                                                    <OpenInBrowserOutlinedIcon color="primary" />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        </>
-                                                        )}
+                                                        (<Tooltip title="Download">
+                                                            <IconButton style={{padding:6}} onClick={() => downloadFile(doc.fileName)}>
+                                                                <CloudDownload color='primary' />
+                                                            </IconButton>
+                                                        </Tooltip>)}
                                                     </StyledTableCell>
                                                 </StyledTableRow>
                                             ))}
@@ -600,94 +463,80 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                 </Grid>
                 )}
                 <Grid item xs={12}>
-    <Box
-        bgcolor="primary.main"
-        color="primary.contrastText"
-        display="flex"
-        justifyContent="space-between"
-        p={0.5}
-        style={{
-            borderTopLeftRadius: 5,
-            borderTopRightRadius: 5
-        }}
-    >
-        <Box component="span" fontSize={"1.2em"}>GradeBook Reports</Box>
-        <Box>
-            {gradeBookReports?.isLoading ? (
-                <CircularProgress style={{ color: 'white', marginTop: 4, marginRight: 8 }} size={18} />
-            ) : (
-                <IconButton
-                    size='small'
-                    className={classnames(classes.expand, { [classes.expandOpen]: expanded[2] })}
-                    onClick={() => handleExpandClick(2)}
-                    aria-expanded={expanded[2]}
-                    aria-label="Show more"
-                >
-                    <ExpandMoreIcon />
-                </IconButton>
-            )}
-        </Box>
-    </Box>
-    <Collapse in={expanded[2]} timeout="auto" unmountOnExit>
-        {gradeBookReports.isLoading ? (
-            <Box p={2} textAlign="center">
-                <CircularProgress />
-            </Box>
-        ) : gradeBookReports.error ? (
-            <Box p={2} textAlign="center" color="error.main">
-                {gradeBookReports.error}
-            </Box>
-        ) : (
-            <TableContainer component={Paper} style={{ marginTop: 8 }}>
-                <Table size="small">
-                    <TableHead>
-                        <StyledTableRow>
-                            <StyledTableCell>Academics Session</StyledTableCell>
-                            <StyledTableCell>Term</StyledTableCell>
-                            <StyledTableCell>Programme</StyledTableCell>
-                            <StyledTableCell>Approved On</StyledTableCell>
-                            <StyledTableCell align='center' style={{width:50}}>Action</StyledTableCell>
-                        </StyledTableRow>
-                    </TableHead>
-                    <TableBody>
-                        {gradeBookReports.list?.length > 0 ? (
-                            gradeBookReports.list.map((doc, idx) => (
-                                <StyledTableRow key={idx}>
-                                    <StyledTableCell>{doc.academicsSessionLabel || 'N/A'}</StyledTableCell>
-                                    <StyledTableCell>{doc.sessionTermLabel || 'N/A'}</StyledTableCell>
-                                    <StyledTableCell>{doc.programmeLabel || 'N/A'}</StyledTableCell>
-                                    <StyledTableCell>{doc.approvedOn || 'N/A'}</StyledTableCell>
-                                    <StyledTableCell align='center'>
-                                        {doc.id ? (
-                                            <Tooltip title="Open">
-                                                <IconButton 
-                                                    style={{padding:6}}
-                                                    component={RouterLink}
-                                                    to={`/R301StudentProgressApprovedReport/${doc.id}`}
-                                                    target="_blank"
-                                                >
-                                                    <OpenInBrowserOutlinedIcon color='primary' />
-                                                </IconButton>
-                                            </Tooltip>
-                                        ) : (
-                                            <Typography variant="caption">No link</Typography>
-                                        )}
-                                    </StyledTableCell>
-                                </StyledTableRow>
-                            ))
-                        ) : (
-                            <StyledTableRow>
-                                <StyledTableCell colSpan={5} align="center">
-                                    No grade book reports available
-                                </StyledTableCell>
-                            </StyledTableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        )}
-    </Collapse>
-</Grid>
+                    <Box
+                        bgcolor="primary.main"
+                        color="primary.contrastText"
+                        display="flex"
+                        justifyContent="space-between"
+                        p={0.5}
+                        style={{
+                            borderTopLeftRadius: 5,
+                            borderTopRightRadius: 5
+                        }}
+                    >
+                        <Box component="span" fontSize={"1.2em"}>GradeBook Reports</Box>
+                        <Box>
+                            {
+                                gradeBookReports?.isLoading ? <CircularProgress style={{ color: 'white', marginTop: 4, marginRight: 8 }} size={18} />
+                                    :
+                                    <IconButton
+                                        size='small'
+                                        className={classnames(classes.expand, { [classes.expandOpen]: expanded[2] })}
+                                        onClick={() => handleExpandClick(2)}
+                                        aria-expanded={expanded[2]}
+                                        aria-label="Show more"
+                                    >
+                                        <ExpandMoreIcon />
+                                    </IconButton>
+                            }
+                        </Box>
+                    </Box>
+                    <Collapse in={expanded[2]} timeout="auto" unmountOnExit>
+                        <Grid container spacing={2} justifyContent='center' alignItems='center'>
+                            <Grid item xs={12}>
+                                <TableContainer component={Paper} style={{ marginTop: 8 }}>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <StyledTableRow>
+                                                <StyledTableCell>Academics Session</StyledTableCell>
+                                                <StyledTableCell>Term</StyledTableCell>
+                                                <StyledTableCell>Programme</StyledTableCell>
+                                                <StyledTableCell>Approved On</StyledTableCell>
+                                                <StyledTableCell align='center' style={{width:50}}>Action</StyledTableCell>
+                                            </StyledTableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {(gradeBookReports?.list || []).length === 0 &&
+                                                <StyledTableRow><StyledTableCell colSpan={5} align="center">No Data</StyledTableCell></StyledTableRow>
+                                            }
+                                            {(gradeBookReports?.list || []).map((doc, idx) => (
+                                                <StyledTableRow key={idx}>
+                                                    <StyledTableCell>{doc.academicsSessionLabel}</StyledTableCell>
+                                                    <StyledTableCell>{doc.sessionTermLabel}</StyledTableCell>
+                                                    <StyledTableCell>{doc.programmeLabel}</StyledTableCell>
+                                                    <StyledTableCell>{doc.approvedOn}</StyledTableCell>
+                                                    <StyledTableCell align='center'>
+                                                        <Tooltip title="Open">
+                                                            <IconButton 
+                                                                style={{padding:6}}
+                                                                component={RouterLink}
+                                                                to={`/R301StudentProgressApprovedReport/${doc.id}`}
+                                                                target="_blank"
+                                                                // onClick={() =>  window.open(`#/R301StudentProgressApprovedReport/${doc.id}`, "_blank") }
+                                                            >
+                                                                <OpenInBrowserOutlinedIcon color='primary' />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </StyledTableCell>
+                                                </StyledTableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Grid>
+                        </Grid>
+                    </Collapse>
+                </Grid>
                 {/* 
                 <Grid item xs={12}>
                     <Box
@@ -791,28 +640,6 @@ const FileRepositoryPopup = ({ open, handleClose, row }) => {
                 </Grid> 
                 */}
             </Grid>
-            <DocumentPreviewDialog
-                open={viewerOpen}
-                url={viewerUrl}
-                type={viewerType}
-                name={viewerName}
-                onDownload={() => {
-                    // allow download from the preview too
-                    if (viewerUrl) {
-                    const a = document.createElement("a");
-                    a.href = viewerUrl;
-                    a.download = viewerName || "file";
-                    a.click();
-                    }
-                }}
-                onClose={() => {
-                    if (viewerUrl) URL.revokeObjectURL(viewerUrl);
-                    setViewerOpen(false);
-                    setViewerUrl(null);
-                    setViewerType("");
-                    setViewerName("");
-                }}
-            />
         </Dialog>
     );
 };

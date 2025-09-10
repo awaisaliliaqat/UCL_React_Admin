@@ -38,7 +38,7 @@ class F87ReportsTableComponent extends Component {
 				{ columnName: "uploadedByLabel", width: 125 },
 				{ columnName: "uploadedOn", width: 125, align:"center", wordWrapEnabled: true },
 				{ columnName: "downloadLink", width: 100, align:"center" },
-				{ columnName: "action", width: 110, align:"center" },
+				{ columnName: "action", width: 160, align:"center" },
 			],
 			resizingMode: "widget",
 			defaultFilters: [],

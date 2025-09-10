@@ -27,10 +27,9 @@ import F30FormFilter from "./F30FormFilter";
 import F30FormTableComponent from "./F30FormTableComponent";
 import F30FormPopupComponent from "./F30FormPopupComponent";
 
-const styles = () => ({
+const styles = (theme) => ({
   root: {
-    padding: 20,
-    minWidth: 350,
+    padding: `${theme.spacing(0)}px ${theme.spacing(2)}px ${theme.spacing(2)}px ${theme.spacing(2)}px`,
     overFlowX: "auto",
   },
   formControl: {
@@ -39,13 +38,6 @@ const styles = () => ({
   sectionTitle: {
     fontSize: 19,
     color: "#174a84",
-  },
-  checkboxDividerLabel: {
-    marginTop: 10,
-    marginLeft: 5,
-    marginRight: 20,
-    fontSize: 16,
-    fontWeight: 600,
   },
   rootProgress: {
     width: "100%",
@@ -547,7 +539,16 @@ class F30Form extends Component {
   }
 
   render() {
+
     const { classes } = this.props;
+
+    const columns = [
+        { name: "SRNo", title: "SR#" },
+        { name: "nucleusId", title: "Nucleus\xa0ID" },
+        { name: "studentName", title: "Student\xa0Name" },
+        { name: "programmeLabel", title: "Programme" },
+        { name: "action", title: "Action"}
+    ];
 
     return (
       <Fragment>
@@ -558,46 +559,41 @@ class F30Form extends Component {
         />
         <form id="myForm" onSubmit={this.isFormValid}>
           <TextField type="hidden" name="id" value={this.state.recordId} />
-          <Grid container component="main" className={classes.root}>
+          <Grid 
+            container
+            spacing={2} 
+            className={classes.root}
+          >
+            <Grid item xs={12}>
             <Typography
               style={{
                 color: "#1d5f98",
                 fontWeight: 600,
-                borderBottom: "1px solid #d2d2d2",
-                width: "98%",
-                marginBottom: 25,
                 fontSize: 20,
               }}
               variant="h5"
             >
               Student Achievement
-              {/* 
               <div style={{ float: "right" }}>
                 <Tooltip title="Table Filter">
                   <IconButton
-                    style={{ marginLeft: "-10px" }}
+                    style={{ marginTop: "-10px" }}
                     onClick={this.handleToggleTableFilter}
                   >
-                    <FilterIcon fontSize="default" color="primary" />
+                    <FilterIcon color="primary" />
                   </IconButton>
                 </Tooltip>
-              </div> 
-              */}
+              </div>
             </Typography>
             <Divider
               style={{
                 backgroundColor: "rgb(58, 127, 187)",
                 opacity: "0.3",
+                width: "100%"
               }}
             />
-            <Grid
-              container
-              spacing={2}
-              style={{
-                marginLeft: 5,
-                marginRight: 10,
-              }}
-            >
+            </Grid>
+           
               <Grid item xs={12} md={6}>
                 <TextField
                   id="academicSessionId"
@@ -690,24 +686,13 @@ class F30Form extends Component {
                 <br />
               )} 
               */}
-              {this.state.studentListArray.length > 0 ? (
                 <F30FormTableComponent
+                  columns={columns}
                   rows={this.state.studentListArray}
                   showFilter={this.state.showTableFilter}
+                  isLoading={this.state.isLoading}
                 />
-              ) : this.state.isLoading ? (
-                <Grid
-                  container
-                  justifyContent="center"
-                  alignItems="center"
-                  style={{ paddingTop: "2em" }}
-                >
-                  <CircularProgress />
-                </Grid>
-              ) : (
-                ""
-              )}
-            </Grid>
+            
           </Grid>
         </form>
         {/* 

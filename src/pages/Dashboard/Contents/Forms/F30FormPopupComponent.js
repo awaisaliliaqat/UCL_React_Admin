@@ -394,19 +394,19 @@ class F30FormPopupComponent extends Component {
 
     return (
       <Fragment>
-        <IconButton
+        <Button
+          variant="contained"
           color="primary"
           aria-label="Add"
           component="span"
           onClick={this.handleClickOpen}
-          variant="outlined"
+          size="small"
+          style={{minWidth:50, padding:4}}
         >
           <Tooltip title="Add Achievements">
-            <Fab color="primary" aria-label="add" size="small">
               <AddIcon />
-            </Fab>
           </Tooltip>
-        </IconButton>
+        </Button>
         <Dialog
           fullScreen={true}
           //maxWidth="md"

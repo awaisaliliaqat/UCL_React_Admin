@@ -14,9 +14,11 @@ import CustomizedSnackbar from "../../../../../components/CustomizedSnackbar/Cus
 
 const styles = (theme) => ({
 	root: {
-		paddingBottom: theme.spacing(2),
-		paddingLeft: theme.spacing(2),
-		paddingRight: theme.spacing(2),
+		padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`
+	},
+	divider: {
+		backgroundColor: "rgb(58, 127, 187)",
+		opacity: "0.3",
 	},
 	resize: {
 		fontSize: 16,
@@ -32,8 +34,6 @@ class F26Form extends Component {
 			recordId: this.props.match.params.recordId,
 			isLoading: false,
 			isReload: false,
-			fromSessionData: [],
-			toSessionData: [],
 			isActive: false,
 			sessionId: "",
 			sessionIdError: "",
@@ -57,131 +57,12 @@ class F26Form extends Component {
 		};
 	}
 
-	getFromSessionsData = async () => {
-		this.setState({ academicSessionsDataLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C26CommonAcademicsSessionsFromView`;
-		await fetch(url, {
-			method: "POST",
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						this.setState((prevState) => ({
-							...prevState,
-							fromSessionData: [json.DATA[0]],
-						}));
-					} else {
-						this.handleSnackbar(
-							true,
-							<span>
-								{json.SYSTEM_MESSAGE}
-								<br />
-								{json.USER_MESSAGE}
-							</span>,
-							"error"
-						);
-					}
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						this.handleSnackbar(
-							true,
-							"Failed to fetch ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
-		this.setState({ academicSessionsDataLoading: false });
-	};
-
-	getToSessionsData = async () => {
-		this.setState({ academicSessionsDataLoading: true });
-		const url = `${process.env.REACT_APP_API_DOMAIN}/${process.env.REACT_APP_SUB_API_NAME}/common/C26CommonAcademicsSessionsToView`;
-		await fetch(url, {
-			method: "POST",
-			headers: new Headers({
-				Authorization: "Bearer " + localStorage.getItem("uclAdminToken"),
-			}),
-		})
-			.then((res) => {
-				if (!res.ok) {
-					throw res;
-				}
-				return res.json();
-			})
-			.then(
-				(json) => {
-					if (json.CODE === 1) {
-						console.log(json.DATA);
-						this.setState((prevState) => ({
-							...prevState,
-							toSessionData: json.DATA,
-						}));
-						console.log(json);
-					} else {
-						this.handleSnackbar(
-							true,
-							<span>
-								{json.SYSTEM_MESSAGE}
-								<br />
-								{json.USER_MESSAGE}
-							</span>,
-							"error"
-						);
-					}
-				},
-				(error) => {
-					if (error.status == 401) {
-						this.setState({
-							isLoginMenu: true,
-							isReload: true,
-						});
-					} else {
-						this.handleSnackbar(
-							true,
-							"Failed to fetch ! Please try Again later.",
-							"error"
-						);
-					}
-				}
-			);
-		this.setState({ academicSessionsDataLoading: false });
-	};
-
 	loadingData = async () => {
 		await this.getSessionData();
 		if (this.state.recordId != 0) {
 			await this.loadData(this.state.recordId);
 		}
 	};
-
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		if (this.props.match.params.recordId != nextProps.match.params.recordId) {
-			if (nextProps.match.params.recordId != 0) {
-				this.loadData(nextProps.match.params.recordId);
-				this.setState({
-					recordId: nextProps.match.params.recordId,
-				});
-			} else {
-				window.location.reload();
-			}
-		}
-	}
 
 	handleOpenSnackbar = (msg, severity) => {
 		this.setState({
@@ -678,9 +559,20 @@ class F26Form extends Component {
 
 	componentDidMount() {
 		this.loadingData();
-		this.getFromSessionsData();
-		this.getToSessionsData();
 		this.getSectionTypeData();
+	}
+
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		if (this.props.match.params.recordId != nextProps.match.params.recordId) {
+			if (nextProps.match.params.recordId != 0) {
+				this.loadData(nextProps.match.params.recordId);
+				this.setState({
+					recordId: nextProps.match.params.recordId,
+				});
+			} else {
+				window.location.reload();
+			}
+		}
 	}
 
 	render() {
@@ -721,54 +613,33 @@ class F26Form extends Component {
 				/>
 				<Grid 
 					container 
-					component="main" 
 					spacing={2}
 					justifyContent="center"
 					alignItems="center"
 					className={classes.root}
 				>
-					<Typography
-						style={{
-							color: "#1d5f98",
-							fontWeight: 600,
-							borderBottom: "1px solid #d2d2d2",
-							width: "98%",
-							marginBottom: 25,
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-between",
-							alignItems: "center",
-							fontSize: 20,
-						}}
-						variant="h5"
-					>
+					<Grid item xs={12}>
 						<Typography
 							style={{
 								color: "#1d5f98",
 								fontWeight: 600,
+								width: "100%",
+								display: "flex",
+								justifyContent: "space-between",
+								alignItems: "center",
 								fontSize: 20,
 							}}
+							variant="h5"
 						>
 							Create Section
+							<CreateSectionPopupComponent
+								handleOpenSnackbar={this.handleOpenSnackbar}
+							/>
 						</Typography>
-						{this.state?.fromSessionData?.length > 0 &&
-							this.state?.toSessionData?.length > 0 && (
-								<CreateSectionPopupComponent
-									columns={columns}
-									data={sessionData}
-									noDataMessage={this.state.sectionDataError}
-									handleOpenSnackbar={this.handleOpenSnackbar}
-									fromSessionData={this.state.fromSessionData}
-									toSessionData={this.state.toSessionData}
-								/>
-							)}
-					</Typography>
-					<Divider
-						style={{
-							backgroundColor: "rgb(58, 127, 187)",
-							opacity: "0.3",
-						}}
-					/>
+						<Divider
+							className={classes.divider}
+						/>
+					</Grid>
 					<Grid item xs={4}>
 						<TextField
 							id="sessionId"
@@ -969,18 +840,11 @@ class F26Form extends Component {
 }
 
 F26Form.propTypes = {
-	isDrawerOpen: PropTypes.bool,
 	classes: PropTypes.object.isRequired,
-	match: PropTypes.object,
 };
 
 F26Form.defaultProps = {
-	isDrawerOpen: true,
-	match: {
-		params: {
-			recordId: 0,
-		},
-	},
+	classes : {}
 };
 
 export default withStyles(styles)(F26Form);

@@ -311,7 +311,7 @@ class DisplayAdmissionApplications extends Component {
                   <TableRow>
                     <StyledTableCell rowSpan="2" style={{borderLeft: "1px solid rgb(47, 87, 165)" }}>Course</StyledTableCell>
                     <StyledTableCell align="center" colSpan="2">Lectures</StyledTableCell>
-                    <StyledTableCell align="center" colSpan="2">Tutorials</StyledTableCell>
+                    <StyledTableCell align="center" colSpan="2">Tutorials&nbsp;/&nbsp;Practicals</StyledTableCell>
                     <StyledTableCell align="center" colSpan="2">Total</StyledTableCell>
                     <StyledTableCell rowSpan="2" align="center" style={{ borderRight: "1px solid rgb(47, 87, 165)" }}>%</StyledTableCell>
                   </TableRow>
