@@ -48,6 +48,7 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 			monthsThisYear,
 			monthsNextYear,
 			yearlyClaimThisYear,
+			weeklyClaimHoursNextYear,
 			yearlyClaimNextYear,
 			yearlyExpenseThisYear,
 			yearlyExpenseNextYear,
@@ -194,6 +195,26 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 				};
 				break;
 			}
+			case "weeklyClaimHoursNextYear": {
+				if (value && !regex.test(value)) return;
+				const weeklyClaimHoursNextLocal = parseFloatSafe(value);
+				const rateNextLocal = parseFloatSafe(rateNextYear);
+				const monthsNextLocal = parseFloatSafe(monthsNextYear);
+				const yearlySalaryNextYearLocal = parseFloatSafe(yearlySalaryNextYear);
+				const yearlyClaimNextLocal = weeklyClaimHoursNextLocal * rateNextLocal * monthsNextLocal;
+				const yearlyExpenseThisLocal = parseFloatSafe(yearlyExpenseThisYear);
+				
+				const updatedExpense = yearlyClaimNextLocal + yearlySalaryNextYearLocal;
+				const percentChangeLocal = ((updatedExpense - yearlyExpenseThisLocal) / (yearlyExpenseThisLocal || 1)) * 100;
+
+				updates = {
+					weeklyClaimHoursNextYear: value,
+					yearlyClaimNextYear: formatNumber(yearlyClaimNextLocal),
+					yearlyExpenseNextYear: formatNumber(updatedExpense),
+					percentChange: formatNumber(percentChangeLocal),
+				};
+				break;
+			}
 			default:
 				updates = { [name]: value };
 		}
@@ -262,7 +283,10 @@ const Popup = ({ row, onApplyChanges, onCancelChanges, open, }) => {
 					<GridMaterial item xs={6}>
 						<TextField name="yearlyClaimThisYear" label="Yearly Claim This Year" value={state.yearlyClaimThisYear || ''} onChange={handleChange} disabled fullWidth />
 					</GridMaterial>
-					<GridMaterial item xs={6}>
+					<GridMaterial item xs={3}>
+						<TextField name="weeklyClaimHoursNextYear" label="Claim Hours Next Year" value={state.weeklyClaimHoursNextYear || ''} onChange={handleChange} fullWidth />
+					</GridMaterial>
+					<GridMaterial item xs={3}>
 						<TextField name="yearlyClaimNextYear" label="Yearly Claim Next Year" value={state.yearlyClaimNextYear || ''} onChange={handleChange} disabled fullWidth />
 					</GridMaterial>
 					<GridMaterial item xs={6}>

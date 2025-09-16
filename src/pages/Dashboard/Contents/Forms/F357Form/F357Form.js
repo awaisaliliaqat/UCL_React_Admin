@@ -440,6 +440,7 @@ class F357Form extends Component {
 		data.append("rateThisYear", rowData.rateThisYear);
 		data.append("monthsThisYear", parseInt(rowData.monthsThisYear) || 0);
 		data.append("monthsNextYear", parseInt(rowData.monthsNextYear) || 0);
+		data.append("weeklyClaimHoursNextYear", parseFloat(rowData.weeklyClaimHoursNextYear) || 0);
 		data.append("salaryThisYear", rowData.salaryThisYear);
 		data.append("rateNextYear", rowData.rateNextYear);
 		data.append("rateIncreasePercentage", rowData.rateIncreasePercentage);
